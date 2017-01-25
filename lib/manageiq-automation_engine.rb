@@ -1,6 +1,2 @@
-require "manageiq/automation_engine/engine"
-
-module ManageIQ
-  module AutomationEngine
-  end
-end
+require 'manageiq/automation_engine/engine'
+require 'miq_automation_engine/miq_ae_exception'
