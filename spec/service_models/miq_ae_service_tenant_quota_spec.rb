@@ -1,7 +1,8 @@
 module MiqAeServiceTenantQuotaSpec
   describe MiqAeMethodService::MiqAeServiceTenantQuota do
-    let(:settings) { {} }
-    let(:tenant) { Tenant.create(:name => 'fred', :domain => 'a.b') }
+    let(:settings)  { {} }
+    let(:default_tenant) { Tenant.seed && Tenant.default_tenant }
+    let(:tenant) { Tenant.create!(:name => 'fred', :domain => 'a.b', :parent => default_tenant) }
     let(:cpu_quota) { TenantQuota.create(:name => "cpu_allocated", :unit => "int", :value => 2, :tenant => tenant) }
     let(:storage_quota) { TenantQuota.create(:name => "storage_allocated", :unit => "GB", :value => 160, :tenant => tenant) }
 
