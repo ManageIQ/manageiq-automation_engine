@@ -1,4 +1,17 @@
-Engine Description:
+# ManageIQ Automation Engine
+
+[![Gem Version](https://badge.fury.io/rb/manageiq-automation_engine.svg)](http://badge.fury.io/rb/manageiq-automation_engine)
+[![Build Status](https://travis-ci.org/ManageIQ/manageiq-automation_engine.svg)](https://travis-ci.org/ManageIQ/manageiq-automation_engine)
+[![Code Climate](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine.svg)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine)
+[![Test Coverage](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/coverage)
+[![Dependency Status](https://gemnasium.com/ManageIQ/manageiq-automation_engine.svg)](https://gemnasium.com/ManageIQ/manageiq-automation_engine)
+[![Security](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/master)
+
+[![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/automate?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+Automation Engine for the ManageIQ project.
+
+## Engine Description
 
 There are two types of storage for the Automation Engine:
 
@@ -121,3 +134,18 @@ AE_DIP should process steps as follows:
   1. Should convert steps to relationships appending #${#ae_message}
   2. Dynamically call methods before_step and after_step (or on_state_change)
   3. Should roughly internalize working of provision_state_machine to allow for others to be defined easier
+
+## Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/ManageIQ/manageiq-automation_engine.
+
+## License
+
+See [LICENSE.txt](LICENSE.txt).
+
