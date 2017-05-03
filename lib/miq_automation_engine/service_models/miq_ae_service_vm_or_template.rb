@@ -41,6 +41,7 @@ module MiqAeMethodService
     expose :compliances,           :association => true
     expose :last_compliance,       :association => true
     expose :ems_events,            :association => true
+    expose :evacuate
 
 
     METHODS_WITH_NO_ARGS = %w(start stop suspend unregister collect_running_processes shutdown_guest standby_guest reboot_guest)
