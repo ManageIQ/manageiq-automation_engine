@@ -21,7 +21,7 @@ module MiqAeDatastore
   TMP_DIR = Rails.root.join("tmp/miq_automate_engine").expand_path
 
   def self.temp_domain
-    "#{TEMP_DOMAIN_PREFIX}-#{MiqUUID.new_guid}"
+    "#{TEMP_DOMAIN_PREFIX}-#{SecureRandom.uuid}"
   end
 
   def self.xml_deprecated_warning
