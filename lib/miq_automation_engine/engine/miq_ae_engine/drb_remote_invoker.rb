@@ -45,20 +45,20 @@ module MiqAeEngine
       global_id_conv = drb_server.config[:idconv]
       drb_server.stop_service
       self.drb_server = nil
+
       # This hack was done to prevent ruby from leaking the
       # TimerIdConv thread.
       # https://bugs.ruby-lang.org/issues/12342 (has been fixed in ruby 2.4.0 preview 1)
       # also fixed in ruby_2_3 branch for the 2.3.2 release: https://github.com/ruby/ruby/commit/c20b07d5357d7cb73226b149431a658cde54a697
-      thread = global_id_conv
-               .try(:instance_variable_get, '@holder')
-               .try(:instance_variable_get, '@keeper')
-      if RUBY_VERSION > "2.3.1"
-        warn "Remove me: #{__FILE__}:#{__LINE__} and my test. Ruby 2.3.2+ should not be creating timer threads."
-      end
-      return unless thread
+      if RUBY_VERSION <= "2.3.1"
+        thread = global_id_conv
+                 .try(:instance_variable_get, '@holder')
+                 .try(:instance_variable_get, '@keeper')
+        return unless thread
 
-      thread.kill
-      Thread.pass while thread.alive?
+        thread.kill
+        Thread.pass while thread.alive?
+      end
     end
 
     def drb_cache_timeout
