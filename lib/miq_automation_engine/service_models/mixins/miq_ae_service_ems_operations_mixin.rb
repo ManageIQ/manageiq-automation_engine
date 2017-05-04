@@ -11,7 +11,7 @@ module MiqAeServiceEmsOperationsMixin
         :args        => args,
         :zone        => @object.my_zone,
         :role        => "ems_operations",
-        :task_id     => nil               # Clear task_id to allow running synchronously under current worker process
+        :task_id     => nil               # Clear task_id to allow running asynchronously under current worker process
       }
 
       if sync
