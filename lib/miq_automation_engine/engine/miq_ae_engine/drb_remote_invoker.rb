@@ -8,11 +8,11 @@ module MiqAeEngine
       @num_methods = 0
     end
 
-    def with_server(inputs, bodies, method_name, line_hash)
+    def with_server(inputs, bodies, method_name, script_info)
       setup if num_methods == 0
       self.num_methods += 1
       svc = MiqAeMethodService::MiqAeService.new(@workspace, inputs)
-      yield build_method_content(bodies, method_name, svc.object_id, line_hash)
+      yield build_method_content(bodies, method_name, svc.object_id, script_info)
     ensure
       svc.destroy # Reset inputs to empty to avoid storing object references
       self.num_methods -= 1
@@ -67,23 +67,23 @@ module MiqAeEngine
 
     # code building
 
-    def build_method_content(bodies, method_name, miq_ae_service_token, line_hash)
+    def build_method_content(bodies, method_name, miq_ae_service_token, script_info)
       [
-        dynamic_preamble(method_name, miq_ae_service_token, line_hash),
+        dynamic_preamble(method_name, miq_ae_service_token, script_info),
         RUBY_METHOD_PREAMBLE,
-        bodies.flatten,
+        bodies,
         RUBY_METHOD_POSTSCRIPT
-      ].join("\n")
+      ].flatten.join("\n")
     end
 
-    def dynamic_preamble(method_name, miq_ae_service_token, line_hash)
-      line_hash_yaml = line_hash.to_yaml
+    def dynamic_preamble(method_name, miq_ae_service_token, script_info)
+      script_info_yaml = script_info.to_yaml
       <<-RUBY.chomp
 MIQ_URI = '#{drb_server.uri}'
 MIQ_ID = #{miq_ae_service_token}
 RUBY_METHOD_NAME = '#{method_name}'
-LINE_HASH_YAML = '#{line_hash_yaml}'
-RUBY_METHOD_PREAMBLE_LINES = #{RUBY_METHOD_PREAMBLE_LINES + 5 + line_hash_yaml.lines.count}
+SCRIPT_INFO_YAML = '#{script_info_yaml}'
+RUBY_METHOD_PREAMBLE_LINES = #{RUBY_METHOD_PREAMBLE_LINES + 5 + script_info_yaml.lines.count}
 RUBY
     end
 
@@ -112,7 +112,6 @@ begin
 
   DRbObject.send(:undef_method, :inspect)
   DRbObject.send(:undef_method, :id) if DRbObject.respond_to?(:id)
-  LINE_HASH = YAML.load(LINE_HASH_YAML)
 
   DRb.start_service
   $evmdrb = DRbObject.new_with_uri(MIQ_URI)
@@ -153,10 +152,11 @@ class Exception
   end
 
   def get_file_info(line)
-    LINE_HASH.each do |fqname, item|
-      return fqname, line - item[:start] if line.between?(item[:start], item[:end])
+    script_info = YAML.load(SCRIPT_INFO_YAML)
+    script_info.each do |fqname, range|
+      return fqname, line - range.begin if range.cover?(line)
     end
-    return "?", line
+    return RUBY_METHOD_NAME, line
   end
 
   alias backtrace_without_evm backtrace

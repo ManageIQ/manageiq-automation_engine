@@ -227,8 +227,7 @@ describe MiqAeEngine::MiqAeMethod do
     context "embed other methods into a method" do
       let(:script) do
         <<-RUBY
-          Shared::Methods.new.some_method('barney', "Bamm-Bamm Ruble")
-          exit MIQ_OK
+          Shared::Methods.new.some_method('barney', "Bamm-Bamm Ruble"); exit MIQ_OK
         RUBY
       end
 
