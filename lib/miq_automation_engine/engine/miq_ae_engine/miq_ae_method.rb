@@ -215,7 +215,7 @@ module MiqAeEngine
     private_class_method :cleanup
 
     def self.get_bodies_and_line_numbers(obj, aem)
-      embeds = get_embeds(obj.workspace, aem) << {:data => aem.data, :fqname =>aem.fqname}
+      embeds = get_embeds(obj.workspace, aem) << {:data => aem.data, :fqname => aem.fqname}
       code_start = 0
       line_hash = {}
       bodies = []
@@ -245,7 +245,7 @@ module MiqAeEngine
     private_class_method :get_embeds
 
     def self.get_embed_method_name(fqname)
-      parts =  MiqAeUri.path(fqname).split('/')
+      parts = MiqAeUri.path(fqname).split('/')
       parts.shift # Remove the leading blank piece
       return parts.pop, parts.pop, parts.join('/')
     end

@@ -306,7 +306,6 @@ describe MiqAeEngine::MiqAeMethod do
           expect { subject }.to raise_error(MiqAeException::UnknownMethodRc)
         end
       end
-
     end
   end
 end
