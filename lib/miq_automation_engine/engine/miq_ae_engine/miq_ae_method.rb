@@ -155,7 +155,8 @@ module MiqAeEngine
     def self.invoke_inline_ruby(aem, obj, inputs)
       if ruby_method_runnable?(aem)
         obj.workspace.invoker ||= MiqAeEngine::DrbRemoteInvoker.new(obj.workspace)
-        obj.workspace.invoker.with_server(inputs, aem.data, aem.fqname) do |code|
+        bodies, line_hash = get_bodies_and_line_numbers(obj, aem)
+        obj.workspace.invoker.with_server(inputs, bodies, aem.fqname, line_hash) do |code|
           $miq_ae_logger.info("<AEMethod [#{aem.fqname}]> Starting ")
           rc, msg = run_ruby_method(code)
           $miq_ae_logger.info("<AEMethod [#{aem.fqname}]> Ending")
@@ -212,5 +213,42 @@ module MiqAeEngine
       threads.each(&:exit)
     end
     private_class_method :cleanup
+
+    def self.get_bodies_and_line_numbers(obj, aem)
+      embeds = get_embeds(obj.workspace, aem) << {:data => aem.data, :fqname =>aem.fqname}
+      code_start = 0
+      line_hash = {}
+      bodies = []
+      embeds.each do |item|
+        bodies << item[:data]
+        line_count = item[:data].lines.count
+        code_end   = code_start + line_count
+        line_hash[item[:fqname]] = {:start => code_start, :end => code_end}
+        code_start = code_end + 1
+      end
+      return bodies, line_hash
+    end
+    private_class_method :get_bodies_and_line_numbers
+
+    def self.get_embeds(workspace, method_obj)
+      method_obj.embedded_methods.collect do |name|
+        method_name, klass, ns = get_embed_method_name(name)
+        match_ns = workspace.overlay_method(ns, klass, method_name)
+        cls = ::MiqAeClass.find_by_fqname("#{match_ns}/#{klass}")
+        aem = ::MiqAeMethod.find_by(:class_id => cls.id, :name => method_name) if cls
+        raise MiqAeException::MethodNotFound, "Embedded method #{name} not found" unless aem
+        fqname = "#{match_ns}/#{klass}/#{method_name}"
+        $miq_ae_logger.info("Loading embedded method #{fqname}")
+        {:data => aem.data, :fqname => fqname}
+      end
+    end
+    private_class_method :get_embeds
+
+    def self.get_embed_method_name(fqname)
+      parts =  MiqAeUri.path(fqname).split('/')
+      parts.shift # Remove the leading blank piece
+      return parts.pop, parts.pop, parts.join('/')
+    end
+    private_class_method :get_embed_method_name
   end
 end
