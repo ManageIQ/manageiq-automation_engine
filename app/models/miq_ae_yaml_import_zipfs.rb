@@ -6,11 +6,11 @@ class MiqAeYamlImportZipfs < MiqAeYamlImport
   end
 
   def load_zip
-    require 'zip/zipfilesystem'
+    require 'zip/filesystem'
 
     raise MiqAeException::FileNotFound, "import file: #{@options['zip_file']} not found" \
       unless File.exist?(@options['zip_file'])
-    @zip = Zip::ZipFile.open(@options['zip_file'])
+    @zip = Zip::File.open(@options['zip_file'])
     @sorted_entries = @zip.entries.sort
   end
 
