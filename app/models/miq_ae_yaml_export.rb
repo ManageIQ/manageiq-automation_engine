@@ -177,6 +177,9 @@ class MiqAeYamlExport
     envelope_hash = setup_envelope(method_obj, METHOD_OBJ_TYPE)
     envelope_hash['object']['inputs'] = method_obj.method_inputs
     envelope_hash['object']['attributes'].delete('data')
+    if method_obj.embedded_methods.empty?
+      envelope_hash['object']['attributes'].delete('embedded_methods')
+    end
     export_file_hash['output_filename'] = "#{method_obj.name}.yaml"
     export_file_hash['export_data']     = envelope_hash.to_yaml
     @counts['method_instances'] += 1

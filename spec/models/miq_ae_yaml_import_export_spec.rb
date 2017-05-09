@@ -176,6 +176,17 @@ describe MiqAeDatastore do
     end
   end
 
+  context "embeded_methods" do
+    it "if no embedded methods the attribute should be missing" do
+      export_model(@manageiq_domain.name)
+      method_file = File.join(@export_dir, @manageiq_domain.name, @aen1.name,
+                              "manageiq_test_class_1.class/__methods__/test1.yaml")
+      data = YAML.load_file(method_file)
+
+      expect(data.fetch_path('object', 'attributes', 'embedded_methods')).to be_nil
+    end
+  end
+
   context "domain_only_attributes" do
     it "namespace should not contain domain only attributes" do
       domain_only_attrs = %w(source top_level_namespace)
