@@ -41,6 +41,10 @@ module MiqAeServiceMethodsSpec
       end
 
       it "sends mail asynchronous" do
+        miq_server = EvmSpecHelper.local_miq_server
+        MiqRegion.seed
+        miq_server.server_roles << FactoryGirl.create(:server_role, :name => 'notifier')
+
         method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, #{options[:content_type].inspect})"
         @ae_method.update_attributes(:data => method)
         stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
