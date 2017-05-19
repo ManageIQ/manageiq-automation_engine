@@ -97,37 +97,6 @@ module MiqAeMethodService
       end
     end
 
-    def self.service_now_eccq_insert(server, username, password, agent, queue, topic, name, source, *params)
-      require 'ServiceNowWebService/SnEccqClientBase'
-      service_now_drb_undumped
-
-      payload = params.empty? ? {} : Hash[*params]
-      password = MiqAePassword.decrypt_if_password(password)
-
-      _log.info("Connecting to host=<#{server}> with username=<#{username}>")
-      sn = SnEccqClientBase.new(server, username, password)
-      _log.info("Inserting agent=<#{agent}>, queue=<#{queue}>, topic=<#{topic}>, name=<#{name}>, source=<#{source}>, payload=<#{payload.inspect}>")
-      rv = sn.insert(agent, queue, topic, name, source, payload)
-      _log.info("Return Value=<#{sn.dumpObj(rv)}>")
-      return rv
-    rescue Handsoap::Fault => hserr
-      _log.error "Handsoap::Fault { :code => '#{hserr.code}', :reason => '#{hserr.reason}', :details => '#{hserr.details.inspect}' }"
-      $log.error hserr.backtrace.join("\n")
-      raise
-    rescue => err
-      _log.error err.to_s
-      $log.error err.backtrace.join("\n")
-      raise
-    end
-
-    def self.service_now_task_get_records(server, username, password, *params)
-      service_now_task_service('getRecords', server, username, password, *params)
-    end
-
-    def self.service_now_task_update(server, username, password, *params)
-      service_now_task_service('update', server, username, password, *params)
-    end
-
     def self.create_provision_request(*args)
       # Need to add the username into the array of params
       # TODO: This code should pass a real username, similar to how the web-service
@@ -140,12 +109,6 @@ module MiqAeMethodService
       user = User.find_by_userid!(userid)
       MiqAeServiceModelBase.wrap_results(AutomationRequest.create_request(options, user, auto_approve))
     end
-
-    def self.service_now_drb_undumped
-      _log.info "Entered"
-      [SnsHash, SnsArray].each { |klass| drb_undumped(klass) }
-    end
-    private_class_method :service_now_drb_undumped
 
     def self.drb_undumped(klass)
       _log.info "Entered: klass=#{klass.name}"
@@ -163,32 +126,5 @@ module MiqAeMethodService
       ActiveRecord::Base.connection_pool.release_connection rescue nil
     end
     private_class_method :ar_method
-
-    def self.service_now_task_service(service, server, username, password, *params)
-      log_prefix = "[#{service.underscore}]"
-      begin
-        require 'ServiceNowWebService/SnSctaskClientBase'
-        service_now_drb_undumped
-
-        payload = params.empty? ? {} : Hash[*params]
-        password = MiqAePassword.decrypt_if_password(password)
-
-        _log.info("#{log_prefix} Connecting to host=<#{server}> with username=<#{username}>")
-        sn = SnSctaskClientBase.new(server, username, password)
-        _log.info("#{log_prefix} Updating with params=<#{payload.inspect}>")
-        rv = sn.send(service, payload)
-        _log.info("#{log_prefix} Return Value=<#{sn.dumpObj(rv)}>")
-        return rv
-      rescue Handsoap::Fault => hserr
-        _log.error "#{log_prefix} Handsoap::Fault { :code => '#{hserr.code}', :reason => '#{hserr.reason}', :details => '#{hserr.details.inspect}' }"
-        $log.error hserr.backtrace.join("\n")
-        raise
-      rescue => err
-        _log.error "#{log_prefix} #{err}"
-        $log.error err.backtrace.join("\n")
-        raise
-      end
-    end
-    private_class_method :service_now_task_service
   end
 end
