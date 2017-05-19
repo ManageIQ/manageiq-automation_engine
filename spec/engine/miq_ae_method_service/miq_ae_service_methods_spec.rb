@@ -20,33 +20,44 @@ module MiqAeServiceMethodsSpec
       end
     end
 
-    it "#send_mail" do
-      options = {
-        :to           => "wilma@bedrock.gov",
-        :from         => "fred@bedrock.gov",
-        :body         => "What are we having for dinner?",
-        :content_type => "text/fred",
-        :subject      => "Dinner"
-      }
+    context "#send_mail" do
+      let(:options) do
+        {
+          :to           => "wilma@bedrock.gov",
+          :from         => "fred@bedrock.gov",
+          :body         => "What are we having for dinner?",
+          :content_type => "text/fred",
+          :subject      => "Dinner"
+        }
+      end
 
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, #{options[:content_type].inspect})"
-      @ae_method.update_attributes(:data => method)
-      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
-      expect(GenericMailer).to receive(:deliver).with(:automation_notification, options).once
-      ae_object = invoke_ae.root(@ae_result_key)
-      expect(ae_object).to be_truthy
+      it "sends mail synchronous" do
+        method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, #{options[:content_type].inspect})"
+        @ae_method.update_attributes(:data => method)
+        stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
+        expect(GenericMailer).to receive(:deliver).with(:automation_notification, options).once
+        ae_object = invoke_ae.root(@ae_result_key)
+        expect(ae_object).to be_truthy
+      end
 
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, #{options[:content_type].inspect})"
-      @ae_method.update_attributes(:data => method)
-      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
-      expect(MiqQueue).to receive(:put).with(
+      it "sends mail asynchronous" do
+        miq_server = EvmSpecHelper.local_miq_server
+        MiqRegion.seed
+        miq_server.server_roles << FactoryGirl.create(:server_role, :name => 'notifier')
+
+        method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, #{options[:content_type].inspect})"
+        @ae_method.update_attributes(:data => method)
+        stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
+        expect(MiqQueue).to receive(:put).with(
           :class_name  => 'GenericMailer',
           :method_name => "deliver",
           :args        => [:automation_notification, options],
           :role        => "notifier",
-          :zone        => nil).once
-      ae_object = invoke_ae.root(@ae_result_key)
-      expect(ae_object).to be_truthy
+          :zone        => nil
+        ).once
+        ae_object = invoke_ae.root(@ae_result_key)
+        expect(ae_object).to be_truthy
+      end
     end
 
     it "#snmp_trap_v1" do
