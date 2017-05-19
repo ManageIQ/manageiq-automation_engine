@@ -42,14 +42,6 @@ module MiqAeEngine
       MiqAeMethodService::MiqAeServiceMethods.snmp_trap_v2(inputs)
     end
 
-    def self.miq_service_now_eccq_insert(_obj, inputs)
-      if inputs['payload'].nil?
-        MiqAeMethodService::MiqAeServiceMethods.service_now_eccq_insert(inputs['server'], inputs['username'], inputs['password'], inputs['agent'], inputs['queue'], inputs['topic'], inputs['name'], inputs['source'])
-      else
-        MiqAeMethodService::MiqAeServiceMethods.service_now_eccq_insert(inputs['server'], inputs['username'], inputs['password'], inputs['agent'], inputs['queue'], inputs['topic'], inputs['name'], inputs['source'], *(inputs['payload']))
-      end
-    end
-
     def self.powershell(_obj, inputs)
       MiqAeMethodService::MiqAeServiceMethods.powershell(inputs['script'], inputs['returns'])
     end
