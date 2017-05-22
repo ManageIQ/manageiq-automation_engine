@@ -8,11 +8,11 @@ module MiqAeEngine
       @num_methods = 0
     end
 
-    def with_server(inputs, body, method_name)
+    def with_server(inputs, bodies, method_name, script_info)
       setup if num_methods == 0
       self.num_methods += 1
       svc = MiqAeMethodService::MiqAeService.new(@workspace, inputs)
-      yield build_method_content(body, method_name, svc.object_id)
+      yield build_method_content(bodies, method_name, svc.object_id, script_info)
     ensure
       svc.destroy # Reset inputs to empty to avoid storing object references
       self.num_methods -= 1
@@ -67,21 +67,23 @@ module MiqAeEngine
 
     # code building
 
-    def build_method_content(body, method_name, miq_ae_service_token)
+    def build_method_content(bodies, method_name, miq_ae_service_token, script_info)
       [
-        dynamic_preamble(method_name, miq_ae_service_token),
+        dynamic_preamble(method_name, miq_ae_service_token, script_info),
         RUBY_METHOD_PREAMBLE,
-        body,
+        bodies,
         RUBY_METHOD_POSTSCRIPT
-      ].join("\n")
+      ].flatten.join("\n")
     end
 
-    def dynamic_preamble(method_name, miq_ae_service_token)
+    def dynamic_preamble(method_name, miq_ae_service_token, script_info)
+      script_info_yaml = script_info.to_yaml
       <<-RUBY.chomp
 MIQ_URI = '#{drb_server.uri}'
 MIQ_ID = #{miq_ae_service_token}
 RUBY_METHOD_NAME = '#{method_name}'
-RUBY_METHOD_PREAMBLE_LINES = #{RUBY_METHOD_PREAMBLE_LINES + 4}
+SCRIPT_INFO_YAML = '#{script_info_yaml}'
+RUBY_METHOD_PREAMBLE_LINES = #{RUBY_METHOD_PREAMBLE_LINES + 5 + script_info_yaml.lines.count}
 RUBY
     end
 
@@ -136,7 +138,8 @@ class Exception
     callers.collect do |c|
       file, line, context = c.split(':')
       if file == "-"
-        [RUBY_METHOD_NAME, line.to_i - RUBY_METHOD_PREAMBLE_LINES, context].join(':')
+        fqname, line = get_file_info(line.to_i - RUBY_METHOD_PREAMBLE_LINES)
+        [fqname, line, context].join(':')
       else
         c
       end
@@ -146,6 +149,14 @@ class Exception
   def backtrace_with_evm
     value = backtrace_without_evm
     value ? filter_backtrace(value) : value
+  end
+
+  def get_file_info(line)
+    script_info = YAML.load(SCRIPT_INFO_YAML)
+    script_info.each do |fqname, range|
+      return fqname, line - range.begin if range.cover?(line)
+    end
+    return RUBY_METHOD_NAME, line
   end
 
   alias backtrace_without_evm backtrace
