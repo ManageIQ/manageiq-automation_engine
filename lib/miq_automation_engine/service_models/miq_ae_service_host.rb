@@ -2,6 +2,8 @@ module MiqAeMethodService
   class MiqAeServiceHost < MiqAeServiceModelBase
     require_relative "mixins/miq_ae_service_custom_attribute_mixin"
     include MiqAeServiceCustomAttributeMixin
+    require_relative "mixins/miq_ae_service_ems_operations_mixin"
+    include MiqAeServiceEmsOperationsMixin
 
     expose :storages,              :association => true
     expose :read_only_storages
@@ -34,16 +36,8 @@ module MiqAeMethodService
     METHODS_WITH_NO_ARGS = %w(scan)
     METHODS_WITH_NO_ARGS.each do |m|
       define_method(m) do
-        ar_method do
-          MiqQueue.put(
-            :class_name  => @object.class.name,
-            :instance_id => @object.id,
-            :method_name => m,
-            :zone        => @object.my_zone,
-            :role        => "ems_operations"
-          )
-          true
-        end
+        sync_or_async_ems_operation(false, m, [])
+        true
       end
     end
 
@@ -65,14 +59,7 @@ module MiqAeMethodService
     end
 
     def ems_custom_set(attribute, value)
-      MiqQueue.put(
-        :class_name  => @object.class.name,
-        :instance_id => @object.id,
-        :method_name => 'set_custom_field',
-        :zone        => @object.my_zone,
-        :role        => 'ems_operations',
-        :args        => [attribute, value]
-      ) if @object.is_vmware?
+      sync_or_async_ems_operation(false, 'set_custom_field', [attribute, value]) if @object.is_vmware?
       true
     end
 
