@@ -59,7 +59,7 @@ module MiqAeMethodService
     end
 
     def ems_custom_set(attribute, value)
-      sync_or_async_ems_operation(false, 'set_custom_field', [attribute, value]) if @object.is_vmware?
+      sync_or_async_ems_operation(false, 'set_custom_field', [attribute, value])
       true
     end
 
