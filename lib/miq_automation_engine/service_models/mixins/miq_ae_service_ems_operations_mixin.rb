@@ -2,7 +2,7 @@ module MiqAeServiceEmsOperationsMixin
   extend ActiveSupport::Concern
 
   # Instance Methods
-  def sync_or_async_ems_operation(sync, method_name, args)
+  def sync_or_async_ems_operation(sync, method_name, args = [])
     ar_method do
       queue_options = {
         :class_name  => @object.class.name,

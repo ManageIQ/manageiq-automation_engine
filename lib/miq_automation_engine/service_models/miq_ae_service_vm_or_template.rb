@@ -47,7 +47,7 @@ module MiqAeMethodService
     METHODS_WITH_NO_ARGS = %w(start stop suspend unregister collect_running_processes shutdown_guest standby_guest reboot_guest)
     METHODS_WITH_NO_ARGS.each do |m|
       define_method(m) do
-        sync_or_async_ems_operation(false, m, [])
+        sync_or_async_ems_operation(false, m)
         true
       end
     end
@@ -136,7 +136,7 @@ module MiqAeMethodService
     end
 
     def remove_from_disk(sync = true)
-      sync_or_async_ems_operation(sync, "vm_destroy", [])
+      sync_or_async_ems_operation(sync, "vm_destroy")
     end
   end
 end

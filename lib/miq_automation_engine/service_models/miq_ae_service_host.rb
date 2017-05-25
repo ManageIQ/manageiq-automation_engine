@@ -36,7 +36,7 @@ module MiqAeMethodService
     METHODS_WITH_NO_ARGS = %w(scan)
     METHODS_WITH_NO_ARGS.each do |m|
       define_method(m) do
-        sync_or_async_ems_operation(false, m, [])
+        sync_or_async_ems_operation(false, m)
         true
       end
     end
