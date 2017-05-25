@@ -13,12 +13,6 @@ module MiqAeServiceManageIQ_Providers_Vmware_InfraManager_VmSpec
         :role        => 'ems_operations',
         :task_id     => nil
       }
-
-      $_miq_worker_current_msg = FactoryGirl.build(:miq_queue, :task_id => '1234')
-    end
-
-    after do
-      $_miq_worker_current_msg = nil
     end
 
     it "#set_number_of_cpus" do
