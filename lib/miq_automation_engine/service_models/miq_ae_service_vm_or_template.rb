@@ -47,16 +47,8 @@ module MiqAeMethodService
     METHODS_WITH_NO_ARGS = %w(start stop suspend unregister collect_running_processes shutdown_guest standby_guest reboot_guest)
     METHODS_WITH_NO_ARGS.each do |m|
       define_method(m) do
-        ar_method do
-          MiqQueue.put(
-            :class_name  => @object.class.name,
-            :instance_id => @object.id,
-            :method_name => m,
-            :zone        => @object.my_zone,
-            :role        => "ems_operations"
-          )
-          true
-        end
+        sync_or_async_ems_operation(false, m)
+        true
       end
     end
 
@@ -70,14 +62,7 @@ module MiqAeMethodService
       args << priority
       args << state
 
-      MiqQueue.put(
-        :class_name  => @object.class.name,
-        :instance_id => @object.id,
-        :method_name => 'migrate_via_ids',
-        :zone        => @object.my_zone,
-        :role        => 'ems_operations',
-        :args        => args
-      )
+      sync_or_async_ems_operation(false, "migrate_via_ids", args)
       true
     end
 
@@ -126,14 +111,7 @@ module MiqAeMethodService
 
     def ems_custom_set(attribute, value)
       _log.info "Setting EMS Custom Key on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}> with key=#{attribute.inspect} to #{value.inspect}"
-      MiqQueue.put(
-        :class_name  => @object.class.name,
-        :instance_id => @object.id,
-        :method_name => 'set_custom_field',
-        :zone        => @object.my_zone,
-        :role        => 'ems_operations',
-        :args        => [attribute, value]
-      )
+      sync_or_async_ems_operation(false, "set_custom_field", [attribute, value])
       true
     end
 
@@ -158,7 +136,7 @@ module MiqAeMethodService
     end
 
     def remove_from_disk(sync = true)
-      sync_or_async_ems_operation(sync, "vm_destroy", [])
+      sync_or_async_ems_operation(sync, "vm_destroy")
     end
   end
 end

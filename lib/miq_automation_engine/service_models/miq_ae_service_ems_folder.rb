@@ -1,20 +1,14 @@
 module MiqAeMethodService
   class MiqAeServiceEmsFolder < MiqAeServiceModelBase
+    require_relative "mixins/miq_ae_service_ems_operations_mixin"
+    include MiqAeServiceEmsOperationsMixin
+
     expose :hosts, :association => true
     expose :vms,   :association => true
 
     def register_host(host)
-      ar_method do
-        MiqQueue.put(
-          :class_name  => @object.class.name,
-          :instance_id => @object.id,
-          :method_name => "register_host",
-          :zone        => @object.my_zone,
-          :role        => "ems_operations",
-          :args        => [host.id]
-        )
-        true
-      end
+      sync_or_async_ems_operation(false, "register_host", [host.id])
+      true
     end
 
     # default options:
