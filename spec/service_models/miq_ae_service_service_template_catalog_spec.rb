@@ -5,18 +5,18 @@ module MiqAeServiceServiceTemplateCatalogSpec
         Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
         @ae_method     = ::MiqAeMethod.first
         @ae_result_key = 'foo'
-        @service_template   = FactoryGirl.create(:service_template_catalog)
+        @service_template_catalog = FactoryGirl.create(:service_template_catalog)
         @user = FactoryGirl.create(:user_with_group)
       end
 
       def invoke_ae
-        MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?ServiceTemplateCatalog::service_template_catalog=#{@service_template.id}", @user)
+        MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?ServiceTemplateCatalog::service_template_catalog=#{@service_template_catalog.id}", @user)
       end
     end
 
     context "associations" do
       before do
-        service_template          = FactoryGirl.create(:service_template)
+        service_template_catalog          = FactoryGirl.create(:service_template_catalog)
         @service_service_template_catalog  = MiqAeMethodService::MiqAeServiceServiceTemplateCatalog.find(service_template_catalog.id)
       end
 
