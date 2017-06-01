@@ -24,7 +24,7 @@ module MiqAeServiceServiceTemplateCatalogSpec
         service_template = FactoryGirl.create(:service_template, :service_template_catalog_id => @service_service_template_catalog.id)
         first_service_template = @service_service_template_catalog.service_templates.first
 
-        expect(first_service_template).to be_kind_of(MiqAeMethodService::MiqAeServiceService)
+        expect(first_service_template).to be_kind_of(MiqAeMethodService::MiqAeServiceServiceTemplate)
         expect(first_service_template.id).to eq(service_template.id)
       end
     end
