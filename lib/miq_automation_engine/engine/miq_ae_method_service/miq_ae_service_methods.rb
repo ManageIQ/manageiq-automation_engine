@@ -110,6 +110,11 @@ module MiqAeMethodService
       MiqAeServiceModelBase.wrap_results(AutomationRequest.create_request(options, user, auto_approve))
     end
 
+    def self.create_service_provision_request(svc_template, options = nil)
+      result = ar_object(svc_template).provision_request(@workspace.ae_user, options)
+      MiqAeServiceModelBase.wrap_results(result)
+    end
+
     def self.drb_undumped(klass)
       _log.info "Entered: klass=#{klass.name}"
       klass.include(DRbUndumped) unless klass.ancestors.include?(DRbUndumped)
