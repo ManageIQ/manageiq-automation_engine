@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package manageiq.dialog;
+
+message Input {
+  string               namespace        = 1;
+  string               class_name       = 2;
+  string               instance_name    = 3;
+  string               automate_message = 4;
+  string               user_id          = 5;
+  string               miq_group_id     = 6;
+  string               tenant_id        = 7;
+  string               object_type      = 8;
+  string               object_id        = 9;
+  map <string, string> attrs            = 10;
+}
+
+message DialogFieldCheckBoxResult {
+  bool                required           = 1;
+  bool                read_only          = 2;
+  bool                visible            = 3;
+  string              value              = 4;
+}
+
+message DialogFieldTextBoxResult {
+  string              data_type          = 1;
+  bool                protected          = 2;
+  bool                required           = 3;
+  string              validator_rule     = 4;
+  string              validator_type     = 5;
+  bool                read_only          = 6;
+  bool                visible            = 7;
+  string              value              = 8;
+}
+
+message DialogFieldTextAreaBoxResult {
+  bool                required           = 1;
+  bool                read_only          = 2;
+  bool                visible            = 3;
+  string              value              = 4;
+}
+
+
+message DialogFieldSortedItemResult {
+  string              sort_by       = 1;
+  string              sort_order    = 2;
+  string              data_type     = 3;
+  string              default_value = 4; 
+  bool                required      = 5;
+  map <int64, string> values        = 6;
+}
+
+message DialogFieldDateTimeControlResult {
+  bool                show_past_dates = 1;
+  bool                read_only       = 2;
+  bool                visible         = 3;
+  string              value           = 4;
+}
+
+message DialogFieldDateControlResult {
+  bool                show_past_dates = 1;
+  bool                read_only       = 2;
+  bool                visible         = 3;
+  string              value           = 4;
+}
+
+// The Dialog service definition.
+service AutomateDialog {
+  // Sends back the result of a dialog field method
+  rpc GetDialogFieldDateControl(Input) returns (DialogFieldDateControlResult) {}
+  rpc GetDialogFieldDateTimeControl(Input) returns (DialogFieldDateTimeControlResult) {}
+  rpc GetDialogFieldSortedItem(Input) returns (DialogFieldSortedItemResult) {}
+  rpc GetDialogFieldTextAreaBox(Input) returns (DialogFieldTextAreaBoxResult) {}
+  rpc GetDialogFieldTextBox(Input) returns (DialogFieldTextBoxResult) {}
+  rpc GetDialogFieldCheckBox(Input) returns (DialogFieldCheckBoxResult) {}
+}
