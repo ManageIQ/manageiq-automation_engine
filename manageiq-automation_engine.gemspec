@@ -15,6 +15,8 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,lib}/**/*", "LICENSE.txt", "Rakefile", "README.md"]
 
+  s.add_dependency "rubyzip", "~>1.2.1"
+
   s.add_development_dependency "codeclimate-test-reporter", "~> 1.0.0"
   s.add_development_dependency "simplecov"
 end
