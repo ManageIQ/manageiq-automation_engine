@@ -182,7 +182,8 @@ module MiqAeServiceMethodsSpec
 
       it "create service request" do
         allow(workspace).to receive(:disable_rbac)
-        expect_any_instance_of(ServiceTemplate).to receive(:provision_request).with(user, svc_options).and_return(miq_request)
+        allow(ServiceTemplate).to receive(:find).with(template.id).and_return(template)
+        expect(template).to receive(:provision_request).with(user, svc_options).and_return(miq_request)
 
         result = miq_ae_service.execute(:create_service_provision_request, svc_template, svc_options)
         expect(result).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqRequest)
