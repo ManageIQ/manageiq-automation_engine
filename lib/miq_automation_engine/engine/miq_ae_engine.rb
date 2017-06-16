@@ -24,19 +24,7 @@ module MiqAeEngine
       :msg_timeout => 60.minutes
     }.merge(options)
 
-    static_keys = [:class_name, :method_name, :zone, :msg_timeout]
-
-    ##############################################
-    # IF there is no current message
-    # OR any of the static keys in the current message do NOT match the value in the options for the same key,
-    # THEN create a new message
-    # ELSE requeue the current message with the new options
-    ##############################################
-    if $_miq_worker_current_msg.nil? || options.any? { |key, value| static_keys.include?(key) ? ($_miq_worker_current_msg.send(key) != value) : false }
-      MiqQueue.put(options)
-    else
-      $_miq_worker_current_msg.requeue(options)
-    end
+    MiqQueue.put(options)
   end
 
   def self.deliver(*args)
