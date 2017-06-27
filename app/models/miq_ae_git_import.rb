@@ -55,6 +55,7 @@ class MiqAeGitImport
     @options['ref'] ||= DEFAULT_BRANCH
     @options['ref_type'] ||= BRANCH
     @options['ref_type'] = @options['ref_type'].downcase
+    @options['verify_ssl'] = @git_repo.verify_ssl
   end
 
   def branch_or_tag
