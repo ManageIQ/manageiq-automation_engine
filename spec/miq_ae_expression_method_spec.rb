@@ -8,15 +8,13 @@ module MiqAeExpressionMethodSpec
     let(:vm3) { FactoryGirl.create(:vm, :name => 'test_4.2', :cpu_shares => 11) }
     let(:complex_qs_exp) do
       {"and" => [{"STARTS WITH" => {"field" => "Vm-name", "value" => :user_input}},
-                 {"ENDS WITH"   => {"field" => "Vm-name", "value" => :user_input}}]
-      }
+                 {"ENDS WITH"   => {"field" => "Vm-name", "value" => :user_input}}]}
     end
 
     let(:m_params) do
       {'arg1'       => {'datatype' => 'string', 'default_value' => 'test'},
        'arg2'       => {'datatype' => 'string', 'default_value' => '1'},
-       'attributes' => {'datatype' => 'array',  'default_value' => 'name'}
-      }
+       'attributes' => {'datatype' => 'array',  'default_value' => 'name'}}
     end
 
     let(:vm_search) do
