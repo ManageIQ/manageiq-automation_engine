@@ -6,13 +6,14 @@ describe MiqAeDatastore do
                            'max_retries' => "10",
                            'collect'     => "dinosaurs",
                            'max_time'    => "100"}
+    @expression_data = "---\n:db: VmOrTemplate\n:expression:\n  STARTS WITH:\n    field: VmOrTemplate-name\n    value: :user_input\n"
     @clear_default_password = 'little_secret'
     @clear_password = 'secret'
     @relations_value = "bedrock relations"
     @domain_counts = {'dom' => 1, 'ns' => 3, 'class' => 4, 'inst' => 10,
-                             'meth' => 3, 'field' => 12, 'value' => 8}
+                             'meth' => 4, 'field' => 12, 'value' => 8}
     @domain_counts_with_extra_items = {'dom' => 1, 'ns' => 4, 'class' => 5, 'inst' => 11,
-                             'meth' => 3, 'field' => 12, 'value' => 8}
+                             'meth' => 4, 'field' => 12, 'value' => 8}
     EvmSpecHelper.local_miq_server
     @tenant = Tenant.seed
     create_factory_data("manageiq", 0, MiqAeDomain::SYSTEM_SOURCE)
@@ -225,7 +226,7 @@ describe MiqAeDatastore do
         export_model(MiqAeYamlImportExportMixin::ALL_DOMAINS, export_options)
         reset_and_import(@export_dir, MiqAeYamlImportExportMixin::ALL_DOMAINS, import_options)
         check_counts('dom'  => 2, 'ns'    => 6,  'class' => 8, 'inst'  => 20,
-                     'meth' => 6, 'field' => 24, 'value' => 16)
+                     'meth' => 8, 'field' => 24, 'value' => 16)
       end
 
       it "import single domain, from directory" do
@@ -370,7 +371,7 @@ describe MiqAeDatastore do
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
       check_counts('dom'  => 2, 'ns'    => 6,  'class' => 8,  'inst'  => 20,
-                   'meth' => 6, 'field' => 24, 'value' => 16)
+                   'meth' => 8, 'field' => 24, 'value' => 16)
       expect(MiqAeDomain.find_by_fqname(import_options['import_as'])).not_to be_nil
     end
 
@@ -419,7 +420,7 @@ describe MiqAeDatastore do
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
       check_counts('dom'  => 1, 'ns'    => 2, 'class' => 3, 'inst'  => 6,
-                   'meth' => 2, 'field' => 6, 'value' => 4)
+                   'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
     it "domain, import only multi-part namespace, to directory" do
@@ -470,7 +471,7 @@ describe MiqAeDatastore do
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
       check_counts('dom'  => 1,  'ns'    => 1, 'class' => 1, 'inst'  => 2,
-                   'meth' => 2, 'field' => 6, 'value' => 4)
+                   'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
     it "namespace, to directory" do
@@ -495,7 +496,7 @@ describe MiqAeDatastore do
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
       check_counts('dom'  => 1, 'ns'    => 2, 'class' => 3, 'inst'  => 6,
-                   'meth' => 2, 'field' => 6, 'value' => 4)
+                   'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
     it "namespace, multi-part, to directory" do
@@ -528,7 +529,7 @@ describe MiqAeDatastore do
       export_model(@manageiq_domain.name, options)
       reset_and_import(@export_dir, @manageiq_domain.name)
       check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst'  => 2,
-                   'meth' => 2, 'field' => 6, 'value' => 4)
+                   'meth' => 3, 'field' => 6, 'value' => 4)
       @manageiq_domain = MiqAeNamespace.find_by_fqname('manageiq', false)
       @aen1_aec1       = MiqAeClass.find_by_name('manageiq_test_class_1')
       @aen1_aec1_aei2  = FactoryGirl.create(:miq_ae_instance,
@@ -538,7 +539,7 @@ describe MiqAeDatastore do
       export_model(@manageiq_domain.name, options)
       MiqAeImport.new(@manageiq_domain.name, 'preview' => false, 'import_dir' => @export_dir).import
       check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst'  => 3,
-                   'meth' => 2, 'field' => 6, 'value' => 4)
+                   'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
     it "class, with methods, to directory" do
@@ -565,7 +566,7 @@ describe MiqAeDatastore do
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
       check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst'  => 2,
-                   'meth' => 2, 'field' => 6, 'value' => 4)
+                   'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
     it "class, with builtin methods, as directory" do
@@ -588,15 +589,35 @@ describe MiqAeDatastore do
       assert_class_with_builtin_methods_export(export_options, import_options)
     end
 
-    def assert_class_with_builtin_methods_export(export_options, import_options)
+    it "class, with expression methods, as zip" do
+      export_options = {'namespace' => @aen1.name, 'class' => @aen1_aec1.name}
+      export_options['zip_file'] = @zip_file
+      import_options = {'zip_file' => @zip_file}
+      assert_class_with_expression_methods_export(export_options, import_options)
+    end
+
+    def assert_methods_export(export_options, import_options)
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
-      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst'  => 2,
-                   'meth' => 2, 'field' => 6, 'value' => 4)
+      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst' => 2,
+                   'meth' => 3, 'field' => 6, 'value' => 4)
+    end
+
+    def assert_class_with_builtin_methods_export(export_options, import_options)
+      assert_methods_export(export_options, import_options)
+      assert_method_data('test2', 'builtin', nil)
+    end
+
+    def assert_class_with_expression_methods_export(export_options, import_options)
+      assert_methods_export(export_options, import_options)
+      assert_method_data('test3', 'expression', @expression_data)
+    end
+
+    def assert_method_data(name, location, data)
       aen1_aec1  = MiqAeClass.find_by_name('manageiq_test_class_1')
-      builtin_method = MiqAeMethod.find_by_class_id_and_name(aen1_aec1.id, 'test2')
-      expect(builtin_method.location).to eql 'builtin'
-      expect(builtin_method.data).to be_nil
+      method = MiqAeMethod.find_by_class_id_and_name(aen1_aec1.id, name)
+      expect(method.location).to eql location
+      expect(method.data).to eq(data)
     end
 
     it "class, without methods, to directory" do
@@ -771,6 +792,13 @@ describe MiqAeDatastore do
                        :scope    => "instance",
                        :language => "ruby",
                        :location => "builtin")
+    FactoryGirl.create(:miq_ae_method,
+                       :class_id => n1_c1.id,
+                       :name     => 'test3',
+                       :scope    => "instance",
+                       :language => "ruby",
+                       :data     => @expression_data,
+                       :location => "expression")
     FactoryGirl.create(:miq_ae_instance,  :name => 'test_instance2', :class_id => n1_c1.id)
     create_fields(n1_c1, n1_c1_i1, n1_c1_m1)
 
