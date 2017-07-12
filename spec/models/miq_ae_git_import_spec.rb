@@ -56,9 +56,10 @@ describe MiqAeGitImport do
         end
 
         let(:import_options) do
-          options.merge("ref_type" => MiqAeGitImport::BRANCH,
-                        "branch"   => branch_name,
-                        "git_dir"  => repo.directory_name)
+          options.merge("ref_type"   => MiqAeGitImport::BRANCH,
+                        "branch"     => branch_name,
+                        "git_dir"    => repo.directory_name,
+                        "verify_ssl" => 1)
         end
 
         before do
@@ -84,10 +85,11 @@ describe MiqAeGitImport do
             basic_options.merge('ref' => branch_name.downcase, 'git_repository_id' => repo.id)
           end
           let(:import_options) do
-            options.merge("ref_type" => MiqAeGitImport::BRANCH,
-                          "ref"      => branch_name,
-                          "branch"   => branch_name,
-                          "git_dir"  => repo.directory_name)
+            options.merge("ref_type"   => MiqAeGitImport::BRANCH,
+                          "ref"        => branch_name,
+                          "branch"     => branch_name,
+                          "verify_ssl" => 1,
+                          "git_dir"    => repo.directory_name)
           end
           it_behaves_like "#import that has a valid branch"
         end
@@ -104,6 +106,7 @@ describe MiqAeGitImport do
         let(:options) do
           basic_options.reverse_merge('ref'               => tag_name,
                                       'git_repository_id' => repo.id,
+                                      'verify_ssl'        => 1,
                                       'ref_type'          => MiqAeGitImport::TAG)
         end
 
@@ -133,7 +136,8 @@ describe MiqAeGitImport do
           let(:options) do
             basic_options.merge('ref'               => tag_name.downcase,
                                 'git_repository_id' => repo.id,
-                                'ref_type'          => MiqAeGitImport::TAG)
+                                'ref_type'          => MiqAeGitImport::TAG,
+                                'verify_ssl'        => 1)
           end
 
           let(:import_options) do
@@ -149,9 +153,10 @@ describe MiqAeGitImport do
         end
 
         let(:import_options) do
-          options.merge("branch"   => branch_name,
-                        "ref_type" => MiqAeGitImport::BRANCH,
-                        "git_dir"  => repo.directory_name)
+          options.merge("branch"     => branch_name,
+                        "ref_type"   => MiqAeGitImport::BRANCH,
+                        "verify_ssl" => 1,
+                        "git_dir"    => repo.directory_name)
         end
 
         before do
@@ -172,7 +177,7 @@ describe MiqAeGitImport do
     end
 
     context "when the ref type and ref are not valid" do
-      let(:options) { {'git_repository_id' => repo.id, 'ref_type' => ref_type, 'ref' => ref} }
+      let(:options) { {'git_repository_id' => repo.id, 'ref_type' => ref_type, 'ref' => ref, 'verify_ssl' => 1} }
 
       shared_examples_for "#import that has invalid ref or ref type" do
         it "throws an argument error" do
