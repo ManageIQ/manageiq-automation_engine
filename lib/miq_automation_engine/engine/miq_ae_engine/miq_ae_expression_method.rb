@@ -36,10 +36,10 @@ module MiqAeEngine
     end
 
     def process_filter
-      exp_table = exp_build_table(@exp)
+      exp_table = exp_build_table(@exp, true)
       qs_tokens = create_tokens(exp_table, @exp)
       values = get_args(qs_tokens.keys.length)
-      values.each_with_index { |v, index| qs_tokens[index + 1][:value] = v }
+      qs_tokens.keys.each_with_index { |token_at, index| qs_tokens[token_at][:value] = values[index] } 
       exp_replace_qs_tokens(@exp, qs_tokens)
     end
 
