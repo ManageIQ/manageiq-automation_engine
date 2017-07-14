@@ -39,7 +39,7 @@ module MiqAeEngine
       exp_table = exp_build_table(@exp, true)
       qs_tokens = create_tokens(exp_table, @exp)
       values = get_args(qs_tokens.keys.length)
-      qs_tokens.keys.each_with_index { |token_at, index| qs_tokens[token_at][:value] = values[index] } 
+      qs_tokens.keys.each_with_index { |token_at, index| qs_tokens[token_at][:value] = values[index] }
       exp_replace_qs_tokens(@exp, qs_tokens)
     end
 
@@ -65,8 +65,7 @@ module MiqAeEngine
     end
 
     def result_simple(obj, attr)
-      raise MiqAeException::MethodNotDefined,
-            "Undefined method #{attr} in class #{obj.class}" unless obj.respond_to?(attr.to_sym)
+      raise MiqAeException::MethodNotDefined, "Undefined method #{attr} in class #{obj.class}" unless obj.respond_to?(attr.to_sym)
       obj.send(attr.to_sym)
     end
 
