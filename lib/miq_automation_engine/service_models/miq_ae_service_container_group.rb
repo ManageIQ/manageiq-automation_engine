@@ -1,7 +1,6 @@
 module MiqAeMethodService
   class MiqAeServiceContainerGroup < MiqAeServiceModelBase
     expose :containers,             :association => true
-    expose :container_definitions,  :association => true
     expose :container_images,       :association => true
     expose :ext_management_system,  :association => true
     expose :labels,                 :association => true
