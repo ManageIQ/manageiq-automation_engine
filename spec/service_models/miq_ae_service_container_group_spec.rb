@@ -4,10 +4,6 @@ module MiqAeServiceContainerSpec
       expect(described_class.instance_methods).to include(:containers)
     end
 
-    it "#container_definitions" do
-      expect(described_class.instance_methods).to include(:container_definitions)
-    end
-
     it "#container_images" do
       expect(described_class.instance_methods).to include(:container_images)
     end
