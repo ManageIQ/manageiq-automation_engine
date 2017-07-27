@@ -39,6 +39,14 @@ module MiqAeException
   class DomainNotAccessible < MiqAeDatastoreError; end
   class CannotLock < MiqAeDatastoreError; end
   class CannotUnlock < MiqAeDatastoreError; end
+
+  class MethodExpressionNotFound < MiqAeEngineError; end
+  class MethodExpressionEmpty < MiqAeEngineError; end
+  class MethodExpressionInvalid < MiqAeEngineError; end
+  class MethodExpressionTargetObjectMissing < MiqAeEngineError; end
+  class MethodExpressionResultTypeInvalid < MiqAeEngineError; end
+  class MethodParameterNotFound < MiqAeEngineError; end
+  class MethodNotDefined < MiqAeEngineError; end
 end
 
 module MiqException
