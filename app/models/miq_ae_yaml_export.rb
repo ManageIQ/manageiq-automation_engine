@@ -168,7 +168,9 @@ class MiqAeYamlExport
     class_obj.ae_methods.sort_by(&:fqname).each do |meth_obj|
       export_file_hash['created_on'] = meth_obj.created_on
       export_file_hash['updated_on'] = meth_obj.updated_on
-      write_method_file(meth_obj, export_file_hash) unless meth_obj.location == 'builtin'
+      if meth_obj.location == 'inline'
+        write_method_file(meth_obj, export_file_hash)
+      end
       write_method_attributes(meth_obj, export_file_hash)
     end
   end
@@ -176,7 +178,9 @@ class MiqAeYamlExport
   def write_method_attributes(method_obj, export_file_hash)
     envelope_hash = setup_envelope(method_obj, METHOD_OBJ_TYPE)
     envelope_hash['object']['inputs'] = method_obj.method_inputs
-    envelope_hash['object']['attributes'].delete('data')
+    if method_obj.location == "inline"
+      envelope_hash['object']['attributes'].delete('data')
+    end
     if method_obj.embedded_methods.empty?
       envelope_hash['object']['attributes'].delete('embedded_methods')
     end
