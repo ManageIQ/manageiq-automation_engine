@@ -217,7 +217,8 @@ class MiqAeYamlImport
   def process_method(class_obj, ruby_method_file_name, method_yaml)
     method_attributes = method_yaml.fetch_path('object', 'attributes')
     if method_attributes['location'] == 'inline'
-      method_yaml.store_path('object', 'attributes', 'data', load_method_ruby(ruby_method_file_name))
+      data = load_method_ruby(ruby_method_file_name)
+      method_yaml.store_path('object', 'attributes', 'data', data) if data
     end
     method_obj = MiqAeMethod.find_by(:name => method_attributes['name'], :class_id => class_obj.id) unless class_obj.nil?
     track_stats('method', method_obj)
