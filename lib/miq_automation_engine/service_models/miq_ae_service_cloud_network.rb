@@ -8,5 +8,7 @@ module MiqAeMethodService
     expose :floating_ips,          :association => true
     expose :network_ports,         :association => true
     expose :network_routers,       :association => true
+    expose :update_cloud_network
+    expose :delete_cloud_network
   end
 end
