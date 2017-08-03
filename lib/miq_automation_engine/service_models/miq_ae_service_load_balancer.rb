@@ -8,8 +8,8 @@ module MiqAeMethodService
     expose :cloud_subnets, :association => true
     expose :vms, :association => true
     expose :ems_ref
-    expose :raw_delete_load_balancer
-    expose :raw_update_load_balancer
+    expose :delete_load_balancer
+    expose :update_load_balancer
     expose :raw_exists?
 
     def add_to_service(service)
