@@ -24,6 +24,7 @@ module MiqAeEngine
         found = find_object(child, object_name)
         return found if found
       end
+      nil
     end
   end
 end
