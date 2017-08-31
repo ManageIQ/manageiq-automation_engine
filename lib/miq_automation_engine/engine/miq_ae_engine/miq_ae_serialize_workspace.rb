@@ -8,7 +8,7 @@ module MiqAeEngine
     end
 
     def to_hash_with_refs(obj, parent, result)
-      key = parent ? "/#{obj.namespace}/#{obj.klass}/#{obj.instance}" : "root"
+      key = parent ? obj.object_name : "root"
       system_attrs = parent ? {"::miq::parent" => parent } : {}
       result[key] = process_attributes(obj).merge(system_attrs)
 
