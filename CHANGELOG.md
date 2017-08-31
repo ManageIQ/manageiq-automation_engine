@@ -2,10 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## Sprint 67 ending 2017-08-21
-- Need to pass the user's group in to automate when the provision starts. [(#61)](https://github.com/ManageIQ/manageiq-automation_engine/pull/61)
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## Sprint 66 ending 2017-08-07
-- Allows expressions to be exported and imported [(#56)](https://github.com/ManageIQ/manageiq-automation_engine/pull/56)
-- Remove container specs [(#55)](https://github.com/ManageIQ/manageiq-automation_engine/pull/55)
-- Support for expression methods [(#49)](https://github.com/ManageIQ/manageiq-automation_engine/pull/49)
+## Unreleased as of Sprint 67 ending 2017-08-21
+
+### Fixed
+- Automate
+  - Need to pass the user's group in to automate when the provision starts. [(#61)](https://github.com/ManageIQ/manageiq-automation_engine/pull/61)
+
+## Unreleased as of Sprint 66 ending 2017-08-07
+
+### Added
+- Automate
+  - Allows expressions to be exported and imported [(#56)](https://github.com/ManageIQ/manageiq-automation_engine/pull/56)
+  - Support for expression methods [(#49)](https://github.com/ManageIQ/manageiq-automation_engine/pull/49)
