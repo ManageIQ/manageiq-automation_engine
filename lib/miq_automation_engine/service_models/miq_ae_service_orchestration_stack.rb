@@ -11,6 +11,7 @@ module MiqAeMethodService
     expose :raw_delete_stack
     expose :raw_update_stack
     expose :raw_exists?
+    expose :refresh, :method => :refresh_ems
 
     def add_to_service(service)
       error_msg = "service must be a MiqAeServiceService"
