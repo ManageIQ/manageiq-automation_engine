@@ -5,6 +5,8 @@ module MiqAeEngine
     attr_accessor :datastore_cache, :persist_state_hash, :current_state_info
     attr_accessor :ae_user
     include MiqAeStateInfo
+    include MiqAeSerializeWorkspace
+    include MiqAeDeserializeWorkspace
 
     attr_reader :nodes
 
