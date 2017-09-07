@@ -31,5 +31,10 @@ module MiqAeMethodService
     rescue MiqException::MiqOrchestrationStackNotExistError => err
       ['not_exist', err.message]
     end
+
+    def self.refresh(manager_id, manager_ref)
+      OrchestrationStack.refresh_ems(manager_id, manager_ref)
+      true
+    end
   end
 end
