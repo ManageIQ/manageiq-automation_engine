@@ -16,6 +16,11 @@ module MiqAeEngine
       exp_method.run
     end
 
+    def self.invoke_playbook(aem, obj, inputs)
+      playbook_method = MiqAeEngine::MiqAePlaybookMethod.new(aem, obj, inputs)
+      playbook_method.run
+    end
+
     def self.invoke_uri(aem, obj, _inputs)
       scheme, userinfo, host, port, registry, path, opaque, query, fragment = URI.split(aem.data)
       raise  MiqAeException::MethodNotFound, "Specified URI [#{aem.data}] in Method [#{aem.name}] has unsupported scheme of #{scheme}; supported scheme is file" unless scheme.downcase == "file"
@@ -65,7 +70,7 @@ module MiqAeEngine
 
       if obj.workspace.readonly?
         $miq_ae_logger.info("Workspace Instantiation is READONLY -- skipping method [#{aem.fqname}] with inputs [#{inputs.inspect}]")
-      elsif %w(inline builtin uri expression).include?(aem.location.downcase.strip)
+      elsif %w(inline builtin uri expression playbook).include?(aem.location.downcase.strip)
         $miq_ae_logger.info("Invoking [#{aem.location}] method [#{aem.fqname}] with inputs [#{inputs.inspect}]")
         return MiqAeEngine::MiqAeMethod.send("invoke_#{aem.location.downcase.strip}", aem, obj, inputs)
       end
