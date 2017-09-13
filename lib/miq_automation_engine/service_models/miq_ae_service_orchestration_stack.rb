@@ -34,7 +34,6 @@ module MiqAeMethodService
 
     def self.refresh(manager_id, manager_ref)
       OrchestrationStack.refresh_ems(manager_id, manager_ref)
-      true
     end
   end
 end
