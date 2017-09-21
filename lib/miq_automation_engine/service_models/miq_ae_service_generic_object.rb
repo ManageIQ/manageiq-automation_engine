@@ -17,7 +17,9 @@ module MiqAeMethodService
     private
 
     def ae_user_identity
-      @ae_user = MiqAeEngine::DrbRemoteInvoker.workspace.ae_user
+      workspace = MiqAeEngine::MiqAeWorkspaceRuntime.current || MiqAeEngine::DrbRemoteInvoker.workspace
+      raise 'Workspace not found when running generic object' unless workspace
+      @ae_user = workspace.ae_user
       ar_method { @object.ae_user_identity(@ae_user, @ae_user.current_group, @ae_user.current_tenant) }
     end
 
