@@ -33,7 +33,7 @@ module MiqAeEvent
   def self.raise_evm_event(event_name, target, inputs = {}, options = {})
     if target.kind_of?(Array)
       klass, id = target
-      klass = Object.const_get(klass)
+      klass = ApplicationRecord.const_get(klass)
       target = klass.find_by(:id => id)
       raise "Unable to find object with class: [#{klass}], Id: [#{id}]" if target.nil?
     end
