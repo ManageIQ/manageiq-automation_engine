@@ -17,8 +17,7 @@ module MiqAeEngine
     end
 
     def self.invoke_playbook(aem, obj, inputs)
-      playbook_method = MiqAeEngine::MiqAePlaybookMethod.new(aem, obj, inputs)
-      playbook_method.run
+      MiqAeEngine::MiqAePlaybookMethod.new(aem, obj, inputs).run
     end
 
     def self.invoke_uri(aem, obj, _inputs)
