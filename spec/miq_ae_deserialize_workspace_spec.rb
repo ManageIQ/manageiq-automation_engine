@@ -39,7 +39,7 @@ describe "MiqAeDeserializeWorkspace" do
       let(:updated_hash) do
         {
           'state_vars' => { 'x' => 1 },
-          'workspace'  => {
+          'objects'    => {
             'root'                => {
               'a'     => 9,
               'my_vm' => "vmdb_reference::#{vm.href_slug}",
@@ -53,7 +53,7 @@ describe "MiqAeDeserializeWorkspace" do
       end
 
       let(:invalid_obj_name_hash) do
-        {'workspace' => { 'frooti' => {} }}
+        {'objects' => { 'frooti' => {} }}
       end
 
       let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
