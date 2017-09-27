@@ -1,7 +1,7 @@
 module MiqAeEngine
   module MiqAeDeserializeWorkspace
     def update_workspace(hash)
-      hash['workspace'].each { |path, attrs| update_object(path, attrs, ae_user) }
+      hash['objects'].each { |path, attrs| update_object(path, attrs, ae_user) }
       hash['state_vars'].each { |k, v| @persist_state_hash[k] = MiqAeReference.decode(v, ae_user) }
     end
 
