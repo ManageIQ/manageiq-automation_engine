@@ -34,7 +34,11 @@ module MiqAeEngine
         raise MiqAeException::AbortInstantiation, err.message
       end
 
-      @workspace.root['ae_state_started'].blank? ? wait_for_method(task_id) : check_task_status(task_id)
+      running_in_state_machine? ? check_task_status(task_id) : wait_for_method(task_id) 
+    end
+
+    def running_in_state_machine?
+      @workspace.root['ae_state_started'].present?
     end
 
     def process_result
@@ -70,19 +74,23 @@ module MiqAeEngine
           raise MiqAeException::Error, task.message
         end
       else
-        @workspace.root['ae_result'] = 'retry'
-        @workspace.root['ae_retry_interval'] = 1.minute
-        @workspace.persist_state_hash['automate_workspace_guid'] = @aw.guid
-        @workspace.persist_state_hash[method_key] = task_id
+        set_retry(task_id)
       end
+    end
+
+    def set_retry(task_id)
+      @workspace.root['ae_result'] = 'retry'
+      @workspace.root['ae_retry_interval'] = 1.minute
+      @workspace.persist_state_hash['automate_workspace_guid'] = @aw.guid
+      @workspace.persist_state_hash[method_key] = task_id
     end
 
     def manageiq_env
       {
-        'api_token' => Api::UserTokenService.new.generate_token(@workspace.ae_user.userid, 'api'),
-        'api_url'   => MiqRegion.my_region.remote_ws_url,
-        'guid'      => @aw.guid,
-        'miq_group' => @workspace.ae_user.current_group.description
+        'api_token'      => Api::UserTokenService.new.generate_token(@workspace.ae_user.userid, 'api'),
+        'api_url'        => MiqRegion.my_region.remote_ws_url,
+        'workspace_guid' => @aw.guid,
+        'miq_group'      => @workspace.ae_user.current_group.description
       }
     end
 
