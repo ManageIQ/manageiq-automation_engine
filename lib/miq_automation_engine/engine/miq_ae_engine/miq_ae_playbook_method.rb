@@ -34,7 +34,7 @@ module MiqAeEngine
         raise MiqAeException::AbortInstantiation, err.message
       end
 
-      running_in_state_machine? ? check_task_status(task_id) : wait_for_method(task_id) 
+      running_in_state_machine? ? check_task_status(task_id) : wait_for_method(task_id)
     end
 
     def running_in_state_machine?
@@ -74,11 +74,11 @@ module MiqAeEngine
           raise MiqAeException::Error, task.message
         end
       else
-        set_retry(task_id)
+        mark_for_retry(task_id)
       end
     end
 
-    def set_retry(task_id)
+    def mark_for_retry(task_id)
       @workspace.root['ae_result'] = 'retry'
       @workspace.root['ae_retry_interval'] = 1.minute
       @workspace.persist_state_hash['automate_workspace_guid'] = @aw.guid
