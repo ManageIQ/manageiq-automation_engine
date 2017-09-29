@@ -1,6 +1,6 @@
 module MiqAeEngine
   class MiqAePlaybookMethod
-    PLAYBOOK_CLASS = ManageIQ::Providers::EmbeddedAutomationManager::ConfigurationScriptPayload
+    PLAYBOOK_CLASS = ManageIQ::Providers::EmbeddedAnsible::AutomationManager::Job
 
     def initialize(aem, obj, inputs)
       @workspace = obj.workspace
