@@ -32,13 +32,16 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:inputs) { { 'name' => 'Fred' } }
 
     context "regular method" do
-      it "success" do
+      before do
         allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_return(miq_task.id)
         allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
-        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
         allow(workspace).to receive(:update_workspace)
+      end
+
+      it "success" do
+        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
 
         ap = described_class.new(aem, obj, inputs)
         ap.run
@@ -47,12 +50,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "method fails" do
-        allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_return(miq_task.id)
-        allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
-        allow(AutomateWorkspace).to receive(:create).and_return(aw)
         miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_ERROR, "Done")
-        allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
-        allow(workspace).to receive(:update_workspace)
 
         ap = described_class.new(aem, obj, inputs)
         expect { ap.run }.to raise_exception(MiqAeException::Error)
@@ -61,8 +59,6 @@ describe MiqAeEngine::MiqAePlaybookMethod do
 
       it "playbook launch fails" do
         allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_raise("Bamm Bamm Rubble")
-        allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
-        allow(AutomateWorkspace).to receive(:create).and_return(aw)
 
         ap = described_class.new(aem, obj, inputs)
         expect { ap.run }.to raise_exception(MiqAeException::Error)
@@ -71,15 +67,18 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     end
 
     context "state machine" do
-      it "sets up retry as a state method" do
+      before do
         root_hash['ae_state_started'] = Time.zone.now.utc.to_s
+        miq_task.update_status(MiqTask::STATE_ACTIVE, MiqTask::STATUS_OK, "Actively working")
         allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_return(miq_task.id)
         allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
-        allow(AutomateWorkspace).to receive(:create).and_return(aw)
-        ap = described_class.new(aem, obj, inputs)
+        allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
         allow(workspace).to receive(:update_workspace)
-        miq_task.update_status(MiqTask::STATE_ACTIVE, MiqTask::STATUS_OK, "Actively working")
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
+      end
+
+      it "sets up retry as a state method" do
+        ap = described_class.new(aem, obj, inputs)
         ap.run
 
         expect(root_object['ae_result']).to eq('retry')
@@ -88,17 +87,10 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "on subsequent calls" do
-        root_hash['ae_state_started'] = Time.zone.now.utc.to_s
         persist_hash[method_key] = miq_task.id
         persist_hash['automate_workspace_guid'] = aw.guid
 
-        allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_return(miq_task.id)
-        allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
-        allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
         ap = described_class.new(aem, obj, inputs)
-        allow(workspace).to receive(:update_workspace)
-        miq_task.update_status(MiqTask::STATE_ACTIVE, MiqTask::STATUS_OK, "Actively working")
-        allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
         ap.run
 
         expect(root_object['ae_result']).to eq('retry')
@@ -107,17 +99,11 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "state finishes succesfully" do
-        root_hash['ae_state_started'] = Time.zone.now.utc.to_s
+        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
         persist_hash[method_key] = miq_task.id
         persist_hash['automate_workspace_guid'] = aw.guid
 
-        allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_return(miq_task.id)
-        allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
-        allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
         ap = described_class.new(aem, obj, inputs)
-        allow(workspace).to receive(:update_workspace)
-        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
-        allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
 
         ap.run
 
@@ -128,17 +114,11 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "state finishes in error" do
-        root_hash['ae_state_started'] = Time.zone.now.utc.to_s
+        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_ERROR, "Done")
         persist_hash[method_key] = miq_task.id
         persist_hash['automate_workspace_guid'] = aw.guid
 
-        allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_return(miq_task.id)
-        allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
-        allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
         ap = described_class.new(aem, obj, inputs)
-        allow(workspace).to receive(:update_workspace)
-        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_ERROR, "Done")
-        allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
 
         expect { ap.run }.to raise_exception(MiqAeException::Error)
 
