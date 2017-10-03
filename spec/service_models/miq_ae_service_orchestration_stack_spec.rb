@@ -32,5 +32,19 @@ module MiqAeServiceOrchestrationStackSpec
         expect(service_stack.normalized_live_status).to eq(['not_exist', 'test failure'])
       end
     end
+
+    context "refresh" do
+      before { stack.update(:ext_management_system => FactoryGirl.create(:ext_management_system)) }
+
+      it "calls a refresh on OrchestrationStack object" do
+        expect(stack.class).to receive(:refresh_ems).with(stack.ext_management_system.id, stack.ems_ref)
+        service_stack.refresh
+      end
+
+      it "calls a refresh on OrchestrationStack class" do
+        expect(stack.class).to receive(:refresh_ems).with(stack.ext_management_system.id, stack.ems_ref)
+        service_stack.class.refresh(stack.ext_management_system.id, stack.ems_ref)
+      end
+    end
   end
 end

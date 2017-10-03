@@ -11,6 +11,7 @@ module MiqAeMethodService
     expose :raw_delete_stack
     expose :raw_update_stack
     expose :raw_exists?
+    expose :refresh, :method => :refresh_ems
 
     def add_to_service(service)
       error_msg = "service must be a MiqAeServiceService"
@@ -29,6 +30,10 @@ module MiqAeMethodService
       @object.raw_status.try(:normalized_status)
     rescue MiqException::MiqOrchestrationStackNotExistError => err
       ['not_exist', err.message]
+    end
+
+    def self.refresh(manager_id, manager_ref)
+      OrchestrationStack.refresh_ems(manager_id, manager_ref)
     end
   end
 end
