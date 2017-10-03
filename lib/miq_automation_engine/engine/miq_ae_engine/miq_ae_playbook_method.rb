@@ -59,7 +59,6 @@ module MiqAeEngine
       self.class.cleanup(@workspace)
     end
 
-
     def wait_for_method(task_id)
       task = MiqTask.wait_for_taskid(task_id)
       raise MiqAeException::Error, task.message unless task.status == "Ok"
