@@ -1,6 +1,7 @@
 module MiqAeEngine
   class MiqAePlaybookMethod
     PLAYBOOK_CLASS = ManageIQ::Providers::EmbeddedAnsible::AutomationManager::Job
+    METHOD_KEY_SUFFIX = "_ansible_method_task_id".freeze
 
     def initialize(aem, obj, inputs)
       @workspace = obj.workspace
@@ -16,6 +17,12 @@ module MiqAeEngine
       else
         execute
       end
+    end
+
+    def self.cleanup(workspace)
+      aw_guid = workspace.persist_state_hash.delete('automate_workspace_guid')
+      AutomateWorkspace.find_by(:guid => aw_guid).try(:delete)
+      workspace.persist_state_hash.delete_if { |key, _| key.to_s.match(/#{METHOD_KEY_SUFFIX}$/) }
     end
 
     private
@@ -43,15 +50,15 @@ module MiqAeEngine
 
     def process_result
       @aw.reload
-      @workspace.update_workspace(@aw.output)
+      @workspace.update_workspace(@aw.output) if @aw.output
       reset
     end
 
     def reset
-      @workspace.persist_state_hash.delete('automate_workspace_guid')
-      @workspace.persist_state_hash.delete(method_key)
       @aw.delete
+      self.class.cleanup(@workspace)
     end
+
 
     def wait_for_method(task_id)
       task = MiqTask.wait_for_taskid(task_id)
@@ -95,7 +102,7 @@ module MiqAeEngine
     end
 
     def method_key
-      @method_key_value ||= "#{@aem.name}_ansible_method_task_id".gsub(/\s+/, "")
+      @method_key_value ||= "#{@aem.name}#{METHOD_KEY_SUFFIX}".gsub(/\s+/, "")
     end
 
     def serialize_workspace
