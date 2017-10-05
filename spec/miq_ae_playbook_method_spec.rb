@@ -31,6 +31,28 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:obj)    { double("OBJ", :workspace => workspace) }
     let(:inputs) { { 'name' => 'Fred' } }
 
+    context "check miq extra vars passed into playbook" do
+      before do
+        allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
+        allow(AutomateWorkspace).to receive(:create).and_return(aw)
+        allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
+        allow(workspace).to receive(:update_workspace)
+      end
+
+      it "success" do
+        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
+        expect(described_class::PLAYBOOK_CLASS).to receive(:run) do |args|
+          expect(args[:config_info][:extra_vars][:manageiq]['automate_workspace']).to eq(aw.href_slug)
+          miq_task.id
+        end
+
+        ap = described_class.new(aem, obj, inputs)
+        ap.run
+
+        expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+    end
+
     context "regular method" do
       before do
         allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_return(miq_task.id)
