@@ -93,10 +93,10 @@ module MiqAeEngine
 
     def manageiq_env
       {
-        'api_token'      => Api::UserTokenService.new.generate_token(@workspace.ae_user.userid, 'api'),
-        'api_url'        => MiqRegion.my_region.remote_ws_url,
-        'workspace_guid' => @aw.guid,
-        'miq_group'      => @workspace.ae_user.current_group.description
+        'api_token'          => Api::UserTokenService.new.generate_token(@workspace.ae_user.userid, 'api'),
+        'api_url'            => MiqRegion.my_region.remote_ws_url,
+        'automate_workspace' => @aw.href_slug,
+        'miq_group'          => @workspace.ae_user.current_group.description
       }
     end
 
