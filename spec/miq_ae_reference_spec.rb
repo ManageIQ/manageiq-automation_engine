@@ -7,7 +7,7 @@ describe MiqAeEngine::MiqAeReference do
     let(:host) { FactoryGirl.create(:host) }
     let(:vm) { FactoryGirl.create(:vm_vmware, :host => host) }
     let(:svc_vm) { MiqAeMethodService::MiqAeServiceVm.find(vm.id) }
-    let(:ref) { "vmdb_reference::#{vm.href_slug}" }
+    let(:ref) { "href_slug::#{vm.href_slug}" }
 
     it "#encode a vm object" do
       expect(::MiqAeEngine::MiqAeReference.encode(svc_vm)).to eq(ref)

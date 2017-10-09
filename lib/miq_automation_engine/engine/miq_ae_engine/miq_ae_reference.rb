@@ -6,7 +6,7 @@ module MiqAeEngine
       elsif value.kind_of?(Hash)
         value.each_with_object({}) { |(k, v), hash| hash[k] = encode(v) }
       elsif /MiqAeMethodService::/ =~ value.class.to_s
-        "vmdb_reference::#{value.href_slug}"
+        "href_slug::#{value.href_slug}"
       elsif /MiqAePassword/ =~ value.class.to_s
         "miq_password::#{value}"
       else
@@ -19,7 +19,7 @@ module MiqAeEngine
         value.map { |v| decode(v, user) }
       elsif value.kind_of?(Hash)
         value.each_with_object({}) { |(k, v), hash| hash[k] = decode(v, user) }
-      elsif value.kind_of?(String) && /vmdb_reference::(.*)/.match(value)
+      elsif value.kind_of?(String) && /href_slug::(.*)/.match(value)
         obj = Api::Utils.resource_search_by_href_slug($1, user)
         MiqAeMethodService::MiqAeServiceModelBase.wrap_results(obj)
       elsif value.kind_of?(String) && /miq_password::(.*)/.match(value)

@@ -42,7 +42,7 @@ describe "MiqAeDeserializeWorkspace" do
           'objects'    => {
             'root'                => {
               'a'     => 9,
-              'my_vm' => "vmdb_reference::#{vm.href_slug}",
+              'my_vm' => "href_slug::#{vm.href_slug}",
               'd'     => '2'
             },
             '/miq/demo/test/ins1' => {
