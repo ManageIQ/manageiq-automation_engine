@@ -44,7 +44,7 @@ describe "MiqAeSerializeWorkspace" do
 
     context "vmdb_object" do
       let(:root_hash) { { 'a' => 1, 'b' => '2', 'my_vm' => svc_vm} }
-      let(:ref_hash) { { 'a' => 1, 'b' => '2', 'my_vm' => "vmdb_reference::#{vm.href_slug}"} }
+      let(:ref_hash) { { 'a' => 1, 'b' => '2', 'my_vm' => "href_slug::#{vm.href_slug}"} }
       let(:hashed_workspace) { { "root" => ref_hash} }
       let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
 
