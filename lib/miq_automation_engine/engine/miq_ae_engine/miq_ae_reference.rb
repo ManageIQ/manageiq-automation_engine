@@ -8,7 +8,7 @@ module MiqAeEngine
       elsif /MiqAeMethodService::/ =~ value.class.to_s
         "href_slug::#{value.href_slug}"
       elsif /MiqAePassword/ =~ value.class.to_s
-        "miq_password::#{value}"
+        "password::#{value}"
       else
         value
       end
@@ -22,7 +22,7 @@ module MiqAeEngine
       elsif value.kind_of?(String) && /href_slug::(.*)/.match(value)
         obj = Api::Utils.resource_search_by_href_slug($1, user)
         MiqAeMethodService::MiqAeServiceModelBase.wrap_results(obj)
-      elsif value.kind_of?(String) && /miq_password::(.*)/.match(value)
+      elsif value.kind_of?(String) && /password::(.*)/.match(value)
         MiqAePassword.new(value)
       else
         value

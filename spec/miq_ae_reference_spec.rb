@@ -22,7 +22,7 @@ describe MiqAeEngine::MiqAeReference do
     let(:password) { MiqAePassword.new("smartvm") }
 
     it "#encodes a password field" do
-      expect(::MiqAeEngine::MiqAeReference.encode(password)).to eq("miq_password::#{password}")
+      expect(::MiqAeEngine::MiqAeReference.encode(password)).to eq("password::#{password}")
     end
   end
 end
