@@ -1,6 +1,6 @@
 module MiqAeEngine
   class MiqAePlaybookMethod
-    PLAYBOOK_CLASS = ManageIQ::Providers::EmbeddedAnsible::AutomationManager::Job
+    PLAYBOOK_CLASS = ManageIQ::Providers::EmbeddedAnsible::AutomationManager::Playbook
     METHOD_KEY_SUFFIX = "_ansible_method_task_id".freeze
 
     def initialize(aem, obj, inputs)
@@ -32,9 +32,11 @@ module MiqAeEngine
                                      :user   => @workspace.ae_user,
                                      :tenant => @workspace.ae_user.current_tenant)
       playbook_options = build_options_hash
-      $miq_ae_logger.info("Playbook Method passing options to runner: #{playbook_options}")
+      $miq_ae_logger.info("Playbook Method passing options: #{playbook_options}")
       begin
-        task_id = PLAYBOOK_CLASS.run(playbook_options)
+        playbook = PLAYBOOK_CLASS.find(playbook_options[:playbook_id])
+        $miq_ae_logger.info("Calling playbook.run with playbook: #{playbook.inspect}")
+        task_id = playbook.run(playbook_options)
       rescue => err
         $miq_ae_logger.error("Playbook Method Ended with error #{err.message}")
         reset
@@ -95,8 +97,10 @@ module MiqAeEngine
       {
         'api_token'          => Api::UserTokenService.new.generate_token(@workspace.ae_user.userid, 'api'),
         'api_url'            => MiqRegion.my_region.remote_ws_url,
+        'user'               => @workspace.ae_user.href_slug,
+        'group'              => @workspace.ae_user.current_group.href_slug,
         'automate_workspace' => @aw.href_slug,
-        'miq_group'          => @workspace.ae_user.current_group.description
+        'X-MIQ_Group'        => @workspace.ae_user.current_group.description
       }
     end
 
@@ -120,7 +124,8 @@ module MiqAeEngine
       config_info = YAML.load(@aem.data)
       config_info[:extra_vars] = MiqAeReference.encode(@inputs)
       config_info[:extra_vars][:manageiq] = manageiq_env
-      { :name => @aem.name, :config_info => config_info }
+      config_info[:inventory] = '1'
+      config_info
     end
   end
 end
