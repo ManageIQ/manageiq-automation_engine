@@ -1,6 +1,6 @@
 module MiqAeEngine
   class MiqAeExpressionMethod
-    include ApplicationController::Filter::SubstMixin
+    include MiqExpression::SubstMixin
     def initialize(method_obj, obj, inputs)
       @edit = {}
       @name = method_obj.name
