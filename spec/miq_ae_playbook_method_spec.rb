@@ -9,6 +9,8 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:method_name) { "Freddy Kreuger" }
     let(:method_key) { "FreddyKreuger_ansible_method_task_id" }
     let(:miq_task) { FactoryGirl.create(:miq_task) }
+    let(:manager)  { FactoryGirl.create(:embedded_automation_manager_ansible) }
+    let(:playbook) { FactoryGirl.create(:embedded_playbook, :manager => manager) }
 
     let(:workspace) do
       double("MiqAeEngine::MiqAeWorkspaceRuntime", :root               => root_object,
@@ -37,12 +39,13 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
         allow(workspace).to receive(:update_workspace)
+        allow(described_class::PLAYBOOK_CLASS).to receive(:find).and_return(playbook)
       end
 
       it "success" do
         miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
-        expect(described_class::PLAYBOOK_CLASS).to receive(:run) do |args|
-          expect(args[:config_info][:extra_vars][:manageiq]['automate_workspace']).to eq(aw.href_slug)
+        expect(playbook).to receive(:run) do |args|
+          expect(args[:extra_vars][:manageiq]['automate_workspace']).to eq(aw.href_slug)
           miq_task.id
         end
 
@@ -55,7 +58,8 @@ describe MiqAeEngine::MiqAePlaybookMethod do
 
     context "regular method" do
       before do
-        allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_return(miq_task.id)
+        allow(described_class::PLAYBOOK_CLASS).to receive(:find).and_return(playbook)
+        allow(playbook).to receive(:run).and_return(miq_task.id)
         allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
@@ -80,7 +84,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "playbook launch fails" do
-        allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_raise("Bamm Bamm Rubble")
+        expect(playbook).to receive(:run).and_raise("Bamm Bamm Rubble")
 
         ap = described_class.new(aem, obj, inputs)
         expect { ap.run }.to raise_exception(MiqAeException::Error)
@@ -92,7 +96,8 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       before do
         root_hash['ae_state_started'] = Time.zone.now.utc.to_s
         miq_task.update_status(MiqTask::STATE_ACTIVE, MiqTask::STATUS_OK, "Actively working")
-        allow(described_class::PLAYBOOK_CLASS).to receive(:run).and_return(miq_task.id)
+        allow(described_class::PLAYBOOK_CLASS).to receive(:find).and_return(playbook)
+        allow(playbook).to receive(:run).and_return(miq_task.id)
         allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
         allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
         allow(workspace).to receive(:update_workspace)
