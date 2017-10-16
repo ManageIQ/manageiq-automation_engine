@@ -32,7 +32,7 @@ module MiqAeEngine
                                      :user   => @workspace.ae_user,
                                      :tenant => @workspace.ae_user.current_tenant)
       playbook_options = build_options_hash
-      $miq_ae_logger.info("Playbook Method passing options: #{playbook_options}")
+      $miq_ae_logger.info("Playbook Method passing options: #{playbook_options.inspect}")
       begin
         playbook = PLAYBOOK_CLASS.find(playbook_options[:playbook_id])
         $miq_ae_logger.info("Calling playbook.run with playbook: #{playbook.inspect}")
@@ -100,7 +100,7 @@ module MiqAeEngine
         'user'               => @workspace.ae_user.href_slug,
         'group'              => @workspace.ae_user.current_group.href_slug,
         'automate_workspace' => @aw.href_slug,
-        'X-MIQ_Group'        => @workspace.ae_user.current_group.description
+        'X_MIQ_Group'        => @workspace.ae_user.current_group.description
       }
     end
 
@@ -121,11 +121,10 @@ module MiqAeEngine
     end
 
     def build_options_hash
-      config_info = YAML.load(@aem.data)
-      config_info[:extra_vars] = MiqAeReference.encode(@inputs)
-      config_info[:extra_vars][:manageiq] = manageiq_env
-      config_info[:inventory] = '1'
-      config_info
+      YAML.safe_load(@aem.data).tap do |config_info|
+        config_info[:extra_vars] = MiqAeReference.encode(@inputs)
+        config_info[:extra_vars][:manageiq] = manageiq_env
+      end
     end
   end
 end
