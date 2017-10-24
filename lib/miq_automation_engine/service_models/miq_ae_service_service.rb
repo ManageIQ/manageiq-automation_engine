@@ -4,6 +4,8 @@ module MiqAeMethodService
     include MiqAeServiceRetirementMixin
     require_relative "mixins/miq_ae_service_custom_attribute_mixin"
     include MiqAeServiceCustomAttributeMixin
+    require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
+    include MiqAeServiceRemoveFromVmdb
 
     expose :retire_service_resources
     expose :automate_retirement_entrypoint
@@ -91,13 +93,6 @@ module MiqAeMethodService
         end
         @object.save
       end
-    end
-
-    def remove_from_vmdb
-      _log.info "Removing #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}>"
-      object_send(:destroy)
-      @object = nil
-      true
     end
 
     def group=(group)
