@@ -121,7 +121,7 @@ module MiqAeEngine
     end
 
     def build_options_hash
-      YAML.safe_load(@aem.data).tap do |config_info|
+      @aem.options.tap do |config_info|
         config_info[:extra_vars] = MiqAeReference.encode(@inputs)
         config_info[:extra_vars][:manageiq] = manageiq_env
       end
