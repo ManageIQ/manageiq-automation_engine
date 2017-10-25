@@ -2,6 +2,8 @@ module MiqAeMethodService
   class MiqAeServiceLoadBalancer < MiqAeServiceModelBase
     require_relative "mixins/miq_ae_service_retirement_mixin"
     include MiqAeServiceRetirementMixin
+    require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
+    include MiqAeServiceRemoveFromVmdb
 
     expose :ext_management_system, :association => true
     expose :cloud_tenant, :association => true
@@ -16,13 +18,6 @@ module MiqAeMethodService
       error_msg = "service must be a MiqAeServiceService"
       raise ArgumentError, error_msg unless service.kind_of?(MiqAeMethodService::MiqAeServiceService)
       ar_method { wrap_results(Service.find_by(:id => service.id).add_resource!(@object)) }
-    end
-
-    def remove_from_vmdb
-      _log.info "Removing #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}>"
-      object_send(:destroy)
-      @object = nil
-      true
     end
 
     def normalized_live_status

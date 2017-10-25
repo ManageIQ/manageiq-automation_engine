@@ -4,6 +4,8 @@ module MiqAeMethodService
     include MiqAeServiceCustomAttributeMixin
     require_relative "mixins/miq_ae_service_ems_operations_mixin"
     include MiqAeServiceEmsOperationsMixin
+    require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
+    include MiqAeServiceRemoveFromVmdb
 
     expose :storages,              :association => true
     expose :read_only_storages

@@ -8,6 +8,8 @@ module MiqAeMethodService
     include MiqAeServiceInflectorMixin
     require_relative "mixins/miq_ae_service_custom_attribute_mixin"
     include MiqAeServiceCustomAttributeMixin
+    require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
+    include MiqAeServiceRemoveFromVmdb
 
     expose :ext_management_system, :association => true
     expose :storage,               :association => true
@@ -75,13 +77,6 @@ module MiqAeMethodService
     # Used to return string object instead of VimString to automate methods which end up with a DrbUnknow object.
     def ems_ref_string
       object_send(:ems_ref)
-    end
-
-    def remove_from_vmdb
-      _log.info "Removing #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}>"
-      object_send(:destroy)
-      @object = nil
-      true
     end
 
     def scan(scan_categories = nil)
