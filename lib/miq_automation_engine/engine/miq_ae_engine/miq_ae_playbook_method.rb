@@ -7,6 +7,8 @@ module MiqAeEngine
       @workspace = obj.workspace
       @inputs    = inputs
       @aem       = aem
+      @api_token = Api::UserTokenService.new.generate_token(@workspace.ae_user.userid, 'api')
+      @api_url   = MiqRegion.my_region.remote_ws_url
     end
 
     def run
@@ -95,12 +97,20 @@ module MiqAeEngine
 
     def manageiq_env
       {
-        'api_token'          => Api::UserTokenService.new.generate_token(@workspace.ae_user.userid, 'api'),
-        'api_url'            => MiqRegion.my_region.remote_ws_url,
+        'api_token'          => @api_token,
+        'api_url'            => @api_url,
         'user'               => @workspace.ae_user.href_slug,
         'group'              => @workspace.ae_user.current_group.href_slug,
         'automate_workspace' => @aw.href_slug,
         'X_MIQ_Group'        => @workspace.ae_user.current_group.description
+      }
+    end
+
+    def manageiq_connection_env
+      {
+        'token'       => @api_token,
+        'url'         => @api_url,
+        'X_MIQ_Group' => @workspace.ae_user.current_group.description
       }
     end
 
@@ -124,6 +134,7 @@ module MiqAeEngine
       @aem.options.tap do |config_info|
         config_info[:extra_vars] = MiqAeReference.encode(@inputs)
         config_info[:extra_vars][:manageiq] = manageiq_env
+        config_info[:extra_vars][:manageiq_connection] = manageiq_connection_env
       end
     end
   end
