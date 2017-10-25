@@ -5,7 +5,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:root_hash) { { 'name' => 'Flintstone' } }
     let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
     let(:persist_hash) { {} }
-    let(:script) { {"a" => "1"} }
+    let(:options) { {"test" => 13} }
     let(:method_name) { "Freddy Kreuger" }
     let(:method_key) { "FreddyKreuger_ansible_method_task_id" }
     let(:miq_task) { FactoryGirl.create(:miq_task) }
@@ -29,7 +29,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
                                            :settings => {:display => { :timezone => "UTC"}})
     end
 
-    let(:aem)    { double("AEM", :data => script.to_yaml, :name => method_name) }
+    let(:aem)    { double("AEM", :options => options, :name => method_name) }
     let(:obj)    { double("OBJ", :workspace => workspace) }
     let(:inputs) { { 'name' => 'Fred' } }
 
@@ -45,6 +45,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       it "success" do
         miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
         expect(playbook).to receive(:run) do |args|
+          expect(args['test']).to eq(13)
           expect(args[:extra_vars][:manageiq]['automate_workspace']).to eq(aw.href_slug)
           miq_task.id
         end
