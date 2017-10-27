@@ -124,6 +124,15 @@ describe MiqAeEvent do
 
           MiqAeEvent.raise_evm_event("vm_create", vm, :vm => vm)
         end
+
+        it "has current user" do
+          User.with_user(user) do
+            args = {:user_id => user.id, :miq_group_id => user.current_group.id, :tenant_id => user.current_tenant.id}
+            expect(MiqAeEngine).to receive(:deliver_queue).with(hash_including(args), anything)
+
+            MiqAeEvent.raise_evm_event("vm_create", vm, :vm => vm)
+          end
+        end
       end
     end
 
