@@ -242,6 +242,40 @@ describe MiqAeEngine::MiqAeObject do
       expect(workspace.root['email']).to eq('USER@EXAMPLE.COM')
       expect(workspace.root['req_email']).to eq('requester@example.com')
     end
+
+    context "substitute_value" do
+      let(:vm_object_value) { '${/#vm}' }
+      let(:vmid_object_value) { '${/#vm.id}' }
+      let(:vm_string_value) { '${/#vm}' }
+      let(:vm_instance_name) { 'WILMA' }
+      let(:vm_ae_instances) do
+        {vm_instance_name => {'vm'        => {:value => vm_object_value},
+                              'vm_id_obj' => {:value => vmid_object_value},
+                              'vm_string' => {:value => vm_string_value}}}
+      end
+      let(:vm_ae_fields) do
+        {'vm'        => {:aetype => 'attribute', :datatype => 'vm'},
+         'vm_string' => {:aetype => 'attribute', :datatype => 'string'},
+         'vm_id_obj' => {:aetype => 'attribute', :datatype => 'vm'}}
+      end
+
+      let(:vm_model) do
+        create_ae_model(:name => 'LUIGI', :ae_class => 'BARNEY',
+                        :ae_namespace => 'A/C',
+                        :ae_fields => vm_ae_fields, :ae_instances => vm_ae_instances)
+      end
+      let(:vm) { FactoryGirl.create(:vm_vmware, :ext_management_system => ems) }
+      let(:service_vm) { MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.find(vm.id) }
+
+      it "vm object" do
+        vm_model
+        ae_str = "/A/C/BARNEY/WILMA?Vm::vm=#{vm.id},User::user=#{user.id}"
+        workspace = MiqAeEngine.instantiate(ae_str, user)
+        expect(workspace.root['vm'].id).to eq(service_vm.id)
+        expect(workspace.root['vm_id_obj'].id).to eq(service_vm.id)
+        expect(workspace.root['vm_string']).to eq(vm.name)
+      end
+    end
   end
 end
 
