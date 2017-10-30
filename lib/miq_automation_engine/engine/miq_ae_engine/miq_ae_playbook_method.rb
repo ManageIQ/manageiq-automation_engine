@@ -2,6 +2,7 @@ module MiqAeEngine
   class MiqAePlaybookMethod
     PLAYBOOK_CLASS = ManageIQ::Providers::EmbeddedAnsible::AutomationManager::Playbook
     METHOD_KEY_SUFFIX = "_ansible_method_task_id".freeze
+    MIN_RETRY_INTERVAL = 1.minute
 
     def initialize(aem, obj, inputs)
       @workspace = obj.workspace
@@ -88,9 +89,23 @@ module MiqAeEngine
 
     def mark_for_retry(task_id)
       @workspace.root['ae_result'] = 'retry'
-      @workspace.root['ae_retry_interval'] = 1.minute
+      @workspace.root['ae_retry_interval'] = retry_interval
       @workspace.persist_state_hash['automate_workspace_guid'] = @aw.guid
       @workspace.persist_state_hash[method_key] = task_id
+      $miq_ae_logger.info("Setting State Machine Auto Retry Interval: #{@workspace.root['ae_retry_interval']}")
+    end
+
+    def ttl
+      @aem.options[:execution_ttl].to_i.minutes
+    end
+
+    def max_retries
+      @workspace.root['ae_state_max_retries'].to_i
+    end
+
+    def retry_interval
+      interval = ttl.positive? && max_retries.positive? ? ttl / max_retries : MIN_RETRY_INTERVAL
+      interval > MIN_RETRY_INTERVAL ? interval : MIN_RETRY_INTERVAL
     end
 
     def manageiq_env
