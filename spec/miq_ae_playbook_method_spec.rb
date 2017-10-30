@@ -157,6 +157,52 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         expect(persist_hash['automate_workspace_guid']).to be_nil
         expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
       end
+
+      shared_context "retry_interval" do
+        let(:max_retries) { 100 }
+        let(:retry_interval) { 1.minute }
+      end
+
+      shared_examples_for "check retry interval" do
+        it "calculate interval" do
+          root_object['ae_state_max_retries'] = max_retries
+          ap = described_class.new(aem, obj, inputs)
+          ap.run
+
+          expect(root_object['ae_result']).to eq('retry')
+          expect(root_object['ae_retry_interval']).to eq(retry_interval)
+        end
+      end
+
+      context "7.minutes, execution_ttl 700" do
+        let(:options) { {:execution_ttl => 700} }
+        let(:max_retries) { 100 }
+        let(:retry_interval) { 7.minutes }
+
+        it_behaves_like "check retry interval"
+      end
+
+      context "default 1.minute, low execution_ttl" do
+        include_context "retry_interval"
+        let(:options) { {:execution_ttl => 40} }
+
+        it_behaves_like "check retry interval"
+      end
+
+      context "default 1.minute, execution_ttl not specified" do
+        include_context "retry_interval"
+        let(:options) { {} }
+
+        it_behaves_like "check retry interval"
+      end
+
+      context "default 1.minute, zero max_retries" do
+        let(:max_retries) { 0 }
+        let(:options) { {} }
+        let(:retry_interval) { 1.minute }
+
+        it_behaves_like "check retry interval"
+      end
     end
   end
 end
