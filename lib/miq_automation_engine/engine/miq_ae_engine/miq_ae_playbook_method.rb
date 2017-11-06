@@ -164,7 +164,7 @@ module MiqAeEngine
       if @workspace.root['vmdb_object_type']
         vmdb_obj = @workspace.root[@workspace.root['vmdb_object_type']]
         if vmdb_obj.kind_of?(MiqAeMethodService::MiqAeServiceMiqRequestTask)
-          result['task_href_slug'] = "#{vmdb_obj.miq_request.href_slug}/#{vmdb_obj.href_slug}"
+          result['request_task'] = "#{vmdb_obj.miq_request.href_slug}/#{vmdb_obj.href_slug}"
         end
       end
       result

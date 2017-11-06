@@ -74,10 +74,10 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
       end
 
-      shared_examples_for "href_slug" do
+      shared_examples_for "task_slug" do
         it "matches" do
           expect(playbook).to receive(:run) do |args|
-            expect(args[:extra_vars][:manageiq]['task_href_slug']).to eq(task_href_slug)
+            expect(args[:extra_vars][:manageiq]['request_task']).to eq(task_href_slug)
             miq_task.id
           end
 
@@ -92,7 +92,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
           { 'vmdb_object_type'                => 'service_template_provision_task',
             'service_template_provision_task' => svc_stpt }
         end
-        it_behaves_like "href_slug"
+        it_behaves_like "task_slug"
       end
 
       context "provision_task" do
@@ -101,7 +101,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
           { 'vmdb_object_type' => 'miq_provision',
             'miq_provision'    => svc_mpt }
         end
-        it_behaves_like "href_slug"
+        it_behaves_like "task_slug"
       end
     end
 
