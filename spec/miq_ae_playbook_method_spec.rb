@@ -33,8 +33,25 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:obj)    { double("OBJ", :workspace => workspace) }
     let(:inputs) { { 'name' => 'Fred' } }
 
+    let(:mpr) { FactoryGirl.create(:miq_provision_request, :requester => user) }
+
+    let(:svc_mpr) { MiqAeMethodService::MiqAeServiceMiqProvisionRequest.find(mpr.id) }
+
+    let(:stpr) { FactoryGirl.create(:service_template_provision_request, :requester => user) }
+
+    let(:svc_stpr) { MiqAeMethodService::MiqAeServiceServiceTemplateProvisionRequest.find(stpr.id) }
+
+    let(:mpt) { FactoryGirl.create(:miq_provision_task, :miq_request => mpr) }
+
+    let(:svc_mpt) { MiqAeMethodService::MiqAeServiceMiqProvisionTask.find(mpt.id) }
+
+    let(:stpt) { FactoryGirl.create(:service_template_provision_task, :miq_request => stpr) }
+
+    let(:svc_stpt) { MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask.find(stpt.id) }
+
     context "check miq extra vars passed into playbook" do
       before do
+        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
         allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
@@ -43,7 +60,6 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "success" do
-        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
         expect(playbook).to receive(:run) do |args|
           expect(args['test']).to eq(13)
           expect(args[:extra_vars][:manageiq]['automate_workspace']).to eq(aw.href_slug)
@@ -56,6 +72,36 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         ap.run
 
         expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+
+      shared_examples_for "task_slug" do
+        it "matches" do
+          expect(playbook).to receive(:run) do |args|
+            expect(args[:extra_vars][:manageiq]['request_task']).to eq(task_href_slug)
+            miq_task.id
+          end
+
+          ap = described_class.new(aem, obj, inputs)
+          ap.run
+        end
+      end
+
+      context "service_template_provision_task" do
+        let(:task_href_slug) { "#{svc_stpr.href_slug}/#{svc_stpt.href_slug}" }
+        let(:root_hash) do
+          { 'vmdb_object_type'                => 'service_template_provision_task',
+            'service_template_provision_task' => svc_stpt }
+        end
+        it_behaves_like "task_slug"
+      end
+
+      context "provision_task" do
+        let(:task_href_slug) { "#{svc_mpr.href_slug}/#{svc_mpt.href_slug}" }
+        let(:root_hash) do
+          { 'vmdb_object_type' => 'miq_provision',
+            'miq_provision'    => svc_mpt }
+        end
+        it_behaves_like "task_slug"
       end
     end
 
