@@ -5,12 +5,14 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:root_hash) { { 'name' => 'Flintstone' } }
     let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
     let(:persist_hash) { {} }
-    let(:options) { {"test" => 13} }
+    let(:options) { {"test" => 13, :hosts => hosts} }
     let(:method_name) { "Freddy Kreuger" }
     let(:method_key) { "FreddyKreuger_ansible_method_task_id" }
     let(:miq_task) { FactoryGirl.create(:miq_task) }
     let(:manager)  { FactoryGirl.create(:embedded_automation_manager_ansible) }
     let(:playbook) { FactoryGirl.create(:embedded_playbook, :manager => manager) }
+    let(:resolved_hosts) { "1.1.1.94" }
+    let(:hosts) { "/#my_vm_ip" }
 
     let(:workspace) do
       double("MiqAeEngine::MiqAeWorkspaceRuntime", :root               => root_object,
@@ -56,6 +58,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
         allow(workspace).to receive(:update_workspace)
+        allow(obj).to receive(:substitute_value).and_return(resolved_hosts)
         allow(described_class::PLAYBOOK_CLASS).to receive(:find).and_return(playbook)
       end
 
@@ -112,6 +115,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
+        allow(obj).to receive(:substitute_value).and_return(resolved_hosts)
         allow(workspace).to receive(:update_workspace)
       end
 
@@ -139,6 +143,28 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         expect { ap.run }.to raise_exception(MiqAeException::Error)
         expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
       end
+
+      shared_examples_for "hosts" do
+        it "raises ArgumentError for invalid values" do
+          allow(obj).to receive(:substitute_value).and_return(resolved_hosts)
+          miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
+
+          ap = described_class.new(aem, obj, inputs)
+          expect { ap.run }.to raise_exception(ArgumentError)
+        end
+      end
+
+      context "nil substituted value" do
+        let(:resolved_hosts) { nil }
+
+        it_behaves_like "hosts"
+      end
+
+      context "blank substituted value" do
+        let(:resolved_hosts) { "" }
+
+        it_behaves_like "hosts"
+      end
     end
 
     context "state machine" do
@@ -149,6 +175,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         allow(playbook).to receive(:run).and_return(miq_task.id)
         allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
         allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
+        allow(obj).to receive(:substitute_value).and_return(resolved_hosts)
         allow(workspace).to receive(:update_workspace)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
       end
