@@ -8,6 +8,7 @@ module MiqAeEngine
       @workspace = obj.workspace
       @inputs    = inputs
       @aem       = aem
+      @ae_object = obj
     end
 
     def run
@@ -148,6 +149,7 @@ module MiqAeEngine
         config_info[:extra_vars] = MiqAeReference.encode(@inputs)
         config_info[:extra_vars][:manageiq] = manageiq_env
         config_info[:extra_vars][:manageiq_connection] = manageiq_connection_env
+        config_info[:hosts] = resolved_hosts
       end
     end
 
@@ -168,6 +170,12 @@ module MiqAeEngine
         end
       end
       result
+    end
+
+    def resolved_hosts
+      @ae_object.substitute_value(@aem.options[:hosts], nil, true).tap do |value|
+        raise ArgumentError, "Hosts field #{@aem.options[:hosts]} resolved to empty string" if value.blank?
+      end
     end
   end
 end
