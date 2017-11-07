@@ -116,7 +116,7 @@ module MiqAeEngine
         'group'              => @workspace.ae_user.current_group.href_slug,
         'automate_workspace' => @aw.href_slug,
         'X_MIQ_Group'        => @workspace.ae_user.current_group.description
-      }
+      }.merge(miq_request_task_url)
     end
 
     def manageiq_connection_env
@@ -157,6 +157,17 @@ module MiqAeEngine
 
     def api_url
       @api_url ||= MiqRegion.my_region.remote_ws_url
+    end
+
+    def miq_request_task_url
+      result = {}
+      if @workspace.root['vmdb_object_type']
+        vmdb_obj = @workspace.root[@workspace.root['vmdb_object_type']]
+        if vmdb_obj.kind_of?(MiqAeMethodService::MiqAeServiceMiqRequestTask)
+          result['request_task'] = "#{vmdb_obj.miq_request.href_slug}/#{vmdb_obj.href_slug}"
+        end
+      end
+      result
     end
   end
 end
