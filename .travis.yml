@@ -10,9 +10,6 @@ env:
   - RUBY_GC_HEAP_GROWTH_FACTOR=1.25
 addons:
   postgresql: '9.4'
-before_install:
-- rvm @global do gem uninstall bundler -a -x
-- rvm @global do gem install bundler -v 1.15.4
 install: bin/setup
 after_script: bundle exec codeclimate-test-reporter
 notifications:
