@@ -7,6 +7,7 @@ module MiqAeEngine
     include MiqAeStateInfo
     include MiqAeSerializeWorkspace
     include MiqAeDeserializeWorkspace
+    include MiqAeObjectLookup
 
     attr_reader :nodes
 
@@ -22,6 +23,7 @@ module MiqAeEngine
       @state_machine_objects = []
       @ae_user = nil
       @rbac = false
+      initialize_obj_entries
     end
 
     delegate :prepend_namespace=, :to =>  :@dom_search
@@ -318,11 +320,14 @@ module MiqAeEngine
         end
       else
         obj = find_named_ancestor(path)
+        # Find object in whole workspace
+        obj = find_obj_entry(path) unless obj
       end
       obj
     end
 
     def find_named_ancestor(path)
+      path = path[1..-1] if path[0] == '/'
       plist = path.split("/")
       raise MiqAeException::InvalidPathFormat, "Unsupported Path [#{path}]" if plist[0].blank?
       klass = plist.pop
