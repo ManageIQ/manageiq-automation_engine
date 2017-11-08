@@ -63,12 +63,12 @@ describe MiqAeEngine::MiqAeObject do
     context "missing object" do
       let(:assert_value) { "${/missing_object#var1}" }
 
-      it "raises InvalidPathFormat" do
+      it "raises ObjectNotFound" do
         ae_model
 
         expect do
-          MiqAeEngine.instantiate(child_url, user)
-        end.to raise_exception(MiqAeException::InvalidPathFormat)
+          MiqAeEngine.instantiate('/A/C/BARNEY/FRED', user)
+        end.to raise_exception(MiqAeException::ObjectNotFound)
       end
     end
 
