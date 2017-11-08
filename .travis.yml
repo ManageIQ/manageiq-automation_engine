@@ -13,6 +13,8 @@ addons:
   postgresql: '9.4'
 install: bin/setup
 after_script: bundle exec codeclimate-test-reporter
+after_failure:
+- cat ${TRAVIS_BUILD_DIR}/log/automation.log
 notifications:
   webhooks:
     urls:
