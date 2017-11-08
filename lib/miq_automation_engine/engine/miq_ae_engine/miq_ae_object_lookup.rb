@@ -43,7 +43,7 @@ module MiqAeEngine
 
     def parse_obj_path(path)
       parts = path.downcase.split('/')
-      raise MiqAeException::InvalidPathFormat, "#{path} is invalid. Need atleast Namespace/Class/Instance" if parts.length < 3
+      raise MiqAeException::InvalidPathFormat, "#{path} is invalid. Need at least Namespace/Class/Instance" if parts.length < 3
       {
         'instance'   => parts.pop,
         'class_name' => parts.pop,
