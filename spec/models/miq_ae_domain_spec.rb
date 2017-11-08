@@ -324,7 +324,7 @@ describe MiqAeDomain do
 
       dom1.update_git_info(repo, branch_name, MiqAeGitImport::BRANCH)
       dom1.reload
-      expect(dom1.attributes).to have_attributes(commit_hash)
+      expect(dom1).to have_attributes(commit_hash)
     end
 
     it "git repo changed for non git domain" do
@@ -336,7 +336,7 @@ describe MiqAeDomain do
       dom1.update_attributes(:ref => branch_name, :git_repository => repo,
                              :ref_type => MiqAeGitImport::BRANCH, :commit_sha => commit_sha)
       expect(dom1.git_repo_changed?).to be_truthy
-      expect(dom1.latest_ref_info).to have_attributes(new_info)
+      expect(dom1.latest_ref_info).to eq(new_info)
     end
 
     it "git repo tag changed" do
@@ -344,7 +344,7 @@ describe MiqAeDomain do
       dom1.update_attributes(:ref => tag_name, :ref_type => MiqAeGitImport::TAG,
                              :git_repository => repo, :commit_sha => commit_sha)
       expect(dom1.git_repo_changed?).to be_truthy
-      expect(dom1.latest_ref_info).to have_attributes(new_info)
+      expect(dom1.latest_ref_info).to eq(new_info)
     end
 
     it "git repo tag changed with no branch or tag" do
