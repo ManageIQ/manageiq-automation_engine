@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 73 ending 2017-11-13
+
+### Added
+- Allow for substitution of hosts in Ansible Playbook methods [(#102)](https://github.com/ManageIQ/manageiq-automation_engine/pull/102)
+- Add task_href_slug as an extra_var for Ansible Playbook [(#101)](https://github.com/ManageIQ/manageiq-automation_engine/pull/101)
+
 ## Unreleased as of Sprint 72 ending 2017-10-30
 
 ### Added
