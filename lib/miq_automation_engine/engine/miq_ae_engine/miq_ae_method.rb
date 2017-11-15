@@ -183,18 +183,19 @@ module MiqAeEngine
       begin
         status = Open4.popen4(*cmd) do |pid, stdin, stdout, stderr|
           method_pid = pid
+          $err = []
           yield stdin if block_given?
           stdin.close
           threads << Thread.new do
             stdout.each_line { |msg| $miq_ae_logger.info "Method STDOUT: #{msg.strip}" }
           end
           threads << Thread.new do
-            stderr.each_line { |msg| $miq_ae_logger.error "Method STDERR: #{msg.strip}" }
+            stderr.each_line { |msg| $miq_ae_logger.error "Method STDERR: #{msg.strip}"; $err << msg.strip }
           end
           threads.each(&:join)
         end
         rc  = status.exitstatus
-        msg = "Method exited with rc=#{verbose_rc(rc)}"
+        msg = "Method exited with rc=#{verbose_rc(rc)}\n\n#{$err.join("\n")}"
         method_pid = nil
         threads = []
       rescue => err
