@@ -136,11 +136,10 @@ module MiqAeEngine
     private_class_method :run_ruby_method
 
     def self.with_automation_env
-      bundle_path = Bundler.bundle_path.to_s
+      gem_paths = (Gem.path + [Bundler.bundle_path.to_s]).uniq
       Bundler.with_clean_env do
         begin
           backup = ENV.to_hash
-          gem_paths = (backup["GEM_PATH"].split(File::PATH_SEPARATOR) << bundle_path).uniq
           ENV.replace(backup.merge("GEM_PATH" => gem_paths.join(File::PATH_SEPARATOR)))
 
           yield
