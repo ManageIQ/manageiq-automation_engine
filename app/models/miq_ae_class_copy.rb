@@ -79,13 +79,19 @@ class MiqAeClassCopy
 
   def validate
     dest_class = MiqAeClass.find_by_fqname("#{@target_ns_fqname}/#{@target_name}")
+    $log.info("Destination class: #{dest_class}")
     if dest_class
-      dest_class.destroy if @overwrite
+      $log.info("Overwrite flag: #{@overwrite}")
+      if @overwrite
+        dest_class.destroy
+        $log.info("Should only print if destination class exists and got destroyed by overwrite")
+      end
       raise "Destination Class already exists #{dest_class.fqname}" unless @overwrite
     end
   end
 
   def check_duplicity(domain, ns, classname)
+    $log.info("Domain: #{domain}, namespace: #{ns}, classname: #{classname}")
     if domain.downcase == @src_domain.downcase && classname.downcase == @ae_class.downcase
       raise "Cannot copy class onto itself" if ns.nil? || ns.downcase == @partial_ns.downcase
     end
