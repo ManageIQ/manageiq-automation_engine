@@ -136,7 +136,7 @@ module MiqAeEngine
     private_class_method :run_ruby_method
 
     def self.with_automation_env
-      gem_paths = (Gem.path + [Bundler.bundle_path.to_s]).uniq
+      gem_paths = ([Rails.root.join("vendor", "miq_gems").to_s] + Gem.path + [Bundler.bundle_path.to_s]).uniq
       Bundler.with_clean_env do
         begin
           backup = ENV.to_hash
