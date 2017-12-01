@@ -43,6 +43,7 @@ describe MiqAeGitImport do
     include_context "variables"
     before do
       EvmSpecHelper.local_guid_miq_server_zone
+      allow(miq_ae_yaml_import_gitfs).to receive(:domain_files).and_return ['BB8/__domain__.yaml']
     end
 
     context "when the ref type and ref are valid" do
@@ -98,6 +99,15 @@ describe MiqAeGitImport do
             .and_return(miq_ae_yaml_import_gitfs)
           allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(nil)
           expect { miq_ae_git_import.import }.to raise_error(MiqAeException::DomainNotFound)
+        end
+
+        it "raises an exception with a message about multiple domains" do
+          expect(MiqAeYamlImportGitfs).to receive(:new).with(domain_name, import_options)
+            .and_return(miq_ae_yaml_import_gitfs)
+          allow(miq_ae_yaml_import_gitfs).to receive(:domain_files) { ['BB8/__domain__.yaml', 'BB8/__domain__.yaml'] }
+          expect { miq_ae_git_import.import }.to raise_exception(
+            MiqAeException::InvalidDomain, 'multiple domains'
+          )
         end
       end
 
