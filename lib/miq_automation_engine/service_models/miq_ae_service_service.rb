@@ -24,6 +24,7 @@ module MiqAeMethodService
     expose :indirect_service_children, :association => true
     expose :parent_service,            :association => true
     expose :tenant,                    :association => true
+    expose :generic_objects,           :association => true
 
     CREATE_ATTRIBUTES = [:name, :description, :service_template]
 
