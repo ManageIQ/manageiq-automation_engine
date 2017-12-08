@@ -561,8 +561,8 @@ module MiqAeEngine
     def self.decrypt_password(value)
       MiqAePassword.new(MiqAePassword.decrypt(value))
     rescue MiqPassword::MiqPasswordError => err
-      $miq_ae_logger.error("Error decrypting password #{err.message}. Is this password imported from a different environment?")
-      raise err
+      $miq_ae_logger.error("Error decrypting password #{err.message}. Possible cause: Password value was encrypted with a different encryption key")
+      raise
     end
     private_class_method :decrypt_password
 
