@@ -1,5 +1,7 @@
 module MiqAeMethodService
   class MiqAeServiceGenericObject < MiqAeServiceModelBase
+    require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
+    include MiqAeServiceRemoveFromVmdb
     require 'drb'
 
     def add_to_service(service)
