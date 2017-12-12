@@ -76,9 +76,9 @@ module MiqAeMethodService
         if service
           raise ArgumentError, "service must be a MiqAeServiceService" unless service.kind_of?(
             MiqAeMethodService::MiqAeServiceService)
-          @object.service = Service.find(service.id)
+          @object.add_to_service(Service.find(service.id))
         else
-          @object.service = nil
+          @object.remove_from_service(@object.parent) if @object.parent.present?
         end
         @object.save
       end
