@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Gaprindashvili RC
+
+### Fixed
+- Log encryption failures [(#127)](https://github.com/ManageIQ/manageiq-automation_engine/pull/127)
+- Add remove_from_vmdb method to generic object for Service models. [(#130)](https://github.com/ManageIQ/manageiq-automation_engine/pull/130)
+- Expose generic objects to the services service model. [(#128)](https://github.com/ManageIQ/manageiq-automation_engine/pull/128)
+
 ## Gaprindashvili Beta2
 
 ### Added
