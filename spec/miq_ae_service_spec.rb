@@ -39,10 +39,10 @@ module MiqAeServiceSpec
     end
   end
 
-  describe MiqAeService do
+  describe MiqAeMethodService::MiqAeService do
     context "#service_model" do
       let(:workspace) { double('ws', :persist_state_hash => {}) }
-      let(:miq_ae_service) { MiqAeService.new(workspace) }
+      let(:miq_ae_service) { described_class.new(workspace) }
       let(:prefix) { "MiqAeMethodService::MiqAeService" }
 
       it "loads base model" do
@@ -106,11 +106,11 @@ module MiqAeServiceSpec
     end
   end
 
-  describe MiqAeService do
+  describe MiqAeMethodService::MiqAeService do
     context "#prepend_namespace=" do
       let(:options) { {} }
       let(:workspace) { double("MiqAeEngine::MiqAeWorkspaceRuntime", :root => options) }
-      let(:miq_ae_service) { MiqAeService.new(workspace) }
+      let(:miq_ae_service) { described_class.new(workspace) }
       let(:ns) { "fred" }
 
       it "set namespace" do
@@ -134,7 +134,7 @@ module MiqAeServiceSpec
                                                      :ae_user            => user,
                                                      :persist_state_hash => {})
       end
-      let(:miq_ae_service) { MiqAeService.new(workspace) }
+      let(:miq_ae_service) { described_class.new(workspace) }
       let(:user) { FactoryGirl.create(:user_with_group) }
       let(:vm) { FactoryGirl.create(:vm) }
       let(:msg_text) { 'mary had a little lamb' }
