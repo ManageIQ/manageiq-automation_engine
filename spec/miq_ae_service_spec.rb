@@ -1,6 +1,3 @@
-module MiqAeServiceSpec
-  include MiqAeMethodService
-
   describe MiqAeMethodService::MiqAeServiceObject do
     before do
       @object = double('object')
@@ -209,4 +206,3 @@ module MiqAeServiceSpec
       end
     end
   end
-end
