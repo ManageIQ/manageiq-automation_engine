@@ -1,11 +1,11 @@
 module MiqAeServiceSpec
   include MiqAeMethodService
 
-  describe MiqAeServiceObject do
+  describe MiqAeMethodService::MiqAeServiceObject do
     before do
       @object = double('object')
       @service = double('service')
-      @service_object = MiqAeServiceObject.new(@object, @service)
+      @service_object = described_class.new(@object, @service)
     end
 
     context "#attributes" do
