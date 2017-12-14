@@ -72,6 +72,16 @@ module MiqAeServiceServiceSpec
 
         @parent.reload
         expect(@parent.direct_service_children.collect(&:id)).to eq([@service.id])
+        expect(@parent.service_resources.collect(&:resource_id)).to eq([@service.id])
+        expect(@parent.service_resources.first).to be_a_kind_of(ServiceResource)
+      end
+
+      it "raises error if child service is already owned by different parent" do
+        parent1 = FactoryGirl.create(:service)
+        service.add_to_service(parent1)
+        parent_service = MiqAeMethodService::MiqAeServiceService.find(@parent.id)
+
+        expect { service_service.parent_service = parent_service }.to raise_error(MiqException::Error)
       end
 
       it "clears the parent service" do
@@ -81,6 +91,7 @@ module MiqAeServiceServiceSpec
 
         @parent.reload
         expect(@parent.direct_service_children).to eq([])
+        expect(@parent.service_resources).to eq([])
       end
 
       it "validates the parent service" do
