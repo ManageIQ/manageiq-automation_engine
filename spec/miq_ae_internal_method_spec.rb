@@ -18,15 +18,15 @@ describe MiqAeEngine::MiqAeInternalMethod do
                                            :settings => {:display => { :timezone => "UTC"}})
     end
 
-    let(:result_object) { "." }
+    let(:result_obj) { "." }
     let(:result_attribute) { "BammBammRubble" }
 
     let(:vm) { FactoryGirl.create(:vm_vmware, :name => "VM1") }
 
     let(:output) do
       {
-        :result_attr   => result_attribute,
-        :result_object => result_object,
+        :result_attr => result_attribute,
+        :result_obj  => result_obj,
       }
     end
 
@@ -191,7 +191,7 @@ describe MiqAeEngine::MiqAeInternalMethod do
     end
 
     context "state var" do
-      let(:result_object) { "state_var" }
+      let(:result_obj) { "state_var" }
       let(:options) do
         {
           :output_parameters => output,
@@ -237,7 +237,7 @@ describe MiqAeEngine::MiqAeInternalMethod do
       end
 
       context "result in state var" do
-        let(:result_object) { "state_var" }
+        let(:result_obj) { "state_var" }
         let(:result_attr) { nil }
 
         it "returns a service vm object" do

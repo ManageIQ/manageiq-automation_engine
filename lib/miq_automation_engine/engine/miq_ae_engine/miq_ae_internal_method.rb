@@ -13,7 +13,12 @@ module MiqAeEngine
     def run
       validate_args
       obj = resolved_object || @aem.options[:class].constantize
-      run_method(obj, @aem.options[:method].to_sym)
+      method = @aem.options[:method].to_sym
+      if obj.respond_to?(method)
+        run_method(obj, method)
+      else
+        raise MiqAeException::MethodNotFound, "#{method} not defined for object #{obj}"
+      end
     end
 
     private
@@ -27,12 +32,8 @@ module MiqAeEngine
     end
 
     def run_method(obj, method)
-      if obj.respond_to?(method)
-        process_result(@inputs.blank? ? obj.send(method) : obj.send(method, @inputs))
-        @workspace.root['ae_result'] = 'ok' if in_state?
-      else
-        raise MiqAeException::MethodNotFound, "#{method} not defined for object #{obj}"
-      end
+      process_result(@inputs.blank? ? obj.send(method) : obj.send(method, @inputs))
+      @workspace.root['ae_result'] = 'ok' if in_state?
     rescue MiqAeException::MiqAeRetryException
       set_retry if @aem.options[:output_parameters].fetch(:retry_exception, false) && in_state?
     rescue StandardError => err
@@ -59,7 +60,7 @@ module MiqAeEngine
     def process_result(result)
       output_params = @aem.options[:output_parameters]
       if output_params
-        if output_params[:result_object] == 'state_var'
+        if output_params[:result_obj] == 'state_var'
           set_state_var(result, output_params[:result_attr])
         else
           set_object_attribute(result, output_params[:result_attr])
@@ -82,7 +83,7 @@ module MiqAeEngine
     end
 
     def target_object
-      obj_name = @aem.options[:output_parameters][:result_object] || '.'
+      obj_name = @aem.options[:output_parameters][:result_obj] || '.'
       @workspace.get_obj_from_path(obj_name).tap do |obj|
         raise MiqAeException::ObjectNotFound, "Internal method results, object #{obj_name} missing" unless obj
       end
