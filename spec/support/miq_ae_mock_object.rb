@@ -6,9 +6,11 @@ module Spec
       attr_accessor :namespace
       attr_accessor :klass
       attr_accessor :instance
+      attr_accessor :workspace
 
       def initialize(hash = {})
         @object_hash = HashWithIndifferentAccess.new(hash)
+        @workspace   = @object_hash[:workspace]
         @children = []
       end
 
