@@ -1,6 +1,6 @@
 module MiqAeEngine
   module MiqAeStateInfo
-    STATE_SALIENT_ATTRIBUTES = %w(ae_state ae_state_retries ae_state_started)
+    STATE_SALIENT_ATTRIBUTES = %w(ae_state ae_state_retries ae_state_started ae_state_max_retries).freeze
 
     def save_current_state_info(key)
       return unless root && root['ae_state']
