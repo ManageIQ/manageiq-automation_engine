@@ -11,7 +11,7 @@ module MiqAeEngine
     def initialize_state_maxima_metadata(field)
       @workspace.root['ae_state_started'] = Time.zone.now.utc.to_s  if @workspace.root['ae_state_started'].blank?
       @workspace.root['ae_state_retries'] = 0                  if @workspace.root['ae_state_retries'].blank?
-      @workspace.root['ae_state_max_retries'] = field['max_retries'].to_i if @workspace.root['ae_state_max_retries'].to_i.zero?
+      @workspace.root['ae_state_max_retries'] = field['max_retries'].to_i
     end
 
     def reset_state_maxima_metadata
