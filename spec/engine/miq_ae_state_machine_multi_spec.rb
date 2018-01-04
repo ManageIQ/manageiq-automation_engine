@@ -11,7 +11,7 @@ describe "MultipleStateMachineSteps" do
     @common_state_method = 'common_state_method'
     @domain              = 'SPEC_DOMAIN'
     @namespace           = 'NS1'
-    @max_retries         = 3
+    @max_retries         = 2
     @state_class1        = 'SM1'
     @state_class2        = 'SM2'
     @state_class3        = 'SM3'
@@ -103,6 +103,8 @@ describe "MultipleStateMachineSteps" do
       steps_executed = $evm.root[step_name].to_a
       steps_executed << $evm.root['ae_state']
       $evm.root[step_name] = steps_executed
+      max_retries = $evm.root['ae_state'].split('_').last.to_i
+      $evm.root['ae_result'] = 'error' unless $evm.root['ae_state_max_retries'] == max_retries
       $evm.root['ae_result'] = inputs['ae_result'] if %w(retry error).exclude?($evm.root['ae_result'])
       $evm.root['ae_result'] = inputs['ae_result'] if inputs['ae_result'] == 'continue'
       $evm.root['ae_next_state']  = inputs['ae_next_state'] unless inputs['ae_next_state'].blank?
@@ -154,11 +156,11 @@ describe "MultipleStateMachineSteps" do
     all_steps = {'on_entry' => "common_state_method",
                  'on_exit'  => "common_state_method",
                  'on_error' => "common_state_method"}
-    ae_fields = {"#{stem}_1" => {:aetype => 'state', :datatype => 'string', :priority => 1},
+    ae_fields = {"#{stem}_1" => {:aetype => 'state', :datatype => 'string', :priority => 1, :max_retries => 1},
                  "#{stem}_2" => {:aetype => 'state', :datatype => 'string', :priority => 2,
                                  :max_retries => @max_retries, :message  => 'create'},
-                 "#{stem}_3" => {:aetype => 'state', :datatype => 'string', :priority => 3},
-                 "#{stem}_4" => {:aetype => 'state', :datatype => 'string', :priority => 4}}
+                 "#{stem}_3" => {:aetype => 'state', :datatype => 'string', :priority => 3, :max_retries => 3},
+                 "#{stem}_4" => {:aetype => 'state', :datatype => 'string', :priority => 4, :max_retries => 4}}
     state1_value = "/#{@domain}/#{@namespace}/#{@method_class}/#{@instance1}"
     state2_value = "/#{@domain}/#{@namespace}/#{@method_class}/#{@instance2}"
     state3_value = "/#{@domain}/#{@namespace}/#{@method_class}/#{@instance3}"
