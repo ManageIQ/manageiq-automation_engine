@@ -3,41 +3,46 @@ module MiqAeEngine
     DEFAULT_ATTR_NAME = 'result'.freeze
     DEFAULT_RETRY_INTERVAL = 1.minute
 
-    def initialize(aem, obj, inputs)
-      @workspace = obj.workspace
-      @inputs    = inputs
-      @aem       = aem
-      @ae_object = obj
+    def initialize(method_ar_obj, obj, inputs)
+      @workspace     = obj.workspace
+      @inputs        = inputs
+      @method_ar_obj = method_ar_obj
+      @ae_object     = obj
     end
 
     def run
       validate_args
-      obj = resolved_object || @aem.options[:class].constantize
-      method = @aem.options[:method].to_sym
-      if obj.respond_to?(method)
-        run_method(obj, method)
-      else
-        raise MiqAeException::MethodNotFound, "#{method} not defined for object #{obj}"
-      end
+      obj = resolved_target || resolved_class
+      method = @method_ar_obj.options[:method].to_sym
+      raise MiqAeException::MethodNotFound, "#{method} not defined for object #{obj}" unless obj.respond_to?(method)
+      run_method(obj, method)
     end
 
     private
 
-    def resolved_object
-      if @aem.options[:object]
-        @ae_object.substitute_value(@aem.options[:object], nil, true).tap do |value|
-          raise ArgumentError, "Object #{@aem.options[:object]} resolved to empty string" if value.blank?
+    def resolved_target
+      if @method_ar_obj.options[:target]
+        @ae_object.substitute_value(@method_ar_obj.options[:target], nil, true).tap do |value|
+          raise ArgumentError, "Target #{@method_ar_obj.options[:target]} resolved to empty string" if value.blank?
         end
       end
     end
 
+    def resolved_class
+      @method_ar_obj.options[:target_class].constantize
+    end
+
     def run_method(obj, method)
-      process_result(@inputs.blank? ? obj.send(method) : obj.send(method, @inputs))
+      process_result(call(obj, method))
       @workspace.root['ae_result'] = 'ok' if in_state?
     rescue MiqAeException::MiqAeRetryException
-      set_retry if @aem.options[:output_parameters].fetch(:retry_exception, false) && in_state?
+      set_retry if @method_ar_obj.options[:output_parameters].fetch(:retry_exception, false) && in_state?
     rescue StandardError => err
       error_handler(err)
+    end
+
+    def call(obj, method)
+      @inputs.blank? ? obj.send(method) : obj.send(method, @inputs)
     end
 
     def error_handler(err)
@@ -50,15 +55,15 @@ module MiqAeEngine
     end
 
     def validate_args
-      if @aem.options[:object].blank? && @aem.options[:class].blank?
-        raise MiqAeException::MethodParmMissing, "need an object or a class to execute the internal method"
+      if @method_ar_obj.options[:target].blank? && @method_ar_obj.options[:target_class].blank?
+        raise MiqAeException::MethodParmMissing, "need a target or a target_class to execute the internal method"
       end
 
-      raise MiqAeException::MethodParmMissing, "method name not provided" if @aem.options[:method].blank?
+      raise MiqAeException::MethodParmMissing, "method name not provided" if @method_ar_obj.options[:method].blank?
     end
 
     def process_result(result)
-      output_params = @aem.options[:output_parameters]
+      output_params = @method_ar_obj.options[:output_parameters]
       if output_params
         if output_params[:result_obj] == 'state_var'
           set_state_var(result, output_params[:result_attr])
@@ -79,11 +84,11 @@ module MiqAeEngine
               else
                 result
               end
-      target_object[key || DEFAULT_ATTR_NAME] = value
+      result_object[key || DEFAULT_ATTR_NAME] = value
     end
 
-    def target_object
-      obj_name = @aem.options[:output_parameters][:result_obj] || '.'
+    def result_object
+      obj_name = @method_ar_obj.options[:output_parameters][:result_obj] || '.'
       @workspace.get_obj_from_path(obj_name).tap do |obj|
         raise MiqAeException::ObjectNotFound, "Internal method results, object #{obj_name} missing" unless obj
       end
@@ -91,7 +96,7 @@ module MiqAeEngine
 
     def set_retry
       @workspace.root['ae_result'] = 'retry'
-      @workspace.root['ae_retry_interval'] = @aem.options[:output_parameters].fetch(:retry_interval, DEFAULT_RETRY_INTERVAL)
+      @workspace.root['ae_retry_interval'] = @method_ar_obj.options[:output_parameters].fetch(:retry_interval, DEFAULT_RETRY_INTERVAL)
     end
 
     def in_state?

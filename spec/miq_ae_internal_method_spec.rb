@@ -43,7 +43,7 @@ describe MiqAeEngine::MiqAeInternalMethod do
       {
         :output_parameters => output,
         :method            => object_method_name,
-        :object            => object_str
+        :target            => object_str
       }
     end
 
@@ -132,7 +132,7 @@ describe MiqAeEngine::MiqAeInternalMethod do
         {
           :output_parameters => output,
           :method            => "name",
-          :class             => svc_mpr.class.name
+          :target_class      => svc_mpr.class.name
         }
       end
 
@@ -155,7 +155,7 @@ describe MiqAeEngine::MiqAeInternalMethod do
         {
           :output_parameters => output,
           :method            => object_method_name,
-          :object            => object_str
+          :target            => object_str
         }
       end
 
@@ -196,7 +196,7 @@ describe MiqAeEngine::MiqAeInternalMethod do
         {
           :output_parameters => output,
           :method            => "name",
-          :class             => svc_mpr.class.name
+          :target_class      => svc_mpr.class.name
         }
       end
 
