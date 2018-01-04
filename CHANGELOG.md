@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 76 ending 2018-01-01
+
+### Added
+- Adds better logging to class copy methods [(#120)](https://github.com/ManageIQ/manageiq-automation_engine/pull/120)
+- Add vm_reconfigure_request service model. [(#97)](https://github.com/ManageIQ/manageiq-automation_engine/pull/97)
+
+### Fixed
+- Add and remove dependent services correctly in hierarchical structures [(#132)](https://github.com/ManageIQ/manageiq-automation_engine/pull/132)
+
 ## Unreleased as of Sprint 75 ending 2017-12-11
 
 ### Fixed
