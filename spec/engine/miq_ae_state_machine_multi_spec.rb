@@ -36,48 +36,6 @@ describe "MultipleStateMachineSteps" do
     setup_model
   end
 
-  def perpetual_retry_script
-    <<-'RUBY'
-      $evm.root['ae_result'] = 'retry'
-    RUBY
-  end
-
-  def method_script_state_var
-    <<-'RUBY'
-      root   = $evm.object("/")
-      if $evm.state_var_exist?(:gravy) && $evm.get_state_var('gravy') == 'train'
-        root['finished'] = true
-        $evm.set_state_var(:three, 3)
-        $evm.set_state_var('one', $evm.get_state_var(:one) + 1)
-        status = 'ok'
-      else
-        $evm.set_state_var(:one, 0)
-        $evm.set_state_var(:two, 2)
-        $evm.set_state_var('gravy', 'train')
-        status = 'retry'
-      end
-
-      case status
-        when 'retry'
-          root['ae_result']         = 'retry'
-          root['ae_retry_interval'] = '1.minute'
-        when 'ok'
-          root['ae_result'] = 'ok'
-        end
-      exit MIQ_OK
-    RUBY
-  end
-
-  def setup_model(method_script)
-    dom = FactoryGirl.create(:miq_ae_domain, :enabled => true, :name => @domain)
-    ns  = FactoryGirl.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
-    @ns_fqname = ns.fqname
-    create_retry_class(:namespace => @ns_fqname, :name => @retry_class, :method_script => method_script)
-    create_state_class(:namespace => @ns_fqname, :name => @state_class)
-    clear_domain
-    setup_model
-  end
-
   def clear_domain
     MiqAeDomain.find_by_name(@domain).try(:destroy)
   end
