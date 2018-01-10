@@ -47,6 +47,7 @@ module MiqAeException
   class MethodExpressionResultTypeInvalid < MiqAeEngineError; end
   class MethodParameterNotFound < MiqAeEngineError; end
   class MethodNotDefined < MiqAeEngineError; end
+  class MiqAeRetryException < MiqAeEngineError; end
 end
 
 module MiqException
