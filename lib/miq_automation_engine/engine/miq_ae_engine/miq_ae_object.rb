@@ -427,11 +427,12 @@ module MiqAeEngine
       uri  # if it was not processed, return the original uri
     end
 
-    def substitute_value(value, _type = nil, required = false)
+    def substitute_value(value, datatype = nil, required = false)
       Benchmark.current_realtime[:substitution_count] += 1
       Benchmark.realtime_block(:substitution_time) do
         value = value.gsub(RE_SUBST) do |_s|
           subst   = uri2value($1, required)
+          return subst if !datatype.blank? && datatype != 'string'
           subst &&= subst.to_s
           # This encoding of relationship is not needed, until we can get a valid use case
           # Based on RFC 3986 Section 2.4 "When to Encode or Decode"
@@ -503,7 +504,7 @@ module MiqAeEngine
     def get_value(f, type = nil, required = false)
       value = f['value']
       value = f['default_value'] if value.blank?
-      value = substitute_value(value, type, required) if f['substitute'] == true
+      value = substitute_value(value, f['datatype'], required) if f['substitute'] == true
       value
     end
 
@@ -513,7 +514,7 @@ module MiqAeEngine
 
       result = nil
       initial_value.split(NULL_COALESCING_OPERATOR).each do |value|
-        result = resolve_value(value, type)
+        result = resolve_value(value, f['datatype'])
         break unless result.blank?
       end
       result
@@ -549,6 +550,7 @@ module MiqAeEngine
 
       if datatype &&
          (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
+        return value if value.kind_of?(service_model)
         return service_model.find(value)
       end
 
