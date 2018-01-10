@@ -1,5 +1,7 @@
 module MiqAeMethodService
   class MiqAeServiceContainerRoute < MiqAeServiceModelBase
+    require_relative 'mixins/miq_ae_service_container_resource_mixin'
+    include MiqAeServiceContainerResourceMixin
     expose :ext_management_system,    :association => true
     expose :container_project,        :association => true
     expose :container_service,        :association => true
