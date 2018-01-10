@@ -1,3 +1,5 @@
 GlobalVars:
   AllowedVariables:
   - $evm
+  - $log
+  - $miq_ae_logger
