@@ -3,14 +3,20 @@ describe MiqAeEngine::MiqAeMethod do
     let(:workspace) do
       Class.new do
         attr_accessor :invoker, :root
-        # rubocop:disable Style/SingleLineMethods, Style/EmptyLineBetweenDefs
-        def persist_state_hash; end
-        def disable_rbac; end
-        def current_method; "/my/automate/method"; end
+
+        def persist_state_hash
+        end
+
+        def disable_rbac
+        end
+
+        def current_method
+          "/my/automate/method"
+        end
+
         def root
           {}
         end
-        # rubocop:enable Style/SingleLineMethods, Style/EmptyLineBetweenDefs
       end.new
     end
 
