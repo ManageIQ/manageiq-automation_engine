@@ -178,6 +178,10 @@ class MiqAeDomain < MiqAeNamespace
     MiqTask.generic_action_with_callback(task_options, queue_options)
   end
 
+  def self.display_name(number = 1)
+    n_('Automate Domain', 'Automate Domains', number)
+  end
+
   private
 
   def squeeze_priorities
