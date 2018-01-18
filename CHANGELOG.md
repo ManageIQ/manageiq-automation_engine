@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 77 ending 2018-01-15
+
+### Fixed
+- Fix Automate State Machine ae_max_retries root object value. [(#137)](https://github.com/ManageIQ/manageiq-automation_engine/pull/137)
+
 ## Unreleased as of Sprint 76 ending 2018-01-01
 
 ### Added
