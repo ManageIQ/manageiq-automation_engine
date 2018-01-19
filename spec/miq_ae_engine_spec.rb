@@ -814,7 +814,7 @@ describe MiqAeEngine do
 
   before do
     @user = FactoryGirl.create(:user_with_group)
-    nco_value = '${/#var1} || ${XY/ABC#var2} || Pebbles'
+    nco_value = '${/#var1} || ${XY/ABC#var2} || ${State_Var#my_id} || Pebbles'
     default_value = '${/#var2} || ${XY/ABC#var2} || Bamm Bamm Rubble'
     instance_name = 'FRED'
     ae_instances = {instance_name => {'field1' => {:value => nco_value},
@@ -849,6 +849,14 @@ describe MiqAeEngine do
 
     it "undefined variable" do
       workspace = MiqAeEngine.instantiate("/A/C/BARNEY/FRED", @user)
+      expect(workspace.root['field2']).to eq('Bamm Bamm Rubble')
+      expect(workspace.root.attributes.keys.exclude?('field3')).to be_truthy
+    end
+
+    it "fetches value from state_var" do
+      ae_state_data = {:my_id => 45}.to_yaml
+      workspace = MiqAeEngine.instantiate("/A/C/BARNEY/FRED?ae_state_data=#{ae_state_data}", @user)
+      expect(workspace.root['field1']).to eq("45")
       expect(workspace.root['field2']).to eq('Bamm Bamm Rubble')
       expect(workspace.root.attributes.keys.exclude?('field3')).to be_truthy
     end
