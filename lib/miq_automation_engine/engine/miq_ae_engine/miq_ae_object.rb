@@ -396,7 +396,7 @@ module MiqAeEngine
 
     def fetch_object_attribute(path, name, required = false)
       o = @workspace.get_obj_from_path(path)
-      raise MiqAeException::ObjectNotFound, "Object Not Found for path=[#{path}]"  if o.nil?
+      raise MiqAeException::ObjectNotFound, "Object Not Found for path=[#{path}]" if o.nil?
 
       if o.attributes.key?(name.downcase)
         o.attributes[name.downcase]
@@ -427,7 +427,7 @@ module MiqAeEngine
         attribute_name = frags.shift
         methods        = frags
 
-        value = if path.casecmp("STATE_VAR") == 0
+        value = if path.casecmp("STATE_VAR").zero?
                   fetch_state_attribute(attribute_name, required)
                 else
                   fetch_object_attribute(path, attribute_name, required)
