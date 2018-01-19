@@ -67,7 +67,7 @@ describe MiqAeEngine::MiqAeObject do
         ae_model
 
         expect do
-          MiqAeEngine.instantiate('/A/C/BARNEY/FRED', user)
+          MiqAeEngine.instantiate(child_url, user)
         end.to raise_exception(MiqAeException::ObjectNotFound)
       end
     end
