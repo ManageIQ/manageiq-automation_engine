@@ -386,6 +386,25 @@ module MiqAeEngine
       invoke_method(ns, klass, method_name, MiqAeUri.query2hash(query))
     end
 
+    def fetch_state_attribute(name, required = false)
+      if @workspace.persist_state_hash.key?(name)
+        @workspace.persist_state_hash[name]
+      elsif required
+        raise MiqAeException::AttributeNotFound, "State var #{name} not found"
+      end
+    end
+
+    def fetch_object_attribute(path, name, required = false)
+      o = @workspace.get_obj_from_path(path)
+      raise MiqAeException::ObjectNotFound, "Object Not Found for path=[#{path}]" if o.nil?
+
+      if o.attributes.key?(name.downcase)
+        o.attributes[name.downcase]
+      elsif required
+        raise MiqAeException::AttributeNotFound, "Attribute #{name} not found for object [#{path}]"
+      end
+    end
+
     def uri2value(uri, required = false)
       scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri)
 
@@ -403,18 +422,17 @@ module MiqAeEngine
           return @workspace.current_message if path.downcase == '!current_message'
           raise MiqAeException::MethodNotFound, "Method [#{path}] Not Found for Current Object"
         end
-        o = @workspace.get_obj_from_path(path)
-        raise MiqAeException::ObjectNotFound, "Object Not Found for path=[#{path}]"  if o.nil?
 
         frags          = fragment.split('.')
         attribute_name = frags.shift
         methods        = frags
 
-        if required && !o.attributes.key?(attribute_name.downcase)
-          raise MiqAeException::AttributeNotFound, "Attribute #{attribute_name} not found for object [#{path}]"
-        end
+        value = if path.casecmp("STATE_VAR").zero?
+                  fetch_state_attribute(attribute_name, required)
+                else
+                  fetch_object_attribute(path, attribute_name, required)
+                end
 
-        value          = o.attributes[attribute_name.downcase]
         begin
           methods.each { |meth| value = call_method(value, meth) }
         rescue => err
