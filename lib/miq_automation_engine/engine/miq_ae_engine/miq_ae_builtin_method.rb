@@ -8,10 +8,14 @@ module MiqAeEngine
       miq_provision
       miq_host_provision
       vm_migrate_task
+      vm_retire_task
+      service_retire_task
+      orchestration_stack_retire_task
       platform_category
     ).freeze
     CLOUD          = 'cloud'.freeze
     INFRASTRUCTURE = 'infrastructure'.freeze
+    SERVICE        = 'service'.freeze
     UNKNOWN        = 'unknown'.freeze
 
     def self.miq_log_object(obj, _inputs)
@@ -59,10 +63,12 @@ module MiqAeEngine
     def self.miq_parse_automation_request(obj, _inputs)
       obj['target_component'], obj['target_class'], obj['target_instance'] =
         case obj['request']
-        when 'vm_provision'   then %w(VM   Lifecycle Provisioning)
-        when 'vm_retired'     then %w(VM   Lifecycle Retirement)
-        when 'vm_migrate'     then %w(VM   Lifecycle Migrate)
-        when 'host_provision' then %w(Host Lifecycle Provisioning)
+        when 'vm_provision'   then %w(VM      Lifecycle Provisioning)
+        when 'vm_retired'     then %w(VM      Lifecycle Retirement)
+        when 'vm_retire'      then %w(VM      Lifecycle Retirement)
+        when 'vm_migrate'     then %w(VM      Lifecycle Migrate)
+        when 'service_retire' then %w(Service Lifecycle Retirement)
+        when 'host_provision' then %w(Host    Lifecycle Provisioning)
         when 'configured_system_provision'
           obj.workspace.root['ae_provider_category'] = 'infrastructure'
           %w(Configured_System Lifecycle Provisioning)
@@ -177,8 +183,10 @@ module MiqAeEngine
         CLOUD
       when "miq_host_provision"
         INFRASTRUCTURE
-      when "miq_request", "miq_provision", "vm_migrate_task"
+      when "miq_request", "miq_provision", "vm_migrate_task", "vm_retire_task"
         vm_detect_category(prov_obj.source) if prov_obj
+      when "service_retire_task"
+        ""
       when "vm"
         vm_detect_category(prov_obj) if prov_obj
       else
