@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 80 ending 2018-02-26
+
+### Added
+- New service model for v2v request and task [(#155)](https://github.com/ManageIQ/manageiq-automation_engine/pull/155)
+- Support for substitution from state_var [(#151)](https://github.com/ManageIQ/manageiq-automation_engine/pull/151)
+
 ## Gaprindashvili-1 - Released 2018-01-31
 
 ### Added
@@ -46,11 +52,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Adds better logging to class copy methods [(#120)](https://github.com/ManageIQ/manageiq-automation_engine/pull/120)
-
-## Unreleased as of Sprint 74 ending 2017-11-27
-
-### Fixed
-- Allow automate scripts to use gems from GEM_PATH and BUNDLE_PATH [(#116)](https://github.com/ManageIQ/manageiq-automation_engine/pull/116)
 
 ## Unreleased as of Sprint 72 ending 2017-10-30
 
