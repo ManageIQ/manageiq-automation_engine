@@ -304,7 +304,7 @@ describe MiqAeDomain do
     let(:info) { {'commit_time' => commit_time, 'commit_message' => commit_message, 'commit_sha' => commit_sha} }
     let(:new_info) { {'commit_time' => commit_time_new, 'commit_message' => "BB-8", 'commit_sha' => "def"} }
     let(:commit_hash) do
-      {'commit_message' => commit_message, 'commit_time' => commit_time,
+      {'commit_message' => commit_message, 'commit_time' => a_value_within(1.second).of(commit_time),
        'commit_sha' => commit_sha, 'ref' => branch_name, 'ref_type' => MiqAeGitImport::BRANCH}
     end
     let(:branch) { FactoryGirl.create(:git_branch, :name => branch_name) }
