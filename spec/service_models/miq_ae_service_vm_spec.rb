@@ -201,7 +201,7 @@ module MiqAeServiceVmSpec
           :retirement_last_warn => nil,
           :retired              => false,
           :retirement_state     => nil,
-          :retires_on           => future_retires_on + extend_days.days
+          :retires_on           => a_value_within(1.second).of(future_retires_on + extend_days.days)
         )
       end
     end
