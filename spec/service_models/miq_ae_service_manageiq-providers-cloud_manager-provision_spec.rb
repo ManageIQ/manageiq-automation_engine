@@ -3,12 +3,12 @@ module MiqAeServiceManageIQ_Providers_CloudManager_ProvisionSpec
     %w(amazon openstack google azure).each do |t|
       context "for #{t}" do
         before do
-          @provider      = FactoryGirl.create("ems_#{t}_with_authentication")
-          @cloud_image   = FactoryGirl.create("template_#{t}", :ext_management_system => @provider)
+          @provider      = FactoryGirl.create("ems_#{t}_with_authentication".to_sym)
+          @cloud_image   = FactoryGirl.create("template_#{t}".to_sym, :ext_management_system => @provider)
           @options       = {:src_vm_id => [@cloud_image.id, @cloud_image.name],
                             :pass      => 1}
           @user          = FactoryGirl.create(:user, :name => 'Fred Flintstone',  :userid => 'fred')
-          @miq_provision = FactoryGirl.create("miq_provision_#{t}",
+          @miq_provision = FactoryGirl.create("miq_provision_#{t}".to_sym,
                                               :provision_type => 'template',
                                               :state          => 'pending',
                                               :status         => 'Ok',
@@ -92,7 +92,7 @@ module MiqAeServiceManageIQ_Providers_CloudManager_ProvisionSpec
 
             context "with an availability_zone" do
               before do
-                @ci = FactoryGirl.create("availability_zone_#{t}")
+                @ci = FactoryGirl.create("availability_zone_#{t}".to_sym)
                 allow_any_instance_of(workflow_klass).to receive(:allowed_availability_zones).and_return(@ci.id => @ci.name)
               end
 
@@ -119,7 +119,7 @@ module MiqAeServiceManageIQ_Providers_CloudManager_ProvisionSpec
 
           context "with an instance_type" do
             before do
-              @ci = FactoryGirl.create("flavor_#{t}")
+              @ci = FactoryGirl.create("flavor_#{t}".to_sym)
               allow_any_instance_of(workflow_klass).to receive(:allowed_instance_types).and_return(@ci.id => @ci.name)
             end
 
@@ -141,8 +141,8 @@ module MiqAeServiceManageIQ_Providers_CloudManager_ProvisionSpec
         if t != "google"
           context "security_groups" do
             before do
-              @ci = FactoryGirl.create("security_group_#{t}")
-              @c2 = FactoryGirl.create("security_group_#{t}")
+              @ci = FactoryGirl.create("security_group_#{t}".to_sym)
+              @c2 = FactoryGirl.create("security_group_#{t}".to_sym)
               allow_any_instance_of(workflow_klass).to receive(:allowed_security_groups).and_return(@ci.id => @ci.name, @c2.id => @c2.name)
             end
 
@@ -235,7 +235,7 @@ module MiqAeServiceManageIQ_Providers_CloudManager_ProvisionSpec
 
             context "with a floating_ip_address" do
               before do
-                @ci = FactoryGirl.create("floating_ip_#{t}")
+                @ci = FactoryGirl.create("floating_ip_#{t}".to_sym)
                 allow_any_instance_of(workflow_klass).to receive(:allowed_floating_ip_addresses).and_return(@ci.id => @ci.address)
               end
 
@@ -263,7 +263,7 @@ module MiqAeServiceManageIQ_Providers_CloudManager_ProvisionSpec
 
             context "with a key_pairs" do
               before do
-                @ci = FactoryGirl.create("auth_key_pair_#{t}")
+                @ci = FactoryGirl.create("auth_key_pair_#{t}".to_sym)
                 allow_any_instance_of(workflow_klass).to receive(:allowed_guest_access_key_pairs).and_return(@ci.id => @ci.name)
               end
 
@@ -291,7 +291,7 @@ module MiqAeServiceManageIQ_Providers_CloudManager_ProvisionSpec
 
             context "with a resource_group" do
               before do
-                @rg = FactoryGirl.create("resource_group")
+                @rg = FactoryGirl.create(:resource_group)
                 allow_any_instance_of(workflow_klass).to receive(:allowed_resource_groups).and_return(@rg.id => @rg.name)
               end
 
@@ -319,7 +319,7 @@ module MiqAeServiceManageIQ_Providers_CloudManager_ProvisionSpec
 
             context "with a cloud_tenant" do
               before do
-                @ct = FactoryGirl.create("cloud_tenant")
+                @ct = FactoryGirl.create(:cloud_tenant)
                 allow_any_instance_of(workflow_klass).to receive(:allowed_cloud_tenants).and_return(@ct.id => @ct.name)
               end
 
