@@ -184,7 +184,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         ap = described_class.new(aem, obj, inputs)
         ap.run
 
-        expect(root_object['ae_result']).to eq('retry')
+        expect(root_object['ae_result']).to eq('async_launch')
         expect(persist_hash[method_key]).to eq(miq_task.id)
         expect(AutomateWorkspace.find_by(:guid => aw.guid)).not_to be_nil
       end
@@ -196,7 +196,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         ap = described_class.new(aem, obj, inputs)
         ap.run
 
-        expect(root_object['ae_result']).to eq('retry')
+        expect(root_object['ae_result']).to eq('async_launch')
         expect(persist_hash[method_key]).to eq(miq_task.id)
         expect(AutomateWorkspace.find_by(:guid => aw.guid)).not_to be_nil
       end
@@ -242,7 +242,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
           ap = described_class.new(aem, obj, inputs)
           ap.run
 
-          expect(root_object['ae_result']).to eq('retry')
+          expect(root_object['ae_result']).to eq('async_launch')
           expect(root_object['ae_retry_interval']).to eq(retry_interval)
         end
       end
