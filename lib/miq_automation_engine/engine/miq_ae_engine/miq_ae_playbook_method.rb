@@ -89,7 +89,7 @@ module MiqAeEngine
     end
 
     def mark_for_retry(task_id)
-      @workspace.root['ae_result'] = 'retry'
+      @workspace.root['ae_result'] = 'async_launch'
       @workspace.root['ae_retry_interval'] = retry_interval
       @workspace.persist_state_hash['automate_workspace_guid'] = @aw.guid
       @workspace.persist_state_hash[method_key] = task_id
