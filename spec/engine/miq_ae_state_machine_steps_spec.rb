@@ -300,6 +300,20 @@ describe "MiqAeStateMachineSteps" do
     expect(ws.root.attributes['ae_state_max_retries']).to eq(100)
   end
 
+  it "dont execute the on_exit method if the state ends in async_launch" do
+    tweak_instance("/#{@domain}/#{@namespace}/#{@method_class}", @instance2,
+                   'ae_result', 'value', "async_launch")
+    tweak_instance("/#{@domain}/#{@namespace}/#{@state_class}", @state_instance,
+                   'state2', 'on_exit', "common_state_method(ae_result => 'retry')")
+    ws = MiqAeEngine.instantiate(@fqname, @user)
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1))
+    expect(ws.root.attributes['step_on_error']).to be_nil
+    expect(ws.root.attributes['ae_state_retries']).to eq(1)
+    expect(ws.root.attributes['ae_state_max_retries']).to eq(100)
+  end
+
   it "allow for retry to be set on on_exit method" do
     tweak_instance("/#{@domain}/#{@namespace}/#{@state_class}", @state_instance,
                    'state2', 'on_exit', "common_state_method(ae_result => 'retry')")

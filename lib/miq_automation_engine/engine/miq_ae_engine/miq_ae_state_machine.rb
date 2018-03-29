@@ -83,7 +83,7 @@ module MiqAeEngine
         elsif @workspace.root['ae_result'] == 'skip'
           $miq_ae_logger.warn("Skipping State=[#{f['name']}]")
           return set_next_state(f, message)
-        elsif %w(retry restart).include?(@workspace.root['ae_result'])
+        elsif %w(retry restart async_launch).include?(@workspace.root['ae_result'])
           increment_state_retries
         elsif @workspace.root['ae_result'] == 'error'
           $miq_ae_logger.warn("Error in State=[#{f['name']}]")
@@ -100,11 +100,15 @@ module MiqAeEngine
         end
 
         state_in_retry = @workspace.root['ae_result'] == 'retry'
-        # Process on_exit method
-        process_state_step_with_error_handling(f, 'on_exit') do
-          process_state_method(f, 'on_exit')
-          if @workspace.root['ae_result'] == 'retry' && !state_in_retry
-            increment_state_retries
+        # Process on_exit method if not async_launch
+        if @workspace.root['ae_result'] == 'async_launch'
+          @workspace.root['ae_result'] = 'retry'
+        else
+          process_state_step_with_error_handling(f, 'on_exit') do
+            process_state_method(f, 'on_exit')
+            if @workspace.root['ae_result'] == 'retry' && !state_in_retry
+              increment_state_retries
+            end
           end
         end
         set_next_state(f, message)
