@@ -30,4 +30,12 @@ describe MiqAeEngine::MiqAeUri do
 
     expect(path).to eq(uri.strip)
   end
+
+  it "remove extra slashes" do
+    uri = "//Cloud//VM/StateMachines//Sample  "
+    result_uri = "/Cloud/VM/StateMachines/Sample"
+    _, _, _, _, _, path = described_class.split(uri)
+
+    expect(path).to eq(result_uri)
+  end
 end
