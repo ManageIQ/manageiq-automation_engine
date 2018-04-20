@@ -7,6 +7,7 @@ module MiqAeServiceRetirementMixin
     expose :retiring?
     expose :error_retiring?
     expose :retired?
+    expose :retirement_initialized?
     expose :extend_retires_on
   end
 
