@@ -806,6 +806,16 @@ describe MiqAeEngine do
       expect(test_class_instance).to receive(:before_ae_starts).once.with(options)
       MiqAeEngine.deliver(options)
     end
+
+    it 'raises error while delivering' do
+      allow(MiqAeEngine).to receive(:create_automation_object).with(any_args).and_return('_ wong_uri _')
+      expect(test_class_name).to receive(:constantize).and_return(test_class)
+      expect(test_class).to receive(:find_by).with(any_args).and_return(test_class_instance)
+      allow(MiqAeEngine).to receive(:create_automation_attribute_key)
+      expect(MiqAeEngine._log).to receive(:error)
+        .with("Error delivering {\"User::user\"=>#{user.id}, nil=>nil} for object [TestClass.] with state [] to Automate: bad URI(is not URI?): _ wong_uri _")
+      MiqAeEngine.deliver(options)
+    end
   end
 end
 
