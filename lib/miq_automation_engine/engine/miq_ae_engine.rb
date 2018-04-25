@@ -28,25 +28,7 @@ module MiqAeEngine
   end
 
   private_class_method def self.options_from_args(args)
-    options = {}
-    if args.length == 1
-      # options = Hash
-      options = args.first
-    else
-      binding.pry
-      # Legacy
-      options[:object_type]      = args.shift
-      options[:object_id]        = args.shift
-      options[:attrs]            = args.shift
-      options[:instance_name]    = args.shift
-      options[:user_id]          = args.shift
-      options[:state]            = args.shift
-      options[:automate_message] = args.shift
-      options[:ae_fsm_started]   = args.shift
-      options[:ae_state_started] = args.shift
-      options[:ae_state_retries] = args.shift
-    end
-
+    options = args.first
     options[:instance_name] ||= 'AUTOMATION'
     options[:attrs] ||= {}
     options
