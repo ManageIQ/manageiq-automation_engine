@@ -314,6 +314,11 @@ describe MiqAeEngine do
       expect(MiqAeEngine.create_automation_attribute_key(host)).to eq("Host::host")
     end
 
+    it "with a MiqRequest" do
+      host = FactoryGirl.create(:miq_host_provision_request)
+      expect(MiqAeEngine.create_automation_attribute_key(host)).to eq("MiqHostProvisionRequest::miq_host_provision_request")
+    end
+
     it "with an EmsCluster" do
       cluster = FactoryGirl.create(:ems_cluster)
       expect(MiqAeEngine.create_automation_attribute_key(cluster)).to eq("EmsCluster::ems_cluster")
@@ -337,6 +342,11 @@ describe MiqAeEngine do
     it "with an Host" do
       host = FactoryGirl.create(:host)
       expect(MiqAeEngine.create_automation_attribute_class_name(host)).to eq("Host")
+    end
+
+    it "with an MiqRequest" do
+      host = FactoryGirl.create(:miq_host_provision_request)
+      expect(MiqAeEngine.create_automation_attribute_class_name(host)).to eq("MiqHostProvisionRequest")
     end
   end
 
@@ -423,6 +433,11 @@ describe MiqAeEngine do
     it "with a string value" do
       expect(MiqAeEngine.create_automation_attributes("")).to eq("")
       expect(MiqAeEngine.create_automation_attributes("")).to eq("")
+    end
+
+    it 'with an Array of attrs' do
+      array = [%w(key value), %w(key1 value1)]
+      expect(MiqAeEngine.create_automation_attributes(array)).to eq('key' => 'value', 'key1' => 'value1')
     end
   end
 
