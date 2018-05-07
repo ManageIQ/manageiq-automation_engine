@@ -27,71 +27,63 @@ module MiqAeEngine
     MiqQueue.put(options)
   end
 
-  def self.deliver(*args)
-    options = {}
-
-    case args.length
-    when 0
-      # options = nil
-    when 1
-      # options = Hash
-      options = args.first
-    else
-      # Legacy
-      options[:object_type]      = args.shift
-      options[:object_id]        = args.shift
-      options[:attrs]            = args.shift
-      options[:instance_name]    = args.shift
-      options[:user_id]          = args.shift
-      options[:state]            = args.shift
-      options[:automate_message] = args.shift
-      options[:ae_fsm_started]   = args.shift
-      options[:ae_state_started] = args.shift
-      options[:ae_state_retries] = args.shift
-    end
-
+  private_class_method def self.options_from_args(args)
+    options = args.first
     options[:instance_name] ||= 'AUTOMATION'
     options[:attrs] ||= {}
-    user_obj = ae_user_object(options)
+    options
+  end
 
-    object_type      = options[:object_type]
-    object_id        = options[:object_id]
-    state            = options[:state]
-    user_id          = options[:user_id]
-    ae_fsm_started   = options[:ae_fsm_started]
-    ae_state_started = options[:ae_state_started]
-    ae_state_retries = options[:ae_state_retries]
-    ae_state_data    = options[:ae_state_data]
-    ae_state_previous = options[:ae_state_previous]
-    vmdb_object      = nil
-    ae_result        = 'error'
+  private_class_method def self.automate_attrs_from_options(options)
+    automate_attrs = options[:attrs].dup
+    automate_attrs['User::user']        = options[:user_id]           unless options[:user_id].nil?
+    automate_attrs[:ae_state]           = options[:state]             unless options[:state].nil?
+    automate_attrs[:ae_fsm_started]     = options[:ae_fsm_started]    unless options[:ae_fsm_started].nil?
+    automate_attrs[:ae_state_started]   = options[:ae_state_started]  unless options[:ae_state_started].nil?
+    automate_attrs[:ae_state_retries]   = options[:ae_state_retries]  unless options[:ae_state_retries].nil?
+    automate_attrs['ae_state_data']     = options[:ae_state_data]     unless options[:ae_state_data].nil?
+    automate_attrs['ae_state_previous'] = options[:ae_state_previous] unless options[:ae_state_previous].nil?
+    automate_attrs
+  end
+
+  private_class_method def self.create_automation_object_options(options, vmdb_object)
+    automation_object_options = {}
+    automation_object_options[:vmdb_object] = vmdb_object                unless vmdb_object.nil?
+    automation_object_options[:class]       = options[:class_name]       unless options[:class_name].nil?
+    automation_object_options[:namespace]   = options[:namespace]        unless options[:namespace].nil?
+    automation_object_options[:fqclass]     = options[:fqclass_name]     unless options[:fqclass_name].nil?
+    automation_object_options[:message]     = options[:automate_message] unless options[:automate_message].nil?
+    automation_object_options
+  end
+
+  private_class_method def self.change_options_by_ws(options, ws)
+    options[:state]             = ws.root['ae_state'] || options[:state]
+    options[:ae_fsm_started]    = ws.root['ae_fsm_started']
+    options[:ae_state_started]  = ws.root['ae_state_started']
+    options[:ae_state_retries]  = ws.root['ae_state_retries']
+    options[:ae_state_data]     = YAML.dump(ws.persist_state_hash) unless ws.persist_state_hash.empty?
+    options[:ae_state_previous] = YAML.dump(ws.current_state_info) unless ws.current_state_info.empty?
+  end
+
+  def self.deliver(*args)
+    options     = options_from_args(args)
+    user_obj    = ae_user_object(options)
+    state       = options[:state]
+    vmdb_object = nil
+    ae_result   = 'error'
 
     begin
-      object_name = "#{object_type}.#{object_id}"
+      object_name = "#{options[:object_type]}.#{options[:object_id]}"
       _log.info("Delivering #{options[:attrs].inspect} for object [#{object_name}] with state [#{state}] to Automate")
-      automate_attrs = options[:attrs].dup
+      automate_attrs = automate_attrs_from_options(options)
 
-      if object_type
-        vmdb_object = object_type.constantize.find_by(:id => object_id)
-        automate_attrs[create_automation_attribute_key(vmdb_object)] = object_id
+      if options[:object_type]
+        vmdb_object = options[:object_type].constantize.find_by(:id => options[:object_id])
+        automate_attrs[create_automation_attribute_key(vmdb_object)] = options[:object_id]
         vmdb_object.before_ae_starts(options) if vmdb_object.respond_to?(:before_ae_starts)
       end
 
-      automate_attrs['User::user']      = user_id            unless user_id.nil?
-      automate_attrs[:ae_state]         = state              unless state.nil?
-      automate_attrs[:ae_fsm_started]   = ae_fsm_started     unless ae_fsm_started.nil?
-      automate_attrs[:ae_state_started] = ae_state_started   unless ae_state_started.nil?
-      automate_attrs[:ae_state_retries] = ae_state_retries   unless ae_state_retries.nil?
-      automate_attrs['ae_state_data']   = ae_state_data      unless ae_state_data.nil?
-      automate_attrs['ae_state_previous'] = ae_state_previous  unless ae_state_previous.nil?
-
-      create_automation_object_options = {}
-      create_automation_object_options[:vmdb_object] = vmdb_object                unless vmdb_object.nil?
-      create_automation_object_options[:class]       = options[:class_name]       unless options[:class_name].nil?
-      create_automation_object_options[:namespace]   = options[:namespace]        unless options[:namespace].nil?
-      create_automation_object_options[:fqclass]     = options[:fqclass_name]     unless options[:fqclass_name].nil?
-      create_automation_object_options[:message]     = options[:automate_message] unless options[:automate_message].nil?
-      uri = create_automation_object(options[:instance_name], automate_attrs, create_automation_object_options)
+      uri = create_automation_object(options[:instance_name], automate_attrs, create_automation_object_options(options, vmdb_object))
       ws  = resolve_automation_object(uri, user_obj)
 
       if ws.nil? || ws.root.nil?
@@ -106,13 +98,7 @@ module MiqAeEngine
         if ae_result.casecmp('retry').zero?
           ae_retry_interval = ws.root['ae_retry_interval'].to_s.to_i_with_method
           deliver_on = Time.now.utc + ae_retry_interval
-
-          options[:state]            = ws.root['ae_state'] || state
-          options[:ae_fsm_started]   = ws.root['ae_fsm_started']
-          options[:ae_state_started] = ws.root['ae_state_started']
-          options[:ae_state_retries] = ws.root['ae_state_retries']
-          options[:ae_state_data]    = YAML.dump(ws.persist_state_hash) unless ws.persist_state_hash.empty?
-          options[:ae_state_previous] = YAML.dump(ws.current_state_info) unless ws.current_state_info.empty?
+          change_options_by_ws(options, ws)
 
           message = "Requeuing #{options.inspect} for object [#{object_name}] with state [#{options[:state]}] to Automate for delivery in [#{ae_retry_interval}] seconds"
           _log.info(message)
