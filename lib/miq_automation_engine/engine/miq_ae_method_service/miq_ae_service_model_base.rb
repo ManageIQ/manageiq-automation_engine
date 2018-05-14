@@ -8,6 +8,7 @@ module MiqAeMethodService
       include DRbUndumped  # Ensure that Automate Method can get at the class itself over DRb
     end
 
+    include Rails.application.routes.url_helpers
     include DRbUndumped    # Ensure that Automate Method can get at instances over DRb
     include MiqAeMethodService::MiqAeServiceObjectCommon
     include Vmdb::Logging
@@ -243,6 +244,13 @@ module MiqAeMethodService
       end
       @object = obj.kind_of?(ar_klass) ? obj : ar_method { ar_klass.find_by(:id => obj) }
       raise MiqAeException::ServiceNotFound, "#{ar_klass.name} Object [#{obj}] not found" if @object.nil?
+    end
+
+    def show_url
+      default_url_options[:host] = MiqRegion.my_region.remote_ui_url
+      url_for(:controller => ActiveModel::Naming.singular(self.class.ar_base_model),
+              :action     => 'show',
+              :id         => @object.id)
     end
 
     def virtual_columns_inspect
