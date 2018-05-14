@@ -12,6 +12,15 @@ describe MiqAeMethodService::MiqAeServiceVm do
     expect(MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.base_class).to eq(MiqAeMethodService::MiqAeServiceVmOrTemplate)
   end
 
+  it "#show_url" do
+    ui_url = "https://www.example.com"
+    miq_region = FactoryGirl.create(:miq_region)
+    allow(MiqRegion).to receive(:my_region).and_return(miq_region)
+    allow(miq_region).to receive(:remote_ui_url).and_return(ui_url)
+
+    expect(@ae_vm.show_url).to eq("#{ui_url}/vm/show/#{@vm.id}")
+  end
+
   it "vm should be valid" do
     expect(@vm).to be_kind_of(Vm)
     expect(@vm).not_to be_nil
