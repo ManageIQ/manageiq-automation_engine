@@ -4,6 +4,7 @@ module MiqAeMethodService
     expose :flavor,            :association => true
     expose :cloud_network,     :association => true
     expose :cloud_subnet,      :association => true
+    expose :cloud_volumes,     :association => true
     expose :network_ports,     :association => true
     expose :network_routers,   :association => true
     expose :cloud_subnets,     :association => true
