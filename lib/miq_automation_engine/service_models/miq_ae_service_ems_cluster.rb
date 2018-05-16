@@ -18,5 +18,9 @@ module MiqAeMethodService
       sync_or_async_ems_operation(false, "register_host", [host.id])
       true
     end
+
+    def show_url
+      URI.join(MiqRegion.my_region.remote_ui_url, "ems_cluster/show/#{@object.id}").to_s
+    end
   end
 end

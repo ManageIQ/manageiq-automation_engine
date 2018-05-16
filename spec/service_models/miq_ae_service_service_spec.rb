@@ -16,6 +16,12 @@ module MiqAeServiceServiceSpec
       MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?Service::service=#{@service.id}", user)
     end
 
+    it "#show_url" do
+      ui_url = stub_remote_ui_url
+
+      expect(service_service.show_url).to eq("#{ui_url}/service/show/#{service.id}")
+    end
+
     it "#remove_from_vmdb" do
       expect(Service.count).to eq(1)
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].remove_from_vmdb"

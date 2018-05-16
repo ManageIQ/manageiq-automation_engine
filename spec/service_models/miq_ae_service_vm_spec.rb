@@ -17,6 +17,11 @@ module MiqAeServiceVmSpec
       MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?Vm::vm=#{@vm.id}", @user)
     end
 
+    it "#show_url" do
+      ui_url = stub_remote_ui_url
+      expect(service_vm.show_url).to eq("#{ui_url}/vm/show/#{vm.id}")
+    end
+
     it "#ems_custom_keys" do
       method   = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].ems_custom_keys"
       @ae_method.update_attributes(:data => method)

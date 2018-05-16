@@ -84,5 +84,9 @@ module MiqAeMethodService
     def current_memory_headroom
       object_send(:current_memory_headroom)
     end
+
+    def show_url
+      URI.join(MiqRegion.my_region.remote_ui_url, "host/show/#{@object.id}").to_s
+    end
   end
 end

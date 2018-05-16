@@ -105,5 +105,9 @@ module MiqAeMethodService
         @object.save
       end
     end
+
+    def show_url
+      URI.join(MiqRegion.my_region.remote_ui_url, "service/show/#{@object.id}").to_s
+    end
   end
 end

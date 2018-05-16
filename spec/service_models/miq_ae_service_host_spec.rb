@@ -12,6 +12,14 @@ module MiqAeServiceHostSpec
       MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?Host::host=#{@host.id}", @user)
     end
 
+    it "#show_url" do
+      ui_url = stub_remote_ui_url
+
+      svc_host = MiqAeMethodService::MiqAeServiceHost.find(@host.id)
+
+      expect(svc_host.show_url).to eq("#{ui_url}/host/show/#{@host.id}")
+    end
+
     context "$evm.vmdb" do
       it "with no parms" do
         method = "$evm.root['#{@ae_result_key}'] = $evm.vmdb('host')"
