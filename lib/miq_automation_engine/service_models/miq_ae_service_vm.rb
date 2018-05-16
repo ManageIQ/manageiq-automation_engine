@@ -38,7 +38,7 @@ module MiqAeMethodService
     end
 
     def show_url
-      MiqRegion.my_region.remote_ui_url + "/vm/show/" + @object.id.to_s
+      URI.join(MiqRegion.my_region.remote_ui_url, "vm/show/#{@object.id}").to_s
     end
   end
 end

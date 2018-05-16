@@ -18,11 +18,7 @@ module MiqAeServiceVmSpec
     end
 
     it "#show_url" do
-      ui_url = "https://www.example.com"
-      miq_region = FactoryGirl.create(:miq_region)
-      allow(MiqRegion).to receive(:my_region).and_return(miq_region)
-      allow(miq_region).to receive(:remote_ui_url).and_return(ui_url)
-
+      ui_url = stub_remote_ui_url
       expect(service_vm.show_url).to eq("#{ui_url}/vm/show/#{vm.id}")
     end
 

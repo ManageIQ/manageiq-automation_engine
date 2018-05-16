@@ -19,10 +19,7 @@ module MiqAeServiceMiqRequestSpec
     end
 
     it "#show_url" do
-      ui_url = "https://www.example.com"
-      miq_region = FactoryGirl.create(:miq_region)
-      allow(MiqRegion).to receive(:my_region).and_return(miq_region)
-      allow(miq_region).to receive(:remote_ui_url).and_return(ui_url)
+      ui_url = stub_remote_ui_url
       svc_request = MiqAeMethodService::MiqAeServiceMiqRequest.find(@miq_request.id)
 
       expect(svc_request.show_url).to eq("#{ui_url}/miq_request/show/#{@miq_request.id}")
