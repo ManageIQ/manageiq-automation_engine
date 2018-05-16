@@ -18,6 +18,16 @@ module MiqAeServiceMiqRequestSpec
       MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?MiqRequest::miq_request=#{@miq_request.id}", @fred)
     end
 
+    it "#show_url" do
+      ui_url = "https://www.example.com"
+      miq_region = FactoryGirl.create(:miq_region)
+      allow(MiqRegion).to receive(:my_region).and_return(miq_region)
+      allow(miq_region).to receive(:remote_ui_url).and_return(ui_url)
+      svc_request = MiqAeMethodService::MiqAeServiceMiqRequest.find(@miq_request.id)
+
+      expect(svc_request.show_url).to eq("#{ui_url}/miq_request/show/#{@miq_request.id}")
+    end
+
     it "#approve" do
       approver = 'wilma'
       reason   = "Why Not?"

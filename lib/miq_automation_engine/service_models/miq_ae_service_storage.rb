@@ -9,5 +9,9 @@ module MiqAeMethodService
     expose :storage_clusters,       :association => true
     expose :to_s
     expose :scan,                   :override_return => true
+
+    def show_url
+      MiqRegion.my_region.remote_ui_url + "/storage/show/" + "#{@object.id}"
+    end
   end
 end

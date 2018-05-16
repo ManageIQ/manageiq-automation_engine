@@ -32,5 +32,9 @@ module MiqAeMethodService
     def description=(new_description)
       object_send(:update_attributes, :description => new_description)
     end
+
+    def show_url
+      MiqRegion.my_region.remote_ui_url + "/miq_request/show/" + "#{@object.id}"
+    end
   end
 end
