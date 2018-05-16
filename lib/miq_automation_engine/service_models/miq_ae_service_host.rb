@@ -86,7 +86,7 @@ module MiqAeMethodService
     end
 
     def show_url
-      MiqRegion.my_region.remote_ui_url + "/host/show/" + "#{@object.id}"
+      MiqRegion.my_region.remote_ui_url + "/host/show/" + @object.id.to_s
     end
   end
 end
