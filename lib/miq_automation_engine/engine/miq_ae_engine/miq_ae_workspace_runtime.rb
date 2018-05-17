@@ -320,8 +320,8 @@ module MiqAeEngine
         end
       else
         obj = find_named_ancestor(path)
-        # Find object in whole workspace
-        obj = find_obj_entry(path) unless obj
+        # if not found try finding object in whole workspace
+        obj ||= find_obj_entry(path)
       end
       obj
     end
