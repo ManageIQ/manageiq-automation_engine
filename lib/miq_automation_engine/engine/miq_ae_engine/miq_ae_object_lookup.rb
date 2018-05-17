@@ -21,12 +21,16 @@ module MiqAeEngine
 
       entries = @lookup_table.select { |entry| entry[:klass] == query['class_name'] }
       ientries = entries.select { |entry| instance_match?(query['instance'], entry) }
-      match = ientries.detect { |entry| fq_match?(query['domain'], query['partial_ns'], entry) }
-      match ||= ientries.detect { |entry| ns_match?(query['fqns'], entry) }
-      match[:object] if match
+      find_best_match(ientries, query)
     rescue MiqAeException::InvalidPathFormat => err
       $miq_ae_logger.error(err.message)
       nil
+    end
+
+    def find_best_match(ientries, query)
+      match = ientries.detect { |entry| fq_match?(query['domain'], query['partial_ns'], entry) }
+      match ||= ientries.detect { |entry| ns_match?(query['fqns'], entry) }
+      match[:object] if match
     end
 
     def ns_match?(ns, entry)
