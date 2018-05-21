@@ -703,7 +703,6 @@ describe MiqAeEngine do
     b4 = a4.children[0]
     expect(b4.attributes["attr1"]).to eq("a4")
 
-    expect { MiqAeEngine.instantiate("/EVM/A/a5", @user) }.to raise_error(MiqAeException::InvalidPathFormat)
     expect { MiqAeEngine.instantiate("/EVM/A/a6", @user) }.to raise_error(MiqAeException::ObjectNotFound)
     expect { MiqAeEngine.instantiate("/EVM/A/a7", @user) }.to raise_error(MiqAeException::ObjectNotFound)
 

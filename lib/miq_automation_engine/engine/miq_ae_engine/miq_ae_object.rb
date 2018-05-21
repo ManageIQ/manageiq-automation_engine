@@ -116,6 +116,7 @@ module MiqAeEngine
       # Make sure we found what we needed before proceeding
       raise MiqAeException::ClassNotFound, "Class [#{@class_fqname}] not found in MiqAeDatastore" if @aec.nil?
 
+      @workspace.add_obj_entry(@namespace, @klass, @instance, self)
       Benchmark.realtime_block(:inherit_time) do
         # Who do we inherit from
         @inherits = BASE_OBJECT
