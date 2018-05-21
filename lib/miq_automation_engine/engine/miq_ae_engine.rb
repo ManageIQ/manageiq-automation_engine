@@ -65,6 +65,17 @@ module MiqAeEngine
     options[:ae_state_previous] = YAML.dump(ws.current_state_info) unless ws.current_state_info.empty?
   end
 
+  private_class_method def self.log_last_worker(worker_id)
+    msg = "Task was previously processed by Worker ID: [worker_id]"
+    w = MiqWorker.find_by(:id => worker_id)
+    if w.nil?
+      _log.info("#{msg} which does not exist any more.")
+      return
+    end
+    server = w.miq_server
+    _log.info("#{msg} on Server ID: [#{server.id}] name: [#{server.name}] Zone [#{server.my_zone}]")
+  end
+
   def self.deliver(*args)
     options     = options_from_args(args)
     user_obj    = ae_user_object(options)
@@ -75,6 +86,10 @@ module MiqAeEngine
     begin
       object_name = "#{options[:object_type]}.#{options[:object_id]}"
       _log.info("Delivering #{options[:attrs].inspect} for object [#{object_name}] with state [#{state}] to Automate")
+
+      log_last_worker(options[:last_worker_id]) if options[:last_worker_id]
+      options[:last_worker_id] = Thread.current[:miq_worker_id]
+
       automate_attrs = automate_attrs_from_options(options)
 
       if options[:object_type]
