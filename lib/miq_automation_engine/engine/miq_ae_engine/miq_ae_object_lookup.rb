@@ -1,25 +1,24 @@
 module MiqAeEngine
   module MiqAeObjectLookup
     def initialize_obj_entries
-      @lookup_table = []
+      @lookup_hash = Hash.new { |h, k| h[k] = [] }
     end
 
     def add_obj_entry(fqns, klass, instance, object)
       parts = fqns.split('/')
       domain = parts.shift
       namespace = parts.join('/')
-
-      @lookup_table << {:domain    => domain.downcase,
-                        :namespace => namespace.downcase,
-                        :klass     => klass.downcase,
-                        :instance  => instance.downcase,
-                        :object    => object}
+      key = klass.downcase
+      @lookup_hash[key] = @lookup_hash[key] << {:domain    => domain.downcase,
+                                                :namespace => namespace.downcase,
+                                                :instance  => instance.downcase,
+                                                :object    => object}
     end
 
     def find_obj_entry(path)
       query = path[0] == '/' ? parse_obj_path(path[1..-1]) : parse_obj_path(path)
 
-      entries = @lookup_table.select { |entry| entry[:klass] == query['class_name'] }
+      entries = @lookup_hash[query['class_name']]
       ientries = entries.select { |entry| instance_match?(query['instance'], entry) }
       find_best_match(ientries, query)
     rescue MiqAeException::InvalidPathFormat => err
