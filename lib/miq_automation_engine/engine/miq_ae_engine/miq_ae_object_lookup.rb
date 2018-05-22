@@ -8,11 +8,10 @@ module MiqAeEngine
       parts = fqns.split('/')
       domain = parts.shift
       namespace = parts.join('/')
-      key = klass.downcase
-      @lookup_hash[key] = @lookup_hash[key] << {:domain    => domain.downcase,
-                                                :namespace => namespace.downcase,
-                                                :instance  => instance.downcase,
-                                                :object    => object}
+      @lookup_hash[klass.downcase] << {:domain    => domain.downcase,
+                                       :namespace => namespace.downcase,
+                                       :instance  => instance.downcase,
+                                       :object    => object}
     end
 
     def find_obj_entry(path)
