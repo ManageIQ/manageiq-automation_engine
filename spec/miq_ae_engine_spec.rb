@@ -166,7 +166,6 @@ describe MiqAeEngine do
             :object_id        => object_id,
             :attrs            => @attrs,
             :instance_name    => @instance_name,
-            :last_worker_id   => nil,
             :user_id          => @user.id,
             :miq_group_id     => @user.current_group.id,
             :tenant_id        => @user.current_tenant.id,
