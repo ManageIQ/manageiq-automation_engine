@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 86 ending 2018-05-21
+
+### Added
+- Added show_url for specific service model objects [(#181)](https://github.com/ManageIQ/manageiq-automation_engine/pull/181)
+- Ability to add and remove volumes for an instance  [(#178)](https://github.com/ManageIQ/manageiq-automation_engine/pull/178)
+
+### Fixed
+- Add support for accessing objects from anywhere in the workspace [(#112)](https://github.com/ManageIQ/manageiq-automation_engine/pull/112)
+
 ## Unreleased as of Sprint 84 ending 2018-04-26
 
 ### Added
