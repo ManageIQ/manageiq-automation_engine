@@ -13,6 +13,7 @@ module MiqAeMethodService
 
     expose :ext_management_system, :association => true
     expose :storage,               :association => true
+    expose :storages,              :association => true
     expose :host,                  :association => true
     expose :hardware,              :association => true
     expose :operating_system,      :association => true
