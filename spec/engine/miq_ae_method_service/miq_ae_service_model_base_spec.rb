@@ -84,6 +84,13 @@ describe MiqAeMethodService::MiqAeServiceModelBase do
         expect(test_class.name).to eq('MiqAeMethodService::MiqAeServiceMiqAeServiceModelSpec_TestVmOrTemplate')
         expect(test_class.superclass.name).to eq('MiqAeMethodService::MiqAeServiceVmOrTemplate')
       end
+
+      it 'does not list private attributes' do
+        expect(MiqAeMethodService::MiqAeServiceModelBase).not_to(receive(:expose).with('properties'))
+        obj     = MiqAeServiceModelSpec::TestPrivateAttrExpose.create
+        svc_obj = described_class.model_name_from_active_record_model(MiqAeServiceModelSpec::TestPrivateAttrExpose).constantize.find(obj.id)
+        expect(svc_obj.methods.include?(:properties)).to(eq(false))
+      end
     end
   end
 end
@@ -92,4 +99,17 @@ module MiqAeServiceModelSpec
   class TestInteger < ::Integer; end
   class TestApplicationRecord < ::ApplicationRecord; end
   class TestVmOrTemplate < ::VmOrTemplate; end
+  class TestPrivateAttrExpose < ::ApplicationRecord
+    self.table_name = 'generic_objects'
+
+    def self.attribute_names
+      ['properties']
+    end
+
+    private
+
+    def properties
+      super
+    end
+  end
 end

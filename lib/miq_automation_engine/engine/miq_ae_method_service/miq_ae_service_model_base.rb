@@ -45,6 +45,7 @@ module MiqAeMethodService
     def self.expose_class_attributes(subclass)
       subclass.class_eval do
         model.attribute_names.each do |attr|
+          next if model.private_method_defined?(attr)
           next if EXPOSED_ATTR_BLACK_LIST.any? { |rexp| attr =~ rexp }
           next if subclass.base_class != self && method_defined?(attr)
           expose attr
@@ -73,13 +74,13 @@ module MiqAeMethodService
 
     def self.base_class
       @base_class ||= begin
-        MiqAeMethodService.const_get("MiqAeService#{model.base_class.name}")
+        model_name_from_active_record_model(model.base_class).constantize
       end
     end
 
     def self.base_model
       @base_model ||= begin
-        MiqAeMethodService.const_get("MiqAeService#{model.base_model.name}")
+        model_name_from_active_record_model(model.base_model).constantize
       end
     end
 
