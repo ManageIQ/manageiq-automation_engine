@@ -1,6 +1,7 @@
 module MiqAeMethodService
   class MiqAeServiceServiceTemplateTransformationPlanTask < MiqAeServiceServiceTemplateProvisionTask
     expose :update_transformation_progress
+    expose :mark_vm_migrated
 
     def transformation_destination(source_obj)
       ar_method do
