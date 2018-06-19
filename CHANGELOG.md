@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 88 ending 2018-06-18
+
+### Added
+- Expose mark_vm_migrated method to TransformationPlanTask service model. [(#186)](https://github.com/ManageIQ/manageiq-automation_engine/pull/186)
+
+### Fixed
+- Expose storages to VmOrTemplate service model. [(#187)](https://github.com/ManageIQ/manageiq-automation_engine/pull/187)
+- Exclude private model methods from being exposed in the Service model. [(#175)](https://github.com/ManageIQ/manageiq-automation_engine/pull/175)
+
 ## Unreleased as of Sprint 86 ending 2018-05-21
 
 ### Added
