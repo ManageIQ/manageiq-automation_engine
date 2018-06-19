@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 88 ending 2018-06-18
+
+### Added
+- Expose task.mark_vm_migrated to Service. [(#186)](https://github.com/ManageIQ/manageiq-automation_engine/pull/186)
+
+### Fixed
+- Adding the `storages` attribute to be exposed. [(#187)](https://github.com/ManageIQ/manageiq-automation_engine/pull/187)
+- Service model: method exposing [(#175)](https://github.com/ManageIQ/manageiq-automation_engine/pull/175)
+
 ## Unreleased as of Sprint 86 ending 2018-05-21
 
 ### Added
