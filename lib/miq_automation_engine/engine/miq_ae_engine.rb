@@ -81,6 +81,7 @@ module MiqAeEngine
         vmdb_object = options[:object_type].constantize.find_by(:id => options[:object_id])
         automate_attrs[create_automation_attribute_key(vmdb_object)] = options[:object_id]
         vmdb_object.before_ae_starts(options) if vmdb_object.respond_to?(:before_ae_starts)
+        vmdb_object.mark_execution_servers if vmdb_object.respond_to?(:mark_execution_servers)
       end
 
       uri = create_automation_object(options[:instance_name], automate_attrs, create_automation_object_options(options, vmdb_object))
