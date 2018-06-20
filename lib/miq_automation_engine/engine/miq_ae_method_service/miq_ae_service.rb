@@ -33,6 +33,7 @@ module MiqAeMethodService
     end
 
     def initialize(ws, inputs = {}, logger = $miq_ae_logger)
+      @tracking_label        = Thread.current["tracking_label"]
       @drb_server_references = []
       @inputs                = inputs
       @workspace             = ws
@@ -67,6 +68,7 @@ module MiqAeMethodService
     ####################################################
 
     def log(level, msg)
+      Thread.current["tracking_label"] = @tracking_label
       $miq_ae_logger.send(level, "<AEMethod #{current_method}> #{msg}")
     end
 
