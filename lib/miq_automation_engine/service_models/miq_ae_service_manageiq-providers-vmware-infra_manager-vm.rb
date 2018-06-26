@@ -11,5 +11,9 @@ module MiqAeMethodService
     def add_disk(disk_name, disk_size_mb, options = {})
       sync_or_async_ems_operation(options[:sync], "add_disk", [disk_name, disk_size_mb, options])
     end
+
+    def remove_disk(disk_name, options = {})
+      sync_or_async_ems_operation(options[:sync], "remove_disk", [disk_name, options])
+    end
   end
 end
