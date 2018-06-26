@@ -70,6 +70,20 @@ describe MiqAeMethodCopy do
       meth2  = MiqAeMethod.find_by_class_id_and_name(class2.id, @src_method)
       validate_method(@meth1, meth2, MiqAeMethodCompare::CONGRUENT_METHOD)
     end
+
+    it 'copy method with embedded_methods' do
+      method = MiqAeMethod.create(
+        :name             => 'embedded_methods_test_method',
+        :embedded_methods => [@src_fqname],
+        :class_id         => MiqAeClass.first.id,
+        :scope            => 'instance',
+        :language         => 'ruby',
+        :location         => 'inline'
+      )
+      src_fqname  = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{method.name}"
+      method_copy = MiqAeMethodCopy.new(src_fqname).to_domain(@dest_domain, @dest_ns, true)
+      expect(method_copy.embedded_methods).to(eq(method.embedded_methods))
+    end
   end
 
   context 'copy onto itself' do
