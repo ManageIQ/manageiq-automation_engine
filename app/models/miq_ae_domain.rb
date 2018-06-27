@@ -101,7 +101,7 @@ class MiqAeDomain < MiqAeNamespace
   end
 
   def available_version
-    domain_path   = Vmdb::Plugins.instance.registered_automate_domains.detect { |d| d.name == name }.try(:path)
+    domain_path   = Vmdb::Plugins.automate_domains.detect { |d| d.name == name }.try(:path)
     domain_path ||= MiqAeDatastore::DATASTORE_DIRECTORY.join(name)
     self.class.version_from_schema(domain_path)
   end
