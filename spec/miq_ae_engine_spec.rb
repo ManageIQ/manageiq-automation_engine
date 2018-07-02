@@ -314,9 +314,9 @@ describe MiqAeEngine do
       expect(MiqAeEngine.create_automation_attribute_key(host)).to eq("Host::host")
     end
 
-    it "with a MiqRequest" do
-      host = FactoryGirl.create(:miq_host_provision_request)
-      expect(MiqAeEngine.create_automation_attribute_key(host)).to eq("MiqHostProvisionRequest::miq_host_provision_request")
+      it "with a MiqRequest" do
+      prov_request = FactoryGirl.create(:miq_provision_request)
+      expect(MiqAeEngine.create_automation_attribute_key(prov_request)).to eq("MiqProvisionRequest::miq_provision_request")
     end
 
     it "with an EmsCluster" do
@@ -345,8 +345,8 @@ describe MiqAeEngine do
     end
 
     it "with an MiqRequest" do
-      host = FactoryGirl.create(:miq_host_provision_request)
-      expect(MiqAeEngine.create_automation_attribute_class_name(host)).to eq("MiqHostProvisionRequest")
+      host = FactoryGirl.create(:miq_provision_request)
+      expect(MiqAeEngine.create_automation_attribute_class_name(host)).to eq("MiqProvisionRequest")
     end
   end
 

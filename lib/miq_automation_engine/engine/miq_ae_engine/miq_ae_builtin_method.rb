@@ -6,7 +6,6 @@ module MiqAeEngine
       orchestration_stack
       miq_request
       miq_provision
-      miq_host_provision
       vm_migrate_task
       vm_retire_task
       service_retire_task
@@ -68,7 +67,6 @@ module MiqAeEngine
         when 'vm_retire'      then %w(VM      Lifecycle Retirement)
         when 'vm_migrate'     then %w(VM      Lifecycle Migrate)
         when 'service_retire' then %w(Service Lifecycle Retirement)
-        when 'host_provision' then %w(Host    Lifecycle Provisioning)
         when 'configured_system_provision'
           obj.workspace.root['ae_provider_category'] = 'infrastructure'
           %w(Configured_System Lifecycle Provisioning)
@@ -181,8 +179,6 @@ module MiqAeEngine
       case obj_name
       when "orchestration_stack"
         CLOUD
-      when "miq_host_provision"
-        INFRASTRUCTURE
       when "miq_request", "miq_provision", "vm_migrate_task", "vm_retire_task"
         vm_detect_category(prov_obj.source) if prov_obj
       when "service_retire_task"
@@ -221,8 +217,6 @@ module MiqAeEngine
       case attr
       when "orchestration_stack"
         src_obj.ext_management_system.try(:provider_name)
-      when "miq_host_provision"
-        "vmware"
       when "miq_request", "miq_provision", "vm_migrate_task"
         src_obj.source.try(:provider_name)
       when "vm"
