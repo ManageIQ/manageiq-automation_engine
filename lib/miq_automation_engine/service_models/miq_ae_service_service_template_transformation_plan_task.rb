@@ -1,6 +1,8 @@
 module MiqAeMethodService
   class MiqAeServiceServiceTemplateTransformationPlanTask < MiqAeServiceServiceTemplateProvisionTask
     expose :update_transformation_progress
+    expose :pre_ansible_playbook_service_template
+    expose :post_ansible_playbook_service_template
     expose :mark_vm_migrated
 
     def transformation_destination(source_obj)
