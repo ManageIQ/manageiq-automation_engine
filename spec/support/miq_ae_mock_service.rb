@@ -19,6 +19,14 @@ module Spec
         @inputs = {}
       end
 
+      def current_object=(obj)
+        @current_object = obj
+      end
+
+      def current
+        @current_object
+      end
+
       def object=(obj)
         @object = obj
       end
