@@ -316,6 +316,10 @@ module MiqAeMethodService
       aec.ae_instances.detect { |i| instance.casecmp(i.name) == 0 }
     end
 
+    def ansible_runner(env_vars, extra_vars, playbook_path)
+      Ansible::Runner.run(env_vars, extra_vars, playbook_path)
+    end
+
     private
 
     def editable_instance?(path)
