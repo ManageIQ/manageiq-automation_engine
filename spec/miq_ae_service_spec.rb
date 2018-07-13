@@ -205,4 +205,32 @@ describe MiqAeMethodService::MiqAeService do
       end
     end
   end
+  context "run ansible playbooks with ansible-runner" do
+    before do
+      allow(User).to receive_messages(:server_timezone => 'UTC')
+      allow(workspace).to receive(:disable_rbac)
+    end
+
+    let(:options) { {} }
+    let(:workspace) do
+      double("MiqAeEngine::MiqAeWorkspaceRuntime", :root               => options,
+                                                   :ae_user            => user,
+                                                   :persist_state_hash => {})
+    end
+    let(:miq_ae_service) { described_class.new(workspace) }
+    let(:user) { FactoryGirl.create(:user_with_group) }
+
+    context "#ansible_runner" do
+      it "calls Ansible::Runner.run" do
+        env_vars = {'ENV1' => 'VAL1', 'ENV2' => 'VAL2'}
+        extra_vars = {:ems_refs => %s(vm1 vm2)}
+        playbook_path = "/path/to/playbook"
+        queue_opts = {:role => "ems_operations"}
+
+        expect(Ansible::Runner).to receive(:run_queue).with(env_vars, extra_vars, playbook_path, workspace.ae_user.name, queue_opts)
+
+        miq_ae_service.ansible_runner(env_vars, extra_vars, playbook_path, queue_opts)
+      end
+    end
+  end
 end
