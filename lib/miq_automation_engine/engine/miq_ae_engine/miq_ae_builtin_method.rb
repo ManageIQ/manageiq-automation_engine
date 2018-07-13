@@ -17,6 +17,8 @@ module MiqAeEngine
     SERVICE        = 'service'.freeze
     UNKNOWN        = 'unknown'.freeze
 
+    include_concern 'MiqAeTaskBuiltin'
+
     def self.miq_log_object(obj, _inputs)
       $miq_ae_logger.info("===========================================")
       $miq_ae_logger.info("Dumping Object")
