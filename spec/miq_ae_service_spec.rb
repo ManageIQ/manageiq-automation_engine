@@ -225,10 +225,11 @@ describe MiqAeMethodService::MiqAeService do
         env_vars = {'ENV1' => 'VAL1', 'ENV2' => 'VAL2'}
         extra_vars = {:ems_refs => %s(vm1 vm2)}
         playbook_path = "/path/to/playbook"
+        queue_opts = {:role => "ems_operations"}
 
-        expect(Ansible::Runner).to receive(:run).with(env_vars, extra_vars, playbook_path)
+        expect(Ansible::Runner).to receive(:run_queue).with(env_vars, extra_vars, playbook_path, workspace.ae_user.name, queue_opts)
 
-        miq_ae_service.ansible_runner(env_vars, extra_vars, playbook_path)
+        miq_ae_service.ansible_runner(env_vars, extra_vars, playbook_path, queue_opts)
       end
     end
   end
