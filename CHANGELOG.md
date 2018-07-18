@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 90 ending 2018-07-16
+
+### Added
+- Support for v2v pre/post Ansible playbook service. [(#192)](https://github.com/ManageIQ/manageiq-automation_engine/pull/192)
+
+## Gaprindashvili-4 - Released 2018-07-16
+
+### Added
+- New service model for v2v request and task [(#155)](https://github.com/ManageIQ/manageiq-automation_engine/pull/155)
+- Support for substitution from state_var [(#151)](https://github.com/ManageIQ/manageiq-automation_engine/pull/151)
+- Expose task.mark_vm_migrated to Service. [(#186)](https://github.com/ManageIQ/manageiq-automation_engine/pull/186)
+
 ## Unreleased as of Sprint 89 ending 2018-07-02
 
 ### Added
@@ -16,9 +28,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Adds tracking label back to AeMethod lines [(#190)](https://github.com/ManageIQ/manageiq-automation_engine/pull/190)
 
 ## Unreleased as of Sprint 88 ending 2018-06-18
-
-### Added
-- Expose mark_vm_migrated method to TransformationPlanTask service model. [(#186)](https://github.com/ManageIQ/manageiq-automation_engine/pull/186)
 
 ### Fixed
 - Expose storages to VmOrTemplate service model. [(#187)](https://github.com/ManageIQ/manageiq-automation_engine/pull/187)
@@ -56,12 +65,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Support calling update_vm_name for miq_provision service models [(#153)](https://github.com/ManageIQ/manageiq-automation_engine/pull/153)
-
-## Unreleased as of Sprint 80 ending 2018-02-26
-
-### Added
-- New service model for v2v request and task [(#155)](https://github.com/ManageIQ/manageiq-automation_engine/pull/155)
-- Support for substitution from state_var [(#151)](https://github.com/ManageIQ/manageiq-automation_engine/pull/151)
 
 ## Gaprindashvili-1 - Released 2018-01-31
 
