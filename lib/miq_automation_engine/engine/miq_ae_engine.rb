@@ -78,7 +78,7 @@ module MiqAeEngine
       automate_attrs = automate_attrs_from_options(options)
 
       if options[:object_type]
-        vmdb_object = options[:object_type].constantize.find_by(:id => options[:object_id])
+        vmdb_object = options[:object_type].constantize.find_by!(:id => options[:object_id])
         automate_attrs[create_automation_attribute_key(vmdb_object)] = options[:object_id]
         vmdb_object.before_ae_starts(options) if vmdb_object.respond_to?(:before_ae_starts)
         vmdb_object.mark_execution_servers if vmdb_object.respond_to?(:mark_execution_servers)
