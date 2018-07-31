@@ -14,13 +14,6 @@ module MiqAeServiceServiceTemplateSpec
       end
 
       context "#type_display" do
-        it "with service_type of unknown" do
-          method = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template'].type_display "
-          @ae_method.update_attributes(:data => method)
-          type_display = invoke_ae.root(@ae_result_key)
-          expect(type_display).to eq('Unknown')
-        end
-
         it "with service_type of atomic" do
           @service_template.update_attributes(:service_type => 'atomic')
           method = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template'].type_display "
