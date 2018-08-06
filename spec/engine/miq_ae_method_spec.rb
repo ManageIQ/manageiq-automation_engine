@@ -237,6 +237,43 @@ describe MiqAeEngine::MiqAeMethod do
         RUBY
       end
 
+      let(:level1_script) do
+        <<-RUBY
+          class Level1
+            def self.log_me(handle = $evm)
+              handle.log(:info, "Level 1 Called")
+              Level2.log_me
+            end
+          end
+          Level1.log_me
+          exit MIQ_OK
+        RUBY
+      end
+      let(:level1_embeds) { ['/Shared/Methods/Level2'] }
+
+      let(:level2_script) do
+        <<-RUBY
+          class Level2
+            def self.log_me(handle = $evm)
+              handle.log(:info, "Level 2 Called")
+              Level3.log_me
+            end
+          end
+        RUBY
+      end
+      let(:level2_embeds) { ['/Shared/Methods/Level3'] }
+
+      let(:level3_script) do
+        <<-RUBY
+          class Level3
+            def self.log_me(handle = $evm)
+              handle.log(:info, "Level 3 Called")
+            end
+          end
+        RUBY
+      end
+      let(:level3_embeds) { [] }
+
       let(:shared_script) do
         <<-RUBY
           module Shared
@@ -273,11 +310,23 @@ describe MiqAeEngine::MiqAeMethod do
       let(:embeds) { ['/Shared/Methods/TopMethod'] }
       let(:klass)    { double("Klass", :id => 10) }
       let(:embed_method) do
-        double("Method", :fqname => 'Shared/Methods/TopMethod', :data => shared_script)
+        double("Method", :fqname => '/Shared/Methods/TopMethod', :data => shared_script, :embedded_methods => [])
       end
 
       let(:exception_method) do
-        double("Method", :fqname => 'Shared/Methods/RaiseException', :data => exception_script)
+        double("Method", :fqname => '/Shared/Methods/RaiseException', :data => exception_script, :embedded_methods => [])
+      end
+
+      let(:level1_method) do
+        double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds)
+      end
+
+      let(:level2_method) do
+        double("Method", :fqname => '/Shared/Methods/Level2', :data => level2_script, :embedded_methods => level2_embeds)
+      end
+
+      let(:level3_method) do
+        double("Method", :fqname => '/Shared/Methods/Level3', :data => level3_script, :embedded_methods => level3_embeds)
       end
 
       it 'can properly call functions in embedded methods' do
@@ -307,9 +356,54 @@ describe MiqAeEngine::MiqAeMethod do
           allow($miq_ae_logger).to receive(:info).and_call_original
           allow($miq_ae_logger).to receive(:error).and_call_original
           allow(workspace).to receive(:overlay_method).with('Shared', 'Methods', 'RaiseException').and_return('Shared')
-          expect($miq_ae_logger).to receive(:error).with("<AEMethod /my/automate/method>   Shared/Methods/RaiseException:8:in `some_method'").at_least(:once)
+          expect($miq_ae_logger).to receive(:error).with("<AEMethod /my/automate/method>   /Shared/Methods/RaiseException:8:in `some_method'").at_least(:once)
           expect { subject }.to raise_error(MiqAeException::UnknownMethodRc)
         end
+      end
+
+      shared_examples "nested embeds" do
+        it 'can load methods within  methods' do
+          allow(::MiqAeClass).to receive(:find_by_fqname).with('Shared/Methods').and_return(klass)
+          allow(::MiqAeMethod).to receive(:find_by).with(:class_id => klass.id, :name => 'Level1').and_return(level1_method)
+          allow(::MiqAeMethod).to receive(:find_by).with(:class_id => klass.id, :name => 'Level2').and_return(level2_method)
+          allow(::MiqAeMethod).to receive(:find_by).with(:class_id => klass.id, :name => 'Level3').and_return(level3_method)
+          allow(workspace).to receive(:overlay_method).with('Shared', 'Methods', 'Level1').and_return('Shared')
+          allow(workspace).to receive(:overlay_method).with('Shared', 'Methods', 'Level2').and_return('Shared')
+          allow(workspace).to receive(:overlay_method).with('Shared', 'Methods', 'Level3').and_return('Shared')
+          allow($miq_ae_logger).to receive(:info).and_call_original
+
+          expect($miq_ae_logger).to_not receive(:error)
+
+          expect(subject).to eq(0)
+        end
+      end
+
+      context "Each level embeds a different file" do
+        let(:aem)    { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
+
+        it_behaves_like 'nested embeds'
+      end
+
+      context "Top level embeds all files" do
+        let(:level1_embeds) { ['/Shared/Methods/Level2', '/Shared/Methods/Level3'] }
+        let(:aem)    { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
+
+        it_behaves_like 'nested embeds'
+      end
+
+      context "Remove duplicate embeds" do
+        let(:level1_embeds) { ['/Shared/Methods/Level2', '/Shared/Methods/Level2'] }
+        let(:aem)    { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
+
+        it_behaves_like 'nested embeds'
+      end
+
+      context "Handle Circular Reference" do
+        let(:level1_embeds) { ['/Shared/Methods/Level2'] }
+        let(:level3_embeds) { ['/Shared/Methods/Level1'] }
+        let(:aem)    { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
+
+        it_behaves_like 'nested embeds'
       end
     end
   end
