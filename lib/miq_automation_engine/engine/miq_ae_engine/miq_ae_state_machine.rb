@@ -49,6 +49,10 @@ module MiqAeEngine
         $miq_ae_logger.warn("Skipping to state #{@workspace.root['ae_next_state']}")
         @workspace.root['ae_result'] = 'skip' if step == 'on_entry'
       end
+    rescue MiqAeException::StopInstantiation => e
+      error_message = "State=<#{f['name']}> running #{step} raised exception: <#{e.message}>"
+      $miq_ae_logger.error(error_message)
+      raise
     rescue => e
       error_message = "State=<#{f['name']}> running #{step} raised exception: <#{e.message}>"
       $miq_ae_logger.error(error_message)
