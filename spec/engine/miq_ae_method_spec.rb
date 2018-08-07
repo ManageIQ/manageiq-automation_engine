@@ -379,21 +379,21 @@ describe MiqAeEngine::MiqAeMethod do
       end
 
       context "Each level embeds a different file" do
-        let(:aem)    { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
+        let(:aem) { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
 
         it_behaves_like 'nested embeds'
       end
 
       context "Top level embeds all files" do
         let(:level1_embeds) { ['/Shared/Methods/Level2', '/Shared/Methods/Level3'] }
-        let(:aem)    { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
+        let(:aem) { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
 
         it_behaves_like 'nested embeds'
       end
 
       context "Remove duplicate embeds" do
         let(:level1_embeds) { ['/Shared/Methods/Level2', '/Shared/Methods/Level2'] }
-        let(:aem)    { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
+        let(:aem) { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
 
         it_behaves_like 'nested embeds'
       end
@@ -401,7 +401,7 @@ describe MiqAeEngine::MiqAeMethod do
       context "Handle Circular Reference" do
         let(:level1_embeds) { ['/Shared/Methods/Level2'] }
         let(:level3_embeds) { ['/Shared/Methods/Level1'] }
-        let(:aem)    { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
+        let(:aem) { double("Method", :fqname => '/Shared/Methods/Level1', :data => level1_script, :embedded_methods => level1_embeds) }
 
         it_behaves_like 'nested embeds'
       end

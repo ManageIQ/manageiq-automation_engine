@@ -286,7 +286,7 @@ module MiqAeEngine
     private_class_method :embedded_method_name
 
     def self.loaded?(current_items, fqname)
-      current_items.any? { |item| item[:fqname].casecmp(fqname) == 0 }
+      current_items.any? { |item| item[:fqname].casecmp(fqname).zero? }
     end
   end
 end
