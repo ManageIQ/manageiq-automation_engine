@@ -230,6 +230,30 @@ describe MiqAeEngine::MiqAeMethod do
       end
     end
 
+    context "with a custom log prefix" do
+      let(:script) do
+        <<-RUBY
+          $evm.set_log_prefix "Flintstones"
+          $evm.log(:info, "This is a test message")
+          $evm.log(:info, "This is a warning message")
+          $evm.log(:error, "This is a error message")
+          $evm.log(:info, "The current prefix is \#{$evm.get_log_prefix}")
+        RUBY
+      end
+
+      it "does not log but raises an exception" do
+        expect($miq_ae_logger).to receive(:info).with(/Flintstones This is a test message/)
+        expect($miq_ae_logger).to receive(:info).with(/Flintstones This is a warning message/)
+        expect($miq_ae_logger).to receive(:error).with(/Flintstones This is a error message/)
+        expect($miq_ae_logger).to receive(:info).with(/Flintstones The current prefix is Flintstones/)
+        allow($miq_ae_logger).to receive(:info).with("<AEMethod [/my/automate/method]> Starting ")
+        allow($miq_ae_logger).to receive(:info).with("<AEMethod [/my/automate/method]> Ending")
+        allow($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK")
+
+        expect(subject).to eq(0)
+      end
+    end
+
     context "embed other methods into a method" do
       let(:script) do
         <<-RUBY

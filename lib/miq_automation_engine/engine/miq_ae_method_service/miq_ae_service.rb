@@ -39,6 +39,7 @@ module MiqAeMethodService
       @workspace             = ws
       @persist_state_hash    = ws.persist_state_hash
       @logger                = logger
+      @log_prefix            = ""
       self.class.add(self)
       ws.disable_rbac
     end
@@ -69,11 +70,23 @@ module MiqAeMethodService
 
     def log(level, msg)
       Thread.current["tracking_label"] = @tracking_label
-      $miq_ae_logger.send(level, "<AEMethod #{current_method}> #{msg}")
+      if @log_prefix.blank?
+        $miq_ae_logger.send(level, "<AEMethod #{current_method}> #{msg}")
+      else
+        $miq_ae_logger.send(level, "<AEMethod #{current_method}> #{@log_prefix} #{msg}")
+      end
     end
 
     def set_state_var(name, value)
       @persist_state_hash[name] = value
+    end
+
+    def set_log_prefix(prefix)
+      @log_prefix = prefix
+    end
+
+    def get_log_prefix
+      @log_prefix
     end
 
     def state_var_exist?(name)
