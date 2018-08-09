@@ -111,7 +111,7 @@ module MiqAeMethodService
     end
 
     def self.create_service_provision_request(svc_template, options = nil)
-      result = svc_template.object_send(:provision_request, User.current_user, options)
+      result = svc_template.object_send(:provision_request, User.current_user, options, options[:submit_workflow] => true)
       MiqAeServiceModelBase.wrap_results(result)
     end
 
