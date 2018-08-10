@@ -18,10 +18,10 @@ module MiqAeServiceMiqRequestSpec
       MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?MiqRequest::miq_request=#{@miq_request.id}", @fred)
     end
 
+    let(:svc_request) { MiqAeMethodService::MiqAeServiceMiqRequest.find(@miq_request.id) }
+
     it "#show_url" do
       ui_url = stub_remote_ui_url
-      svc_request = MiqAeMethodService::MiqAeServiceMiqRequest.find(@miq_request.id)
-
       expect(svc_request.show_url).to eq("#{ui_url}/miq_request/show/#{@miq_request.id}")
     end
 
@@ -163,16 +163,12 @@ module MiqAeServiceMiqRequestSpec
     end
 
     it "#set_option" do
+      svc_request # pre-load the service object
       options = {:a => 1, :b => 'two'}
       @miq_request.update_attributes(:options => options)
-      key     = 'foo'
-      value   = 'bar'
-      method  = "$evm.root['miq_request'].set_option('#{key}', '#{value}')"
-      @ae_method.update_attributes(:data => method)
-      invoke_ae
-      new_options      = options.dup
-      new_options[key] = value
-      expect(@miq_request.reload.options).to eq(new_options)
+      svc_request.set_option(:foo, 'bar')
+      expect(svc_request.get_option(:a)).to eq(1)
+      expect(@miq_request.reload.options).to eq({:foo => 'bar'}.merge(options))
     end
 
     it "#get_tag" do
