@@ -1,0 +1,5 @@
+module MiqAeMethodService
+  class MiqAeServiceManageIQ_Providers_AnsibleTower_AutomationManager_ConfigurationWorkflow < MiqAeServiceManageIQ_Providers_ExternalAutomationManager_ConfigurationScript
+    expose :run
+  end
+end
