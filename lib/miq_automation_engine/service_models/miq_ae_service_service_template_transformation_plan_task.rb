@@ -4,6 +4,8 @@ module MiqAeMethodService
     expose :pre_ansible_playbook_service_template
     expose :post_ansible_playbook_service_template
     expose :mark_vm_migrated
+    expose :canceling
+    expose :canceled
 
     def transformation_destination(source_obj)
       ar_method do
