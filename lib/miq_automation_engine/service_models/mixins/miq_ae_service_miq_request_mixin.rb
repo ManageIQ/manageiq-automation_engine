@@ -17,8 +17,10 @@ module MiqAeServiceMiqRequestMixin
 
   def set_option(key, value)
     ar_method do
-      @object.options[key] = value
-      @object.update_attribute(:options, @object.options)
+      @object.with_lock do
+        @object.options[key] = value
+        @object.update_attributes(:options => @object.options)
+      end
     end
   end
 
