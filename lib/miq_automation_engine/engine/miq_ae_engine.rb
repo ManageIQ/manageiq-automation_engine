@@ -71,8 +71,10 @@ module MiqAeEngine
     state       = options[:state]
     vmdb_object = nil
     ae_result   = 'error'
+    miq_task    = MiqTask.find(options[:open_url_task_id]) if options[:open_url_task_id]
 
     begin
+      miq_task&.state_active
       object_name = "#{options[:object_type]}.#{options[:object_id]}"
       _log.info("Delivering #{options[:attrs].inspect} for object [#{object_name}] with state [#{state}] to Automate")
       automate_attrs = automate_attrs_from_options(options)
@@ -105,9 +107,11 @@ module MiqAeEngine
           _log.info(message)
           queue_options = {:deliver_on => deliver_on}
           queue_options[:server_guid] = MiqServer.my_guid if ws.root['ae_retry_server_affinity']
+          miq_task&.state_queued
           deliver_queue(options, queue_options)
         else
           if ae_result.casecmp('error').zero?
+            miq_task&.update_message(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
             message = "Error delivering #{options[:attrs].inspect} for object [#{object_name}] with state [#{state}] to Automate: #{ws.root['ae_message']}"
             _log.error(message)
           end
@@ -118,9 +122,14 @@ module MiqAeEngine
       return ws
     rescue MiqAeException::Error => err
       message = "Error delivering #{automate_attrs.inspect} for object [#{object_name}] with state [#{state}] to Automate: #{err.message}"
+      miq_task&.error(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
       _log.error(message)
     ensure
       vmdb_object.after_ae_delivery(ae_result.to_s.downcase) if vmdb_object.respond_to?(:after_ae_delivery)
+      if miq_task && miq_task.state == MiqTask::STATE_ACTIVE
+        miq_task.update_message(MiqTask::MESSAGE_TASK_COMPLETED_SUCCESSFULLY) if miq_task.message == MiqTask::DEFAULT_MESSAGE
+        miq_task.state_finished
+      end
     end
   end
 

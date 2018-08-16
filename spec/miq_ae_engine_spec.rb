@@ -11,7 +11,7 @@ describe MiqAeEngine do
     @miq_server_id = MiqServer.first.id
   end
 
-  def call_automate(obj_type, obj_id)
+  def call_automate(obj_type, obj_id, open_url_task_id = nil)
     MiqAeEngine.deliver(:object_type      => obj_type,
                         :object_id        => obj_id,
                         :attrs            => nil,
@@ -19,7 +19,8 @@ describe MiqAeEngine do
                         :user_id          => @user.id,
                         :miq_group_id     => @user.current_group.id,
                         :tenant_id        => @user.current_tenant.id,
-                        :automate_message => nil)
+                        :automate_message => nil,
+                        :open_url_task_id => open_url_task_id)
   end
 
   after(:each) do
@@ -125,6 +126,15 @@ describe MiqAeEngine do
           expect(call_automate(object_type, object_id)).to eq(@ws)
         end
 
+        it 'with defaults and open_url_task_id' do
+          miq_task = FactoryGirl.create(:miq_task, :name => "Automate method task for open_url")
+          miq_task.state_queued
+          object_type = @ems.class.name
+          object_id   = @ems.id
+          expect(call_automate(object_type, object_id, miq_task.id)).to(eq(@ws))
+          expect(MiqTask.find(miq_task).state).to(eq(MiqTask::STATE_FINISHED))
+        end
+
         it "with a starting point instead of /SYSTEM/PROCESS" do
           args = {}
           attrs = {'User::user' => @user.id}
@@ -163,6 +173,7 @@ describe MiqAeEngine do
 
           args = {
             :object_type      => object_type,
+            :open_url_task_id => nil,
             :object_id        => object_id,
             :attrs            => @attrs,
             :instance_name    => @instance_name,
