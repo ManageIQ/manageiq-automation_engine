@@ -174,7 +174,8 @@ module MiqAeMethodService
 
     def self.wrap_results(results)
       ar_method do
-        if results.kind_of?(Array) || results.kind_of?(ActiveRecord::Relation)
+        if results.kind_of?(Array) || results.kind_of?(ActiveRecord::Relation) || 
+             (results.kind_of?(Enumerable) && results.respond_to?(:peek) && (results.peek.nil? || results.peek.kind_of(ActiveRecord::Base)) )
           results.collect { |r| wrap_results(r) }
         elsif results.kind_of?(ActiveRecord::Base)
           klass = MiqAeMethodService.const_get("MiqAeService#{results.class.name.gsub(/::/, '_')}")
