@@ -236,7 +236,7 @@ describe MiqAeEngine::MiqAeMethod do
           $evm.set_log_prefix "Flintstones"
           $evm.log(:info, "This is a test message")
           $evm.log(:info, "This is a warning message")
-          $evm.log(:error, "This is a error message")
+          $evm.log(:error, "This is an error message")
           $evm.log(:info, "The current prefix is \#{$evm.get_log_prefix}")
         RUBY
       end
@@ -244,7 +244,7 @@ describe MiqAeEngine::MiqAeMethod do
       it "does not log but raises an exception" do
         expect($miq_ae_logger).to receive(:info).with(/Flintstones This is a test message/)
         expect($miq_ae_logger).to receive(:info).with(/Flintstones This is a warning message/)
-        expect($miq_ae_logger).to receive(:error).with(/Flintstones This is a error message/)
+        expect($miq_ae_logger).to receive(:error).with(/Flintstones This is an error message/)
         expect($miq_ae_logger).to receive(:info).with(/Flintstones The current prefix is Flintstones/)
         allow($miq_ae_logger).to receive(:info).with("<AEMethod [/my/automate/method]> Starting ")
         allow($miq_ae_logger).to receive(:info).with("<AEMethod [/my/automate/method]> Ending")
