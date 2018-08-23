@@ -14,7 +14,8 @@ describe "MiqAeStateMachineSteps" do
     @fqname              = '/SPEC_DOMAIN/NS1/MY_STATE_MACHINE/MY_STATE_INSTANCE'
     @method_params       = {'ae_result'     => {:datatype => 'string', :default_value => 'ok'},
                             'ae_next_state' => {:datatype => 'string'},
-                            'raise'         => {:datatype => 'string'}
+                            'raise'         => {:datatype => 'string'},
+                            'exit_code'     => {:datatype => 'integer'}
                            }
     clear_domain
     setup_model
@@ -35,6 +36,7 @@ describe "MiqAeStateMachineSteps" do
       $evm.root['ae_result'] = inputs['ae_result']
       $evm.root['ae_next_state']  = inputs['ae_next_state'] unless inputs['ae_next_state'].blank?
       raise inputs['raise'] unless inputs['raise'].blank?
+      exit inputs['exit_code'] unless inputs['exit_code'].blank?
     RUBY
   end
 
@@ -50,6 +52,7 @@ describe "MiqAeStateMachineSteps" do
       $evm.root['ae_result'] = inputs['ae_result']
       $evm.root['ae_next_state']  = inputs['ae_next_state'] unless inputs['ae_next_state'].blank?
       raise inputs['raise'] unless inputs['raise'].blank?
+      exit inputs['exit_code'] unless inputs['exit_code'].blank?
     RUBY
   end
 
@@ -345,5 +348,19 @@ describe "MiqAeStateMachineSteps" do
                    'state1', 'on_entry', "common_state_method(ae_next_state => 'state_missing')")
 
     expect { MiqAeEngine.instantiate(@fqname, @user) }.to raise_error(MiqAeException::AbortInstantiation)
+  end
+
+  it "ensure MIQ STOP is raised" do
+    tweak_instance("/#{@domain}/#{@namespace}/#{@state_class}", @state_instance,
+                   'state1', 'on_entry', "common_state_method(exit_code => 8)")
+    allow($miq_ae_logger).to receive(:info).with(/<AEMethod/)
+    allow($miq_ae_logger).to receive(:info).with(/MiqAeEngine: /)
+    allow($miq_ae_logger).to receive(:info).with(/Instantiating/)
+    allow($miq_ae_logger).to receive(:info).with(/In State/)
+    allow($miq_ae_logger).to receive(:info).with(/Updated namespace/)
+    allow($miq_ae_logger).to receive(:info).with(/Invoking/)
+
+    expect($miq_ae_logger).to receive(:info).with("Stopping instantiation because [Method exited with rc=MIQ_STOP]")
+    MiqAeEngine.instantiate(@fqname, @user)
   end
 end

@@ -121,6 +121,7 @@ module MiqAeEngine
       klass ||= current[:klass] if current
 
       pushed = false
+      is_state_machine = false
       raise MiqAeException::CyclicalRelationship, "cyclical reference: [#{MiqAeObject.fqname(ns, klass, instance)} with message=#{message}]" if cyclical?(ns, klass, instance, message)
 
       begin
@@ -136,6 +137,7 @@ module MiqAeEngine
             save_current_state_info(@state_machine_objects.last) unless @state_machine_objects.empty?
             @state_machine_objects.push(obj.object_name)
             reset_state_info(obj.object_name)
+            is_state_machine = true
           end
 
           obj.process_assertions(message)
@@ -165,7 +167,7 @@ module MiqAeEngine
         raise
       ensure
         @current.pop if pushed
-        pop_state_machine_info if obj && obj.state_machine? && self.root
+        pop_state_machine_info if is_state_machine && self.root
       end
 
       obj
