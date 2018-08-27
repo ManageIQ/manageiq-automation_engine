@@ -20,6 +20,10 @@ module ManageIQ
       def vmdb_plugin?
         true
       end
+
+      def plugin_name
+        _('Automation Engine')
+      end
     end
   end
 end
