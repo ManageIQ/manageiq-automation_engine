@@ -20,7 +20,8 @@ module MiqAeServiceManageIQ_Providers_Redhat_InfraManager_VmSpec
       expect(MiqQueue.first).to have_attributes(
         @base_queue_options.merge(
           :method_name => 'set_number_of_cpus',
-          :args        => [1])
+          :args        => [1]
+        )
       )
     end
 
@@ -30,7 +31,8 @@ module MiqAeServiceManageIQ_Providers_Redhat_InfraManager_VmSpec
       expect(MiqQueue.first).to have_attributes(
         @base_queue_options.merge(
           :method_name => 'set_memory',
-          :args        => [100])
+          :args        => [100]
+        )
       )
     end
 
