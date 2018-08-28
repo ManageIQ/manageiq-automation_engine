@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 93 ending 2018-08-27
+
+### Added
+- Add plugin display name [(#214)](https://github.com/ManageIQ/manageiq-automation_engine/pull/214)
+
+### Fixed
+- Lock the model object when modify an option key [(#211)](https://github.com/ManageIQ/manageiq-automation_engine/pull/211)
+- Handle MIQ_STOP in state machine processing [(#208)](https://github.com/ManageIQ/manageiq-automation_engine/pull/208)
+- Updating miq_task for the CustomButton request call with open_url. [(#205)](https://github.com/ManageIQ/manageiq-automation_engine/pull/205)
+
 ## Unreleased as of Sprint 92 ending 2018-08-13
 
 ### Added
