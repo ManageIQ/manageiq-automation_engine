@@ -5,6 +5,7 @@ module MiqAeMethodService
     expose :vms,                    :association => true
     expose :unregistered_vms,       :association => true
     expose :storage_files,          :association => true
+    expose :storage_profiles,       :association => true
     expose :files,                  :association => true
     expose :storage_clusters,       :association => true
     expose :to_s
