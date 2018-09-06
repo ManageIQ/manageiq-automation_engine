@@ -269,4 +269,17 @@ describe "MiqAeStateMachineRetry" do
     q = MiqQueue.where(:state => 'ready').first
     expect(q[:server_guid]).to be_nil
   end
+
+  it "it can preserve old state data" do
+    ae_state_data = {'old' => 1}
+    setup_model(retry_script)
+    send_ae_request_via_queue(@automate_args.merge(:ae_state_data => ae_state_data.to_yaml))
+    status, _message, ws = deliver_ae_request_from_queue
+    expect(status).not_to eq(MiqQueue::STATUS_ERROR)
+    expect(ws).not_to be_nil
+    expect(MiqQueue.count).to eq(2)
+    q = MiqQueue.where(:state => 'ready').first
+    expect(q[:server_guid]).to be_nil
+    expect(YAML.load(q.args.first[:ae_state_data])).to eq(ae_state_data)
+  end
 end
