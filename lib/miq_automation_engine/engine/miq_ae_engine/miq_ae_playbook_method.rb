@@ -15,10 +15,8 @@ module MiqAeEngine
       if @workspace.persist_state_hash[method_key].present?
         task_id = @workspace.persist_state_hash[method_key]
         @aw = AutomateWorkspace.find_by(:guid => @workspace.persist_state_hash['automate_workspace_guid'])
-        check_task_status(task_id)
-      else
-        execute
       end
+      @aw ? check_task_status(task_id) : execute
     end
 
     def self.cleanup(workspace)
@@ -93,6 +91,7 @@ module MiqAeEngine
       @workspace.root['ae_retry_interval'] = retry_interval
       @workspace.persist_state_hash['automate_workspace_guid'] = @aw.guid
       @workspace.persist_state_hash[method_key] = task_id
+      @workspace.root['ae_state_retries'] = @workspace.root['ae_state_retries'].to_i - 1
       $miq_ae_logger.info("Setting State Machine Auto Retry Interval: #{@workspace.root['ae_retry_interval']}")
     end
 
