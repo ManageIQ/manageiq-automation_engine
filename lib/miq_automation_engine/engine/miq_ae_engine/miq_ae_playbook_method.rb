@@ -15,10 +15,8 @@ module MiqAeEngine
       if @workspace.persist_state_hash[method_key].present?
         task_id = @workspace.persist_state_hash[method_key]
         @aw = AutomateWorkspace.find_by(:guid => @workspace.persist_state_hash['automate_workspace_guid'])
-        check_task_status(task_id)
-      else
-        execute
       end
+      @aw ? check_task_status(task_id) : execute
     end
 
     def self.cleanup(workspace)
