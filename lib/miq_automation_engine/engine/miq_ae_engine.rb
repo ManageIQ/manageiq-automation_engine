@@ -57,6 +57,8 @@ module MiqAeEngine
   end
 
   private_class_method def self.change_options_by_ws(options, ws)
+    options.delete(:ae_state_data)
+    options.delete(:ae_state_previous)
     options[:state]             = ws.root['ae_state'] || options[:state]
     options[:ae_fsm_started]    = ws.root['ae_fsm_started']
     options[:ae_state_started]  = ws.root['ae_state_started']
