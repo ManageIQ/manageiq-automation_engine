@@ -28,8 +28,7 @@ module MiqAeMethodService
     def method_missing(method_name, *args)
       ae_user_identity unless @ae_user
       args = convert_params_to_ar_model(args)
-      results = object_send(method_name, *args)
-      wrap_results(results)
+      wrap_results(@object.go_send(method_name, *args))
     end
 
     def convert_params_to_ar_model(args)
