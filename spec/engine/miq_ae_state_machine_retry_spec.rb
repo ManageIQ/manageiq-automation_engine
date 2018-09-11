@@ -281,5 +281,5 @@ describe "MiqAeStateMachineRetry" do
      q = MiqQueue.where(:state => 'ready').first
      expect(q[:server_guid]).to be_nil
      expect(YAML.safe_load(q.args.first[:ae_state_data])).to eq(ae_state_data)
-   end
+  end
 end
