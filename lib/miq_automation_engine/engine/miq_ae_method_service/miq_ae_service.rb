@@ -84,6 +84,10 @@ module MiqAeMethodService
       @persist_state_hash[name]
     end
 
+    def delete_state_var(name)
+      @persist_state_hash.delete(name)
+    end
+
     def prepend_namespace=(ns)
       @workspace.prepend_namespace = ns
     end
