@@ -89,6 +89,14 @@ describe MiqAeMethodService::MiqAeService do
       end
     end
 
+    it 'sets, gets and removes state_var' do
+      allow(workspace).to receive(:disable_rbac)
+      miq_ae_service.set_state_var('name', 'value')
+      expect(miq_ae_service.get_state_var('name')).to(eq('value'))
+      miq_ae_service.delete_state_var('name')
+      expect(miq_ae_service.get_state_var('name')).to(eq(nil))
+    end
+
     it "loads cloud networks" do
       allow(workspace).to receive(:disable_rbac)
       items = %w(
