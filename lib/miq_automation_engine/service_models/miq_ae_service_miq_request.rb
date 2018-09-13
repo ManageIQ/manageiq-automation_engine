@@ -13,6 +13,9 @@ module MiqAeMethodService
     expose :approve,   :override_return => true
     expose :deny,      :override_return => true
     expose :pending,   :override_return => true
+    expose :cancel_requested?
+    expose :canceling?
+    expose :canceled?
 
     # For backward compatibility
     def miq_request
