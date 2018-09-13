@@ -32,7 +32,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add plugin display name [(#214)](https://github.com/ManageIQ/manageiq-automation_engine/pull/214)
 
 ### Fixed
-- Lock the model object when modify an option key [(#211)](https://github.com/ManageIQ/manageiq-automation_engine/pull/211)
 - Handle MIQ_STOP in state machine processing [(#208)](https://github.com/ManageIQ/manageiq-automation_engine/pull/208)
 - Updating miq_task for the CustomButton request call with open_url. [(#205)](https://github.com/ManageIQ/manageiq-automation_engine/pull/205)
 
@@ -44,13 +43,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ## Unreleased as of Sprint 91 ending 2018-07-30
 
 ### Fixed
-- Start the drb server with a unix socket [(#201)](https://github.com/ManageIQ/manageiq-automation_engine/pull/201)
 - Incorporating the deliver method change into the refactoring [(#200)](https://github.com/ManageIQ/manageiq-automation_engine/pull/200)
-
-## Unreleased as of Sprint 90 ending 2018-07-16
-
-### Added
-- Support for v2v pre/post Ansible playbook service. [(#192)](https://github.com/ManageIQ/manageiq-automation_engine/pull/192)
 
 ## Gaprindashvili-4 - Released 2018-07-16
 
@@ -64,10 +57,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Added
 - Add vm.remove_disk method for a VMware VM [(#191)](https://github.com/ManageIQ/manageiq-automation_engine/pull/191)
 - Keep track of the server ids where the automate task has been processed. [(#183)](https://github.com/ManageIQ/manageiq-automation_engine/pull/183)
-
-### Fixed
-- Fix for ae_method copy with embedded methods. [(#193)](https://github.com/ManageIQ/manageiq-automation_engine/pull/193)
-- Adds tracking label back to AeMethod lines [(#190)](https://github.com/ManageIQ/manageiq-automation_engine/pull/190)
 
 ## Unreleased as of Sprint 88 ending 2018-06-18
 
