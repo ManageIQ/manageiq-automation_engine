@@ -10,6 +10,10 @@ module MiqAeMethodService
     expose :source,            :association => true
     expose :destination,       :association => true
     expose :tenant,            :association => true
+    expose :cancel_requested?
+    expose :canceling?
+    expose :canceled?
+
     undef :phase_context
 
     def message=(msg)
