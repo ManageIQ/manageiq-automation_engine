@@ -108,7 +108,8 @@ module MiqAeEngine
         if ae_result.casecmp('retry').zero?
           ae_retry_interval = ws.root['ae_retry_interval'].to_s.to_i_with_method
           deliver_on = Time.now.utc + ae_retry_interval
-
+          options.delete(:ae_state_data)
+          options.delete(:ae_state_previous)
           options[:state]            = ws.root['ae_state'] || state
           options[:ae_fsm_started]   = ws.root['ae_fsm_started']
           options[:ae_state_started] = ws.root['ae_state_started']
