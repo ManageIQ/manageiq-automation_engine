@@ -4,11 +4,12 @@ module MiqAeServiceManageIQ_Providers_Redhat_InfraManager_VmSpec
     let(:service_vm) { MiqAeMethodService::MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Vm.find(vm.id) }
 
     before do
-      allow(MiqServer).to receive(:my_zone).and_return('default')
+      zone = FactoryGirl.create(:zone)
+      allow(MiqServer).to receive(:my_zone).and_return(zone.name)
       @base_queue_options = {
         :class_name  => vm.class.name,
         :instance_id => vm.id,
-        :zone        => 'default',
+        :zone        => zone.name,
         :role        => 'ems_operations',
         :task_id     => nil
       }

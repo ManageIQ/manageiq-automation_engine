@@ -6,12 +6,13 @@ module MiqAeServiceCloudVolumeOpenstackSpec
     end
 
     before do
-      allow_any_instance_of(CloudVolume).to receive(:my_zone).and_return('default')
-      allow(MiqServer).to receive(:my_zone).and_return('default')
+      zone = FactoryGirl.create(:zone)
+      allow_any_instance_of(CloudVolume).to receive(:my_zone).and_return(zone.name)
+      allow(MiqServer).to receive(:my_zone).and_return(zone.name)
       @base_queue_options = {
         :class_name  => cloud_volume.class.name,
         :instance_id => cloud_volume.id,
-        :zone        => 'default',
+        :zone        => zone.name,
         :role        => 'ems_operations',
         :task_id     => nil
       }
