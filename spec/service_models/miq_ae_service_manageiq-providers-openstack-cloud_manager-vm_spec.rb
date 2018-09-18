@@ -4,12 +4,13 @@ module MiqAeServiceVmOpenstackSpec
     let(:service_vm) { described_class.find(vm.id) }
 
     before do
-      allow_any_instance_of(Vm).to receive(:my_zone).and_return('default')
-      allow(MiqServer).to receive(:my_zone).and_return('default')
+      zone = FactoryGirl.create(:zone)
+      allow_any_instance_of(Vm).to receive(:my_zone).and_return(zone.name)
+      allow(MiqServer).to receive(:my_zone).and_return(zone.name)
       @base_queue_options = {
         :class_name  => vm.class.name,
         :instance_id => vm.id,
-        :zone        => 'default',
+        :zone        => zone.name,
         :role        => 'ems_operations',
         :task_id     => nil
       }

@@ -9,8 +9,9 @@ module MiqAeServiceVmSpec
       @ae_method     = ::MiqAeMethod.first
       @ae_result_key = 'foo'
 
-      @vm   = FactoryGirl.create(:vm_vmware, :name => "template1", :location => "abc/abc.vmx")
-      allow(MiqServer).to receive(:my_zone).and_return('default')
+      @vm  = FactoryGirl.create(:vm_vmware, :name => "template1", :location => "abc/abc.vmx")
+      zone = FactoryGirl.create(:zone)
+      allow(MiqServer).to receive(:my_zone).and_return(zone.name)
     end
 
     def invoke_ae

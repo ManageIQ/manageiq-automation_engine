@@ -17,7 +17,8 @@ describe "MiqAeMethodDispatch" do
                         :miq_group_id     => @user.current_group.id,
                         :tenant_id        => @user.current_tenant.id,
                         :automate_message => 'create'}
-    allow(MiqServer).to receive(:my_zone).and_return('default')
+    zone = FactoryGirl.create(:zone)
+    allow(MiqServer).to receive(:my_zone).and_return(zone.name)
     @pidfile = File.join(Dir.mktmpdir, "rip_van_winkle.pid")
     clear_domain
   end
