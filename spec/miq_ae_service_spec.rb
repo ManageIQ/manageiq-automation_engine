@@ -89,14 +89,6 @@ describe MiqAeMethodService::MiqAeService do
       end
     end
 
-    it 'sets, gets and removes state_var' do
-      allow(workspace).to receive(:disable_rbac)
-      miq_ae_service.set_state_var('name', 'value')
-      expect(miq_ae_service.get_state_var('name')).to(eq('value'))
-      miq_ae_service.delete_state_var('name')
-      expect(miq_ae_service.get_state_var('name')).to(eq(nil))
-    end
-
     it "loads cloud networks" do
       allow(workspace).to receive(:disable_rbac)
       items = %w(
@@ -106,6 +98,32 @@ describe MiqAeMethodService::MiqAeService do
       )
       items.each do |name|
         expect(miq_ae_service.vmdb(name)).to be("#{prefix}#{name}".constantize)
+      end
+    end
+
+    context 'state_var methods' do
+      before do
+        allow(workspace).to(receive(:disable_rbac))
+      end
+      it '#set_state_var' do
+        miq_ae_service.set_state_var('name', 'value')
+        validation_hash = { 'name' => 'value' }
+        expect(miq_ae_service.instance_eval { @persist_state_hash }).to(eq(validation_hash))
+      end
+      it '#get_state_var' do
+        expect(miq_ae_service.get_state_var('name')).to(eq(nil))
+        miq_ae_service.instance_eval { @persist_state_hash = { 'name' => 'value' } }
+        expect(miq_ae_service.get_state_var('name')).to(eq('value'))
+      end
+      it '#delete_state_var' do
+        miq_ae_service.instance_eval { @persist_state_hash = { 'name' => 'value' } }
+        miq_ae_service.delete_state_var('name')
+        expect(miq_ae_service.instance_eval { @persist_state_hash }).to(eq({}))
+      end
+      it '#state_var_exist?' do
+        expect(miq_ae_service.state_var_exist?('name')).to(be_falsey)
+        miq_ae_service.instance_eval { @persist_state_hash = { 'name' => 'value' } }
+        expect(miq_ae_service.state_var_exist?('name')).to(be_truthy)
       end
     end
   end
