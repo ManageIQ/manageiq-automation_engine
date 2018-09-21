@@ -36,6 +36,8 @@ module MiqAeEngine
 
     def setup
       require 'drb/timeridconv'
+      require_relative 'miq_ae_drb_patches'
+
       global_id_conv = DRb::TimerIdConv.new(drb_cache_timeout)
       drb_front = MiqAeMethodService::MiqAeServiceFront.new(@workspace)
 
