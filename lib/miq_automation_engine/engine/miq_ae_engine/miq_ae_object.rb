@@ -271,7 +271,7 @@ module MiqAeEngine
       if args_key.include?(CLASS_SEPARATOR)
         key, klass = get_key_name_and_klass_from_key(args_key)
         value = args.delete(args_key)
-        args["#{key}_id"] = value unless @attributes.key?(key)
+        args["#{key}_id"] = value if attribute_for_vmdb_object?(klass, value) && !@attributes.key?(key)
         args[key] = MiqAeObject.convert_value_based_on_datatype(value, klass)
       else
         args[args_key.downcase] = args.delete(args_key) if args_key != args_key.downcase
@@ -853,6 +853,10 @@ module MiqAeEngine
       else
         return self[value]
       end
+    end
+
+    def attribute_for_vmdb_object?(klass, value)
+      klass.safe_constantize && value.to_i.nonzero?
     end
   end
 end

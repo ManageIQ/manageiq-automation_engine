@@ -69,7 +69,7 @@ module MiqAeMethodService
 
     def log(level, msg)
       Thread.current["tracking_label"] = @tracking_label
-      $miq_ae_logger.send(level, "<AEMethod #{current_method}> #{msg}")
+      $miq_ae_logger.send(level, "<AEMethod #{current_method}> #{MiqPassword.sanitize_string(msg)}")
     end
 
     def set_state_var(name, value)
