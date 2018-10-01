@@ -62,11 +62,12 @@ module MiqAeEngine
     def self.miq_parse_automation_request(obj, _inputs)
       obj['target_component'], obj['target_class'], obj['target_instance'] =
         case obj['request']
-        when 'vm_provision'   then %w(VM      Lifecycle Provisioning)
-        when 'vm_retired'     then %w(VM      Lifecycle Retirement)
-        when 'vm_retire'      then %w(VM      Lifecycle Retirement)
-        when 'vm_migrate'     then %w(VM      Lifecycle Migrate)
-        when 'service_retire' then %w(Service Lifecycle Retirement)
+        when 'vm_provision'               then %w(VM            Lifecycle Provisioning)
+        when 'vm_retired'                 then %w(VM            Lifecycle Retirement)
+        when 'vm_retire'                  then %w(VM            Lifecycle Retirement)
+        when 'vm_migrate'                 then %w(VM            Lifecycle Migrate)
+        when 'service_retire'             then %w(Service       Lifecycle Retirement)
+        when 'orchestration_stack_retire' then %w(Orchestration Lifecycle Retirement)
         when 'configured_system_provision'
           obj.workspace.root['ae_provider_category'] = 'infrastructure'
           %w(Configured_System Lifecycle Provisioning)
@@ -177,7 +178,7 @@ module MiqAeEngine
 
     def self.detect_category(obj_name, prov_obj)
       case obj_name
-      when "orchestration_stack"
+      when "orchestration_stack", "orchestration_stack_retire_task"
         CLOUD
       when "miq_request", "miq_provision", "vm_migrate_task", "vm_retire_task"
         vm_detect_category(prov_obj.source) if prov_obj
