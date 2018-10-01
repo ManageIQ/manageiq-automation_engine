@@ -29,6 +29,14 @@ module MiqAeMethodService
       MiqAePassword.decrypt_if_password(@object[attr.downcase])
     end
 
+    def encrypted?(attr)
+      @object[attr.downcase].class == MiqAePassword
+    end
+
+    def encrypted_string(attr)
+      @object[attr.downcase].encStr if encrypted?(attr)
+    end
+
     def current_field_name
       @object.current_field_name
     end
