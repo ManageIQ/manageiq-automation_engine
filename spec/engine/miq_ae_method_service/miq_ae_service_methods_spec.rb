@@ -51,8 +51,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
         :class_name  => 'GenericMailer',
         :method_name => "deliver",
         :args        => [:automation_notification, options],
-        :role        => "notifier",
-        :zone        => nil
+        :role        => "notifier"
       ).once
       ae_object = invoke_ae.root(@ae_result_key)
       expect(ae_object).to be_truthy
