@@ -1,0 +1,29 @@
+# English translations for ManageIQ_AutomationEngine package.
+# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the ManageIQ_AutomationEngine package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ManageIQ_AutomationEngine 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2018-10-02 16:32+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"\n"
+
+msgid "Automate Domain"
+msgid_plural "Automate Domains"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Automation Engine"
+msgstr ""
+
+msgid "multiple domains"
+msgstr ""
