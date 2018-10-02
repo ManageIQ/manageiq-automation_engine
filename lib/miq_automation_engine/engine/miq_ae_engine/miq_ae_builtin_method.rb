@@ -216,7 +216,7 @@ module MiqAeEngine
     def self.detect_vendor(src_obj, attr)
       return unless src_obj
       case attr
-      when "orchestration_stack"
+      when "orchestration_stack", "orchestration_stack_retire_task"
         src_obj.ext_management_system.try(:provider_name)
       when "miq_request", "miq_provision", "vm_migrate_task"
         src_obj.source.try(:provider_name)
