@@ -15,7 +15,7 @@ class MiqAePassword < MiqPassword
   end
 
   def to_s
-    "********"
+    MASK
   end
 
   def inspect
