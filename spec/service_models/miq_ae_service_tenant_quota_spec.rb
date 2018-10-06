@@ -1,5 +1,4 @@
 describe MiqAeMethodService::MiqAeServiceTenantQuota do
-  let(:settings)  { {} }
   let(:default_tenant) { Tenant.seed && Tenant.default_tenant }
   let(:tenant) { Tenant.create!(:name => 'fred', :domain => 'a.b', :parent => default_tenant) }
   let(:cpu_quota) { TenantQuota.create(:name => "cpu_allocated", :unit => "int", :value => 2, :tenant => tenant) }
@@ -7,10 +6,6 @@ describe MiqAeMethodService::MiqAeServiceTenantQuota do
 
   let(:st_cpu_quota) { MiqAeMethodService::MiqAeServiceTenantQuota.find(cpu_quota.id) }
   let(:st_storage_quota) { MiqAeMethodService::MiqAeServiceTenantQuota.find(storage_quota.id) }
-
-  before do
-    stub_server_configuration(settings)
-  end
 
   it "check max_cpu quota" do
     expect(st_cpu_quota.name).to eq('cpu_allocated')

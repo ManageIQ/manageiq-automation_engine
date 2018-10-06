@@ -1,12 +1,7 @@
 describe MiqAeMethodService::MiqAeServiceTenant do
-  let(:settings) { {} }
   let(:tenant) { FactoryGirl.create(:tenant, :name => 'fred', :domain => 'a.b', :description => "Krueger") }
 
   let(:service_tenant) { MiqAeMethodService::MiqAeServiceTenant.find(tenant.id) }
-
-  before do
-    stub_server_configuration(settings)
-  end
 
   it "#name" do
     expect(service_tenant.name).to eq('fred')
