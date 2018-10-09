@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 96 ending 2018-10-08
+
+### Fixed
+- Add orch stack retire task to vendor detect [(#242)](https://github.com/ManageIQ/manageiq-automation_engine/pull/242)
+- Remove check for nil zone during MiqQueue.put of GenericMailer [(#241)](https://github.com/ManageIQ/manageiq-automation_engine/pull/241)
+- Add orch stack retirement task to category [(#238)](https://github.com/ManageIQ/manageiq-automation_engine/pull/238)
+- Add some helper methods for MiqAeObject. [(#237)](https://github.com/ManageIQ/manageiq-automation_engine/pull/237)
+
 ## Unreleased as of Sprint 95 ending 2018-09-24
 
 ### Added
