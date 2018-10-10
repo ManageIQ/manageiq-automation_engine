@@ -191,13 +191,13 @@ module MiqAeEngine
     private_class_method :invoke_inline_ruby
 
     def self.run_method(cmd)
-      require 'open4'
+      require 'open3'
       rc = nil
       threads = []
       method_pid = nil
       begin
-        status = Open4.popen4(*cmd) do |pid, stdin, stdout, stderr|
-          method_pid = pid
+        status = Open3.popen3(*cmd) do |stdin, stdout, stderr, wait_thread|
+          method_pid = wait_thread.pid
           yield stdin if block_given?
           stdin.close
           threads << Thread.new do
@@ -207,6 +207,7 @@ module MiqAeEngine
             stderr.each_line { |msg| $miq_ae_logger.error "Method STDERR: #{msg.strip}" }
           end
           threads.each(&:join)
+          wait_thread.value
         end
         rc  = status.exitstatus
         msg = "Method exited with rc=#{verbose_rc(rc)}"
