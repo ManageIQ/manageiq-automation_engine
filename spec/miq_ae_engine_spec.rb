@@ -453,6 +453,7 @@ describe MiqAeEngine do
   end
 
   context ".set_automation_attributes_from_objects" do
+    let(:orch_stack) { FactoryGirl.create(:orchestration_stack) }
     before(:each) do
       FactoryGirl.create(:small_environment)
     end
@@ -466,6 +467,13 @@ describe MiqAeEngine do
       hash = {:a => 'A', 'b' => 'b'}
       expected_hash = hash.merge("VmOrTemplate::vm" => Vm.first.id, "Host::host" => Host.first.id)
       MiqAeEngine.set_automation_attributes_from_objects([Vm.first, nil, Host.first], hash)
+      expect(hash).to eq(expected_hash)
+    end
+
+    it "with an array of nil and valid objects that are longer than single words" do
+      hash = {:a => 'A', 'b' => 'b'}
+      expected_hash = hash.merge("VmOrTemplate::vm" => Vm.first.id, "Host::host" => Host.first.id, "OrchestrationStack::orchestration_stack" => orch_stack.id)
+      MiqAeEngine.set_automation_attributes_from_objects([Vm.first, nil, Host.first, OrchestrationStack.first], hash)
       expect(hash).to eq(expected_hash)
     end
 
