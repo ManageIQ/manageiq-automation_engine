@@ -282,7 +282,7 @@ module MiqAeEngine
       objects_str.split(',').collect do |element|
         if element.include?(CLASS_SEPARATOR)
           klass, str_value = element.split(CLASS_SEPARATOR)
-          MiqAeObject.convert_value_based_on_datatype(str_value.strip, klass.strip)
+          MiqAeObject.convert_value_based_on_datatype(str_value.strip, klass.strip.downcase)
         else
           element.presence
         end
@@ -567,7 +567,7 @@ module MiqAeEngine
       if datatype &&
          (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
         return service_model.find(value)
-      end
+      end 
 
       (raise MiqAeException::InvalidClass unless MiqAeField.available_datatypes.include?(datatype)) if datatype
 
