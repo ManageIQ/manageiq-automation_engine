@@ -6,6 +6,21 @@ module MiqAeMethodService
     expose :mark_vm_migrated
     expose :canceling
     expose :canceled
+    expose :preflight_check
+    expose :source_cluster
+    expose :destination_cluster
+    expose :source_ems
+    expose :destination_ems
+    expose :transformation_type
+    expose :virtv2v_disks
+    expose :network_mappings
+    expose :destination_flavor
+    expose :destination_security_group
+    expose :conversion_host
+    expose :conversion_options
+    expose :run_conversion
+    expose :get_conversion_state
+    expose :kill_virtv2v
 
     def transformation_destination(source_obj)
       ar_method do
