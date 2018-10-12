@@ -1,5 +1,5 @@
 module MiqAeMethodService
-  class MiqAeServiceServiceConversionHost < MiqAeServiceModelBase
+  class MiqAeServiceConversionHost < MiqAeServiceModelBase
     expose :active_tasks
     expose :eligible?
     expose :check_conversion_host_role
