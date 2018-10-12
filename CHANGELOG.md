@@ -41,6 +41,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add support for accessing objects from anywhere in the workspace [(#112)](https://github.com/ManageIQ/manageiq-automation_engine/pull/112)
 - Change URI.split to replace double slashes with a single slash. [(#162)](https://github.com/ManageIQ/manageiq-automation_engine/pull/162)
 - Expose generic_objects from GenericObjectDefinition. [(#170)](https://github.com/ManageIQ/manageiq-automation_engine/pull/170)
+- Add some helper methods for MiqAeObject. [(#237)](https://github.com/ManageIQ/manageiq-automation_engine/pull/237)
+- Add orch stack retirement task to category [(#238)](https://github.com/ManageIQ/manageiq-automation_engine/pull/238)
+- Add orch stack retire task to vendor detect [(#242)](https://github.com/ManageIQ/manageiq-automation_engine/pull/242)
+
+### Removed
+- Remove check for nil zone during MiqQueue.put of GenericMailer [(#241)](https://github.com/ManageIQ/manageiq-automation_engine/pull/241)
 
 ## Gaprindashvili-5 - Released 2018-09-07
 
