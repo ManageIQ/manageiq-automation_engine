@@ -5,5 +5,6 @@ module MiqAeMethodService
     expose :check_conversion_host_role
     expose :enable_conversion_host_role
     expose :disable_conversion_host_role
+    expose :ext_management_system
   end
 end
