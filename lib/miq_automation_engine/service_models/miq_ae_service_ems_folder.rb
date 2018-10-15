@@ -3,8 +3,9 @@ module MiqAeMethodService
     require_relative "mixins/miq_ae_service_ems_operations_mixin"
     include MiqAeServiceEmsOperationsMixin
 
-    expose :hosts, :association => true
-    expose :vms,   :association => true
+    expose :hosts,   :association => true
+    expose :vms,     :association => true
+    expose :folders, :association => true
 
     def register_host(host)
       sync_or_async_ems_operation(false, "register_host", [host.id])
