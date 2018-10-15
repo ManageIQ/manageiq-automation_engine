@@ -31,6 +31,6 @@ module MiqAeMethodService
     def conversion_host=(conversion_host)
       raise ArgumentError, "conversion_host must be a MiqAeServiceConversionHost" unless conversion_host.kind_of?(MiqAeMethodService::MiqAeServiceConversionHost)
       ar_method { wrap_results(@object.conversion_host = ConversionHost.find(conversion_host.id)) }
-    end 
+    end
   end
 end
