@@ -1,5 +1,3 @@
-require 'byebug'
-
 describe MiqAeMethodService::MiqAeServiceServiceTemplateTransformationPlanTask do
   let(:user) { FactoryGirl.create(:user_with_group) }
   let(:task) { FactoryGirl.create(:service_template_transformation_plan_task) }
