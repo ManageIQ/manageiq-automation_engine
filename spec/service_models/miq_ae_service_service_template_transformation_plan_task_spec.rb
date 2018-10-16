@@ -6,7 +6,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateTransformationPlanTask d
 
   before(:each) do
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
-    @ae_method     = ::MiqAeMethod.first
+    @ae_method = ::MiqAeMethod.first
   end
 
   def invoke_ae
