@@ -1,6 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceServiceTemplateTransformationPlanTask do
   let(:conversion_host_1) { FactoryGirl.create(:conversion_host) }
-  let(:service_conversion_host_1) { MiqAeMethodService::MiqAeServiceConversionHost.find(conversion_host_1.id) }
   let(:conversion_host_2) { FactoryGirl.create(:conversion_host) }
   let(:service_conversion_host_2) { MiqAeMethodService::MiqAeServiceConversionHost.find(conversion_host_2.id) }
   let(:task) { FactoryGirl.create(:service_template_transformation_plan_task, :conversion_host => conversion_host_1) }
