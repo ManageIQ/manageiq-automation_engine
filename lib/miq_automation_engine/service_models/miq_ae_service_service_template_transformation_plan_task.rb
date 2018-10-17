@@ -27,5 +27,14 @@ module MiqAeMethodService
         wrap_results(@object.transformation_destination(source_obj.object_class.find(source_obj.id)))
       end
     end
+
+    def conversion_host=(conversion_host)
+      raise ArgumentError, "conversion_host must be nil or a MiqAeServiceConversionHost" unless conversion_host.nil? || conversion_host.kind_of?(MiqAeMethodService::MiqAeServiceConversionHost)
+      ar_method do
+        conversion_host = ConversionHost.find_by(:id => conversion_host.id) if conversion_host
+        @object.conversion_host = conversion_host
+        @object.save
+      end
+    end
   end
 end
