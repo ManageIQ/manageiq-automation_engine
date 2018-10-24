@@ -316,4 +316,10 @@ describe MiqAeEngine::MiqAeObject do
       end.to raise_exception(MiqPassword::MiqPasswordError)
     end
   end
+
+  context "integer" do
+    it "returns value to_i" do
+      %w(Integer integer Fixnum).each { |type| expect(described_class.convert_value_based_on_datatype("45", type)).to eq(45) }
+    end
+  end
 end
