@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer Beta-1
+## Hammer Beta-2
+
+### Added
+- Expose ConversionHost and ServiceTemplateTransformationPlanTask methods [(#246)](https://github.com/ManageIQ/manageiq-automation_engine/pull/246)
+- Expose folders to ems_folder service model. [(#256)](https://github.com/ManageIQ/manageiq-automation_engine/pull/256)
+- Expose ext_management_system from ConversionHost [(#255)](https://github.com/ManageIQ/manageiq-automation_engine/pull/255)
+- Add conversion_host= method to MiqAeServiceServiceTemplateTransformationPlanTask [(#253)](https://github.com/ManageIQ/manageiq-automation_engine/pull/253)
+
+### Fixed
+- Fix class name for conversion host [(#252)](https://github.com/ManageIQ/manageiq-automation_engine/pull/252)
+- Take out detect vendor changes for orch stack retire tasks [(#249)](https://github.com/ManageIQ/manageiq-automation_engine/pull/249)
+
+## Hammer Beta-1 - Released 2018-10-12
 
 ### Added
 - Exposes cancelation status to client side [(#229)](https://github.com/ManageIQ/manageiq-automation_engine/pull/229)
