@@ -5,34 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Unreleased as of Sprint 96 ending 2018-10-08
+## Unreleased as of Sprint 97 ending 2018-10-22
+
+### Added
+- Expose folders to ems_folder service model. [(#256)](https://github.com/ManageIQ/manageiq-automation_engine/pull/256)
+- Expose ext_management_system from ConversionHost [(#255)](https://github.com/ManageIQ/manageiq-automation_engine/pull/255)
+- Add conversion_host= method to MiqAeServiceServiceTemplateTransformationPlanTask [(#253)](https://github.com/ManageIQ/manageiq-automation_engine/pull/253)
+- Expose ConversionHost and ServiceTemplateTransformationPlanTask methods [(#246)](https://github.com/ManageIQ/manageiq-automation_engine/pull/246)
 
 ### Fixed
-- Add orch stack retire task to vendor detect [(#242)](https://github.com/ManageIQ/manageiq-automation_engine/pull/242)
-- Remove check for nil zone during MiqQueue.put of GenericMailer [(#241)](https://github.com/ManageIQ/manageiq-automation_engine/pull/241)
-- Add orch stack retirement task to category [(#238)](https://github.com/ManageIQ/manageiq-automation_engine/pull/238)
-- Add some helper methods for MiqAeObject. [(#237)](https://github.com/ManageIQ/manageiq-automation_engine/pull/237)
+- Fix class name for conversion host [(#252)](https://github.com/ManageIQ/manageiq-automation_engine/pull/252)
+- Take out detect vendor changes for orch stack retire tasks [(#249)](https://github.com/ManageIQ/manageiq-automation_engine/pull/249)
 
-## Unreleased as of Sprint 95 ending 2018-09-24
+## Hammer Beta-1 - Released 2018-10-12
 
 ### Added
 - Exposes cancelation status to client side [(#229)](https://github.com/ManageIQ/manageiq-automation_engine/pull/229)
 - delete_state_var method for MiqAeService. [(#225)](https://github.com/ManageIQ/manageiq-automation_engine/pull/225)
 - Allow for embedded methods to contain embedded methods [(#207)](https://github.com/ManageIQ/manageiq-automation_engine/pull/207)
+- Add MiqWidget service model and expose queue_generate_content method [(#218)](https://github.com/ManageIQ/manageiq-automation_engine/pull/218)
+- Add support to redhat VM for set_memory and set_number_of_cpus [(#216)](https://github.com/ManageIQ/manageiq-automation_engine/pull/216)
+- Add plugin display name [(#214)](https://github.com/ManageIQ/manageiq-automation_engine/pull/214)
+- Expose configuration_workflow and workflow_job [(#206)](https://github.com/ManageIQ/manageiq-automation_engine/pull/206)
+- Add vm.remove_disk method for a VMware VM [(#191)](https://github.com/ManageIQ/manageiq-automation_engine/pull/191)
+- Keep track of the server ids where the automate task has been processed. [(#183)](https://github.com/ManageIQ/manageiq-automation_engine/pull/183)
+- Added show_url for specific service model objects [(#181)](https://github.com/ManageIQ/manageiq-automation_engine/pull/181)
+- Ability to add and remove volumes for an instance  [(#178)](https://github.com/ManageIQ/manageiq-automation_engine/pull/178)
+- Expose initializing to automate [(#173)](https://github.com/ManageIQ/manageiq-automation_engine/pull/173)
+- Adds better logging to class copy methods [(#120)](https://github.com/ManageIQ/manageiq-automation_engine/pull/120)
+- Set state machine retry interval for Ansible playbook method. [(#98)](https://github.com/ManageIQ/manageiq-automation_engine/pull/98)
+- Added support for manageiq_connection [(#95)](https://github.com/ManageIQ/manageiq-automation_engine/pull/95)
+- Use options instead of data to fetch config info [(#94)](https://github.com/ManageIQ/manageiq-automation_engine/pull/94)
+- Add remove_from_vmdb method to Host object for Service models [(#93)](https://github.com/ManageIQ/manageiq-automation_engine/pull/93)
+- Automate Workspace encrypt/decrypt support [(#90)](https://github.com/ManageIQ/manageiq-automation_engine/pull/90)
+- Get the current user if user context is set. [(#86)](https://github.com/ManageIQ/manageiq-automation_engine/pull/86)
 
 ### Fixed
 - Clean up the password field and value in automate and evm.log [(#228)](https://github.com/ManageIQ/manageiq-automation_engine/pull/228)
 - Enable cancelation_status to be updated for service model [(#212)](https://github.com/ManageIQ/manageiq-automation_engine/pull/212)
-
-## Unreleased as of Sprint 94 ending 2018-09-10
-
-### Added
-- Add MiqWidget service model and expose queue_generate_content method [(#218)](https://github.com/ManageIQ/manageiq-automation_engine/pull/218)
-- Add support to redhat VM for set_memory and set_number_of_cpus [(#216)](https://github.com/ManageIQ/manageiq-automation_engine/pull/216)
-
-### Fixed
 - Clear stale data from ae_state_data and ae_state_previous [(#222)](https://github.com/ManageIQ/manageiq-automation_engine/pull/222)
 - Expose storage_profiles association in Storage's service model. [(#219)](https://github.com/ManageIQ/manageiq-automation_engine/pull/219)
+- Handle MIQ_STOP in state machine processing [(#208)](https://github.com/ManageIQ/manageiq-automation_engine/pull/208)
+- Updating miq_task for the CustomButton request call with open_url. [(#205)](https://github.com/ManageIQ/manageiq-automation_engine/pull/205)
+- Incorporating the deliver method change into the refactoring [(#200)](https://github.com/ManageIQ/manageiq-automation_engine/pull/200)
+- Expose storages to VmOrTemplate service model. [(#187)](https://github.com/ManageIQ/manageiq-automation_engine/pull/187)
+- Exclude private model methods from being exposed in the Service model. [(#175)](https://github.com/ManageIQ/manageiq-automation_engine/pull/175)
+- Add support for accessing objects from anywhere in the workspace [(#112)](https://github.com/ManageIQ/manageiq-automation_engine/pull/112)
+- Change URI.split to replace double slashes with a single slash. [(#162)](https://github.com/ManageIQ/manageiq-automation_engine/pull/162)
+- Expose generic_objects from GenericObjectDefinition. [(#170)](https://github.com/ManageIQ/manageiq-automation_engine/pull/170)
+- Add some helper methods for MiqAeObject. [(#237)](https://github.com/ManageIQ/manageiq-automation_engine/pull/237)
+- Add orch stack retirement task to category [(#238)](https://github.com/ManageIQ/manageiq-automation_engine/pull/238)
+- Add orch stack retire task to vendor detect [(#242)](https://github.com/ManageIQ/manageiq-automation_engine/pull/242)
+
+## Unreleased as of Sprint 96 ending 2018-10-08
+
+### Fixed
+- Remove check for nil zone during MiqQueue.put of GenericMailer [(#241)](https://github.com/ManageIQ/manageiq-automation_engine/pull/241)
 
 ## Gaprindashvili-5 - Released 2018-09-07
 
@@ -45,25 +73,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Fix for ae_method copy with embedded methods. [(#193)](https://github.com/ManageIQ/manageiq-automation_engine/pull/193)
 - Start the drb server with a unix socket [(#201)](https://github.com/ManageIQ/manageiq-automation_engine/pull/201)
 
-## Unreleased as of Sprint 93 ending 2018-08-27
-
-### Added
-- Add plugin display name [(#214)](https://github.com/ManageIQ/manageiq-automation_engine/pull/214)
-
-### Fixed
-- Handle MIQ_STOP in state machine processing [(#208)](https://github.com/ManageIQ/manageiq-automation_engine/pull/208)
-- Updating miq_task for the CustomButton request call with open_url. [(#205)](https://github.com/ManageIQ/manageiq-automation_engine/pull/205)
-
-## Unreleased as of Sprint 92 ending 2018-08-13
-
-### Added
-- Expose configuration_workflow and workflow_job [(#206)](https://github.com/ManageIQ/manageiq-automation_engine/pull/206)
-
-## Unreleased as of Sprint 91 ending 2018-07-30
-
-### Fixed
-- Incorporating the deliver method change into the refactoring [(#200)](https://github.com/ManageIQ/manageiq-automation_engine/pull/200)
-
 ## Gaprindashvili-4 - Released 2018-07-16
 
 ### Added
@@ -71,45 +80,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Support for substitution from state_var [(#151)](https://github.com/ManageIQ/manageiq-automation_engine/pull/151)
 - Expose task.mark_vm_migrated to Service. [(#186)](https://github.com/ManageIQ/manageiq-automation_engine/pull/186)
 
-## Unreleased as of Sprint 89 ending 2018-07-02
-
-### Added
-- Add vm.remove_disk method for a VMware VM [(#191)](https://github.com/ManageIQ/manageiq-automation_engine/pull/191)
-- Keep track of the server ids where the automate task has been processed. [(#183)](https://github.com/ManageIQ/manageiq-automation_engine/pull/183)
-
-## Unreleased as of Sprint 88 ending 2018-06-18
-
-### Fixed
-- Expose storages to VmOrTemplate service model. [(#187)](https://github.com/ManageIQ/manageiq-automation_engine/pull/187)
-- Exclude private model methods from being exposed in the Service model. [(#175)](https://github.com/ManageIQ/manageiq-automation_engine/pull/175)
-
-## Unreleased as of Sprint 86 ending 2018-05-21
-
-### Added
-- Added show_url for specific service model objects [(#181)](https://github.com/ManageIQ/manageiq-automation_engine/pull/181)
-- Ability to add and remove volumes for an instance  [(#178)](https://github.com/ManageIQ/manageiq-automation_engine/pull/178)
-
-### Fixed
-- Add support for accessing objects from anywhere in the workspace [(#112)](https://github.com/ManageIQ/manageiq-automation_engine/pull/112)
-
 ## Gaprindashvili-3 released 2018-05-15
 
 ### Fixed
 - Making processing log to be uniform. [(#152)](https://github.com/ManageIQ/manageiq-automation_engine/pull/152)
 - Don't call on_exit method while Ansible Playbook method is running. [(#168)](https://github.com/ManageIQ/manageiq-automation_engine/pull/168)
-
-## Unreleased as of Sprint 84 ending 2018-04-26
-
-### Added
-- Expose initializing to automate [(#173)](https://github.com/ManageIQ/manageiq-automation_engine/pull/173)
-
-### Fixed
-- Change URI.split to replace double slashes with a single slash. [(#162)](https://github.com/ManageIQ/manageiq-automation_engine/pull/162)
-
-## Unreleased as of Sprint 83 ending 2018-04-09
-
-### Fixed
-- Expose generic_objects from GenericObjectDefinition. [(#170)](https://github.com/ManageIQ/manageiq-automation_engine/pull/170)
 
 ## Gaprindashvili-2 released 2018-03-06
 
@@ -144,20 +119,5 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add and remove dependent services correctly in hierarchical structures [(#132)](https://github.com/ManageIQ/manageiq-automation_engine/pull/132)
 - Add check for a single domain in git import [(#124)](https://github.com/ManageIQ/manageiq-automation_engine/pull/124)
 - Fix Automate State Machine ae_max_retries root object value [(#137)](https://github.com/ManageIQ/manageiq-automation_engine/pull/137)
-
-## Unreleased as of Sprint 76 ending 2018-01-01
-
-### Added
-- Adds better logging to class copy methods [(#120)](https://github.com/ManageIQ/manageiq-automation_engine/pull/120)
-
-## Unreleased as of Sprint 72 ending 2017-10-30
-
-### Added
-- Set state machine retry interval for Ansible playbook method. [(#98)](https://github.com/ManageIQ/manageiq-automation_engine/pull/98)
-- Added support for manageiq_connection [(#95)](https://github.com/ManageIQ/manageiq-automation_engine/pull/95)
-- Use options instead of data to fetch config info [(#94)](https://github.com/ManageIQ/manageiq-automation_engine/pull/94)
-- Add remove_from_vmdb method to Host object for Service models [(#93)](https://github.com/ManageIQ/manageiq-automation_engine/pull/93)
-- Automate Workspace encrypt/decrypt support [(#90)](https://github.com/ManageIQ/manageiq-automation_engine/pull/90)
-- Get the current user if user context is set. [(#86)](https://github.com/ManageIQ/manageiq-automation_engine/pull/86)
 
 ## Initial changelog added
