@@ -559,7 +559,7 @@ module MiqAeEngine
       return false                                           if datatype == 'FalseClass'
       return Time.parse(value)                               if datatype == 'time' || datatype == 'Time'
       return value.to_sym                                    if datatype == 'symbol' || datatype == 'Symbol'
-      return value.to_i                                      if datatype == 'integer' || datatype == 'Fixnum'
+      return value.to_i                                      if %w(integer Integer Fixnum).include?(datatype)
       return value.to_f                                      if datatype == 'float' || datatype == 'Float'
       return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/)  if datatype == 'array' && value.class == String
       return decrypt_password(value) if datatype == 'password'
