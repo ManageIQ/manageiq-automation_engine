@@ -1,29 +1,28 @@
-# Japanese translations for ManageIQ_AutomationEngine package.
-# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the ManageIQ_AutomationEngine package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
-#
+# kmoriguc <kmoriguc@redhat.com>, 2018. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: ManageIQ_AutomationEngine 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2018-10-02 16:32+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2018-10-02 16:32+0200\n"
+"PO-Revision-Date: 2018-10-25 10:11+0000\n"
+"Last-Translator: kmoriguc <kmoriguc@redhat.com>\n"
 "Language-Team: Japanese\n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"X-Generator: Zanata 4.6.2\n"
 
+#: ../app/models/miq_ae_domain.rb:182
 msgid "Automate Domain"
 msgid_plural "Automate Domains"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "ドメインの自動化"
 
+#: ../lib/manageiq/automation_engine/engine.rb:25
 msgid "Automation Engine"
-msgstr ""
+msgstr "自動化エンジン"
 
+#: ../app/models/miq_ae_git_import.rb:25
 msgid "multiple domains"
-msgstr ""
+msgstr "複数ドメイン"
