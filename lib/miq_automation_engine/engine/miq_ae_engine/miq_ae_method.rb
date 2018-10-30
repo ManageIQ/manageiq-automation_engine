@@ -12,12 +12,15 @@ module MiqAeEngine
     end
 
     def self.invoke_expression(aem, obj, inputs)
-      exp_method = MiqAeEngine::MiqAeExpressionMethod.new(aem, obj, inputs)
-      exp_method.run
+      MiqAeEngine::MiqAeExpressionMethod.new(aem, obj, inputs).run
     end
 
     def self.invoke_playbook(aem, obj, inputs)
       MiqAeEngine::MiqAePlaybookMethod.new(aem, obj, inputs).run
+    end
+
+    def self.invoke_ansibletemplate(aem, obj, inputs)
+      MiqAeEngine::MiqAeAnsibleTemplateMethod.new(aem, obj, inputs).run
     end
 
     def self.invoke_uri(aem, obj, _inputs)
@@ -69,7 +72,7 @@ module MiqAeEngine
 
       if obj.workspace.readonly?
         $miq_ae_logger.info("Workspace Instantiation is READONLY -- skipping method [#{aem.fqname}] with inputs [#{inputs.inspect}]")
-      elsif %w(inline builtin uri expression playbook).include?(aem.location.downcase.strip)
+      elsif %w(inline builtin uri expression playbook ansibletemplate).include?(aem.location.downcase.strip)
         $miq_ae_logger.info("Invoking [#{aem.location}] method [#{aem.fqname}] with inputs [#{inputs.inspect}]")
         return MiqAeEngine::MiqAeMethod.send("invoke_#{aem.location.downcase.strip}", aem, obj, inputs)
       end

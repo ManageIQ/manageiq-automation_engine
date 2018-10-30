@@ -23,6 +23,12 @@ module MiqAeEngine
       running_in_state_machine? ? check_task_status(task_id) : wait_for_method(task_id)
     end
 
+    def build_options_hash
+      super.tap do |config_info|
+        config_info[:hosts] = resolved_hosts
+      end
+    end
+
     def resolved_hosts
       @ae_object.substitute_value(@aem.options[:hosts], nil, true).tap do |value|
         raise ArgumentError, "Hosts field #{@aem.options[:hosts]} resolved to empty string" if value.blank?
