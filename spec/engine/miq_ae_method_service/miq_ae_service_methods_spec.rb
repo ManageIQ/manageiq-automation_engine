@@ -52,8 +52,7 @@ module MiqAeServiceMethodsSpec
           :class_name  => 'GenericMailer',
           :method_name => "deliver",
           :args        => [:automation_notification, options],
-          :role        => "notifier",
-          :zone        => nil
+          :role        => "notifier"
         ).once
         ae_object = invoke_ae.root(@ae_result_key)
         expect(ae_object).to be_truthy
@@ -77,7 +76,8 @@ module MiqAeServiceMethodsSpec
           :class_name  => "MiqSnmp",
           :method_name => "trap_v1",
           :args        => [inputs],
-          :role        => "notifier").once
+          :role        => "notifier",
+          :zone        => nil).once
       ae_object = invoke_ae.root(@ae_result_key)
       expect(ae_object).to be_truthy
     end
