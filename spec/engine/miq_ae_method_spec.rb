@@ -259,6 +259,7 @@ describe MiqAeEngine::MiqAeMethod do
               Level3.log_me
             end
           end
+          Level3.log_me
         RUBY
       end
       let(:level2_embeds) { ['/Shared/Methods/Level3'] }

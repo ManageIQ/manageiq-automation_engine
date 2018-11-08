@@ -242,6 +242,7 @@ module MiqAeEngine
     def self.bodies_and_line_numbers(obj, aem)
       embeds = []
       embedded_methods(obj.workspace, aem, embeds, aem.fqname)
+      embeds.reverse!
       embeds << {:data => aem.data, :fqname => aem.fqname}
       code_start = 0
       script_info = {}
