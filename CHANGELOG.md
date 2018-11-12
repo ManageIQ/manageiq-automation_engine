@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer Beta-2
+## Hammer RC-1
+
+### Added
+- Expose validate_conversion_hosts for TransformationPlanRequest [(#263)](https://github.com/ManageIQ/manageiq-automation_engine/pull/263)
+
+### Fixed
+- convert_value_based_on_datatype won't take "Integer" [(#258)](https://github.com/ManageIQ/manageiq-automation_engine/pull/258)
+
+## Hammer Beta-2 - Released 2018-10-29
 
 ### Added
 - Expose ConversionHost and ServiceTemplateTransformationPlanTask methods [(#246)](https://github.com/ManageIQ/manageiq-automation_engine/pull/246)
