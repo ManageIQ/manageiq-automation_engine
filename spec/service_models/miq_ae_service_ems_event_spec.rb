@@ -177,7 +177,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
   end
 
   it "#src_vm_disconnect_storage" do
-    expect_any_instance_of(VmOrTemplate).to receive("disconnect_storage".to_sym).once
+    expect_any_instance_of(VmOrTemplate).not_to receive("disconnect_storage".to_sym).once
     @service_event.src_vm_disconnect_storage
   end
 end
