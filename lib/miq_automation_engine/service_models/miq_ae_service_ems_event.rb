@@ -33,7 +33,8 @@ module MiqAeMethodService
     end
 
     def src_vm_disconnect_storage
-      ar_method { @object.src_vm_disconnect_storage }
+      # Logic for storage disconnect has been moved to VmOrTemplate#disconnect_inv
+      # This method is kept for compatibility and will be removed in a future version
     end
   end
 end
