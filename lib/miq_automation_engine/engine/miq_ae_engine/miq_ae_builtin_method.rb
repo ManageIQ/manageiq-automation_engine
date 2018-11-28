@@ -142,8 +142,9 @@ module MiqAeEngine
       event_object_from_workspace(obj).src_vm_destroy_all_snapshots
     end
 
-    def self.miq_src_vm_disconnect_storage(obj, _inputs)
-      event_object_from_workspace(obj).src_vm_disconnect_storage
+    def self.miq_src_vm_disconnect_storage(_obj, _inputs)
+      # Logic for storage disconnect has been moved to VmOrTemplate#disconnect_inv
+      # This method is kept for compatibility and will be removed in a future version
     end
 
     def self.miq_event_enforce_policy(obj, _inputs)
