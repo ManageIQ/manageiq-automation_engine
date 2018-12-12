@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Gaprindashvili-6
+## Gaprindashvili-7
+
+### Added
+- Expose folders to ems_folder service model. [(#256)](https://github.com/ManageIQ/manageiq-automation_engine/pull/256)
+
+### Fixed
+- Make disconnect_storage a no-op [(#272)](https://github.com/ManageIQ/manageiq-automation_engine/pull/272)
+
+## Gaprindashvili-6 - Released 2018-11-06
 
 ### Added
 - Add support to redhat VM for set_memory and set_number_of_cpus [(#216)](https://github.com/ManageIQ/manageiq-automation_engine/pull/216)
@@ -17,7 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Clean up the password field and value in automate and evm.log [(#228)](https://github.com/ManageIQ/manageiq-automation_engine/pull/228)
 - Add orch stack retirement task to category [(#238)](https://github.com/ManageIQ/manageiq-automation_engine/pull/238)
 
-## Gaprindashvili-5
+## Gaprindashvili-5 - Released 2018-09-7
 
 ### Added
 - Support for v2v pre/post Ansible playbook service. [(#192)](https://github.com/ManageIQ/manageiq-automation_engine/pull/192)
