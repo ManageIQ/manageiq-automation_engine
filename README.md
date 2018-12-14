@@ -1,7 +1,7 @@
 # ManageIQ Automation Engine
 
 [![Gem Version](https://badge.fury.io/rb/manageiq-automation_engine.svg)](http://badge.fury.io/rb/manageiq-automation_engine)
-[![Build Status](https://travis-ci.org/ManageIQ/manageiq-automation_engine.svg)](https://travis-ci.org/ManageIQ/manageiq-automation_engine)
+[![Build Status](https://travis-ci.org/ManageIQ/manageiq-automation_engine.svg?branch=master)](https://travis-ci.org/ManageIQ/manageiq-automation_engine)
 [![Code Climate](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine.svg)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine)
 [![Test Coverage](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/coverage)
 [![Security](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/master)
