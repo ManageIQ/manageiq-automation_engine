@@ -1,6 +1,6 @@
 describe MiqAeMethodService::MiqAeServiceVm do
   before(:each) do
-    @vm = FactoryGirl.create(:vm_vmware)
+    @vm = FactoryBot.create(:vm_vmware)
     @ae_vm = MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.new(@vm.id)
   end
 
@@ -38,8 +38,8 @@ describe MiqAeMethodService::MiqAeServiceVm do
   end
 
   describe "#tag_assign" do
-    let(:category)    { FactoryGirl.create(:classification) }
-    let(:tag)         { FactoryGirl.create(:classification_tag, :parent_id => category.id) }
+    let(:category)    { FactoryBot.create(:classification) }
+    let(:tag)         { FactoryBot.create(:classification_tag, :parent_id => category.id) }
 
     it "can assign an exiting tag to ae_vm" do
       expect(@ae_vm.tag_assign("#{category.name}/#{tag.name}")).to be_truthy
@@ -52,7 +52,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
     end
 
     it "getting UntaggableModel exception while tagging account model" do
-      account = FactoryGirl.create(:account)
+      account = FactoryBot.create(:account)
       account_provider = MiqAeMethodService::MiqAeServiceAccount.new(account.id)
       expect do
         account_provider.tag_assign("#{category.name}/#{tag.name}")
@@ -61,9 +61,9 @@ describe MiqAeMethodService::MiqAeServiceVm do
   end
 
   describe "#tag_unassign" do
-    let(:category)    { FactoryGirl.create(:classification) }
-    let(:tag)         { FactoryGirl.create(:classification_tag, :parent_id => category.id) }
-    let(:another_tag) { FactoryGirl.create(:classification_tag, :parent_id => category.id) }
+    let(:category)    { FactoryBot.create(:classification) }
+    let(:tag)         { FactoryBot.create(:classification_tag, :parent_id => category.id) }
+    let(:another_tag) { FactoryBot.create(:classification_tag, :parent_id => category.id) }
 
     context "with assigned tags" do
       before do
@@ -94,7 +94,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
     end
 
     it "Account model is not taggable" do
-      account = FactoryGirl.create(:account)
+      account = FactoryBot.create(:account)
       account_provider = MiqAeMethodService::MiqAeServiceAccount.new(account.id)
       expect(account_provider.taggable?).to be_falsey
     end
@@ -103,7 +103,7 @@ end
 
 describe MiqAeMethodService::MiqAeServiceMiqAeDomain do
   let(:tenant) { Tenant.seed }
-  let(:domain) { FactoryGirl.create(:miq_ae_domain, :tenant => tenant) }
+  let(:domain) { FactoryBot.create(:miq_ae_domain, :tenant => tenant) }
 
   it "#ae_domains" do
     domain
@@ -117,7 +117,7 @@ end
 
 describe MiqAeMethodService::MiqAeServiceVmOrTemplate do
   it '#where' do
-    vm = FactoryGirl.create(:vm_vmware, :name => 'fred')
+    vm = FactoryBot.create(:vm_vmware, :name => 'fred')
     svc_vm = MiqAeMethodService::MiqAeServiceVmOrTemplate.where(:name => 'fred').first
     expect(svc_vm.id).to eq(vm.id)
   end

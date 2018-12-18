@@ -4,7 +4,7 @@ describe MiqAeEngine do
   before(:each) do
     MiqAeDatastore.reset
     EvmSpecHelper.local_guid_miq_server_zone
-    @user   = FactoryGirl.create(:user_with_group)
+    @user   = FactoryBot.create(:user_with_group)
     @domain = 'SPEC_DOMAIN'
     @model_data_dir = File.join(File.dirname(__FILE__), "data")
     @root_tenant_id = Tenant.root_tenant.id
@@ -29,9 +29,9 @@ describe MiqAeEngine do
 
   context ".deliver" do
     before(:each) do
-      @ems              = FactoryGirl.create(:ems_vmware)
-      @cluster          = FactoryGirl.create(:ems_cluster)
-      @vm               = FactoryGirl.create(:vm_vmware)
+      @ems              = FactoryBot.create(:ems_vmware)
+      @cluster          = FactoryBot.create(:ems_cluster)
+      @vm               = FactoryBot.create(:vm_vmware)
       @attrs            = {}
       @instance_name    = 'AUTOMATION'
       @user_id          = nil
@@ -127,7 +127,7 @@ describe MiqAeEngine do
         end
 
         it 'with defaults and open_url_task_id' do
-          miq_task = FactoryGirl.create(:miq_task, :name => "Automate method task for open_url")
+          miq_task = FactoryBot.create(:miq_task, :name => "Automate method task for open_url")
           miq_task.state_queued
           object_type = @ems.class.name
           object_id   = @ems.id
@@ -258,14 +258,14 @@ describe MiqAeEngine do
     end
 
     it "with a Vm (special case)" do
-      vm = FactoryGirl.create(:vm_vmware)
+      vm = FactoryBot.create(:vm_vmware)
       extras = "MiqServer%3A%3Amiq_server=#{@miq_server_id}"
       uri = "/System/Process/AUTOMATION?#{extras}&VmOrTemplate%3A%3Avm=#{vm.id}&object_name=AUTOMATION&vmdb_object_type=vm"
       expect(MiqAeEngine.create_automation_object("AUTOMATION", {}, :vmdb_object => vm)).to eq(uri)
     end
 
     it "with a starting point other than /SYSTEM/PROCESS" do
-      vm = FactoryGirl.create(:vm_vmware)
+      vm = FactoryBot.create(:vm_vmware)
       fqclass = "Factory/StateMachines/ServiceProvision_template"
       uri = MiqAeEngine.create_automation_object("DEFAULT", {}, :vmdb_object => vm, :fqclass => fqclass)
       extras = "MiqServer%3A%3Amiq_server=#{@miq_server_id}"
@@ -274,7 +274,7 @@ describe MiqAeEngine do
     end
 
     it "will not override values in attrs" do
-      host  = FactoryGirl.create(:host)
+      host  = FactoryBot.create(:host)
       attrs = {"Host::host" => host.id, "MiqServer::miq_server" => "12"}
       extras = "MiqServer%3A%3Amiq_server=12"
       uri = "/System/Process/AUTOMATION?Host%3A%3Ahost=#{host.id}&#{extras}&object_name=AUTOMATION&vmdb_object_type=host"
@@ -282,7 +282,7 @@ describe MiqAeEngine do
     end
 
     it "will process an array of objects" do
-      FactoryGirl.create(:host)
+      FactoryBot.create(:host)
       hash       = {"hosts" => Host.all}
       attrs      = {"Array::my_hosts" => hash["hosts"].collect { |h| "Host::#{h.id}" }}
       result_str = "Array%3A%3Amy_hosts=" + hash["hosts"].collect { |h| "Host%3A%3A#{h.id}" }.join(",")
@@ -301,7 +301,7 @@ describe MiqAeEngine do
 
     it "will process an array of objects with a server and user" do
       extras = "MiqServer%3A%3Amiq_server=12"
-      FactoryGirl.create(:small_environment)
+      FactoryBot.create(:small_environment)
       attrs = {"MiqServer::miq_server" => "12", "array::tag" => "Classification::1,Classification::2"}
       result_str = "array%3A%3Atag=Classification%3A%3A1%2CClassification%3A%3A2"
       uri = "/System/Process/AUTOMATION?#{extras}&#{result_str}&object_name=AUTOMATION"
@@ -311,27 +311,27 @@ describe MiqAeEngine do
 
   context ".create_automation_attribute_key" do
     it "with a Vm (special case)" do
-      vm = FactoryGirl.create(:vm_vmware)
+      vm = FactoryBot.create(:vm_vmware)
       expect(MiqAeEngine.create_automation_attribute_key(vm)).to eq("VmOrTemplate::vm")
     end
 
     it "with an EMS" do
-      ems = FactoryGirl.create(:ems_vmware)
+      ems = FactoryBot.create(:ems_vmware)
       expect(MiqAeEngine.create_automation_attribute_key(ems)).to eq("ExtManagementSystem::ext_management_system")
     end
 
     it "with a Host" do
-      host = FactoryGirl.create(:host)
+      host = FactoryBot.create(:host)
       expect(MiqAeEngine.create_automation_attribute_key(host)).to eq("Host::host")
     end
 
       it "with a MiqRequest" do
-      prov_request = FactoryGirl.create(:miq_provision_request)
+      prov_request = FactoryBot.create(:miq_provision_request)
       expect(MiqAeEngine.create_automation_attribute_key(prov_request)).to eq("MiqProvisionRequest::miq_provision_request")
     end
 
     it "with an EmsCluster" do
-      cluster = FactoryGirl.create(:ems_cluster)
+      cluster = FactoryBot.create(:ems_cluster)
       expect(MiqAeEngine.create_automation_attribute_key(cluster)).to eq("EmsCluster::ems_cluster")
     end
 
@@ -346,24 +346,24 @@ describe MiqAeEngine do
     end
 
     it "with an VmOrTemplate" do
-      vm = FactoryGirl.create(:vm_vmware)
+      vm = FactoryBot.create(:vm_vmware)
       expect(MiqAeEngine.create_automation_attribute_class_name(vm)).to eq("VmOrTemplate")
     end
 
     it "with an Host" do
-      host = FactoryGirl.create(:host)
+      host = FactoryBot.create(:host)
       expect(MiqAeEngine.create_automation_attribute_class_name(host)).to eq("Host")
     end
 
     it "with an MiqRequest" do
-      host = FactoryGirl.create(:miq_provision_request)
+      host = FactoryBot.create(:miq_provision_request)
       expect(MiqAeEngine.create_automation_attribute_class_name(host)).to eq("MiqProvisionRequest")
     end
   end
 
   context ".create_automation_attributes" do
     before(:each) do
-      FactoryGirl.create(:small_environment)
+      FactoryBot.create(:small_environment)
     end
 
     it "with an array of Vms" do
@@ -454,7 +454,7 @@ describe MiqAeEngine do
 
   context ".set_automation_attributes_from_objects" do
     before(:each) do
-      FactoryGirl.create(:small_environment)
+      FactoryBot.create(:small_environment)
     end
     it "with an array of nil objects" do
       hash = {}
@@ -501,7 +501,7 @@ describe MiqAeEngine do
     end
 
     it "user has changed the group" do
-      requester_group = FactoryGirl.create(:miq_group)
+      requester_group = FactoryBot.create(:miq_group)
       user_obj = MiqAeEngine.ae_user_object(:user_id => @user.id, :miq_group_id => requester_group.id)
       expect(user_obj.current_group).to eq(requester_group)
       expect(user_obj.current_group).not_to eq(@user.current_group)
@@ -769,9 +769,9 @@ describe MiqAeEngine do
 
   it "processes arrays arguments properly" do
     vm_name = 'fred flintstone'
-    vm1 = FactoryGirl.create(:vm_vmware, :name => vm_name)
-    vm2 = FactoryGirl.create(:vm_vmware, :name => vm_name)
-    ems = FactoryGirl.create(:ems_vmware)
+    vm1 = FactoryBot.create(:vm_vmware, :name => vm_name)
+    vm2 = FactoryBot.create(:vm_vmware, :name => vm_name)
+    ems = FactoryBot.create(:ems_vmware)
 
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "miq_ae_engine_spec5"), @domain)
     ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?Array::my_objects=Vm::#{vm1.id},ExtManagementSystem::#{ems.id},Vm::#{vm2.id}", @user)
@@ -793,7 +793,7 @@ describe MiqAeEngine do
   include Spec::Support::AutomationHelper
 
   before do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     ae_fields = {'var1' => {:aetype => 'attribute', :datatype => 'string'}}
     ae_instances = {'.missing' => {'var1' => {:value => "${#_missing_instance}"}}}
     create_ae_model(:name => 'DOM1', :ae_namespace => 'NS1', :ae_class => 'CLASS1',
@@ -819,7 +819,7 @@ describe MiqAeEngine do
     let(:test_class_name) { test_class.name }
     let(:test_class_instance) { test_class.new }
     let(:workspace) { double("MiqAeEngine::MiqAeWorkspaceRuntime", :root => options) }
-    let(:user) { FactoryGirl.create(:user_with_group) }
+    let(:user) { FactoryBot.create(:user_with_group) }
     let(:options) { {:user_id => user.id, :miq_group_id => user.current_group.id, :object_type => test_class_name} }
 
     it "#before_ae_starts" do
@@ -854,7 +854,7 @@ describe MiqAeEngine do
   include Spec::Support::AutomationHelper
 
   before do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     nco_value = '${/#var1} || ${XY/ABC#var2} || ${State_Var#my_id} || Pebbles'
     default_value = '${/#var2} || ${XY/ABC#var2} || Bamm Bamm Rubble'
     instance_name = 'FRED'

@@ -1,14 +1,14 @@
 describe MiqAeMethodService::MiqAeServiceService do
-  let(:service)         { FactoryGirl.create(:service, :name => "test_service", :description => "test_description") }
+  let(:service)         { FactoryBot.create(:service, :name => "test_service", :description => "test_description") }
   let(:service_service) { MiqAeMethodService::MiqAeServiceService.find(service.id) }
-  let(:user)            { FactoryGirl.create(:user_with_group) }
+  let(:user)            { FactoryBot.create(:user_with_group) }
 
   before(:each) do
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
 
-    @service   = FactoryGirl.create(:service, :name => "test_service", :description => "test_description")
+    @service   = FactoryBot.create(:service, :name => "test_service", :description => "test_description")
   end
 
   def invoke_ae
@@ -67,7 +67,7 @@ describe MiqAeMethodService::MiqAeServiceService do
 
   context "#parent_service=" do
     before(:each) do
-      @parent = FactoryGirl.create(:service, :name => "parent_service")
+      @parent = FactoryBot.create(:service, :name => "parent_service")
     end
 
     it "updates the parent service" do
@@ -82,7 +82,7 @@ describe MiqAeMethodService::MiqAeServiceService do
     end
 
     it "raises error if child service is already owned by different parent" do
-      parent1 = FactoryGirl.create(:service)
+      parent1 = FactoryBot.create(:service)
       service.add_to_service(parent1)
       parent_service = MiqAeMethodService::MiqAeServiceService.find(@parent.id)
 
@@ -109,7 +109,7 @@ describe MiqAeMethodService::MiqAeServiceService do
 
   context "#self.create" do
     it "creates a new service" do
-      service_template = FactoryGirl.create(:service_template, :name => 'Dummy')
+      service_template = FactoryBot.create(:service_template, :name => 'Dummy')
       service_name = 'service name'
       description = 'description'
       method = <<EOF
@@ -161,8 +161,8 @@ EOF
   end
 
   it "#retire_service_resources" do
-    ems = FactoryGirl.create(:ems_vmware, :zone => @zone)
-    vm  = FactoryGirl.create(:vm_vmware, :ems_id => ems.id)
+    ems = FactoryBot.create(:ems_vmware, :zone => @zone)
+    vm  = FactoryBot.create(:vm_vmware, :ems_id => ems.id)
     service << vm
     # method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].retire_service_resources"
 

@@ -1,7 +1,7 @@
 describe "MiqAeStateMachine" do
   before(:each) do
     @domain = 'SPEC_DOMAIN'
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     @model_data_dir = File.join(File.dirname(__FILE__), "data")
     MiqAeDatastore.reset
   end

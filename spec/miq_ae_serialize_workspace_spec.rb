@@ -23,12 +23,12 @@ describe "MiqAeSerializeWorkspace" do
   let(:workspace) { double("MiqAeEngine::MiqAeWorkspaceRuntime", :root => root_object) }
   let(:test_class_instance) { test_class.new(workspace) }
   let(:user) do
-    FactoryGirl.create(:user_with_group, :userid   => "admin",
+    FactoryBot.create(:user_with_group, :userid   => "admin",
                                          :settings => {:display => { :timezone => "UTC"}})
   end
 
-  let(:host) { FactoryGirl.create(:host) }
-  let(:vm) { FactoryGirl.create(:vm_vmware, :host => host) }
+  let(:host) { FactoryBot.create(:host) }
+  let(:vm) { FactoryBot.create(:vm_vmware, :host => host) }
   let(:svc_vm) { MiqAeMethodService::MiqAeServiceVm.find(vm.id) }
 
   describe "#hash_workspace" do

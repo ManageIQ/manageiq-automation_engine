@@ -6,10 +6,10 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask do
   before(:each) do
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
-    @user          = FactoryGirl.create(:user_with_group)
+    @user          = FactoryBot.create(:user_with_group)
     @ae_result_key = 'foo'
     @options       = {}
-    @service_template_provision_task = FactoryGirl.create(:service_template_provision_task, :options => @options)
+    @service_template_provision_task = FactoryBot.create(:service_template_provision_task, :options => @options)
   end
 
   def invoke_ae

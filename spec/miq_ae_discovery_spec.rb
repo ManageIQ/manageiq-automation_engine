@@ -1,12 +1,12 @@
 describe "MiqAeDiscovery" do
   before(:each) do
     # admin user is needed to process Events
-    @admin  = User.super_admin || FactoryGirl.create(:user_with_group, :userid => "admin")
+    @admin  = User.super_admin || FactoryBot.create(:user_with_group, :userid => "admin")
     @tenant = Tenant.root_tenant
-    @group  = FactoryGirl.create(:miq_group, :tenant => @tenant)
-    @ems    = FactoryGirl.create(:ext_management_system, :tenant => @tenant)
-    @vm     = FactoryGirl.create(:vm_vmware, :miq_group => @group)
-    @event  = FactoryGirl.create(:ems_event, :event_type => "CreateVM_Task_Complete",
+    @group  = FactoryBot.create(:miq_group, :tenant => @tenant)
+    @ems    = FactoryBot.create(:ext_management_system, :tenant => @tenant)
+    @vm     = FactoryBot.create(:vm_vmware, :miq_group => @group)
+    @event  = FactoryBot.create(:ems_event, :event_type => "CreateVM_Task_Complete",
                                 :source => "VC", :ems_id => @ems.id, :vm_or_template_id => @vm.id)
     @domain = "SPEC_DOMAIN"
     @model_data_dir = File.join(File.dirname(__FILE__), "data")

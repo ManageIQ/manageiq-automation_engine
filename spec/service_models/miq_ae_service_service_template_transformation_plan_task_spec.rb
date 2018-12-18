@@ -4,7 +4,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateTransformationPlanTask d
   let(:conversion_host_1) { FactoryBot.create(:conversion_host, :resource => host) }
   let(:conversion_host_2) { FactoryBot.create(:conversion_host, :resource => vm) }
   let(:service_conversion_host_2) { MiqAeMethodService::MiqAeServiceConversionHost.find(conversion_host_2.id) }
-  let(:task) { FactoryGirl.create(:service_template_transformation_plan_task, :conversion_host => conversion_host_1) }
+  let(:task) { FactoryBot.create(:service_template_transformation_plan_task, :conversion_host => conversion_host_1) }
   let(:service_task) { MiqAeMethodService::MiqAeServiceServiceTemplateTransformationPlanTask.find(task.id) }
 
   describe "#conversion_host=" do

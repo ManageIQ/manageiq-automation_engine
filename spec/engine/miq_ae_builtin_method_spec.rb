@@ -1,6 +1,6 @@
 describe MiqAeEngine::MiqAeBuiltinMethod do
   describe '.miq_check_policy_prevent' do
-    let(:event)     { FactoryGirl.create(:miq_event) }
+    let(:event)     { FactoryBot.create(:miq_event) }
     let(:svc_event) { MiqAeMethodService::MiqAeServiceEventStream.find(event.id) }
     let(:workspace) { double('WORKSPACE', :get_obj_from_path => { 'event_stream' => svc_event }) }
     let(:obj)       { double('OBJ', :workspace => workspace) }

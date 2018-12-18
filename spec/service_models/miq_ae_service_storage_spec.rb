@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceStorage do
-  let(:storage) { FactoryGirl.create(:storage) }
+  let(:storage) { FactoryBot.create(:storage) }
   let(:svc_storage) { MiqAeMethodService::MiqAeServiceStorage.find(storage.id) }
 
   it "#show_url" do

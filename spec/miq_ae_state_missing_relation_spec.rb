@@ -1,7 +1,7 @@
 describe "MiqAeStateMachine" do
   before do
     MiqAeDatastore.reset_default_namespace
-    @user             = FactoryGirl.create(:user_with_group)
+    @user             = FactoryBot.create(:user_with_group)
     @domain           = 'FLINTSTONE'
     @namespace        = 'WILMA'
     @state_class      = 'FRED'
@@ -16,8 +16,8 @@ describe "MiqAeStateMachine" do
   end
 
   def setup_model
-    dom = FactoryGirl.create(:miq_ae_domain, :enabled => true, :name => @domain)
-    ns  = FactoryGirl.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
+    dom = FactoryBot.create(:miq_ae_domain, :enabled => true, :name => @domain)
+    ns  = FactoryBot.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
     @ns_fqname = ns.fqname
     create_other_class(:namespace => @ns_fqname, :name => @other_class)
     create_state_class(:namespace => @ns_fqname, :name => @state_class)
@@ -27,7 +27,7 @@ describe "MiqAeStateMachine" do
     ae_fields = {'var1' => {:aetype => 'attribute', :datatype => 'string'}}
     ae_instances = {@other1 => {'var1' => {:value => "1"}},
                     @other3 => {'var1' => {:value => "3"}}}
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_instances' => ae_instances,
                                    'ae_methods'   => {}))
@@ -54,7 +54,7 @@ describe "MiqAeStateMachine" do
                                          'state3' => {:value => missing_fq}}
                    }
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_methods'   => {},
                                    'ae_instances' => ae_instances))

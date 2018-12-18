@@ -2,7 +2,7 @@ describe MiqAeMethod do
   context "needing datatore" do
     before(:each) do
       MiqAeDatastore.reset
-      @user = FactoryGirl.create(:user_with_group)
+      @user = FactoryBot.create(:user_with_group)
       @domain = 'SPEC_DOMAIN'
       @model_data_dir = File.join(File.dirname(__FILE__), "data")
     end
@@ -15,21 +15,21 @@ describe MiqAeMethod do
                         :data => method_data, :location => 'inline'}
       params = [{:name => 'num1', :priority => 1, :datatype => 'integer'},
                 {:name => 'num2', :priority => 2, :datatype => 'integer', :default_value => 0}]
-      foo_c = FactoryGirl.create(:miq_ae_method, method_options.merge(:name => 'foo', :scope => 'class'))
+      foo_c = FactoryBot.create(:miq_ae_method, method_options.merge(:name => 'foo', :scope => 'class'))
       foo_c.inputs.build(params)
       foo_c.save!
-      foo_i = FactoryGirl.create(:miq_ae_method, method_options.merge(:name => 'foo', :scope => 'instance'))
+      foo_i = FactoryBot.create(:miq_ae_method, method_options.merge(:name => 'foo', :scope => 'instance'))
       foo_i.inputs.build(params)
       foo_i.save!
       method_options = {:language => 'ruby', :name => 'non_existent',
                         :scope => 'instance', :location => 'builtin',
                         :class_id => object_class.id}
-      FactoryGirl.create(:miq_ae_method, method_options)
+      FactoryBot.create(:miq_ae_method, method_options)
     end
 
     it "integrates with base methods of MiqAeServiceModelBase" do
       vm_name = 'fred flintstone'
-      vm = FactoryGirl.create(:vm_vmware, :name => vm_name)
+      vm = FactoryBot.create(:vm_vmware, :name => vm_name)
       EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "miq_ae_method_spec1"), @domain)
       ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?Vm::vm=#{vm.id}", @user)
       expect(ws.root("vm_id_via_hash")).to eq(vm.id)

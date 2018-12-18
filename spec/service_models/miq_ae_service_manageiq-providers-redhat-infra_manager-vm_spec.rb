@@ -1,9 +1,9 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Vm do
-  let(:vm)         { FactoryGirl.create(:vm_redhat) }
+  let(:vm)         { FactoryBot.create(:vm_redhat) }
   let(:service_vm) { MiqAeMethodService::MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Vm.find(vm.id) }
 
   before do
-    zone = FactoryGirl.create(:zone)
+    zone = FactoryBot.create(:zone)
     allow(MiqServer).to receive(:my_zone).and_return(zone.name)
     @base_queue_options = {
       :class_name  => vm.class.name,

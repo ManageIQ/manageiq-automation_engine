@@ -1,15 +1,15 @@
 describe MiqAeMethodService::MiqAeServiceVm do
-  let(:vm)         { FactoryGirl.create(:vm_vmware, :name => "template1", :location => "abc/abc.vmx") }
+  let(:vm)         { FactoryBot.create(:vm_vmware, :name => "template1", :location => "abc/abc.vmx") }
   let(:service_vm) { MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.find(vm.id) }
 
   before(:each) do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
 
-    @vm   = FactoryGirl.create(:vm_vmware, :name => "template1", :location => "abc/abc.vmx")
-    zone = FactoryGirl.create(:zone)
+    @vm   = FactoryBot.create(:vm_vmware, :name => "template1", :location => "abc/abc.vmx")
+    zone = FactoryBot.create(:zone)
     allow(MiqServer).to receive(:my_zone).and_return(zone.name)
   end
 
@@ -31,7 +31,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
 
     key1   = 'key1'
     value1 = 'value1'
-    c1 = FactoryGirl.create(:ems_custom_attribute, :resource => @vm, :name => key1, :value => value1)
+    c1 = FactoryBot.create(:ems_custom_attribute, :resource => @vm, :name => key1, :value => value1)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(Array)
     expect(ae_object.length).to eq(1)
@@ -39,7 +39,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
 
     key2   = 'key2'
     value2 = 'value2'
-    c1 = FactoryGirl.create(:ems_custom_attribute, :resource => @vm, :name => key2, :value => value2)
+    c1 = FactoryBot.create(:ems_custom_attribute, :resource => @vm, :name => key2, :value => value2)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(Array)
     expect(ae_object.length).to eq(2)
@@ -54,7 +54,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_nil
 
-    c1 = FactoryGirl.create(:ems_custom_attribute, :resource => @vm, :name => key, :value => value)
+    c1 = FactoryBot.create(:ems_custom_attribute, :resource => @vm, :name => key, :value => value)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to eq(value)
   end
@@ -69,7 +69,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
 
   context "with a service" do
     before(:each) do
-      @service = FactoryGirl.create(:service)
+      @service = FactoryBot.create(:service)
     end
 
     context "#add_to_service" do
@@ -251,7 +251,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
     end
 
     it "when not supported" do
-      vm_amazon = FactoryGirl.create(:vm_amazon, :name => "template1")
+      vm_amazon = FactoryBot.create(:vm_amazon, :name => "template1")
       svc_vm = MiqAeMethodService::MiqAeServiceManageIQ_Providers_Amazon_CloudManager_Vm.find(vm_amazon.id)
 
       expect { svc_vm.create_snapshot('snap', 'crackle & pop') }.to raise_error(RuntimeError)

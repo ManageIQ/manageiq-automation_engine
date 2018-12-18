@@ -32,11 +32,11 @@ describe MiqAeBrowser do
     learning_instances = { "Campanella" => { "study"   => { :value => "inprogress" },
                                              "perform" => { :value => "" } } }
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        :name => "Learning", :namespace => "/Liszt/SelectedWorks",
                        :ae_fields => learning_fields, :ae_methods => {}, :ae_instances => learning_instances)
 
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     @browser = described_class.new(@user)
   end
 

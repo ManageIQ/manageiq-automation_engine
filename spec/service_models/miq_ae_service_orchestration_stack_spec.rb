@@ -1,7 +1,7 @@
 describe MiqAeMethodService::MiqAeServiceOrchestrationStack do
-  let(:stack)           { FactoryGirl.create(:orchestration_stack) }
+  let(:stack)           { FactoryBot.create(:orchestration_stack) }
   let(:service_stack)   { MiqAeMethodService::MiqAeServiceOrchestrationStack.find(stack.id) }
-  let(:service)         { FactoryGirl.create(:service) }
+  let(:service)         { FactoryBot.create(:service) }
   let(:service_service) { MiqAeMethodService::MiqAeServiceService.find(service.id) }
 
   context "#add_to_service" do
@@ -33,7 +33,7 @@ describe MiqAeMethodService::MiqAeServiceOrchestrationStack do
   end
 
   context "refresh" do
-    before { stack.update(:ext_management_system => FactoryGirl.create(:ext_management_system)) }
+    before { stack.update(:ext_management_system => FactoryBot.create(:ext_management_system)) }
 
     it "calls a refresh on OrchestrationStack object" do
       expect(stack.class).to receive(:refresh_ems).with(stack.ext_management_system.id, stack.ems_ref)

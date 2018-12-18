@@ -135,8 +135,8 @@ describe MiqAeDatastore do
     end
 
     it "#restore_attrs_for_domains" do
-      d1 = FactoryGirl.create(:miq_ae_system_domain, :priority => 10, :name => "DOM1")
-      d2 = FactoryGirl.create(:miq_ae_domain_enabled, :priority => 11, :name => "DOM2")
+      d1 = FactoryBot.create(:miq_ae_system_domain, :priority => 10, :name => "DOM1")
+      d2 = FactoryBot.create(:miq_ae_domain_enabled, :priority => 11, :name => "DOM2")
       domain_attributes = MiqAeDatastore.preserved_attrs_for_domains
       d2.update_attributes(:priority => 6, :enabled => false)
       d1.update_attributes(:priority => 1, :enabled => true)

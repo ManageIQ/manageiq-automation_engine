@@ -3,7 +3,7 @@ describe MiqAeDomain do
 
   before do
     EvmSpecHelper.local_guid_miq_server_zone
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     @temp_dir = Pathname.new(Dir.mktmpdir)
     require 'miq_ae_datastore'
     stub_const("MiqAeDatastore::DATASTORE_DIRECTORY", @temp_dir)
@@ -15,7 +15,7 @@ describe MiqAeDomain do
 
   context "version" do
     it "no about class" do
-      d1 = FactoryGirl.create(:miq_ae_domain, :name => 'Obelix')
+      d1 = FactoryBot.create(:miq_ae_domain, :name => 'Obelix')
       expect(d1.version).to be_nil
     end
 
@@ -27,7 +27,7 @@ describe MiqAeDomain do
 
   context "available_version" do
     it "no version specified" do
-      d1 = FactoryGirl.create(:miq_ae_domain, :name => 'Asterix')
+      d1 = FactoryBot.create(:miq_ae_domain, :name => 'Asterix')
       expect(d1.available_version).to be_nil
     end
 

@@ -9,8 +9,8 @@ describe MiqAeMethodService::MiqAeServiceServiceReconfigureRequest do
   end
 
   let(:ae_method)     { ::MiqAeMethod.first }
-  let(:user)          { FactoryGirl.create(:user_with_group) }
-  let(:request)       { FactoryGirl.create(:service_reconfigure_request, :requester => user) }
+  let(:user)          { FactoryBot.create(:user_with_group) }
+  let(:request)       { FactoryBot.create(:service_reconfigure_request, :requester => user) }
 
   def invoke_ae
     MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?ServiceReconfigureRequest::request=#{request.id}", user)

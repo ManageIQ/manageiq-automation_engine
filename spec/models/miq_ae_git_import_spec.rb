@@ -7,12 +7,12 @@ describe MiqAeGitImport do
     let(:url) { "http://www.example.com/x/y" }
     let(:verify_ssl_disabled) { 0 }
     let(:domain) do
-      FactoryGirl.create(:miq_ae_git_domain,
+      FactoryBot.create(:miq_ae_git_domain,
                          :tenant => user.current_tenant,
                          :name   => domain_name)
     end
-    let(:repo) { FactoryGirl.create(:git_repository, :url => url, :verify_ssl => verify_ssl_disabled) }
-    let(:user) { FactoryGirl.create(:user_with_group) }
+    let(:repo) { FactoryBot.create(:git_repository, :url => url, :verify_ssl => verify_ssl_disabled) }
+    let(:user) { FactoryBot.create(:user_with_group) }
     let(:branch_hash) do
       {'ref' => branch_name, 'ref_type' => MiqAeGitImport::BRANCH}
     end
@@ -21,8 +21,8 @@ describe MiqAeGitImport do
       {'ref' => tag_name, 'ref_type' => MiqAeGitImport::TAG}
     end
 
-    let(:branch) { FactoryGirl.create(:git_branch, :name => branch_name) }
-    let(:tag) { FactoryGirl.create(:git_tag, :name => tag_name) }
+    let(:branch) { FactoryBot.create(:git_branch, :name => branch_name) }
+    let(:tag) { FactoryBot.create(:git_tag, :name => tag_name) }
     let(:basic_options) do
       {
         'domain'    => domain_name,

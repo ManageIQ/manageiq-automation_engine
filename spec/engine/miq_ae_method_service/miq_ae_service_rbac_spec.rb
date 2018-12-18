@@ -11,23 +11,23 @@ describe MiqAeMethodService::MiqAeServiceRbac do
 
   let(:default_tenant) { Tenant.seed }
 
-  let(:tenant1) { FactoryGirl.create(:tenant) }
-  let(:group1) { FactoryGirl.create(:miq_group, :tenant => tenant1) }
-  let(:ems1)   { FactoryGirl.create(:ext_management_system, :tenant => tenant1) }
-  let(:host1)   { FactoryGirl.create(:host) }
-  let(:user1) { FactoryGirl.create(:user, :miq_groups => [group1], :settings => {:display => {:timezone => "UTC"}}) }
-  let(:vm11) { FactoryGirl.create(:vm_vmware, :tenant => tenant1, :host => host1, :miq_group => group1) }
-  let(:vm12) { FactoryGirl.create(:vm_vmware, :tenant => tenant1, :host => host1, :miq_group => group1) }
-  let(:vm13) { FactoryGirl.create(:vm_vmware, :tenant => tenant1, :host => host1, :miq_group => group1) }
+  let(:tenant1) { FactoryBot.create(:tenant) }
+  let(:group1) { FactoryBot.create(:miq_group, :tenant => tenant1) }
+  let(:ems1)   { FactoryBot.create(:ext_management_system, :tenant => tenant1) }
+  let(:host1)   { FactoryBot.create(:host) }
+  let(:user1) { FactoryBot.create(:user, :miq_groups => [group1], :settings => {:display => {:timezone => "UTC"}}) }
+  let(:vm11) { FactoryBot.create(:vm_vmware, :tenant => tenant1, :host => host1, :miq_group => group1) }
+  let(:vm12) { FactoryBot.create(:vm_vmware, :tenant => tenant1, :host => host1, :miq_group => group1) }
+  let(:vm13) { FactoryBot.create(:vm_vmware, :tenant => tenant1, :host => host1, :miq_group => group1) }
 
-  let(:tenant2) { FactoryGirl.create(:tenant) }
-  let(:group2) { FactoryGirl.create(:miq_group, :tenant => tenant2) }
-  let(:user2) { FactoryGirl.create(:user, :miq_groups => [group2], :settings => {:display => {:timezone => "UTC"}}) }
-  let(:ems2) { FactoryGirl.create(:ext_management_system, :tenant => tenant2) }
-  let(:host2) { FactoryGirl.create(:host) }
-  let(:vm21) { FactoryGirl.create(:vm_vmware, :tenant => tenant2, :host => host2, :miq_group => group2) }
-  let(:vm22) { FactoryGirl.create(:vm_vmware, :tenant => tenant2, :host => host2, :miq_group => group2) }
-  let(:vm23) { FactoryGirl.create(:vm_vmware, :tenant => tenant2, :host => host2, :miq_group => group2) }
+  let(:tenant2) { FactoryBot.create(:tenant) }
+  let(:group2) { FactoryBot.create(:miq_group, :tenant => tenant2) }
+  let(:user2) { FactoryBot.create(:user, :miq_groups => [group2], :settings => {:display => {:timezone => "UTC"}}) }
+  let(:ems2) { FactoryBot.create(:ext_management_system, :tenant => tenant2) }
+  let(:host2) { FactoryBot.create(:host) }
+  let(:vm21) { FactoryBot.create(:vm_vmware, :tenant => tenant2, :host => host2, :miq_group => group2) }
+  let(:vm22) { FactoryBot.create(:vm_vmware, :tenant => tenant2, :host => host2, :miq_group => group2) }
+  let(:vm23) { FactoryBot.create(:vm_vmware, :tenant => tenant2, :host => host2, :miq_group => group2) }
 
   context "automate methods - enable rbac" do
     def collect_names_with_rbac

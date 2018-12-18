@@ -1,12 +1,12 @@
 describe MiqAeMethodService::MiqAeServiceServiceOrchestration do
-  let(:orch_template)    { FactoryGirl.create(:orchestration_template) }
-  let(:orch_manager)     { FactoryGirl.create(:ems_amazon) }
+  let(:orch_template)    { FactoryBot.create(:orchestration_template) }
+  let(:orch_manager)     { FactoryBot.create(:ems_amazon) }
   let(:stack_opts)       { {'any_key' => 'any_value'} }
   let(:ae_orch_template) { MiqAeMethodService::MiqAeServiceOrchestrationTemplate.find(orch_template.id) }
   let(:ae_orch_manager)  { MiqAeMethodService::MiqAeServiceExtManagementSystem.find(orch_manager.id) }
-  let(:service_template) { FactoryGirl.create(:service_template_orchestration) }
+  let(:service_template) { FactoryBot.create(:service_template_orchestration) }
   let(:ss_template)      { MiqAeMethodService::MiqAeServiceServiceTemplate.find(service_template.id) }
-  let(:service)          { FactoryGirl.create(:service_orchestration, :service_template => service_template) }
+  let(:service)          { FactoryBot.create(:service_orchestration, :service_template => service_template) }
   let(:service_service)  { MiqAeMethodService::MiqAeServiceService.find(service.id) }
 
   it "sets and gets orchestration_template" do

@@ -9,10 +9,10 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
 
-    @ems                   = FactoryGirl.create(:ems_vmware_with_authentication)
-    @vm_template           = FactoryGirl.create(:template_vmware, :ext_management_system => @ems)
-    @user                  = FactoryGirl.create(:user_with_group)
-    @miq_provision_request = FactoryGirl.create(:miq_provision_request, :provision_type => 'template', :state => 'pending', :status => 'Ok', :src_vm_id => @vm_template.id, :requester => @user)
+    @ems                   = FactoryBot.create(:ems_vmware_with_authentication)
+    @vm_template           = FactoryBot.create(:template_vmware, :ext_management_system => @ems)
+    @user                  = FactoryBot.create(:user_with_group)
+    @miq_provision_request = FactoryBot.create(:miq_provision_request, :provision_type => 'template', :state => 'pending', :status => 'Ok', :src_vm_id => @vm_template.id, :requester => @user)
   end
 
   def invoke_ae
@@ -38,8 +38,8 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
     options       = {}
     options[:src_vm_id] = [@vm_template.id, @vm_template.name]
     options[:pass]      = 1
-    miq_provision1 = FactoryGirl.create(:miq_provision, :provision_type => 'template', :state => 'pending', :status => 'Ok', :options => options)
-    miq_provision2 = FactoryGirl.create(:miq_provision, :provision_type => 'template', :state => 'pending', :status => 'Ok', :options => options)
+    miq_provision1 = FactoryBot.create(:miq_provision, :provision_type => 'template', :state => 'pending', :status => 'Ok', :options => options)
+    miq_provision2 = FactoryBot.create(:miq_provision, :provision_type => 'template', :state => 'pending', :status => 'Ok', :options => options)
 
     @miq_provision_request.miq_provisions = [miq_provision1]
     @miq_provision_request.save!

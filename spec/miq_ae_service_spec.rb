@@ -158,8 +158,8 @@ describe MiqAeMethodService::MiqAeService do
                                                    :persist_state_hash => {})
     end
     let(:miq_ae_service) { described_class.new(workspace) }
-    let(:user) { FactoryGirl.create(:user_with_group) }
-    let(:vm) { FactoryGirl.create(:vm) }
+    let(:user) { FactoryBot.create(:user_with_group) }
+    let(:vm) { FactoryBot.create(:vm) }
     let(:msg_text) { 'mary had a little lamb' }
 
     context "#create_notification!" do
