@@ -1,6 +1,6 @@
 describe MiqAeMethodService::MiqAeServiceHostAggregate do
   before(:each) do
-    @host_aggregate          = FactoryGirl.create(:host_aggregate, :name => "aggregate1")
+    @host_aggregate          = FactoryBot.create(:host_aggregate, :name => "aggregate1")
     @service_host_aggregate  = MiqAeMethodService::MiqAeServiceHostAggregate.find(@host_aggregate.id)
   end
 

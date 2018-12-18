@@ -1,16 +1,16 @@
 describe MiqAeEngine::MiqAePlaybookMethod do
   describe "run" do
-    let(:user) { FactoryGirl.create(:user_with_group) }
-    let(:aw) { FactoryGirl.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
+    let(:user) { FactoryBot.create(:user_with_group) }
+    let(:aw) { FactoryBot.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
     let(:root_hash) { { 'name' => 'Flintstone' } }
     let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
     let(:persist_hash) { {} }
     let(:options) { {"test" => 13, :hosts => hosts} }
     let(:method_name) { "Freddy Kreuger" }
     let(:method_key) { "FreddyKreuger_ansible_method_task_id" }
-    let(:miq_task) { FactoryGirl.create(:miq_task) }
-    let(:manager)  { FactoryGirl.create(:embedded_automation_manager_ansible) }
-    let(:playbook) { FactoryGirl.create(:embedded_playbook, :manager => manager) }
+    let(:miq_task) { FactoryBot.create(:miq_task) }
+    let(:manager)  { FactoryBot.create(:embedded_automation_manager_ansible) }
+    let(:playbook) { FactoryBot.create(:embedded_playbook, :manager => manager) }
     let(:resolved_hosts) { "1.1.1.94" }
     let(:hosts) { "/#my_vm_ip" }
 
@@ -27,7 +27,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     end
 
     let(:user) do
-      FactoryGirl.create(:user_with_group, :userid   => "admin",
+      FactoryBot.create(:user_with_group, :userid   => "admin",
                                            :settings => {:display => { :timezone => "UTC"}})
     end
 
@@ -35,26 +35,26 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:obj)    { double("OBJ", :workspace => workspace) }
     let(:inputs) { { 'name' => 'Fred' } }
 
-    let(:mpr) { FactoryGirl.create(:miq_provision_request, :requester => user) }
+    let(:mpr) { FactoryBot.create(:miq_provision_request, :requester => user) }
 
     let(:svc_mpr) { MiqAeMethodService::MiqAeServiceMiqProvisionRequest.find(mpr.id) }
 
-    let(:stpr) { FactoryGirl.create(:service_template_provision_request, :requester => user) }
+    let(:stpr) { FactoryBot.create(:service_template_provision_request, :requester => user) }
 
     let(:svc_stpr) { MiqAeMethodService::MiqAeServiceServiceTemplateProvisionRequest.find(stpr.id) }
 
-    let(:mpt) { FactoryGirl.create(:miq_provision_task, :miq_request => mpr) }
+    let(:mpt) { FactoryBot.create(:miq_provision_task, :miq_request => mpr) }
 
     let(:svc_mpt) { MiqAeMethodService::MiqAeServiceMiqProvisionTask.find(mpt.id) }
 
-    let(:stpt) { FactoryGirl.create(:service_template_provision_task, :miq_request => stpr) }
+    let(:stpt) { FactoryBot.create(:service_template_provision_task, :miq_request => stpr) }
 
     let(:svc_stpt) { MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask.find(stpt.id) }
 
     context "check miq extra vars passed into playbook" do
       before do
         miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
-        allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
+        allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
         allow(workspace).to receive(:update_workspace)
@@ -112,7 +112,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       before do
         allow(described_class::PLAYBOOK_CLASS).to receive(:find).and_return(playbook)
         allow(playbook).to receive(:run).and_return(miq_task.id)
-        allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
+        allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
         allow(obj).to receive(:substitute_value).and_return(resolved_hosts)
@@ -173,7 +173,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         miq_task.update_status(MiqTask::STATE_ACTIVE, MiqTask::STATUS_OK, "Actively working")
         allow(described_class::PLAYBOOK_CLASS).to receive(:find).and_return(playbook)
         allow(playbook).to receive(:run).and_return(miq_task.id)
-        allow(MiqRegion).to receive(:my_region).and_return(FactoryGirl.create(:miq_region))
+        allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
         allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
         allow(obj).to receive(:substitute_value).and_return(resolved_hosts)
         allow(workspace).to receive(:update_workspace)

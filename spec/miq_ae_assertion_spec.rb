@@ -2,19 +2,19 @@ describe MiqAeEngine::MiqAeObject do
   include Spec::Support::AutomationHelper
 
   context "Expression" do
-    let(:user) { FactoryGirl.create(:user_with_group) }
+    let(:user) { FactoryBot.create(:user_with_group) }
     let(:instance_name) { 'Pebbles' }
     let(:parent_instance_name) { 'Wilma' }
     let(:vm_name) { "BammBammRubble" }
-    let(:vm) { FactoryGirl.create(:vm, :name => vm_name) }
-    let(:ems) { FactoryGirl.create(:ems_vmware) }
+    let(:vm) { FactoryBot.create(:vm, :name => vm_name) }
+    let(:ems) { FactoryBot.create(:ems_vmware) }
     let(:number_of_vms) { 999 }
     let(:vm_template) do
-      FactoryGirl.create(:template_vmware, :name                  => "template1",
+      FactoryBot.create(:template_vmware, :name                  => "template1",
                                            :ext_management_system => ems)
     end
     let(:miq_provision_request) do
-      FactoryGirl.create(:miq_provision_request,
+      FactoryBot.create(:miq_provision_request,
                          :requester => user,
                          :src_vm_id => vm_template.id,
                          :options   => {:number_of_vms => number_of_vms})

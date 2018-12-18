@@ -1,7 +1,7 @@
 describe MiqAeEngine::MiqAeDomainSearch do
   include Spec::Support::AutomationHelper
 
-  let(:user) { FactoryGirl.create(:user_with_group) }
+  let(:user) { FactoryBot.create(:user_with_group) }
   let(:search) { described_class.new }
 
   def create_ae_instances

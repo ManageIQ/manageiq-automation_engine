@@ -4,13 +4,13 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
 
-    @ems           = FactoryGirl.create(:ems_vmware_with_authentication)
-    @vm_template   = FactoryGirl.create(:template_vmware, :ext_management_system => @ems)
+    @ems           = FactoryBot.create(:ems_vmware_with_authentication)
+    @vm_template   = FactoryBot.create(:template_vmware, :ext_management_system => @ems)
     @options       = {}
     @options[:src_vm_id] = [@vm_template.id, @vm_template.name]
     @options[:pass]      = 1
-    @user = FactoryGirl.create(:user_with_group, :name => 'Fred Flintstone', :userid => 'fred')
-    @miq_provision = FactoryGirl.create(:miq_provision_vmware,
+    @user = FactoryBot.create(:user_with_group, :name => 'Fred Flintstone', :userid => 'fred')
+    @miq_provision = FactoryBot.create(:miq_provision_vmware,
                                         :provision_type => 'template',
                                         :state => 'pending', :status => 'Ok',
                                         :options => @options,
@@ -27,7 +27,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
   context "check requests" do
     before(:each) do
-      @miq_provision_request = FactoryGirl.create(:miq_provision_request,
+      @miq_provision_request = FactoryBot.create(:miq_provision_request,
                                                   :provision_type => 'template',
                                                   :state => 'pending', :status => 'Ok',
                                                   :src_vm_id => @vm_template.id,
@@ -62,7 +62,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_nil
 
-    vm = FactoryGirl.create(:vm_vmware, :name => "vm42", :location => "vm42/vm42.vmx")
+    vm = FactoryBot.create(:vm_vmware, :name => "vm42", :location => "vm42/vm42.vmx")
     @miq_provision.vm = vm
     @miq_provision.save!
 
@@ -142,7 +142,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
   context "iso_images" do
     before(:each) do
-      @iso_image = FactoryGirl.create(:iso_image, :name => "Test ISO Image")
+      @iso_image = FactoryBot.create(:iso_image, :name => "Test ISO Image")
       iso_image_struct = [MiqHashStruct.new(
         :id               => "IsoImage::#{@iso_image.id}",
         :name             => @iso_image.name,
@@ -201,7 +201,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     context "returns ok for finished/ok" do
       let(:return_status) { "ok" }
       let(:miq_provision) do
-        FactoryGirl.create(:vm_migrate_task, :status => "Ok", :state => "finished")
+        FactoryBot.create(:vm_migrate_task, :status => "Ok", :state => "finished")
       end
       it_behaves_like "#statemachine_task_status"
     end
@@ -209,7 +209,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     context "returns error for finished/error" do
       let(:return_status) { "error" }
       let(:miq_provision) do
-        FactoryGirl.create(:vm_migrate_task, :status => "Error", :state => "finished")
+        FactoryBot.create(:vm_migrate_task, :status => "Error", :state => "finished")
       end
       it_behaves_like "#statemachine_task_status"
     end
@@ -217,7 +217,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     context "returns ok for migrated/ok" do
       let(:return_status) { "ok" }
       let(:miq_provision) do
-        FactoryGirl.create(:vm_migrate_task, :status => "Ok", :state => "migrated")
+        FactoryBot.create(:vm_migrate_task, :status => "Ok", :state => "migrated")
       end
       it_behaves_like "#statemachine_task_status"
     end
@@ -225,7 +225,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     context "returns error for migrated/error" do
       let(:return_status) { "error" }
       let(:miq_provision) do
-        FactoryGirl.create(:vm_migrate_task, :status => "Error", :state => "migrated")
+        FactoryBot.create(:vm_migrate_task, :status => "Error", :state => "migrated")
       end
       it_behaves_like "#statemachine_task_status"
     end
@@ -233,7 +233,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     context "returns retry for pending" do
       let(:return_status) { "retry" }
       let(:miq_provision) do
-        FactoryGirl.create(:vm_migrate_task, :state => "pending")
+        FactoryBot.create(:vm_migrate_task, :state => "pending")
       end
       it_behaves_like "#statemachine_task_status"
     end
@@ -272,7 +272,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
     it "#statemachine_task_status finished state, status of error returns error " do
       @miq_provision.update_attributes(:status => "Error", :state => "finished",
-                                       :vm => FactoryGirl.create(:vm_vmware))
+                                       :vm => FactoryBot.create(:vm_vmware))
       expect(ae_svc_prov.status).to eq('error')
     end
 
@@ -282,14 +282,14 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     end
 
     it "#statemachine_task_status finished state, status of ok returns ok " do
-      @miq_provision.update_attributes(:status => "Ok", :state => "finished", :vm => FactoryGirl.create(:vm_vmware))
+      @miq_provision.update_attributes(:status => "Ok", :state => "finished", :vm => FactoryBot.create(:vm_vmware))
       expect(ae_svc_prov.status).to eq('ok')
     end
   end
 
   context "customization_templates" do
     before(:each) do
-      @ct = FactoryGirl.create(:customization_template, :name => "Test Templates", :script => "script_text")
+      @ct = FactoryBot.create(:customization_template, :name => "Test Templates", :script => "script_text")
       ct_struct = [MiqHashStruct.new(:id => @ct.id, :name => @ct.name,
                                      :evm_object_class => @ct.class.base_class.name.to_sym)]
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_customization_templates).and_return(ct_struct)
@@ -317,7 +317,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
   context "customization_specs" do
     before(:each) do
-      @cs = FactoryGirl.create(:customization_spec, :name => "Test Specs", :spec => {"script_text" => "blah"})
+      @cs = FactoryBot.create(:customization_spec, :name => "Test Specs", :spec => {"script_text" => "blah"})
       cs_struct = [MiqHashStruct.new(:id => @cs.id, :name => @cs.name,
                                      :evm_object_class => @cs.class.base_class.name.to_sym)]
       allow_any_instance_of(MiqProvisionVirtWorkflow).to receive(:allowed_customization_specs).and_return(cs_struct)
@@ -360,7 +360,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   end
 
   context "storage_profiles" do
-    let(:storage_profile) { FactoryGirl.create(:storage_profile, :name => "Test StorageProfile", :ems_id => @ems.id) }
+    let(:storage_profile) { FactoryBot.create(:storage_profile, :name => "Test StorageProfile", :ems_id => @ems.id) }
 
     before(:each) do
       @vm_template.storage_profile = storage_profile
@@ -389,7 +389,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
   context "resource_pools" do
     before(:each) do
-      @rsc = FactoryGirl.create(:resource_pool)
+      @rsc = FactoryBot.create(:resource_pool)
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_resource_pools).and_return(@rsc.id => @rsc.name)
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_respools).and_return(@rsc.id => @rsc.name)
     end

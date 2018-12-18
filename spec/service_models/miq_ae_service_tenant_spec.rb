@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceTenant do
-  let(:tenant) { FactoryGirl.create(:tenant, :name => 'fred', :domain => 'a.b', :description => "Krueger") }
+  let(:tenant) { FactoryBot.create(:tenant, :name => 'fred', :domain => 'a.b', :description => "Krueger") }
 
   let(:service_tenant) { MiqAeMethodService::MiqAeServiceTenant.find(tenant.id) }
 
@@ -16,7 +16,7 @@ describe MiqAeMethodService::MiqAeServiceTenant do
   end
 
   it "#tenant_quotas" do
-    cpu_quota = FactoryGirl.create(:tenant_quota_cpu, :tenant_id => tenant.id)
+    cpu_quota = FactoryBot.create(:tenant_quota_cpu, :tenant_id => tenant.id)
     ids = [cpu_quota.id]
     expect(service_tenant.tenant_quotas.collect(&:id)).to match_array(ids)
   end

@@ -4,8 +4,8 @@ describe MiqAeMethodService::MiqAeService do
     @domain = 'Bedrock'
     Tenant.seed
     @root_tenant = Tenant.root_tenant
-    @tenant = FactoryGirl.build(:tenant, :parent => @root_tenant)
-    @owner = FactoryGirl.create(:user_with_group, :name => "fred", :tenant => @tenant)
+    @tenant = FactoryBot.build(:tenant, :parent => @root_tenant)
+    @owner = FactoryBot.create(:user_with_group, :name => "fred", :tenant => @tenant)
     create_method(@domain, @tenant)
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
@@ -26,8 +26,8 @@ describe MiqAeMethodService::MiqAeService do
   end
 
   def create_inaccessible_domain
-    @other_tenant = FactoryGirl.build(:tenant, :parent => @root_tenant)
-    @other_owner = FactoryGirl.create(:user_with_group, :name => "barney", :tenant => @other_tenant)
+    @other_tenant = FactoryBot.build(:tenant, :parent => @root_tenant)
+    @other_owner = FactoryBot.create(:user_with_group, :name => "barney", :tenant => @other_tenant)
     @other_domain = 'Mexirock'
     create_method(@other_domain, @other_tenant)
   end

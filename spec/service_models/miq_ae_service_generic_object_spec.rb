@@ -1,13 +1,13 @@
 describe MiqAeMethodService::MiqAeServiceGenericObject do
-  let(:generic_object)   { FactoryGirl.create(:generic_object) }
+  let(:generic_object)   { FactoryBot.create(:generic_object) }
   let(:service_go)       { MiqAeMethodService::MiqAeServiceGenericObject.find(generic_object.id) }
-  let(:service)          { FactoryGirl.create(:service) }
+  let(:service)          { FactoryBot.create(:service) }
   let(:service_service)  { MiqAeMethodService::MiqAeServiceService.find(service.id) }
-  let(:service2)         { FactoryGirl.create(:service) }
+  let(:service2)         { FactoryBot.create(:service) }
   let(:service_service2) { MiqAeMethodService::MiqAeServiceService.find(service2.id) }
   let(:method_name)      { 'fred' }
   let(:definition) do
-    FactoryGirl.create(
+    FactoryBot.create(
       :generic_object_definition,
       :name       => "test_definition",
       :properties => {
@@ -17,14 +17,14 @@ describe MiqAeMethodService::MiqAeServiceGenericObject do
   end
 
   let(:go) do
-    FactoryGirl.create(
+    FactoryBot.create(
       :generic_object,
       :generic_object_definition => definition,
       :name                      => 'test'
     )
   end
 
-  let(:user) { FactoryGirl.create(:user_with_group) }
+  let(:user) { FactoryBot.create(:user_with_group) }
   let(:workspace) do
     double('ws', :persist_state_hash => {},
                  :ae_user            => user,

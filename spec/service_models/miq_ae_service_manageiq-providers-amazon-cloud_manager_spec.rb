@@ -1,8 +1,8 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Amazon_CloudManager do
   before(:each) do
-    @ems                    = FactoryGirl.create(:ems_amazon)
-    @flavor                 = FactoryGirl.create(:flavor)
-    @availability_zone      = FactoryGirl.create(:availability_zone)
+    @ems                    = FactoryBot.create(:ems_amazon)
+    @flavor                 = FactoryBot.create(:flavor)
+    @availability_zone      = FactoryBot.create(:availability_zone)
     @ems.availability_zones << @availability_zone
     @ems.flavors << @flavor
     @ems_amazon             = MiqAeMethodService::MiqAeServiceManageIQ_Providers_Amazon_CloudManager.find(@ems.id)

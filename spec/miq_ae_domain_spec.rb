@@ -3,7 +3,7 @@ describe MiqAeDomain do
 
   let(:root_tenant) { Tenant.seed }
   before do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     EvmSpecHelper.local_miq_server
     root_tenant
     setup_model

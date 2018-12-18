@@ -1,6 +1,6 @@
 describe MiqAeMethodService::MiqAeServiceAvailabilityZone do
   before(:each) do
-    @availability_zone          = FactoryGirl.create(:availability_zone, :name => "us-west-1a")
+    @availability_zone          = FactoryBot.create(:availability_zone, :name => "us-west-1a")
     @service_availability_zone  = MiqAeMethodService::MiqAeServiceAvailabilityZone.find(@availability_zone.id)
   end
 

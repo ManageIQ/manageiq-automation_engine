@@ -1,11 +1,11 @@
 describe MiqAeMethodService::MiqAeServiceUser do
-  let(:cloud_volume)         { FactoryGirl.create(:cloud_volume_openstack) }
+  let(:cloud_volume)         { FactoryBot.create(:cloud_volume_openstack) }
   let(:service_cloud_volume) do
     MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager_CloudVolume.find(cloud_volume.id)
   end
 
   before do
-    zone = FactoryGirl.create(:zone)
+    zone = FactoryBot.create(:zone)
     allow_any_instance_of(CloudVolume).to receive(:my_zone).and_return(zone.name)
     allow(MiqServer).to receive(:my_zone).and_return(zone.name)
     @base_queue_options = {

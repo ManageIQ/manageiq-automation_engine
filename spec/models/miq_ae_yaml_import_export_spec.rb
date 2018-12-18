@@ -267,9 +267,9 @@ describe MiqAeDatastore do
 
       def add_extra_items_to_customer_domain
         @customer_domain = MiqAeDomain.find_by_name("customer")
-        n    = FactoryGirl.create(:miq_ae_namespace, :name => "bonus_namespace_2", :parent_id => @customer_domain.id)
-        n_c1 = FactoryGirl.create(:miq_ae_class, :name => "bonus_test_class_3", :namespace_id => n.id)
-        FactoryGirl.create(:miq_ae_instance, :name => "bonus_test_instance1", :class_id => n_c1.id)
+        n    = FactoryBot.create(:miq_ae_namespace, :name => "bonus_namespace_2", :parent_id => @customer_domain.id)
+        n_c1 = FactoryBot.create(:miq_ae_class, :name => "bonus_test_class_3", :namespace_id => n.id)
+        FactoryBot.create(:miq_ae_instance, :name => "bonus_test_instance1", :class_id => n_c1.id)
       end
 
       it "import single user domain" do
@@ -532,7 +532,7 @@ describe MiqAeDatastore do
                    'meth' => 3, 'field' => 6, 'value' => 4)
       @manageiq_domain = MiqAeNamespace.find_by_fqname('manageiq', false)
       @aen1_aec1       = MiqAeClass.find_by_name('manageiq_test_class_1')
-      @aen1_aec1_aei2  = FactoryGirl.create(:miq_ae_instance,
+      @aen1_aec1_aei2  = FactoryBot.create(:miq_ae_instance,
                                             :name     => 'test_instance3',
                                             :class_id => @aen1_aec1.id)
       setup_export_dir
@@ -702,7 +702,7 @@ describe MiqAeDatastore do
 
   def create_field(class_obj, instance_obj, method_obj, options)
     if method_obj.nil?
-      field = FactoryGirl.create(:miq_ae_field,
+      field = FactoryBot.create(:miq_ae_field,
                                  :class_id      => class_obj.id,
                                  :name          => options['name'],
                                  :aetype        => options['type'],
@@ -712,7 +712,7 @@ describe MiqAeDatastore do
                                  :default_value => options['default_value'])
       create_field_value(instance_obj, field, options) unless options['value'].nil?
     else
-      FactoryGirl.create(:miq_ae_field,
+      FactoryBot.create(:miq_ae_field,
                          :method_id     => method_obj.id,
                          :name          => options['name'],
                          :aetype        => options['type'],
@@ -729,7 +729,7 @@ describe MiqAeDatastore do
             :value       => options['value']}
     hash.reverse_merge!(@additional_columns) if options['type'] == 'relationship'
 
-    FactoryGirl.create(:miq_ae_value, hash)
+    FactoryBot.create(:miq_ae_value, hash)
   end
 
   def create_fields(class_obj, instance_obj, method_obj)
@@ -772,43 +772,43 @@ describe MiqAeDatastore do
   end
 
   def create_factory_data(domain_name, priority, source = MiqAeDomain::USER_SOURCE)
-    domain   = FactoryGirl.create(:miq_ae_domain_enabled, :name => domain_name, :source => source, :priority => priority)
-    n1       = FactoryGirl.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_1",    :parent_id => domain.id, :description => "test", :display_name => "test")
-    n1_c1    = FactoryGirl.create(:miq_ae_class,     :name => "#{domain_name}_test_class_1",   :namespace_id => n1.id)
-    n1_1     = FactoryGirl.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_1_1",  :parent_id => n1.id)
-    n1_1_c1  = FactoryGirl.create(:miq_ae_class,     :name => "#{domain_name}_test_class_4",   :namespace_id => n1_1.id)
-    n1_c1_i1 = FactoryGirl.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n1_c1.id)
-    n1_c1_m1 = FactoryGirl.create(:miq_ae_method,
+    domain   = FactoryBot.create(:miq_ae_domain_enabled, :name => domain_name, :source => source, :priority => priority)
+    n1       = FactoryBot.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_1",    :parent_id => domain.id, :description => "test", :display_name => "test")
+    n1_c1    = FactoryBot.create(:miq_ae_class,     :name => "#{domain_name}_test_class_1",   :namespace_id => n1.id)
+    n1_1     = FactoryBot.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_1_1",  :parent_id => n1.id)
+    n1_1_c1  = FactoryBot.create(:miq_ae_class,     :name => "#{domain_name}_test_class_4",   :namespace_id => n1_1.id)
+    n1_c1_i1 = FactoryBot.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n1_c1.id)
+    n1_c1_m1 = FactoryBot.create(:miq_ae_method,
                                   :class_id => n1_c1.id,
                                   :name     => 'test1',
                                   :scope    => "instance",
                                   :language => "ruby",
                                   # Method with no data
                                   :location => "inline")
-    FactoryGirl.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n1_1_c1.id)
-    FactoryGirl.create(:miq_ae_method,
+    FactoryBot.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n1_1_c1.id)
+    FactoryBot.create(:miq_ae_method,
                        :class_id => n1_c1.id,
                        :name     => 'test2',
                        :scope    => "instance",
                        :language => "ruby",
                        :location => "builtin")
-    FactoryGirl.create(:miq_ae_method,
+    FactoryBot.create(:miq_ae_method,
                        :class_id => n1_c1.id,
                        :name     => 'test3',
                        :scope    => "instance",
                        :language => "ruby",
                        :data     => @expression_data,
                        :location => "expression")
-    FactoryGirl.create(:miq_ae_instance,  :name => 'test_instance2', :class_id => n1_c1.id)
+    FactoryBot.create(:miq_ae_instance,  :name => 'test_instance2', :class_id => n1_c1.id)
     create_fields(n1_c1, n1_c1_i1, n1_c1_m1)
 
-    n1_c2     = FactoryGirl.create(:miq_ae_class,     :name => "#{domain_name}_test_class_2",   :namespace_id => n1.id)
-    3.times {   FactoryGirl.create(:miq_ae_instance,  :class_id => n1_c2.id) }
-    n2        = FactoryGirl.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_2",    :parent_id => domain.id)
-    n2_c1     = FactoryGirl.create(:miq_ae_class,     :name => "#{domain_name}_test_class_3",   :namespace_id => n2.id)
-    n2_c1_i1  = FactoryGirl.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n2_c1.id)
-    3.times {   FactoryGirl.create(:miq_ae_instance,  :class_id => n2_c1.id) }
-    n2_c1_m1 =  FactoryGirl.create(:miq_ae_method,
+    n1_c2     = FactoryBot.create(:miq_ae_class,     :name => "#{domain_name}_test_class_2",   :namespace_id => n1.id)
+    3.times {   FactoryBot.create(:miq_ae_instance,  :class_id => n1_c2.id) }
+    n2        = FactoryBot.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_2",    :parent_id => domain.id)
+    n2_c1     = FactoryBot.create(:miq_ae_class,     :name => "#{domain_name}_test_class_3",   :namespace_id => n2.id)
+    n2_c1_i1  = FactoryBot.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n2_c1.id)
+    3.times {   FactoryBot.create(:miq_ae_instance,  :class_id => n2_c1.id) }
+    n2_c1_m1 =  FactoryBot.create(:miq_ae_method,
                                    :class_id => n2_c1.id,
                                    :name     => 'namespace2_method_test1',
                                    :scope    => "instance",

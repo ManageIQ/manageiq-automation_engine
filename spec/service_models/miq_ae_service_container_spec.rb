@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceContainer do
-  let(:container) { FactoryGirl.create(:container) }
+  let(:container) { FactoryBot.create(:container) }
 
   it "#ext_management_system" do
     expect(described_class.instance_methods).to include(:ext_management_system)

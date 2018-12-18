@@ -9,8 +9,8 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
 
-    @fred          = FactoryGirl.create(:user_with_group)
-    @miq_request   = FactoryGirl.create(:automation_request, :requester => @fred)
+    @fred          = FactoryBot.create(:user_with_group)
+    @miq_request   = FactoryBot.create(:automation_request, :requester => @fred)
   end
 
   def invoke_ae
@@ -56,10 +56,10 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     @ae_method.update_attributes(:data => method)
     expect(invoke_ae.root(@ae_result_key)).to eq([])
 
-    wilma          = FactoryGirl.create(:user_with_email_and_group)
-    betty          = FactoryGirl.create(:user_with_email_and_group)
-    wilma_approval = FactoryGirl.create(:miq_approval, :approver => wilma)
-    betty_approval = FactoryGirl.create(:miq_approval, :approver => betty)
+    wilma          = FactoryBot.create(:user_with_email_and_group)
+    betty          = FactoryBot.create(:user_with_email_and_group)
+    wilma_approval = FactoryBot.create(:miq_approval, :approver => wilma)
+    betty_approval = FactoryBot.create(:miq_approval, :approver => betty)
     @miq_request.miq_approvals = [wilma_approval, betty_approval]
     @miq_request.save!
 
@@ -100,8 +100,8 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].resource"
     @ae_method.update_attributes(:data => method)
 
-    vm_template = FactoryGirl.create(:template_vmware, :name => "template1")
-    resource    = FactoryGirl.create(:miq_provision_request, :requester => @fred, :src_vm_id => vm_template.id)
+    vm_template = FactoryBot.create(:template_vmware, :name => "template1")
+    resource    = FactoryBot.create(:miq_provision_request, :requester => @fred, :src_vm_id => vm_template.id)
     @miq_request = resource
 
     ae_resource = invoke_ae.root(@ae_result_key)
@@ -116,8 +116,8 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     reason = invoke_ae.root(@ae_result_key)
     expect(reason).to be_nil
 
-    betty          = FactoryGirl.create(:user_with_email_and_group)
-    betty_approval = FactoryGirl.create(:miq_approval, :approver => betty)
+    betty          = FactoryBot.create(:user_with_email_and_group)
+    betty_approval = FactoryBot.create(:miq_approval, :approver => betty)
     @miq_request.miq_approvals = [betty_approval]
     @miq_request.save!
 
@@ -130,8 +130,8 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     reason = invoke_ae.root(@ae_result_key)
     expect(reason).to eq(betty_reason)
 
-    wilma          = FactoryGirl.create(:user_with_email_and_group)
-    wilma_approval = FactoryGirl.create(:miq_approval, :approver => wilma)
+    wilma          = FactoryBot.create(:user_with_email_and_group)
+    wilma_approval = FactoryBot.create(:miq_approval, :approver => wilma)
     @miq_request.miq_approvals << wilma_approval
     wilma_reason = "Where's Fred?"
     wilma_approval.deny(wilma.userid, wilma_reason)

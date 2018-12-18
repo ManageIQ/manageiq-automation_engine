@@ -1,20 +1,20 @@
 describe MiqAeDomain do
   before do
     EvmSpecHelper.local_guid_miq_server_zone
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
   end
 
   it "should use the highest priority when not specified" do
-    FactoryGirl.create(:miq_ae_domain, :name => 'TEST1')
-    FactoryGirl.create(:miq_ae_domain, :name => 'TEST2', :priority => 10)
-    d3 = FactoryGirl.create(:miq_ae_domain, :name => 'TEST3')
+    FactoryBot.create(:miq_ae_domain, :name => 'TEST1')
+    FactoryBot.create(:miq_ae_domain, :name => 'TEST2', :priority => 10)
+    d3 = FactoryBot.create(:miq_ae_domain, :name => 'TEST3')
     expect(d3.priority).to eql(11)
   end
 
   context "reset priority" do
     before do
       initial = {'TEST1' => 11, 'TEST2' => 12, 'TEST3' => 13, 'TEST4' => 14}
-      initial.each { |dom, pri| FactoryGirl.create(:miq_ae_domain, :name => dom, :priority => pri) }
+      initial.each { |dom, pri| FactoryBot.create(:miq_ae_domain, :name => dom, :priority => pri) }
     end
 
     it "should change priority based on ordered list of ids" do
@@ -44,37 +44,37 @@ describe MiqAeDomain do
 
     it "after all domains are deleted" do
       %w(TEST1 TEST2 TEST3 TEST4).each { |name| MiqAeDomain.find_by_fqname(name).destroy }
-      d1 = FactoryGirl.create(:miq_ae_domain, :name => 'TEST1')
+      d1 = FactoryBot.create(:miq_ae_domain, :name => 'TEST1')
       expect(d1.priority).to eql(1)
     end
   end
 
   context "any_unlocked?" do
     it "should return unlocked_domains? as true if the there are any unlocked domains available" do
-      FactoryGirl.create(:miq_ae_system_domain)
-      FactoryGirl.create(:miq_ae_domain)
+      FactoryBot.create(:miq_ae_system_domain)
+      FactoryBot.create(:miq_ae_domain)
       expect(MiqAeDomain.any_unlocked?).to be_truthy
     end
 
     it "should return unlocked_domains? as false if the there are no unlocked domains available" do
-      FactoryGirl.create(:miq_ae_system_domain)
-      FactoryGirl.create(:miq_ae_system_domain)
+      FactoryBot.create(:miq_ae_system_domain)
+      FactoryBot.create(:miq_ae_system_domain)
       expect(MiqAeDomain.any_unlocked?).to be_falsey
     end
   end
 
   context "all_unlocked" do
     it "should return all unlocked domains" do
-      FactoryGirl.create(:miq_ae_system_domain)
-      FactoryGirl.create(:miq_ae_domain)
-      FactoryGirl.create(:miq_ae_domain)
+      FactoryBot.create(:miq_ae_system_domain)
+      FactoryBot.create(:miq_ae_domain)
+      FactoryBot.create(:miq_ae_domain)
       expect(MiqAeDomain.all_unlocked.count).to eq(2)
     end
 
     it "should return empty array when there are no unlocked domains" do
-      FactoryGirl.create(:miq_ae_system_domain)
-      FactoryGirl.create(:miq_ae_system_domain)
-      FactoryGirl.create(:miq_ae_system_domain)
+      FactoryBot.create(:miq_ae_system_domain)
+      FactoryBot.create(:miq_ae_system_domain)
+      FactoryBot.create(:miq_ae_system_domain)
       expect(MiqAeDomain.all_unlocked.count).to eq(0)
     end
   end
@@ -140,59 +140,59 @@ describe MiqAeDomain do
 
   context "editable properties for a domain" do
     it "manageiq domain can't change properties" do
-      dom = FactoryGirl.create(:miq_ae_system_domain, :name => "ManageIQ", :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_system_domain, :name => "ManageIQ", :tenant => @user.current_tenant)
       expect(dom.editable_properties?).to be_falsey
     end
 
     it "user domain can change properties" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       expect(dom.editable_properties?).to be_truthy
     end
 
     it "git domain cannot change properties" do
-      dom = FactoryGirl.create(:miq_ae_git_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_git_domain, :tenant => @user.current_tenant)
       expect(dom.editable_properties?).to be_truthy
     end
   end
 
   context "lock contents" do
     it "contents_locked? should be false for user domain" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       expect(dom.contents_locked?).to be_falsey
     end
 
     it "contents_locked? should be true for user domain after its locked" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       dom.lock_contents!
       expect(dom.contents_locked?).to be_truthy
     end
 
     it "call lock_contents! multiple times" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       dom.lock_contents!
       dom.lock_contents!
       expect(dom.contents_locked?).to be_truthy
     end
 
     it "contents_locked? should be true for user domain" do
-      dom = FactoryGirl.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
       expect(dom.contents_locked?).to be_truthy
     end
 
     it "cannot lock a system domain" do
-      dom = FactoryGirl.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
       expect { dom.lock_contents! }.to raise_error(MiqAeException::CannotLock)
     end
   end
 
   context "unlock contents" do
     it "cannot unlock a system domain" do
-      dom = FactoryGirl.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
       expect { dom.unlock_contents! }.to raise_error(MiqAeException::CannotUnlock)
     end
 
     it "call unlock_contents! multiple times" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       dom.lock_contents!
       dom.unlock_contents!
       dom.unlock_contents!
@@ -202,29 +202,29 @@ describe MiqAeDomain do
 
   context "editable contents for a domain" do
     it "system domain can't change contents" do
-      dom = FactoryGirl.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
       expect(dom.editable_contents?(@user)).to be_falsey
     end
 
     it "user domain can change contents" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       expect(dom.editable_contents?(@user)).to be_truthy
     end
 
     it "git domain cannot change contents" do
-      dom = FactoryGirl.create(:miq_ae_git_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_git_domain, :tenant => @user.current_tenant)
       expect(dom.editable_contents?(@user)).to be_falsey
     end
   end
 
   context "lockable" do
     it "a user domain should be lockable" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       expect(dom.lockable?).to be_truthy
     end
 
     it "a locked user domain should not be lockable" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       dom.lock_contents!
       expect(dom.lockable?).to be_falsey
     end
@@ -232,20 +232,20 @@ describe MiqAeDomain do
 
   context "unlockable" do
     it "a locked user domain should be unlockable" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       dom.lock_contents!
       expect(dom.unlockable?).to be_truthy
     end
 
     it "a unlocked user domain should not be unlockable" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       expect(dom.unlockable?).to be_falsey
     end
   end
 
   context "editable property" do
     it "system domain" do
-      dom = FactoryGirl.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
       expect(dom.editable_property?('name')).to be_falsey
       expect(dom.editable_property?('description')).to be_falsey
       expect(dom.editable_property?('priority')).to be_falsey
@@ -253,7 +253,7 @@ describe MiqAeDomain do
     end
 
     it "git domain" do
-      dom = FactoryGirl.create(:miq_ae_git_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_git_domain, :tenant => @user.current_tenant)
       expect(dom.editable_property?(:name)).to be_falsey
       expect(dom.editable_property?(:description)).to be_falsey
       expect(dom.editable_property?('priority')).to be_truthy
@@ -261,7 +261,7 @@ describe MiqAeDomain do
     end
 
     it "user domain" do
-      dom = FactoryGirl.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
       expect(dom.editable_property?(:name)).to be_truthy
       expect(dom.editable_property?(:description)).to be_truthy
       expect(dom.editable_property?('priority')).to be_truthy
@@ -271,12 +271,12 @@ describe MiqAeDomain do
 
   context "reset priority" do
     it "#reset_priorites" do
-      FactoryGirl.create(:miq_ae_system_domain, :name => 'ManageIQ', :tenant => @user.current_tenant, :priority => 0)
-      FactoryGirl.create(:miq_ae_system_domain, :name => 'B', :tenant => @user.current_tenant)
-      FactoryGirl.create(:miq_ae_system_domain, :name => 'A', :tenant => @user.current_tenant)
-      FactoryGirl.create(:miq_ae_system_domain, :name => 'Z', :tenant => @user.current_tenant)
-      FactoryGirl.create(:miq_ae_domain, :name => 'U1', :tenant => @user.current_tenant)
-      FactoryGirl.create(:miq_ae_domain, :name => 'U2', :tenant => @user.current_tenant)
+      FactoryBot.create(:miq_ae_system_domain, :name => 'ManageIQ', :tenant => @user.current_tenant, :priority => 0)
+      FactoryBot.create(:miq_ae_system_domain, :name => 'B', :tenant => @user.current_tenant)
+      FactoryBot.create(:miq_ae_system_domain, :name => 'A', :tenant => @user.current_tenant)
+      FactoryBot.create(:miq_ae_system_domain, :name => 'Z', :tenant => @user.current_tenant)
+      FactoryBot.create(:miq_ae_domain, :name => 'U1', :tenant => @user.current_tenant)
+      FactoryBot.create(:miq_ae_domain, :name => 'U2', :tenant => @user.current_tenant)
 
       ordered_names = %w(ManageIQ Z B A U1 U2)
       MiqAeDomain.reset_priorities
@@ -294,12 +294,12 @@ describe MiqAeDomain do
     let(:domain_name) { "BB8" }
     let(:url) { "http://www.example.com/x/y" }
     let(:dom1) do
-      FactoryGirl.create(:miq_ae_git_domain,
+      FactoryBot.create(:miq_ae_git_domain,
                          :tenant => @user.current_tenant,
                          :name   => domain_name)
     end
-    let(:dom2) { FactoryGirl.create(:miq_ae_domain) }
-    let(:repo) { FactoryGirl.create(:git_repository, :url => url) }
+    let(:dom2) { FactoryBot.create(:miq_ae_domain) }
+    let(:repo) { FactoryBot.create(:git_repository, :url => url) }
     let(:git_import) { instance_double('MiqAeYamlImportGitfs') }
     let(:info) { {'commit_time' => commit_time, 'commit_message' => commit_message, 'commit_sha' => commit_sha} }
     let(:new_info) { {'commit_time' => commit_time_new, 'commit_message' => "BB-8", 'commit_sha' => "def"} }
@@ -307,8 +307,8 @@ describe MiqAeDomain do
       {'commit_message' => commit_message, 'commit_time' => a_value_within(1.second).of(commit_time),
        'commit_sha' => commit_sha, 'ref' => branch_name, 'ref_type' => MiqAeGitImport::BRANCH}
     end
-    let(:branch) { FactoryGirl.create(:git_branch, :name => branch_name) }
-    let(:tag) { FactoryGirl.create(:git_tag, :name => tag_name) }
+    let(:branch) { FactoryBot.create(:git_branch, :name => branch_name) }
+    let(:tag) { FactoryBot.create(:git_tag, :name => tag_name) }
 
     it "check if a git domain is locked" do
       expect(dom1.editable?(@user)).to be_falsey
@@ -359,7 +359,7 @@ describe MiqAeDomain do
     ae_fields = {'field1' => {:aetype => 'relationship', :datatype => 'string'}}
     ae_instances = {'instance1' => {'field1' => {:value => 'hello world'}}}
 
-    FactoryGirl.create(:miq_ae_domain, :with_small_model, :with_instances,
+    FactoryBot.create(:miq_ae_domain, :with_small_model, :with_instances,
                        attrs.merge('ae_fields' => ae_fields, 'ae_instances' => ae_instances))
   end
 
@@ -368,7 +368,7 @@ describe MiqAeDomain do
     ae_methods = {'method1' => {:scope => 'instance', :location => 'inline',
                                 :data => 'puts "Hello World"',
                                 :language => 'ruby', 'params' => {}}}
-    FactoryGirl.create(:miq_ae_domain, :with_small_model, :with_methods,
+    FactoryBot.create(:miq_ae_domain, :with_small_model, :with_methods,
                        attrs.merge('ae_methods' => ae_methods))
   end
 
@@ -430,8 +430,8 @@ describe MiqAeDomain do
 
   describe "#destroy_queue" do
     shared_context "domain_context" do
-      let(:user) { FactoryGirl.create(:user_with_group) }
-      let(:task) { FactoryGirl.create(:miq_task) }
+      let(:user) { FactoryBot.create(:user_with_group) }
+      let(:task) { FactoryBot.create(:miq_task) }
       let(:task_options) { {:action => "Destroy domain", :userid => user.userid} }
       let(:queue_options) do
         {
@@ -453,7 +453,7 @@ describe MiqAeDomain do
 
     context "git enabled domain" do
       include_context "domain_context"
-      let(:domain) { FactoryGirl.create(:miq_ae_git_domain) }
+      let(:domain) { FactoryBot.create(:miq_ae_git_domain) }
       let(:role) { "git_owner" }
 
       it_behaves_like "create queue entry"
@@ -461,14 +461,14 @@ describe MiqAeDomain do
 
     context "regular domain" do
       include_context "domain_context"
-      let(:domain) { FactoryGirl.create(:miq_ae_domain) }
+      let(:domain) { FactoryBot.create(:miq_ae_domain) }
       let(:role) { nil }
 
       it_behaves_like "create queue entry"
     end
 
     context "raises error if user not provided" do
-      let(:domain) { FactoryGirl.create(:miq_ae_domain) }
+      let(:domain) { FactoryBot.create(:miq_ae_domain) }
       it "raise ArgumentError" do
         expect { domain.destroy_queue(nil) }.to raise_exception(ArgumentError)
       end

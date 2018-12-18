@@ -1,9 +1,9 @@
 describe MiqAeEngine::MiqAeExpressionMethod do
   include Spec::Support::AutomationHelper
-  let(:user) { FactoryGirl.create(:user_with_group) }
-  let!(:vm1) { FactoryGirl.create(:vm, :name => 'test_2.1', :cpu_shares => 400) }
-  let!(:vm2) { FactoryGirl.create(:vm, :name => 'test_3.1', :cpu_shares => 400) }
-  let!(:vm3) { FactoryGirl.create(:vm, :name => 'test_4.2', :cpu_shares => 11) }
+  let(:user) { FactoryBot.create(:user_with_group) }
+  let!(:vm1) { FactoryBot.create(:vm, :name => 'test_2.1', :cpu_shares => 400) }
+  let!(:vm2) { FactoryBot.create(:vm, :name => 'test_3.1', :cpu_shares => 400) }
+  let!(:vm3) { FactoryBot.create(:vm, :name => 'test_4.2', :cpu_shares => 11) }
   let(:complex_qs_exp) do
     {"and" => [{"STARTS WITH" => {"field" => "Vm-name", "value" => :user_input}},
                {"ENDS WITH"   => {"field" => "Vm-name", "value" => :user_input}}]}

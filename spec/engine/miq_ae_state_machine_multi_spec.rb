@@ -17,8 +17,8 @@ describe "MultipleStateMachineSteps" do
     @state_class3        = 'SM3'
     @state_instance      = 'MY_STATE_INSTANCE'
     @fqname              = '/SPEC_DOMAIN/NS1/SM1/MY_STATE_INSTANCE'
-    @miq_server      = FactoryGirl.create(:miq_server)
-    @user                = FactoryGirl.create(:user_with_group)
+    @miq_server      = FactoryBot.create(:miq_server)
+    @user                = FactoryBot.create(:user_with_group)
     @method_params       = {'ae_result'     => {:datatype => 'string', 'default_value' => 'ok'},
                             'ae_next_state' => {:datatype => 'string'},
                             'raise'         => {:datatype => 'string'}
@@ -30,7 +30,7 @@ describe "MultipleStateMachineSteps" do
                         :miq_group_id     => @user.current_group_id,
                         :tenant_id        => @user.current_tenant.id,
                         :automate_message => 'create'}
-    zone = FactoryGirl.create(:zone)
+    zone = FactoryBot.create(:zone)
     allow(MiqServer).to receive(:my_zone).and_return(zone.name)
     allow(MiqServer).to receive(:my_server).and_return(@miq_server)
     clear_domain
@@ -72,8 +72,8 @@ describe "MultipleStateMachineSteps" do
   end
 
   def setup_model
-    dom = FactoryGirl.create(:miq_ae_domain, :enabled => true, :name => @domain)
-    ns  = FactoryGirl.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
+    dom = FactoryBot.create(:miq_ae_domain, :enabled => true, :name => @domain)
+    ns  = FactoryBot.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
     @ns_fqname = ns.fqname
     create_method_class(:namespace => @ns_fqname, :name => @method_class)
     connect = "/#{@domain}/#{@namespace}/#{@state_class2}/#{@state_instance}"
@@ -103,7 +103,7 @@ describe "MultipleStateMachineSteps" do
                                            :language => 'ruby', :params => @method_params}
                  }
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_instances' => ae_instances,
                                    'ae_methods'   => ae_methods))
@@ -128,7 +128,7 @@ describe "MultipleStateMachineSteps" do
                                         "#{stem}_3" => {:value => state2_value}.merge(all_steps),
                                         "#{stem}_4" => {:value => state3_value}.merge(all_steps)}}
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_methods'   => state_methods,
                                    'ae_instances' => ae_instances))

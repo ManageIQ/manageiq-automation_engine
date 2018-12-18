@@ -4,13 +4,13 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
 
-    @ems           = FactoryGirl.create(:ems_vmware_with_authentication)
-    @vm_template   = FactoryGirl.create(:template_vmware, :ext_management_system => @ems)
+    @ems           = FactoryBot.create(:ems_vmware_with_authentication)
+    @vm_template   = FactoryBot.create(:template_vmware, :ext_management_system => @ems)
     @options       = {}
     @options[:src_vm_id] = [@vm_template.id, @vm_template.name]
     @options[:pass]      = 1
-    @user        = FactoryGirl.create(:user_with_group, :name => 'Fred Flintstone',  :userid => 'fred')
-    @miq_provision = FactoryGirl.create(:miq_provision, :provision_type => 'template', :state => 'pending', :status => 'Ok', :options => @options, :userid => @user.userid)
+    @user        = FactoryBot.create(:user_with_group, :name => 'Fred Flintstone',  :userid => 'fred')
+    @miq_provision = FactoryBot.create(:miq_provision, :provision_type => 'template', :state => 'pending', :status => 'Ok', :options => @options, :userid => @user.userid)
   end
 
   def invoke_ae
@@ -18,7 +18,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#miq_request" do
-    miq_provision_request = FactoryGirl.create(:miq_provision_request, :provision_type => 'template', :state => 'pending', :status => 'Ok', :src_vm_id => @vm_template.id, :requester => @user)
+    miq_provision_request = FactoryBot.create(:miq_provision_request, :provision_type => 'template', :state => 'pending', :status => 'Ok', :src_vm_id => @vm_template.id, :requester => @user)
 
     @miq_provision.miq_provision_request = miq_provision_request
     @miq_provision.save!
@@ -31,7 +31,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#miq_provision_request" do
-    miq_provision_request = FactoryGirl.create(:miq_provision_request, :provision_type => 'template', :state => 'pending', :status => 'Ok', :src_vm_id => @vm_template.id, :requester => @user)
+    miq_provision_request = FactoryBot.create(:miq_provision_request, :provision_type => 'template', :state => 'pending', :status => 'Ok', :src_vm_id => @vm_template.id, :requester => @user)
     @miq_provision.miq_provision_request = miq_provision_request
     @miq_provision.save!
 
@@ -48,7 +48,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_nil
 
-    vm = FactoryGirl.create(:vm_vmware, :name => "vm42", :location => "vm42/vm42.vmx")
+    vm = FactoryBot.create(:vm_vmware, :name => "vm42", :location => "vm42/vm42.vmx")
     @miq_provision.vm = vm
     @miq_provision.save!
 
@@ -136,7 +136,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
   context "iso_images" do
     before(:each) do
-      @iso_image = FactoryGirl.create(:iso_image, :name => "Test ISO Image")
+      @iso_image = FactoryBot.create(:iso_image, :name => "Test ISO Image")
       iso_image_struct = [MiqHashStruct.new(:id => "IsoImage::#{@iso_image.id}", :name => @iso_image.name, :evm_object_class => @iso_image.class.base_class.name.to_sym)]
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_iso_images).and_return(iso_image_struct)
     end
@@ -181,7 +181,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
   context "customization_templates" do
     before(:each) do
-      @ct = FactoryGirl.create(:customization_template, :name => "Test Templates", :script => "script_text")
+      @ct = FactoryBot.create(:customization_template, :name => "Test Templates", :script => "script_text")
       ct_struct = [MiqHashStruct.new(:id => @ct.id, :name => @ct.name, :evm_object_class => @ct.class.base_class.name.to_sym)]
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_customization_templates).and_return(ct_struct)
     end
@@ -208,7 +208,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
   context "resource_pools" do
     before(:each) do
-      @rsc = FactoryGirl.create(:resource_pool)
+      @rsc = FactoryBot.create(:resource_pool)
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_resource_pools).and_return(@rsc.id => @rsc.name)
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_respools).and_return(@rsc.id => @rsc.name)
     end

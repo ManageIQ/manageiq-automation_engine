@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceUser do
-  let(:user)         { FactoryGirl.create(:user_admin) }
+  let(:user)         { FactoryBot.create(:user_admin) }
   let(:service_user) { MiqAeMethodService::MiqAeServiceUser.find(user.id) }
 
   it "#miq_groups" do

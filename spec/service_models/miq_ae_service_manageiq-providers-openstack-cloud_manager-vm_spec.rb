@@ -1,9 +1,9 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager_Vm do
-  let(:vm)         { FactoryGirl.create(:vm_openstack) }
+  let(:vm)         { FactoryBot.create(:vm_openstack) }
   let(:service_vm) { described_class.find(vm.id) }
 
   before do
-    zone = FactoryGirl.create(:zone)
+    zone = FactoryBot.create(:zone)
     allow_any_instance_of(Vm).to receive(:my_zone).and_return(zone.name)
     allow(MiqServer).to receive(:my_zone).and_return(zone.name)
     @base_queue_options = {

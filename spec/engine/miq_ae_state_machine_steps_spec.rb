@@ -1,6 +1,6 @@
 describe "MiqAeStateMachineSteps" do
   before do
-    @user                = FactoryGirl.create(:user_with_group)
+    @user                = FactoryBot.create(:user_with_group)
     @instance1           = 'instance1'
     @instance2           = 'instance2'
     @instance3           = 'instance3'
@@ -57,8 +57,8 @@ describe "MiqAeStateMachineSteps" do
   end
 
   def setup_model
-    dom = FactoryGirl.create(:miq_ae_domain, :enabled => true, :name => @domain)
-    ns  = FactoryGirl.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
+    dom = FactoryBot.create(:miq_ae_domain, :enabled => true, :name => @domain)
+    ns  = FactoryBot.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
     @ns_fqname = ns.fqname
     create_method_class(:namespace => @ns_fqname, :name => @method_class)
     create_state_class(:namespace => @ns_fqname, :name => @state_class)
@@ -84,7 +84,7 @@ describe "MiqAeStateMachineSteps" do
                                            :language => 'ruby', 'params' => @method_params}
                  }
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_instances' => ae_instances,
                                    'ae_methods'   => ae_methods))
@@ -104,7 +104,7 @@ describe "MiqAeStateMachineSteps" do
                                         'state2' => {:value => state2_value}.merge(all_steps),
                                         'state3' => {:value => state3_value}.merge(all_steps)}}
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_methods'   => state_methods,
                                    'ae_instances' => ae_instances))

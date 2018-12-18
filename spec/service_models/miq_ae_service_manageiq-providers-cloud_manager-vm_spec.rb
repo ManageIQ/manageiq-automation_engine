@@ -10,21 +10,21 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManag
       end
 
       before(:each) do
-        vm                   =  FactoryGirl.create("vm_#{t}".to_sym)
-        vm.availability_zone =  FactoryGirl.create("availability_zone_#{t}".to_sym)
-        vm.flavor            =  FactoryGirl.create("flavor_#{t}".to_sym)
+        vm                   =  FactoryBot.create("vm_#{t}".to_sym)
+        vm.availability_zone =  FactoryBot.create("availability_zone_#{t}".to_sym)
+        vm.flavor            =  FactoryBot.create("flavor_#{t}".to_sym)
         if t != "google"
-          vm.key_pairs << FactoryGirl.create("auth_key_pair_#{t}".to_sym)
+          vm.key_pairs << FactoryBot.create("auth_key_pair_#{t}".to_sym)
         end
 
-        network = FactoryGirl.create("cloud_network_#{t}".to_sym)
-        subnet  = FactoryGirl.create("cloud_subnet_#{t}".to_sym, :cloud_network => network)
-        vm.network_ports << network_port = FactoryGirl.create("network_port_#{t}".to_sym,
+        network = FactoryBot.create("cloud_network_#{t}".to_sym)
+        subnet  = FactoryBot.create("cloud_subnet_#{t}".to_sym, :cloud_network => network)
+        vm.network_ports << network_port = FactoryBot.create("network_port_#{t}".to_sym,
                                                               :device       => vm)
-        FactoryGirl.create(:cloud_subnet_network_port, :cloud_subnet => subnet, :network_port => network_port)
+        FactoryBot.create(:cloud_subnet_network_port, :cloud_subnet => subnet, :network_port => network_port)
 
-        network_port.security_groups << FactoryGirl.create("security_group_#{t}".to_sym)
-        network_port.floating_ip = FactoryGirl.create("floating_ip_#{t}".to_sym, :vm => vm)
+        network_port.security_groups << FactoryBot.create("security_group_#{t}".to_sym)
+        network_port.floating_ip = FactoryBot.create("floating_ip_#{t}".to_sym, :vm => vm)
 
         vm.save!
         @vm                  = service_class_for(:vm).find(vm.id)

@@ -1,6 +1,6 @@
 describe MiqAeMethodService::MiqAeServiceMethods do
   before(:each) do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
@@ -42,7 +42,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     it "sends mail asynchronous" do
       miq_server = EvmSpecHelper.local_miq_server
       MiqRegion.seed
-      miq_server.server_roles << FactoryGirl.create(:server_role, :name => 'notifier')
+      miq_server.server_roles << FactoryBot.create(:server_role, :name => 'notifier')
 
       method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, #{options[:content_type].inspect})"
       @ae_method.update_attributes(:data => method)
@@ -110,8 +110,8 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
     expect(invoke_ae.root(@ae_result_key)).to be_empty
 
-    v1 = FactoryGirl.create(:vm_vmware, :ems_id => 42, :vendor => 'vmware')
-    t1 = FactoryGirl.create(:template_vmware, :ems_id => 42)
+    v1 = FactoryBot.create(:vm_vmware, :ems_id => 42, :vendor => 'vmware')
+    t1 = FactoryBot.create(:template_vmware, :ems_id => 42)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(Array)
     expect(ae_object.length).to eq(1)
@@ -125,7 +125,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
     expect(invoke_ae.root(@ae_result_key)).to be_falsey
 
-    FactoryGirl.create(:classification, :name => category)
+    FactoryBot.create(:classification, :name => category)
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
   end
 
@@ -144,7 +144,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   end
 
   it "#tag_exists?" do
-    ct = FactoryGirl.create(:classification_department_with_tags)
+    ct = FactoryBot.create(:classification_department_with_tags)
     method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_exists?, #{ct.name.inspect}, #{ct.entries.first.name.inspect})"
     @ae_method.update_attributes(:data => method)
 
@@ -152,7 +152,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   end
 
   it "#tag_create" do
-    ct = FactoryGirl.create(:classification_department_with_tags)
+    ct = FactoryBot.create(:classification_department_with_tags)
     method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_create, #{ct.name.inspect}, {:name => 'fred', :description => 'ABC'})"
     @ae_method.update_attributes(:data => method)
 
@@ -164,9 +164,9 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   context "#create_service_provision_request" do
     let(:options) { {:fred => :flintstone} }
     let(:svc_options) { {:dialog_style => "medium"} }
-    let(:user) { FactoryGirl.create(:user_with_group) }
-    let(:template) { FactoryGirl.create(:service_template_ansible_playbook) }
-    let(:miq_request) { FactoryGirl.create(:service_template_provision_request) }
+    let(:user) { FactoryBot.create(:user_with_group) }
+    let(:template) { FactoryBot.create(:service_template_ansible_playbook) }
+    let(:miq_request) { FactoryBot.create(:service_template_provision_request) }
     let(:svc_template) do
       MiqAeMethodService::MiqAeServiceServiceTemplate.find(template.id)
     end

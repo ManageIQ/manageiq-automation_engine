@@ -2,12 +2,12 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   %w(amazon openstack google azure).each do |t|
     context "for #{t}" do
       before do
-        @provider      = FactoryGirl.create("ems_#{t}_with_authentication".to_sym)
-        @cloud_image   = FactoryGirl.create("template_#{t}".to_sym, :ext_management_system => @provider)
+        @provider      = FactoryBot.create("ems_#{t}_with_authentication".to_sym)
+        @cloud_image   = FactoryBot.create("template_#{t}".to_sym, :ext_management_system => @provider)
         @options       = {:src_vm_id => [@cloud_image.id, @cloud_image.name],
                           :pass      => 1}
-        @user          = FactoryGirl.create(:user, :name => 'Fred Flintstone',  :userid => 'fred')
-        @miq_provision = FactoryGirl.create("miq_provision_#{t}".to_sym,
+        @user          = FactoryBot.create(:user, :name => 'Fred Flintstone',  :userid => 'fred')
+        @miq_provision = FactoryBot.create("miq_provision_#{t}".to_sym,
                                             :provision_type => 'template',
                                             :state          => 'pending',
                                             :status         => 'Ok',
@@ -60,7 +60,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
         context "with a customization_template" do
           before do
-            @ct = FactoryGirl.create(:customization_template, :name => "Test Templates", :script => "script_text")
+            @ct = FactoryBot.create(:customization_template, :name => "Test Templates", :script => "script_text")
             ct_struct = [MiqHashStruct.new(:id               => @ct.id,
                                            :name             => @ct.name,
                                            :evm_object_class => @ct.class.base_class.name.to_sym)]
@@ -91,7 +91,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
           context "with an availability_zone" do
             before do
-              @ci = FactoryGirl.create("availability_zone_#{t}".to_sym)
+              @ci = FactoryBot.create("availability_zone_#{t}".to_sym)
               allow_any_instance_of(workflow_klass).to receive(:allowed_availability_zones).and_return(@ci.id => @ci.name)
             end
 
@@ -118,7 +118,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
         context "with an instance_type" do
           before do
-            @ci = FactoryGirl.create("flavor_#{t}".to_sym)
+            @ci = FactoryBot.create("flavor_#{t}".to_sym)
             allow_any_instance_of(workflow_klass).to receive(:allowed_instance_types).and_return(@ci.id => @ci.name)
           end
 
@@ -140,8 +140,8 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
       if t != "google"
         context "security_groups" do
           before do
-            @ci = FactoryGirl.create("security_group_#{t}".to_sym)
-            @c2 = FactoryGirl.create("security_group_#{t}".to_sym)
+            @ci = FactoryBot.create("security_group_#{t}".to_sym)
+            @c2 = FactoryBot.create("security_group_#{t}".to_sym)
             allow_any_instance_of(workflow_klass).to receive(:allowed_security_groups).and_return(@ci.id => @ci.name, @c2.id => @c2.name)
           end
 
@@ -179,7 +179,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
         context "with a cloud_network" do
           before do
-            @ci = FactoryGirl.create(:cloud_network)
+            @ci = FactoryBot.create(:cloud_network)
             allow_any_instance_of(workflow_klass).to receive(:allowed_cloud_networks).and_return(@ci.id => @ci.name)
           end
 
@@ -206,7 +206,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
           context "with a cloud_subnet" do
             before do
-              @ci = FactoryGirl.create(:cloud_subnet)
+              @ci = FactoryBot.create(:cloud_subnet)
               allow_any_instance_of(workflow_klass).to receive(:allowed_cloud_subnets).and_return(@ci.id => @ci.name)
             end
 
@@ -234,7 +234,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
           context "with a floating_ip_address" do
             before do
-              @ci = FactoryGirl.create("floating_ip_#{t}".to_sym)
+              @ci = FactoryBot.create("floating_ip_#{t}".to_sym)
               allow_any_instance_of(workflow_klass).to receive(:allowed_floating_ip_addresses).and_return(@ci.id => @ci.address)
             end
 
@@ -262,7 +262,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
           context "with a key_pairs" do
             before do
-              @ci = FactoryGirl.create("auth_key_pair_#{t}".to_sym)
+              @ci = FactoryBot.create("auth_key_pair_#{t}".to_sym)
               allow_any_instance_of(workflow_klass).to receive(:allowed_guest_access_key_pairs).and_return(@ci.id => @ci.name)
             end
 
@@ -290,7 +290,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
           context "with a resource_group" do
             before do
-              @rg = FactoryGirl.create(:resource_group)
+              @rg = FactoryBot.create(:resource_group)
               allow_any_instance_of(workflow_klass).to receive(:allowed_resource_groups).and_return(@rg.id => @rg.name)
             end
 
@@ -318,7 +318,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
           context "with a cloud_tenant" do
             before do
-              @ct = FactoryGirl.create(:cloud_tenant)
+              @ct = FactoryBot.create(:cloud_tenant)
               allow_any_instance_of(workflow_klass).to receive(:allowed_cloud_tenants).and_return(@ct.id => @ct.name)
             end
 

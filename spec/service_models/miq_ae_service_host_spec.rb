@@ -1,10 +1,10 @@
 describe MiqAeMethodService::MiqAeServiceHost do
   before(:each) do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
-    @host = FactoryGirl.create(:host)
+    @host = FactoryBot.create(:host)
   end
 
   def invoke_ae
@@ -39,7 +39,7 @@ describe MiqAeMethodService::MiqAeServiceHost do
     end
 
     it "with ems_events" do
-      @ems_event = FactoryGirl.create(:ems_event)
+      @ems_event = FactoryBot.create(:ems_event)
       @host.ems_events << @ems_event
       method = "$evm.root['#{@ae_result_key}'] = $evm.vmdb('host').first.ems_events"
       @ae_method.update_attributes(:data => method)
@@ -78,7 +78,7 @@ describe MiqAeMethodService::MiqAeServiceHost do
 
     key1   = 'key1'
     value1 = 'value1'
-    FactoryGirl.create(:ems_custom_attribute, :resource => @host, :name => key1, :value => value1)
+    FactoryBot.create(:ems_custom_attribute, :resource => @host, :name => key1, :value => value1)
     ae_result = invoke_ae.root(@ae_result_key)
     expect(ae_result).to be_kind_of(Array)
     expect(ae_result.length).to eq(1)
@@ -86,7 +86,7 @@ describe MiqAeMethodService::MiqAeServiceHost do
 
     key2   = 'key2'
     value2 = 'value2'
-    FactoryGirl.create(:ems_custom_attribute, :resource => @host, :name => key2, :value => value2)
+    FactoryBot.create(:ems_custom_attribute, :resource => @host, :name => key2, :value => value2)
     ae_result = invoke_ae.root(@ae_result_key)
     expect(ae_result).to be_kind_of(Array)
     expect(ae_result.length).to eq(2)
@@ -101,7 +101,7 @@ describe MiqAeMethodService::MiqAeServiceHost do
     ae_result = invoke_ae.root(@ae_result_key)
     expect(ae_result).to be_nil
 
-    FactoryGirl.create(:ems_custom_attribute, :resource => @host, :name => key, :value => value)
+    FactoryBot.create(:ems_custom_attribute, :resource => @host, :name => key, :value => value)
     ae_result = invoke_ae.root(@ae_result_key)
     expect(ae_result).to eq(value)
   end

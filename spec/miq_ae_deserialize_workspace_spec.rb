@@ -19,7 +19,7 @@ describe "MiqAeDeserializeWorkspace" do
   end
 
   let(:user) do
-    FactoryGirl.create(:user_with_group,
+    FactoryBot.create(:user_with_group,
                        :userid   => "admin",
                        :settings => {:display => { :timezone => "UTC"}})
   end
@@ -29,9 +29,9 @@ describe "MiqAeDeserializeWorkspace" do
   end
 
   let(:test_class_instance) { test_class.new(workspace) }
-  let(:host) { FactoryGirl.create(:host) }
+  let(:host) { FactoryBot.create(:host) }
   let(:vm_name) { "Freddy Krueger" }
-  let(:vm) { FactoryGirl.create(:vm_vmware, :host => host, :name => vm_name) }
+  let(:vm) { FactoryBot.create(:vm_vmware, :host => host, :name => vm_name) }
 
   describe "#update_workspace" do
     context "caller adds a vm object as attribute" do

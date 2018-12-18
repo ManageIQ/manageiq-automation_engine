@@ -4,8 +4,8 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplate do
       Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
       @ae_method     = ::MiqAeMethod.first
       @ae_result_key = 'foo'
-      @service_template   = FactoryGirl.create(:service_template)
-      @user = FactoryGirl.create(:user_with_group)
+      @service_template   = FactoryBot.create(:service_template)
+      @user = FactoryBot.create(:user_with_group)
     end
 
     def invoke_ae
@@ -33,12 +33,12 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplate do
 
   context "associations" do
     before do
-      service_template          = FactoryGirl.create(:service_template)
+      service_template          = FactoryBot.create(:service_template)
       @service_service_template  = MiqAeMethodService::MiqAeServiceServiceTemplate.find(service_template.id)
     end
 
     it "#services" do
-      service = FactoryGirl.create(:service, :service_template_id => @service_service_template.id)
+      service = FactoryBot.create(:service, :service_template_id => @service_service_template.id)
       first_service = @service_service_template.services.first
 
       expect(first_service).to    be_kind_of(MiqAeMethodService::MiqAeServiceService)
@@ -47,7 +47,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplate do
 
     context "with a service resource" do
       before do
-        @service_resource = FactoryGirl.create(:service_resource,
+        @service_resource = FactoryBot.create(:service_resource,
                                                :service_template_id => @service_service_template.id)
       end
 
@@ -59,7 +59,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplate do
       end
 
       it "#service_templates" do
-        sub_service_template = FactoryGirl.create(:service_template)
+        sub_service_template = FactoryBot.create(:service_template)
         @service_resource.update_attributes(:resource => sub_service_template)
         first_service_template = @service_service_template.service_templates.first
 

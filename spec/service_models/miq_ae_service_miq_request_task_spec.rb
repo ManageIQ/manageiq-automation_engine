@@ -1,11 +1,11 @@
 describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
   before(:each) do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
 
-    @miq_request_task = FactoryGirl.create(:miq_request_task, :status => 'Ok')
+    @miq_request_task = FactoryBot.create(:miq_request_task, :status => 'Ok')
   end
 
   def invoke_ae
@@ -23,8 +23,8 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].miq_request"
     @ae_method.update_attributes(:data => method)
 
-    user        = FactoryGirl.create(:user)
-    miq_request = FactoryGirl.create(:vm_migrate_request, :requester => user)
+    user        = FactoryBot.create(:user)
+    miq_request = FactoryBot.create(:vm_migrate_request, :requester => user)
     @miq_request_task.update_attributes(:miq_request => miq_request)
 
     result = invoke_ae.root(@ae_result_key)

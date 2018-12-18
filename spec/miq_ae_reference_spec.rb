@@ -1,11 +1,11 @@
 describe MiqAeEngine::MiqAeReference do
   context "vmdb objects" do
     let(:user) do
-      FactoryGirl.create(:user_with_group, :userid   => "admin",
+      FactoryBot.create(:user_with_group, :userid   => "admin",
                                            :settings => {:display => { :timezone => "UTC"}})
     end
-    let(:host) { FactoryGirl.create(:host) }
-    let(:vm) { FactoryGirl.create(:vm_vmware, :host => host) }
+    let(:host) { FactoryBot.create(:host) }
+    let(:vm) { FactoryBot.create(:vm_vmware, :host => host) }
     let(:svc_vm) { MiqAeMethodService::MiqAeServiceVm.find(vm.id) }
     let(:ref) { "href_slug::#{vm.href_slug}" }
 
@@ -20,7 +20,7 @@ describe MiqAeEngine::MiqAeReference do
 
   context "passwords" do
     let(:user) do
-      FactoryGirl.create(:user_with_group, :userid   => "admin",
+      FactoryBot.create(:user_with_group, :userid   => "admin",
                                            :settings => {:display => { :timezone => "UTC"}})
     end
     let(:password) { "ca$hc0w" }
