@@ -12,8 +12,8 @@ module MiqAeEngine
       $miq_ae_logger.info("Ansible Template Method passing options: #{template_options.inspect}")
       begin
         template = TEMPLATE_CLASS.find(template_options[:ansible_template_id])
-        $miq_ae_logger.info("Calling template.runner with template: #{template.inspect}")
-        task_id = template.runner(template_options)
+        $miq_ae_logger.info("Calling template.run_with_miq_job for template: #{template.inspect}")
+        task_id = template.run_with_miq_job(template_options)
       rescue StandardError => err
         $miq_ae_logger.error("Ansible Template Method Ended with error #{err.message}")
         reset
