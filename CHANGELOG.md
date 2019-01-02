@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 101 ending 2018-12-17
+
+### Added
+- Add resource to conversion_host to pass validation [(#275)](https://github.com/ManageIQ/manageiq-automation_engine/pull/275)
+- Adding a domain lock check for automate import. [(#271)](https://github.com/ManageIQ/manageiq-automation_engine/pull/271)
+
 ## Unreleased as of Sprint 98 ending 2018-11-05
 
 ### Added
