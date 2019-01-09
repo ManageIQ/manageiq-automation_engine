@@ -5,47 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Unreleased as of Sprint 101 ending 2018-12-17
-
-### Added
-- Add resource to conversion_host to pass validation [(#275)](https://github.com/ManageIQ/manageiq-automation_engine/pull/275)
-- Adding a domain lock check for automate import. [(#271)](https://github.com/ManageIQ/manageiq-automation_engine/pull/271)
-
-## Unreleased as of Sprint 98 ending 2018-11-05
+## Hammer-1
 
 ### Added
 - Expose validate_conversion_hosts for TransformationPlanRequest [(#263)](https://github.com/ManageIQ/manageiq-automation_engine/pull/263)
-
-### Fixed
-- convert_value_based_on_datatype won't take "Integer"  [(#258)](https://github.com/ManageIQ/manageiq-automation_engine/pull/258)
-
-## Gaprindashvili-6 - Released 2018-11-02
-
-### Added
-- Add support to redhat VM for set_memory and set_number_of_cpus [(#216)](https://github.com/ManageIQ/manageiq-automation_engine/pull/216)
-
-### Fixed
-- Updating miq_task for the CustomButton request call with open_url. [(#205)](https://github.com/ManageIQ/manageiq-automation_engine/pull/205)
-- Clear stale data from ae_state_data and ae_state_previous [(#222)](https://github.com/ManageIQ/manageiq-automation_engine/pull/222)
-- Expose storage_profiles association in Storage's service model. [(#219)](https://github.com/ManageIQ/manageiq-automation_engine/pull/219)
-- Clean up the password field and value in automate and evm.log [(#228)](https://github.com/ManageIQ/manageiq-automation_engine/pull/228)
-- Add orch stack retirement task to category [(#238)](https://github.com/ManageIQ/manageiq-automation_engine/pull/238)
-
-## Hammer Beta-2 - Released 2018-10-29
-
-### Added
 - Expose ConversionHost and ServiceTemplateTransformationPlanTask methods [(#246)](https://github.com/ManageIQ/manageiq-automation_engine/pull/246)
 - Expose folders to ems_folder service model. [(#256)](https://github.com/ManageIQ/manageiq-automation_engine/pull/256)
 - Expose ext_management_system from ConversionHost [(#255)](https://github.com/ManageIQ/manageiq-automation_engine/pull/255)
 - Add conversion_host= method to MiqAeServiceServiceTemplateTransformationPlanTask [(#253)](https://github.com/ManageIQ/manageiq-automation_engine/pull/253)
-
-### Fixed
-- Fix class name for conversion host [(#252)](https://github.com/ManageIQ/manageiq-automation_engine/pull/252)
-- Take out detect vendor changes for orch stack retire tasks [(#249)](https://github.com/ManageIQ/manageiq-automation_engine/pull/249)
-
-## Hammer Beta-1 - Released 2018-10-12
-
-### Added
 - Exposes cancelation status to client side [(#229)](https://github.com/ManageIQ/manageiq-automation_engine/pull/229)
 - delete_state_var method for MiqAeService. [(#225)](https://github.com/ManageIQ/manageiq-automation_engine/pull/225)
 - Allow for embedded methods to contain embedded methods [(#207)](https://github.com/ManageIQ/manageiq-automation_engine/pull/207)
@@ -67,6 +34,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Get the current user if user context is set. [(#86)](https://github.com/ManageIQ/manageiq-automation_engine/pull/86)
 
 ### Fixed
+- convert_value_based_on_datatype won't take "Integer" [(#258)](https://github.com/ManageIQ/manageiq-automation_engine/pull/258)
+- Fix class name for conversion host [(#252)](https://github.com/ManageIQ/manageiq-automation_engine/pull/252)
+- Take out detect vendor changes for orch stack retire tasks [(#249)](https://github.com/ManageIQ/manageiq-automation_engine/pull/249)
 - Clean up the password field and value in automate and evm.log [(#228)](https://github.com/ManageIQ/manageiq-automation_engine/pull/228)
 - Enable cancelation_status to be updated for service model [(#212)](https://github.com/ManageIQ/manageiq-automation_engine/pull/212)
 - Clear stale data from ae_state_data and ae_state_previous [(#222)](https://github.com/ManageIQ/manageiq-automation_engine/pull/222)
@@ -82,11 +52,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 - Add some helper methods for MiqAeObject. [(#237)](https://github.com/ManageIQ/manageiq-automation_engine/pull/237)
 - Add orch stack retirement task to category [(#238)](https://github.com/ManageIQ/manageiq-automation_engine/pull/238)
 - Add orch stack retire task to vendor detect [(#242)](https://github.com/ManageIQ/manageiq-automation_engine/pull/242)
+- Make disconnect_storage a no-op [(#272)](https://github.com/ManageIQ/manageiq-automation_engine/pull/272)
 
-## Unreleased as of Sprint 96 ending 2018-10-08
+## Unreleased as of Sprint 101 ending 2018-12-17
+
+### Added
+- Add resource to conversion_host to pass validation [(#275)](https://github.com/ManageIQ/manageiq-automation_engine/pull/275)
+- Adding a domain lock check for automate import. [(#271)](https://github.com/ManageIQ/manageiq-automation_engine/pull/271)
+
+## Gaprindashvili-6 - Released 2018-11-02
+
+### Added
+- Add support to redhat VM for set_memory and set_number_of_cpus [(#216)](https://github.com/ManageIQ/manageiq-automation_engine/pull/216)
 
 ### Fixed
-- Remove check for nil zone during MiqQueue.put of GenericMailer [(#241)](https://github.com/ManageIQ/manageiq-automation_engine/pull/241)
+- Updating miq_task for the CustomButton request call with open_url. [(#205)](https://github.com/ManageIQ/manageiq-automation_engine/pull/205)
+- Clear stale data from ae_state_data and ae_state_previous [(#222)](https://github.com/ManageIQ/manageiq-automation_engine/pull/222)
+- Expose storage_profiles association in Storage's service model. [(#219)](https://github.com/ManageIQ/manageiq-automation_engine/pull/219)
+- Clean up the password field and value in automate and evm.log [(#228)](https://github.com/ManageIQ/manageiq-automation_engine/pull/228)
+- Add orch stack retirement task to category [(#238)](https://github.com/ManageIQ/manageiq-automation_engine/pull/238)
 
 ## Gaprindashvili-5 - Released 2018-09-07
 
