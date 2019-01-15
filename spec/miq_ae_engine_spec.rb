@@ -281,6 +281,15 @@ describe MiqAeEngine do
       expect(MiqAeEngine.create_automation_object("AUTOMATION", attrs, :vmdb_object => host)).to eq(uri)
     end
 
+    it "has both message from request and message from attrs" do
+      host = FactoryBot.create(:host)
+      message = "request_message"
+      attrs = {"Host::host" => host.id, :message => "attr_message"}
+      extras = "MiqServer%3A%3Amiq_server=#{@miq_server_id}"
+      uri = "/System/Process/AUTOMATION?Host%3A%3Ahost=#{host.id}&#{extras}&message=attr_message&object_name=AUTOMATION&vmdb_object_type=host#request_message"
+      expect(MiqAeEngine.create_automation_object("AUTOMATION", attrs, :vmdb_object => host, :message => message)).to eq(uri)
+    end
+
     it "will process an array of objects" do
       FactoryGirl.create(:host)
       hash       = {"hosts" => Host.all}
