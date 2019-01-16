@@ -205,7 +205,6 @@ describe MiqAeEngine do
         end
 
         it "with defaults, no automate role, nil zone" do
-          allow_any_instance_of(MiqServer).to receive_messages(:has_active_role? => false)
           object_type = ems.class.name
           object_id   = ems.id
           expect(call_automate(object_type, object_id)).to eq(@ws)
@@ -759,7 +758,6 @@ describe MiqAeEngine do
 
   it "properly processes substitution with methods" do
     EvmSpecHelper.import_yaml_model(File.join(model_data_dir, "miq_ae_engine_spec4"), domain)
-    allow_any_instance_of(MiqProvision).to receive(:validate).and_return(true)
     allow_any_instance_of(MiqProvision).to receive(:set_template_and_networking)
     prov = MiqProvision.create!(:provision_type => 'clone_to_template', :state => 'pending', :status => 'Ok')
     ws = MiqAeEngine.instantiate("/System/Process/REQUEST?MiqProvision::miq_provision=#{prov.id}&request=test_subst", user)
