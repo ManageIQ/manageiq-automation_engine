@@ -1,0 +1,12 @@
+---
+object_type: domain
+version: 1.0
+object:
+  attributes:
+    name: drew_test_system
+    description:
+    display_name:
+    system: true
+    source: system
+    priority: 100
+    enabled:

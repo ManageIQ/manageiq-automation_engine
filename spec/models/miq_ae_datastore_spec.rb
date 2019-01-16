@@ -94,8 +94,24 @@ describe MiqAeDatastore do
     expect(MiqAeMethod.count).to         eq(3)
   end
 
-  it ".default_domain_names" do
-    expect(MiqAeDatastore.default_domain_names).to include("ManageIQ")
+  describe ".default_domain_names" do
+    describe "vmdb plugin domains" do
+      it "includes MIQ" do
+        expect(MiqAeDatastore.default_domain_names).to include('ManageIQ')
+      end
+    end
+
+    describe "legacy domains" do
+      it "includes system domain" do
+        stub_const("MiqAeDatastore::DATASTORE_DIRECTORY", ManageIQ::AutomationEngine::Engine.root.join('spec/models/miq_ae_datastore/data/automate_domain_list_tests'))
+        expect(MiqAeDatastore.default_domain_names).to include('drew_test_system')
+      end
+
+      it "doesn't include non-system domain" do
+        stub_const("MiqAeDatastore::DATASTORE_DIRECTORY", ManageIQ::AutomationEngine::Engine.root.join('spec/models/miq_ae_datastore/data/automate_domain_list_tests'))
+        expect(MiqAeDatastore.default_domain_names).not_to include('drew_test_not_system')
+      end
+    end
   end
 
   it "temporary file cleanup for unsuccessful import" do
