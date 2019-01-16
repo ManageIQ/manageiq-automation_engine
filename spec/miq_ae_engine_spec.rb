@@ -62,7 +62,7 @@ describe MiqAeEngine do
         :args        => [args]
       )
 
-      status, message, result = q.deliver
+      status, _message, _result = q.deliver
       if status == MiqQueue::STATUS_ERROR
         puts "#{q.last_exception.class.name}: #{q.last_exception.message}"
         puts q.last_exception.backtrace
@@ -77,7 +77,7 @@ describe MiqAeEngine do
 
       it "with defaults and non-STI object" do
         object_type = cluster.class.name
-        object_id   = cluster.id
+        object_id = cluster.id
         automate_attrs = {"#{object_type}::#{object_type.underscore}" => object_id,
                           "User::user"                                => user.id}
         expect(MiqAeEngine).to receive(:create_automation_object).with(instance_name, automate_attrs, :vmdb_object => cluster).and_return('uri')
@@ -87,7 +87,7 @@ describe MiqAeEngine do
       it "with defaults and STI object" do
         base_name   = ems.class.base_class.name
         object_type = ems.class.name
-        object_id   = ems.id
+        object_id = ems.id
         automate_attrs = {"#{base_name}::#{base_name.underscore}" => object_id,
                           "User::user"                            => user.id}
         expect(MiqAeEngine).to receive(:create_automation_object).with(instance_name, automate_attrs, :vmdb_object => ems).and_return('uri')
@@ -106,7 +106,7 @@ describe MiqAeEngine do
 
         it "with defaults" do
           object_type = ems.class.name
-          object_id   = ems.id
+          object_id = ems.id
           expect(call_automate(object_type, object_id)).to eq(@ws)
         end
       end
@@ -121,7 +121,7 @@ describe MiqAeEngine do
 
         it "with defaults" do
           object_type = ems.class.name
-          object_id   = ems.id
+          object_id = ems.id
           expect(call_automate(object_type, object_id)).to eq(@ws)
         end
 
@@ -129,7 +129,7 @@ describe MiqAeEngine do
           miq_task = FactoryBot.create(:miq_task, :name => "Automate method task for open_url")
           miq_task.state_queued
           object_type = ems.class.name
-          object_id   = ems.id
+          object_id = ems.id
           expect(call_automate(object_type, object_id, miq_task.id)).to(eq(@ws))
           expect(MiqTask.find(miq_task).state).to(eq(MiqTask::STATE_FINISHED))
         end
@@ -137,7 +137,7 @@ describe MiqAeEngine do
         it "with a starting point instead of /SYSTEM/PROCESS" do
           args = {}
           attrs = {'User::user' => user.id}
-          args[:instance_name]    = "DEFAULT"
+          args[:instance_name] = "DEFAULT"
           args[:fqclass_name] = "Factory/StateMachines/ServiceProvision_template"
           args[:user_id] = user.id
           args[:miq_group_id] = user.current_group.id
@@ -236,21 +236,21 @@ describe MiqAeEngine do
         "/System/Process/REQUEST?#{extras}&message=get_networks&object_name=REQUEST&request=UI_PROVISION_INFO"                           => {'request' => 'UI_PROVISION_INFO', 'message' => 'get_networks'},
         "/System/Process/REQUEST?#{extras}&message=get_vmname&object_name=REQUEST&request=UI_PROVISION_INFO"                             => {'request' => 'UI_PROVISION_INFO', 'message' => 'get_vmname'},
         "/System/Process/REQUEST?#{extras}&message=get_dialogs&object_name=REQUEST&request=UI_PROVISION_INFO"                            => {'request' => 'UI_PROVISION_INFO', 'message' => 'get_dialogs'},
-      }.each { |uri, attrs|
+      }.each do |uri, attrs|
         saved = attrs.dup
         expect(MiqAeEngine.create_automation_object('REQUEST', attrs)).to eq(uri)
         expect(attrs).to eq(saved)
-      }
+      end
 
       prov = MiqProvision.new
       prov.id = 42
-      expect(MiqAeEngine.create_automation_object('REQUEST', {'request' => 'UI_PROVISION_INFO', 'message' => 'get_host_and_storage'}, :vmdb_object => prov)).to eq("/System/Process/REQUEST?MiqProvision%3A%3Amiq_provision=#{prov.id}&#{extras}&message=get_host_and_storage&object_name=REQUEST&request=UI_PROVISION_INFO&vmdb_object_type=miq_provision")
+      expect(MiqAeEngine.create_automation_object('REQUEST', {'request' => 'UI_PROVISION_INFO', 'message' => 'get_host_and_storage'}, {:vmdb_object => prov})).to eq("/System/Process/REQUEST?MiqProvision%3A%3Amiq_provision=#{prov.id}&#{extras}&message=get_host_and_storage&object_name=REQUEST&request=UI_PROVISION_INFO&vmdb_object_type=miq_provision")
 
       user = User.new
       user.id = 42
       begin
         Thread.current[:user] = user
-        expect(MiqAeEngine.create_automation_object('REQUEST', {'request' => 'UI_PROVISION_INFO', 'message' => 'get_host_and_storage'}, :vmdb_object => prov)).to eq("/System/Process/REQUEST?MiqProvision%3A%3Amiq_provision=#{prov.id}&#{extras}&User%3A%3Auser=#{user.id}&message=get_host_and_storage&object_name=REQUEST&request=UI_PROVISION_INFO&vmdb_object_type=miq_provision")
+        expect(MiqAeEngine.create_automation_object('REQUEST', {'request' => 'UI_PROVISION_INFO', 'message' => 'get_host_and_storage'}, {:vmdb_object => prov})).to eq("/System/Process/REQUEST?MiqProvision%3A%3Amiq_provision=#{prov.id}&#{extras}&User%3A%3Auser=#{user.id}&message=get_host_and_storage&object_name=REQUEST&request=UI_PROVISION_INFO&vmdb_object_type=miq_provision")
       ensure
         Thread.current[:user] = nil
       end
@@ -260,13 +260,13 @@ describe MiqAeEngine do
       vm = FactoryBot.create(:vm_vmware)
       extras = "MiqServer%3A%3Amiq_server=#{miq_server_id}"
       uri = "/System/Process/AUTOMATION?#{extras}&VmOrTemplate%3A%3Avm=#{vm.id}&object_name=AUTOMATION&vmdb_object_type=vm"
-      expect(MiqAeEngine.create_automation_object("AUTOMATION", {}, :vmdb_object => vm)).to eq(uri)
+      expect(MiqAeEngine.create_automation_object("AUTOMATION", {}, {:vmdb_object => vm})).to eq(uri)
     end
 
     it "with a starting point other than /SYSTEM/PROCESS" do
       vm = FactoryBot.create(:vm_vmware)
       fqclass = "Factory/StateMachines/ServiceProvision_template"
-      uri = MiqAeEngine.create_automation_object("DEFAULT", {}, :vmdb_object => vm, :fqclass => fqclass)
+      uri = MiqAeEngine.create_automation_object("DEFAULT", {}, {:vmdb_object => vm, :fqclass => fqclass})
       extras = "MiqServer%3A%3Amiq_server=#{miq_server_id}"
       expected_uri = "/#{fqclass}/DEFAULT?#{extras}&VmOrTemplate%3A%3Avm=#{vm.id}&object_name=DEFAULT&vmdb_object_type=vm"
       expect(uri).to eq(expected_uri)
@@ -393,7 +393,7 @@ describe MiqAeEngine do
     end
 
     it "with an empty array" do
-      result        = MiqAeEngine.create_automation_attributes({"vms" => []})
+      result = MiqAeEngine.create_automation_attributes("vms" => [])
       expect(result["Array::vms"]).to eq("")
     end
 
@@ -517,20 +517,20 @@ describe MiqAeEngine do
   end
 
   it "a namespace containing a slash is parsed correctly " do
-    start   = "namespace/more_namespace/my_favorite_class"
+    start = "namespace/more_namespace/my_favorite_class"
     msg_attrs = "message=testmessage&object_name=REQUEST&request=NOT_THERE"
     extras = "MiqServer%3A%3Amiq_server=#{miq_server_id}"
-    uri =  "/namespace/more_namespace/my_favorite_class/REQUEST?#{extras}&#{msg_attrs}"
-    attrs  = {'request' => 'NOT_THERE', 'message' => 'testmessage'}
+    uri = "/namespace/more_namespace/my_favorite_class/REQUEST?#{extras}&#{msg_attrs}"
+    attrs = {'request' => 'NOT_THERE', 'message' => 'testmessage'}
     expect(MiqAeEngine.create_automation_object('REQUEST', attrs, :fqclass => start)).to eq(uri)
   end
 
   it "a namespace not containing a slash is parsed correctly " do
-    start   = "namespace/my_favorite_class"
+    start = "namespace/my_favorite_class"
     msg_attrs = "message=testmessage&object_name=REQUEST&request=NOT_THERE"
     extras = "MiqServer%3A%3Amiq_server=#{miq_server_id}"
     uri =  "/namespace/my_favorite_class/REQUEST?#{extras}&#{msg_attrs}"
-    attrs  = {'request' => 'NOT_THERE', 'message' => 'testmessage'}
+    attrs = {'request' => 'NOT_THERE', 'message' => 'testmessage'}
     expect(MiqAeEngine.create_automation_object('REQUEST', attrs, :fqclass => start)).to eq(uri)
   end
 
@@ -759,17 +759,17 @@ describe MiqAeEngine do
 
   it "properly processes substitution with methods" do
     EvmSpecHelper.import_yaml_model(File.join(model_data_dir, "miq_ae_engine_spec4"), domain)
-    allow_any_instance_of(MiqProvision).to receive(:validate).and_return(:true)
+    allow_any_instance_of(MiqProvision).to receive(:validate).and_return(true)
     allow_any_instance_of(MiqProvision).to receive(:set_template_and_networking)
     prov = MiqProvision.create!(:provision_type => 'clone_to_template', :state => 'pending', :status => 'Ok')
-    ws   = MiqAeEngine.instantiate("/System/Process/REQUEST?MiqProvision::miq_provision=#{prov.id}&request=test_subst", user)
+    ws = MiqAeEngine.instantiate("/System/Process/REQUEST?MiqProvision::miq_provision=#{prov.id}&request=test_subst", user)
     expect(ws).not_to be_nil
 
     roots = ws.roots
     expect(roots).not_to be_nil
     expect(roots).to be_a_kind_of(Array)
     expect(roots.length).to eql(1)
-    root  = roots[0]
+    root = roots[0]
     expect(root['request']).to eql('test_subst')
     child = root.children[0]
     expect(child['test_attr']).to eq("target_type=template")
@@ -821,8 +821,12 @@ describe MiqAeEngine do
   context "deliver to automate" do
     let(:test_class) do
       Class.new do
-        def self.name; "TestClass"; end
-        def before_ae_starts(_options); end
+        def self.name
+          "TestClass"
+        end
+
+        def before_ae_starts(_options)
+        end
       end
     end
     let(:test_class_name) { test_class.name }
