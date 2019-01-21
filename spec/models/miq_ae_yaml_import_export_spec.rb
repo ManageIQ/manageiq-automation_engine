@@ -177,14 +177,20 @@ describe MiqAeDatastore do
     end
   end
 
-  context "embeded_methods" do
-    it "if no embedded methods the attribute should be missing" do
+  context "deleting empty attributes from export" do
+    before do
       export_model(@manageiq_domain.name)
       method_file = File.join(@export_dir, @manageiq_domain.name, @aen1.name,
                               "manageiq_test_class_1.class/__methods__/test1.yaml")
-      data = YAML.load_file(method_file)
+      @data = YAML.load_file(method_file)
+    end
 
-      expect(data.fetch_path('object', 'attributes', 'embedded_methods')).to be_nil
+    it "if no options the attribute should be missing" do
+      expect(@data.fetch_path('object', 'attributes', 'options')).to(be_nil)
+    end
+
+    it "if no embedded methods the attribute should be missing" do
+      expect(@data.fetch_path('object', 'attributes', 'embedded_methods')).to(be_nil)
     end
   end
 

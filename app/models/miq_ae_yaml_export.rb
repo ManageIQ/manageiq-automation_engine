@@ -178,12 +178,9 @@ class MiqAeYamlExport
   def write_method_attributes(method_obj, export_file_hash)
     envelope_hash = setup_envelope(method_obj, METHOD_OBJ_TYPE)
     envelope_hash['object']['inputs'] = method_obj.method_inputs
-    if method_obj.location == "inline"
-      envelope_hash['object']['attributes'].delete('data')
-    end
-    if method_obj.embedded_methods.empty?
-      envelope_hash['object']['attributes'].delete('embedded_methods')
-    end
+    envelope_hash['object']['attributes'].delete('data') if method_obj.location == "inline"
+    envelope_hash['object']['attributes'].delete('embedded_methods') if method_obj.embedded_methods.empty?
+    envelope_hash['object']['attributes'].delete('options') if method_obj.options.empty?
     export_file_hash['output_filename'] = "#{method_obj.name}.yaml"
     export_file_hash['export_data']     = envelope_hash.to_yaml
     @counts['method_instances'] += 1
