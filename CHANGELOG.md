@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 103 ending 2019-01-21
+
+### Fixed
+- Don't overwrite message in create_automation_object [(#287)](https://github.com/ManageIQ/manageiq-automation_engine/pull/287)
+
 ## Hammer-1
 
 ### Added
