@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ## Unreleased as of Sprint 103 ending 2019-01-21
 
 ### Fixed
-- Don't overwrite message in create_automation_object [(#287)](https://github.com/ManageIQ/manageiq-automation_engine/pull/287)
+- Reset System Domains Missing RedHat Domain [(#274)](https://github.com/ManageIQ/manageiq-automation_engine/pull/274)
+- Fix Custom Button Message Override [(#287)](https://github.com/ManageIQ/manageiq-automation_engine/pull/287)
 
 ## Hammer-1
 
