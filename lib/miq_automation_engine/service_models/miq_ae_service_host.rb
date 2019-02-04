@@ -9,7 +9,7 @@ module MiqAeMethodService
 
     expose :storages,              :association => true
     expose :read_only_storages
-    expose :writable_storages
+    expose :writable_storages,                                :method => :writable_accessible_storages
     expose :vms,                   :association => true
     expose :ext_management_system, :association => true
     expose :hardware,              :association => true
