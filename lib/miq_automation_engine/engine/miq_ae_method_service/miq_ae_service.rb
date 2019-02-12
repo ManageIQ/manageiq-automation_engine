@@ -165,9 +165,12 @@ module MiqAeMethodService
     end
 
     def execute(m, *args)
+      User.with_user(@workspace.ae_user) { execute_with_user(m, *args) }
+    end
+
+    def execute_with_user(m, *args)
       # Since each request from DRb client could run in a separate thread
       # We have to set the current_user in every thread.
-      User.current_user = @workspace.ae_user
       MiqAeServiceMethods.send(m, *args)
     rescue NoMethodError => err
       raise MiqAeException::MethodNotFound, err.message
@@ -202,11 +205,14 @@ module MiqAeMethodService
     end
 
     def create_notification!(values_hash = {})
+       User.with_user(@workspace.ae_user) { create_notification_with_user!(values_hash) }
+    end
+
+    def create_notification_with_user!(values_hash)
       options = {}
       type = notification_type(values_hash)
       subject = notification_subject(values_hash)
       options[:message] = values_hash[:message] if values_hash[:message].present?
-      User.current_user = @workspace.ae_user
 
       $miq_ae_logger.info("Calling Create Notification type: #{type} subject type: #{subject.class.base_class.name} id: #{subject.id} options: #{options.inspect}")
       MiqAeServiceModelBase.wrap_results(Notification.create!(:type      => type,

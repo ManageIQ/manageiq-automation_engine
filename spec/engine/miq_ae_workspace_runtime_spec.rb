@@ -5,10 +5,9 @@ describe MiqAeEngine::MiqAeWorkspaceRuntime do
     EvmSpecHelper.local_miq_server
   end
 
-  it "sets current_user" do
-    allow_any_instance_of(MiqAeEngine::MiqAeWorkspaceRuntime).to receive(:instantiate)
-    MiqAeEngine::MiqAeWorkspaceRuntime.instantiate("/a/b/c", user)
-
-    expect(User.current_user).to eq(user)
+  describe "#instantiate" do
+    it "returns workspace" do
+      expect(MiqAeEngine::MiqAeWorkspaceRuntime.instantiate("/a/b/c", user)).to be_a_kind_of(MiqAeEngine::MiqAeWorkspaceRuntime) 
+    end
   end
 end

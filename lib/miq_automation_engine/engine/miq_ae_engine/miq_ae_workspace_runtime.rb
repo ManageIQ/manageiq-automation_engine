@@ -45,7 +45,10 @@ module MiqAeEngine
     end
 
     def self.instantiate(uri, user, attrs = {})
-      User.current_user = user
+       User.with_user(user) { instantiate_with_user(uri, user, attrs) }
+    end
+
+    def self.instantiate_with_user(uri, user, attrs)
       workspace = MiqAeWorkspaceRuntime.new(attrs)
       self.current = workspace
       workspace.instantiate(uri, user, nil)
