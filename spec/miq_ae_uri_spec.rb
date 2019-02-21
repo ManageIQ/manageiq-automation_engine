@@ -16,9 +16,9 @@ describe MiqAeEngine::MiqAeUri do
   end
 
   it "escape non-ASCII Numeric characters" do
-    hash = {"test://dev?lab$~" => "OU=serverbuildingtest, OU=dev2"}
+    hash = {"test://dev?lab$" => "OU=serverbuildingtest, OU=dev2"}
     query = described_class.hash2query(hash)
-    expect(query).to eq("test%3A%2F%2Fdev%3Flab%24%7E=OU%3Dserverbuildingtest%2C%20OU%3Ddev2")
+    expect(query).to eq("test%3A%2F%2Fdev%3Flab%24=OU%3Dserverbuildingtest%2C%20OU%3Ddev2")
 
     result_hash = described_class.query2hash(query)
     expect(result_hash).to eq(hash)
