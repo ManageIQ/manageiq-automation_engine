@@ -105,7 +105,7 @@ describe MiqAeClassCopy do
       new_ids = [miq_ae_class.id] * ids.length
       expect(miq_ae_class_copy).to receive(:to_domain).with(domain, nil, false).exactly(ids.length).times { miq_ae_class }
       expect(miq_ae_class).to receive(:fqname).with(no_args).exactly(ids.length).times { fqname }
-      expect(MiqAeClass).to receive(:find).with(an_instance_of(Fixnum)).exactly(ids.length).times { miq_ae_class }
+      expect(MiqAeClass).to receive(:find).with(an_instance_of(Integer)).exactly(ids.length).times { miq_ae_class }
       expect(MiqAeClassCopy).to receive(:new).with(anything).exactly(ids.length).times { miq_ae_class_copy }
       expect(MiqAeClassCopy.copy_multiple(ids, domain)).to match_array(new_ids)
     end
