@@ -5,13 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 105 ending 2019-02-18
+
+### Fixed
+- Don't set User.current_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
+- Redirect writable_storages to writable_accessible_storages [(#292)](https://github.com/ManageIQ/manageiq-automation_engine/pull/292)
+
 ## Unreleased as of Sprint 103 ending 2019-01-21
 
 ### Fixed
 - Reset System Domains Missing RedHat Domain [(#274)](https://github.com/ManageIQ/manageiq-automation_engine/pull/274)
 - Fix Custom Button Message Override [(#287)](https://github.com/ManageIQ/manageiq-automation_engine/pull/287)
 
-## Hammer-1
+## Hammer-1 - Released 2019-01-15
 
 ### Added
 - Expose validate_conversion_hosts for TransformationPlanRequest [(#263)](https://github.com/ManageIQ/manageiq-automation_engine/pull/263)
