@@ -131,7 +131,7 @@ describe MiqAeEngine do
           object_type = ems.class.name
           object_id = ems.id
           expect(call_automate(object_type, object_id, miq_task.id)).to(eq(@ws))
-          expect(MiqTask.find(miq_task).state).to(eq(MiqTask::STATE_FINISHED))
+          expect(MiqTask.find(miq_task.id).state).to(eq(MiqTask::STATE_FINISHED))
         end
 
         it "with a starting point instead of /SYSTEM/PROCESS" do
