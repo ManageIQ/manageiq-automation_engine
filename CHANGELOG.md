@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-1
+## Hammer-3
+
+### Fixed
+- Don't overwrite message in create_automation_object [(#287)](https://github.com/ManageIQ/manageiq-automation_engine/pull/287)
+
+## Hammer-1 - Released 2019-01-15
 
 ### Added
 - Expose validate_conversion_hosts for TransformationPlanRequest [(#263)](https://github.com/ManageIQ/manageiq-automation_engine/pull/263)
