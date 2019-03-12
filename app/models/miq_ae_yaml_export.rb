@@ -175,6 +175,7 @@ class MiqAeYamlExport
 
   def write_method_attributes(method_obj, export_file_hash)
     envelope_hash = setup_envelope(method_obj, METHOD_OBJ_TYPE)
+    convert_playbook_attributes(envelope_hash) if method_obj.location == "playbook"
     envelope_hash['object']['inputs'] = method_obj.method_inputs
     envelope_hash['object']['attributes'].delete('data')
     if method_obj.embedded_methods.empty?
@@ -184,6 +185,21 @@ class MiqAeYamlExport
     export_file_hash['export_data']     = envelope_hash.to_yaml
     @counts['method_instances'] += 1
     write_export_file(export_file_hash)
+  end
+
+  def convert_playbook_attributes(envelope_hash)
+    options_hash = envelope_hash['object']['attributes']['options']
+    create_playbook_attributes_names(options_hash)
+    options_hash.except!(:repository_id, :playbook_id, :credential_id, :vault_credential_id, :cloud_credential_id)
+  end
+
+  def create_playbook_attributes_names(options)
+    ae_manager = ManageIQ::Providers::EmbeddedAnsible::AutomationManager
+    options[:repository_name]       = AnsibleRepositoryController.model.find_by(:id => options[:repository_id])&.name if options[:repository_id]
+    options[:playbook_name]         = ae_manager::Playbook.find_by(:id => options[:playbook_id])&.name                if options[:playbook_id]
+    options[:credential_name]       = ae_manager::Credential.find_by(:id => options[:credential_id])&.name            if options[:credential_id]
+    options[:vault_credential_name] = ae_manager::VaultCredential.find_by(:id => options[:vault_credential_id])&.name if options[:vault_credential_id]
+    options[:cloud_credential_name] = ae_manager::CloudCredential.find_by(:id => options[:cloud_credential_id])&.name if options[:cloud_credential_id]
   end
 
   def write_method_file(method_obj, export_file_hash)
