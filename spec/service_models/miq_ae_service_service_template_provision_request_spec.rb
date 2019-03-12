@@ -15,15 +15,26 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateProvisionRequest do
     MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?ServiceTemplateProvisionRequest::service_template_provision_request=#{@service_template_provision_request.id}", @user)
   end
 
-  it "#approve" do
-    approver = 'wilma'
-    reason   = "Why Not?"
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_request'].approve('#{approver}', '#{reason}')"
-    @ae_method.update_attributes(:data => method)
-    expect(MiqRequest).to receive(:find).with(@service_template_provision_request.id.to_s)
-      .and_return(@service_template_provision_request)
-    expect(@service_template_provision_request).to receive(:approve).with(approver, reason).once
-    expect(invoke_ae.root(@ae_result_key)).to be_truthy
+  context "#approve" do
+    it "gets called by method" do
+      approver = 'wilma'
+      reason   = "Why Not?"
+      method   = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_request'].approve('#{approver}', '#{reason}')"
+      @ae_method.update_attributes(:data => method)
+      expect(MiqRequest).to receive(:find).with(@service_template_provision_request.id.to_s).and_return(@service_template_provision_request)
+      expect(@service_template_provision_request).to receive(:approve).with(approver, reason).once
+      expect(invoke_ae.root(@ae_result_key)).to be_truthy
+    end
+
+    it "sets current user" do
+      user = FactoryBot.create(:user_with_group)
+      ws = double(:ae_user => user)
+      allow(service_service_template_provision_request.class).to receive(:workspace).and_return(ws)
+      approver = FactoryBot.create(:user_miq_request_approver)
+
+      expect(User).to receive(:with_user).with(user)
+      service_service_template_provision_request.approve(approver, "for test")
+    end
   end
 
   it "#user_message" do
