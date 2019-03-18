@@ -9,17 +9,17 @@ describe MiqAePassword do
     end
   end
 
-  it "produces a key decryptable by MiqPassword" do
-    expect(MiqPassword.decrypt(described_class.encrypt(plaintext))).to eq(plaintext)
+  it "produces a key decryptable by ManageIQ::Password" do
+    expect(ManageIQ::Password.decrypt(described_class.encrypt(plaintext))).to eq(plaintext)
   end
 
   describe ".decrypt" do
-    it "reads password encrypted by MiqPassword" do
-      expect(described_class.decrypt(MiqPassword.encrypt(plaintext))).to eq(plaintext)
+    it "reads password encrypted by ManageIQ::Password" do
+      expect(described_class.decrypt(ManageIQ::Password.encrypt(plaintext))).to eq(plaintext)
     end
 
     it "throws understandable error" do
-      expect { described_class.decrypt("v1:{something}") }.to raise_error(MiqAePassword::MiqPasswordError)
+      expect { described_class.decrypt("v1:{something}") }.to raise_error(ManageIQ::Password::PasswordError)
     end
   end
 

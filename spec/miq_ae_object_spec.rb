@@ -313,7 +313,7 @@ describe MiqAeEngine::MiqAeObject do
     it "raises exception for bogus passwords" do
       expect do
         described_class.convert_value_based_on_datatype('gobbledygook', 'password')
-      end.to raise_exception(MiqPassword::MiqPasswordError)
+      end.to raise_exception(ManageIQ::Password::PasswordError)
     end
   end
 

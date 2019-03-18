@@ -18,7 +18,7 @@ describe MiqAeMethodService::MiqAeServiceObjectCommon do
       end
 
       it "#attributes" do
-        enc_hash = {'fred' => MiqPassword::MASK, 'barney' => 'betty' }
+        enc_hash = {'fred' => ManageIQ::Password::MASK, 'barney' => 'betty' }
 
         wrapper['barney'] = 'betty'
         expect(wrapper.attributes).to eq(enc_hash)
@@ -29,7 +29,7 @@ describe MiqAeMethodService::MiqAeServiceObjectCommon do
       end
 
       it "#[]" do
-        expect(wrapper['fred']).to eq(MiqPassword::MASK)
+        expect(wrapper['fred']).to eq(ManageIQ::Password::MASK)
       end
 
       it "#encrypted?" do
