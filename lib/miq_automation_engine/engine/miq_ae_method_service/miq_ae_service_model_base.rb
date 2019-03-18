@@ -164,13 +164,17 @@ module MiqAeMethodService
         self.association = method_name if options[:association]
         define_method(method_name) do |*params|
           method = options[:method] || method_name
-          ret = object_send(method, *params)
+          ret = User.with_user(self.class.workspace&.ae_user) { object_send(method, *params) }
           return options[:override_return] if options.key?(:override_return)
           options[:association] ? wrap_results(self.class.filter_objects(ret)) : wrap_results(ret)
         end
       end
     end
     private_class_method :expose
+
+    def self.workspace
+      MiqAeEngine::MiqAeWorkspaceRuntime.current || MiqAeEngine::DrbRemoteInvoker.workspace
+    end
 
     def self.wrap_results(results)
       ar_method do
