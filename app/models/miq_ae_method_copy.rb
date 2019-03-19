@@ -55,6 +55,7 @@ class MiqAeMethodCopy
     validate
     create_method
     @dest_method.inputs << add_inputs
+    @dest_method.options = @src_method.options
     @dest_method.save!
     @dest_method
   end

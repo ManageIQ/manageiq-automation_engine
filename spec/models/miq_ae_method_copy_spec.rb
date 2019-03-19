@@ -84,6 +84,32 @@ describe MiqAeMethodCopy do
       method_copy = MiqAeMethodCopy.new(src_fqname).to_domain(@dest_domain, @dest_ns, true)
       expect(method_copy.embedded_methods).to(eq(method.embedded_methods))
     end
+
+    it 'copy playbook method' do
+      method = MiqAeMethod.create(
+        :name             => 'playbook_method',
+        :embedded_methods => [],
+        :class_id         => MiqAeClass.first.id,
+        :scope            => 'instance',
+        :language         => 'ruby',
+        :location         => 'playbook',
+        :options          => {
+          :repository_id       => "23",
+          :playbook_id         => "304",
+          :credential_id       => "10",
+          :vault_credential_id => "",
+          :verbosity           => "1",
+          :cloud_credential_id => "123",
+          :execution_ttl       => "2",
+          :hosts               => "201",
+          :log_output          => "always",
+          :become_enabled      => true
+        }
+      )
+      src_fqname  = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{method.name}"
+      method_copy = MiqAeMethodCopy.new(src_fqname).to_domain(@dest_domain, @dest_ns, true)
+      expect(method_copy.options).to(eq(method.options))
+    end
   end
 
   context 'copy onto itself' do
