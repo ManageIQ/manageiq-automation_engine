@@ -2,12 +2,8 @@ require 'manageiq-password'
 
 class MiqAePassword < ManageIQ::Password
   def self.encrypt(str)
-    return str if str.blank? || self.encrypted?(str)
-    ManageIQ::Password.encrypt(str)
-  end
-
-  def self.decrypt(str)
-    ManageIQ::Password.decrypt(str)
+    return str if str.blank? || encrypted?(str)
+    super
   end
 
   def self.decrypt_if_password(obj)
@@ -19,6 +15,6 @@ class MiqAePassword < ManageIQ::Password
   end
 
   def inspect
-    "\"#{self}\""
+    to_s.inspect
   end
 end

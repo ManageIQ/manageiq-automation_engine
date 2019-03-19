@@ -9,6 +9,14 @@ describe MiqAePassword do
     end
   end
 
+  describe ".inspect" do
+    subject { described_class.new(plaintext) }
+
+    it "is hidden inspect" do
+      expect(subject.inspect).to eq("\"********\"")
+    end
+  end
+
   it "produces a key decryptable by ManageIQ::Password" do
     expect(ManageIQ::Password.decrypt(described_class.encrypt(plaintext))).to eq(plaintext)
   end
