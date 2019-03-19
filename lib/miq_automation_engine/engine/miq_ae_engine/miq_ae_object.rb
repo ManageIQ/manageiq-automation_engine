@@ -577,7 +577,7 @@ module MiqAeEngine
 
     def self.decrypt_password(value)
       MiqAePassword.new(MiqAePassword.decrypt(value))
-    rescue MiqPassword::MiqPasswordError => err
+    rescue ManageIQ::Password::PasswordError => err
       $miq_ae_logger.error("Error decrypting password #{err.message}. Possible cause: Password value was encrypted with a different encryption key")
       raise
     end

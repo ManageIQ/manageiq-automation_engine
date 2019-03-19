@@ -8,9 +8,9 @@ module MiqAeEngine
   DEFAULT_ATTRIBUTES = %w( User::user MiqServer::miq_server object_name )
 
   def self.instantiate(uri, user)
-    $miq_ae_logger.info("MiqAeEngine: Instantiating Workspace for URI=#{MiqPassword.sanitize_string(uri)}")
+    $miq_ae_logger.info("MiqAeEngine: Instantiating Workspace for URI=#{ManageIQ::Password.sanitize_string(uri)}")
     workspace, t = Benchmark.realtime_block(:total_time) { MiqAeWorkspaceRuntime.instantiate(uri, user) }
-    $miq_ae_logger.info("MiqAeEngine: Instantiating Workspace for URI=#{MiqPassword.sanitize_string(uri)}...Complete - Counts: #{format_benchmark_counts(t)}, Timings: #{format_benchmark_times(t)}")
+    $miq_ae_logger.info("MiqAeEngine: Instantiating Workspace for URI=#{ManageIQ::Password.sanitize_string(uri)}...Complete - Counts: #{format_benchmark_counts(t)}, Timings: #{format_benchmark_times(t)}")
     workspace
   end
 
@@ -78,7 +78,7 @@ module MiqAeEngine
     begin
       miq_task&.state_active
       object_name = "#{options[:object_type]}.#{options[:object_id]}"
-      _log.info("Delivering #{MiqPassword.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate")
+      _log.info("Delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate")
       automate_attrs = automate_attrs_from_options(options)
 
       if options[:object_type]
@@ -92,7 +92,7 @@ module MiqAeEngine
       ws  = resolve_automation_object(uri, user_obj)
 
       if ws.nil? || ws.root.nil?
-        message = "Error delivering #{MiqPassword.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate: Empty Workspace"
+        message = "Error delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate: Empty Workspace"
         _log.error(message)
         return nil
       end
@@ -105,7 +105,7 @@ module MiqAeEngine
           deliver_on = Time.now.utc + ae_retry_interval
           change_options_by_ws(options, ws)
 
-          message = "Requeuing #{MiqPassword.sanitize_string(options.inspect)} for object [#{object_name}] with state [#{options[:state]}] to Automate for delivery in [#{ae_retry_interval}] seconds"
+          message = "Requeuing #{ManageIQ::Password.sanitize_string(options.inspect)} for object [#{object_name}] with state [#{options[:state]}] to Automate for delivery in [#{ae_retry_interval}] seconds"
           _log.info(message)
           queue_options = {:deliver_on => deliver_on}
           queue_options[:server_guid] = MiqServer.my_guid if ws.root['ae_retry_server_affinity']

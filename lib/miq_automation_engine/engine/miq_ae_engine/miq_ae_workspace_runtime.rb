@@ -99,7 +99,7 @@ module MiqAeEngine
     end
 
     def instantiate(uri, user, root = nil)
-      $miq_ae_logger.info("Instantiating [#{MiqPassword.sanitize_string(uri)}]") if root.nil?
+      $miq_ae_logger.info("Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]") if root.nil?
       @ae_user = user
       @dom_search.ae_user = user
       scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri, "miqaedb")
