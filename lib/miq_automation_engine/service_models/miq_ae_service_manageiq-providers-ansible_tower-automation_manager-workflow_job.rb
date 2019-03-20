@@ -1,6 +1,5 @@
 module MiqAeMethodService
   class MiqAeServiceManageIQ_Providers_AnsibleTower_AutomationManager_WorkflowJob < MiqAeServiceManageIQ_Providers_ExternalAutomationManager_OrchestrationStack
-    expose :workflow_template, :association => true
     expose :refresh_ems
 
     def self.create_job(template, args = {})

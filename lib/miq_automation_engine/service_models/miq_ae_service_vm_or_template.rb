@@ -11,18 +11,6 @@ module MiqAeMethodService
     require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
     include MiqAeServiceRemoveFromVmdb
 
-    expose :ext_management_system, :association => true
-    expose :storage,               :association => true
-    expose :storages,              :association => true
-    expose :host,                  :association => true
-    expose :hardware,              :association => true
-    expose :operating_system,      :association => true
-    expose :guest_applications,    :association => true
-    expose :miq_provision,         :association => true
-    expose :ems_cluster,           :association => true
-    expose :snapshots,             :association => true
-    expose :direct_service,        :association => true
-    expose :service,               :association => true
     expose :ems_folder,            :association => true, :method => :parent_folder
     expose :ems_blue_folder,       :association => true, :method => :parent_blue_folder
     expose :resource_pool,         :association => true, :method => :parent_resource_pool
@@ -34,16 +22,7 @@ module MiqAeMethodService
     expose :performances_maintains_value_for_duration?
     expose :reconfigured_hardware_value?
     expose :changed_vm_value?
-    expose :files,                 :association => true
-    expose :directories,           :association => true
     expose :refresh, :method => :refresh_ems
-    expose :tenant,                :association => true
-    expose :accounts,              :association => true
-    expose :users,                 :association => true
-    expose :groups,                :association => true
-    expose :compliances,           :association => true
-    expose :last_compliance,       :association => true
-    expose :ems_events,            :association => true
     expose :evacuate
 
 

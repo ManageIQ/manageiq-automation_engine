@@ -3,9 +3,6 @@ module MiqAeMethodService
     require_relative "mixins/miq_ae_service_miq_provision_mixin"
     include MiqAeServiceMiqProvisionMixin
 
-    expose :miq_provision_request, :association => true
-    expose :vm,                    :association => true
-    expose :vm_template,           :association => true
     expose :target_type
     expose :source_type
     expose :update_vm_name

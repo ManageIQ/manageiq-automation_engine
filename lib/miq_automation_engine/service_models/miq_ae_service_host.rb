@@ -7,18 +7,8 @@ module MiqAeMethodService
     require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
     include MiqAeServiceRemoveFromVmdb
 
-    expose :storages,              :association => true
     expose :read_only_storages
     expose :writable_storages,                                :method => :writable_accessible_storages
-    expose :vms,                   :association => true
-    expose :ext_management_system, :association => true
-    expose :hardware,              :association => true
-    expose :switches,              :association => true
-    expose :lans,                  :association => true
-    expose :operating_system,      :association => true
-    expose :guest_applications,    :association => true
-    expose :ems_cluster,           :association => true
-    expose :ems_events,            :association => true
     expose :ems_folder,            :association => true,      :method => :owning_folder
     expose :datacenter,            :association => true,      :method => :owning_datacenter
     expose :authentication_userid
@@ -26,14 +16,9 @@ module MiqAeMethodService
     expose :event_log_threshold?
     expose :to_s
     expose :domain
-    expose :files,                 :association => true
-    expose :directories,           :association => true
     expose :set_node_maintenance
     expose :unset_node_maintenance
     expose :external_get_node_maintenance
-    expose :compliances,           :association => true
-    expose :last_compliance,       :association => true
-    expose :host_aggregates,       :association => true
 
     METHODS_WITH_NO_ARGS = %w(scan)
     METHODS_WITH_NO_ARGS.each do |m|
