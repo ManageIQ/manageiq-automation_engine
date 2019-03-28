@@ -9,22 +9,14 @@ module MiqAeMethodService
 
     expose :retire_service_resources
     expose :automate_retirement_entrypoint
-    expose :service_resources, :association => true
-    expose :service_template,  :association => true
     expose :start
     expose :stop
     expose :suspend
     expose :shutdown_guest
-    expose :vms,                       :association => true
     expose :direct_vms,                :association => true
     expose :indirect_vms,              :association => true
     expose :root_service,              :association => true
-    expose :all_service_children,      :association => true
-    expose :direct_service_children,   :association => true
     expose :indirect_service_children, :association => true
-    expose :parent_service,            :association => true
-    expose :tenant,                    :association => true
-    expose :generic_objects,           :association => true
 
     CREATE_ATTRIBUTES = [:name, :description, :service_template]
 

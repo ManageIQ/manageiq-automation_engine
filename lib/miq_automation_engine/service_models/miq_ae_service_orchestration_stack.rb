@@ -5,10 +5,6 @@ module MiqAeMethodService
     require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
     include MiqAeServiceRemoveFromVmdb
 
-    expose :parameters,             :association => true
-    expose :resources,              :association => true
-    expose :outputs,                :association => true
-    expose :ext_management_system,  :association => true
     expose :ems_ref
     expose :raw_delete_stack
     expose :raw_update_stack

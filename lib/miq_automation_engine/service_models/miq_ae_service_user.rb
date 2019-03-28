@@ -3,11 +3,7 @@ module MiqAeMethodService
     require_relative "mixins/miq_ae_service_custom_attribute_mixin"
     include MiqAeServiceCustomAttributeMixin
 
-    expose :current_group,  :association => true
     expose :current_tenant, :association => true
-    expose :vms,            :association => true
-    expose :miq_groups,     :association => true
-    expose :miq_requests,   :association => true
     expose :name
     expose :email
     expose :userid

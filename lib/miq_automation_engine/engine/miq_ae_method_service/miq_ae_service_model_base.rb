@@ -39,7 +39,15 @@ module MiqAeMethodService
 
     def self.inherited(subclass)
       # Skip for anonymous classes
-      expose_class_attributes(subclass) if subclass.name
+      return unless subclass.name
+      expose_class_attributes(subclass)
+      expose_class_associations(subclass)
+    end
+
+    def self.expose_class_associations(subclass)
+      subclass.class_eval do
+        model.reflections_with_virtual.each_key { |key| expose key, :association => true }
+      end
     end
 
     def self.expose_class_attributes(subclass)
@@ -115,6 +123,7 @@ module MiqAeMethodService
       Class.new(super_class) do |klass|
         ::MiqAeMethodService.const_set(model_to_service_model_name(ar_model), klass)
         expose_class_attributes(klass)
+        expose_class_associations(klass)
       end
     end
     private_class_method :dynamic_service_model_creation
