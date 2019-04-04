@@ -46,8 +46,12 @@ module MiqAeMethodService
 
     def self.expose_class_associations(subclass)
       subclass.class_eval do
-        model.reflections_with_virtual.each_key { |key| expose key, :association => true }
+        ar_model_associations.each { |key| expose(key, :association => true) }
       end
+    end
+
+    def self.ar_model_associations
+      model.reflections_with_virtual.except(:tags).keys - superclass_associations
     end
 
     def self.expose_class_attributes(subclass)
@@ -62,9 +66,11 @@ module MiqAeMethodService
     end
 
     def self.associations
-      @associations ||= []
-      super_assoc = superclass.respond_to?(:associations) ? superclass.associations : []
-      (super_assoc + @associations).sort
+      (superclass_associations + @associations ||= []).sort
+    end
+
+    def self.superclass_associations
+      superclass.try(:associations) || []
     end
 
     def associations
@@ -77,7 +83,7 @@ module MiqAeMethodService
 
     def self.association=(meth)
       @associations ||= []
-      @associations << meth.to_s unless @associations.include?(meth.to_s)
+      @associations << meth.to_s unless associations.include?(meth.to_s)
     end
 
     def self.base_class
