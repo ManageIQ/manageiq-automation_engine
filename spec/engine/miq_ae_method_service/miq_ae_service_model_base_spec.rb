@@ -93,6 +93,31 @@ describe MiqAeMethodService::MiqAeServiceModelBase do
       end
     end
   end
+
+  context 'with a VM service model' do
+    let(:service_model) { MiqAeMethodService::MiqAeServiceManageIQ_Providers_InfraManager_Vm }
+
+    describe '.ar_subclass_associations' do
+      it `does not return the tags association` do
+        expect(service_model.ar_model_associations).to_not include(:tags)
+      end
+
+      it `does not include associations from superclass` do
+        expect(service_model.ar_model_associations).to_not include(service_model.superclass.ar_model_associations)
+      end
+    end
+
+    describe '.associations' do
+      it 'does not contain duplicate associations' do
+        associations = service_model.associations
+        expect(associations.count).to eq(associations.uniq.count)
+      end
+
+      it 'does not return the tags associations' do
+        expect(service_model.associations).to_not include(:tags)
+      end
+    end
+  end
 end
 
 module MiqAeServiceModelSpec
