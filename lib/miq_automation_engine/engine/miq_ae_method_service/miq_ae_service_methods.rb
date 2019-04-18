@@ -7,12 +7,14 @@ module MiqAeMethodService
 
     SYNCHRONOUS = Rails.env.test?
 
-    def self.send_email(to, from, subject, body, content_type = nil)
+    def self.send_email(to, from, subject, body, content_type: nil, cc: nil, bcc: nil)
       ar_method do
         meth = SYNCHRONOUS ? :deliver : :deliver_queue
         options = {
           :to           => to,
           :from         => from,
+          :cc           => cc,
+          :bcc          => bcc,
           :subject      => subject,
           :content_type => content_type,
           :body         => body
