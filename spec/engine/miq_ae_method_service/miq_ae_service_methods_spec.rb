@@ -26,12 +26,14 @@ describe MiqAeMethodService::MiqAeServiceMethods do
         :from         => "fred@bedrock.gov",
         :body         => "What are we having for dinner?",
         :content_type => "text/fred",
+        :bcc          => "thing1@bedrock.gov",
+        :cc           => "thing2@bedrock.gov",
         :subject      => "Dinner"
       }
     end
 
     it "sends mail synchronous" do
-      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, #{options[:content_type].inspect})"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, {:bcc => #{options[:bcc].inspect}, :cc => #{options[:cc].inspect}, :content_type => #{options[:content_type].inspect}})"
       @ae_method.update_attributes(:data => method)
       stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
       expect(GenericMailer).to receive(:deliver).with(:automation_notification, options).once
@@ -44,7 +46,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       MiqRegion.seed
       miq_server.server_roles << FactoryGirl.create(:server_role, :name => 'notifier')
 
-      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, #{options[:content_type].inspect})"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, {:bcc => #{options[:bcc].inspect}, :cc => #{options[:cc].inspect}, :content_type => #{options[:content_type].inspect}})"
       @ae_method.update_attributes(:data => method)
       stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
       expect(MiqQueue).to receive(:put).with(
