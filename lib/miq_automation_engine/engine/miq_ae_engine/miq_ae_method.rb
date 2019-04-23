@@ -24,9 +24,17 @@ module MiqAeEngine
     end
 
     def self.invoke_uri(aem, obj, _inputs)
-      scheme, userinfo, host, port, registry, path, opaque, query, fragment = URI.split(aem.data)
-      raise  MiqAeException::MethodNotFound, "Specified URI [#{aem.data}] in Method [#{aem.name}] has unsupported scheme of #{scheme}; supported scheme is file" unless scheme.downcase == "file"
-      raise  MiqAeException::MethodNotFound, "Invalid file specification -- #{aem.data}" if path.nil?
+      uri = URI.parse(aem.data)
+
+      unless uri.scheme.casecmp?("file")
+        msg = "Specified URI [#{aem.data}] in Method [#{aem.name}] has unsupported scheme of #{scheme}; supported scheme is file"
+        raise MiqAeException::MethodNotFound, msg
+      end
+
+      if uri.path.blank?
+        raise  MiqAeException::MethodNotFound, "Invalid file specification -- #{aem.data}"
+      end
+
       # Create the filename corresponding to the URI specification
       fname = ae_methods_dir.join(path)
       raise  MiqAeException::MethodNotFound, "Method [#{aem.data}] Not Found (fname=#{fname})" unless File.exist?(fname)
