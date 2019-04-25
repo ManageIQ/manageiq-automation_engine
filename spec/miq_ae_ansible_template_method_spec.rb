@@ -1,5 +1,6 @@
 describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
   describe "run" do
+    before { allow(MiqServer).to receive(:my_zone).and_return(FactoryGirl.create(:zone).name) }
     let(:user) { FactoryBot.create(:user_with_group) }
     let(:aw) { FactoryBot.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
     let(:root_hash) { { 'name' => 'Flintstone' } }
@@ -60,7 +61,7 @@ describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
       end
 
       it "success" do
-        expect(template).to receive(:runner) do |args|
+        expect(template).to receive(:run_with_miq_job) do |args|
           expect(args['test']).to eq(13)
           expect(args[:extra_vars][:manageiq]['automate_workspace']).to eq(aw.href_slug)
           expect(%w(api_url api_token) - args[:extra_vars][:manageiq].keys).to be_empty
@@ -76,7 +77,7 @@ describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
 
       shared_examples_for "task_slug" do
         it "matches" do
-          expect(template).to receive(:runner) do |args|
+          expect(template).to receive(:run_with_miq_job) do |args|
             expect(args[:extra_vars][:manageiq]['request_task']).to eq(task_href_slug)
             miq_task.id
           end
@@ -108,7 +109,7 @@ describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
     context "regular method" do
       before do
         allow(described_class::TEMPLATE_CLASS).to receive(:find).and_return(template)
-        allow(template).to receive(:runner).and_return(miq_task.id)
+        allow(template).to receive(:run_with_miq_job).and_return(miq_task.id)
         allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
@@ -133,7 +134,7 @@ describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
       end
 
       it "template launch fails" do
-        expect(template).to receive(:runner).and_raise("Bamm Bamm Rubble")
+        expect(template).to receive(:run_with_miq_job).and_raise("Bamm Bamm Rubble")
 
         at = described_class.new(aem, obj, inputs)
         expect { at.run }.to raise_exception(MiqAeException::Error)
@@ -146,7 +147,7 @@ describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
         root_hash['ae_state_started'] = Time.zone.now.utc.to_s
         miq_task.update_status(MiqTask::STATE_ACTIVE, MiqTask::STATUS_OK, "Actively working")
         allow(described_class::TEMPLATE_CLASS).to receive(:find).and_return(template)
-        allow(template).to receive(:runner).and_return(miq_task.id)
+        allow(template).to receive(:run_with_miq_job).and_return(miq_task.id)
         allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
         allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
         allow(workspace).to receive(:update_workspace)
