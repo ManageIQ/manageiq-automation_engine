@@ -117,6 +117,11 @@ module MiqAeMethodService
       MiqAeServiceModelBase.wrap_results(result)
     end
 
+    def self.create_retire_request(obj)
+      result = obj.object_send(:make_retire_request, User.current_user)
+      MiqAeServiceModelBase.wrap_results(result)
+    end
+
     def self.drb_undumped(klass)
       _log.info "Entered: klass=#{klass.name}"
       klass.include(DRbUndumped) unless klass.ancestors.include?(DRbUndumped)
