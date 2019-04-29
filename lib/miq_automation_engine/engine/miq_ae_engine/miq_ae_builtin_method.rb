@@ -10,10 +10,12 @@ module MiqAeEngine
       vm_retire_task
       service_retire_task
       orchestration_stack_retire_task
+      physical_server_provision_task
       platform_category
     ).freeze
     CLOUD          = 'cloud'.freeze
     INFRASTRUCTURE = 'infrastructure'.freeze
+    PHYSICAL_INFRA = 'physicalinfrastructure'.freeze
     SERVICE        = 'service'.freeze
     UNKNOWN        = 'unknown'.freeze
 
@@ -70,7 +72,8 @@ module MiqAeEngine
         when 'orchestration_stack_retire' then %w(Orchestration Lifecycle Retirement)
         when 'configured_system_provision'
           obj.workspace.root['ae_provider_category'] = 'infrastructure'
-          %w(Configured_System Lifecycle Provisioning)
+          %w[Configured_System Lifecycle Provisioning]
+        when 'physical_server_provision' then %w[PhysicalServer Lifecycle Provisioning]
         end
       $miq_ae_logger.info("Request:<#{obj['request']}> Target Component:<#{obj['target_component']}> ")
       $miq_ae_logger.info("Target Class:<#{obj['target_class']}> Target Instance:<#{obj['target_instance']}>")
@@ -181,12 +184,23 @@ module MiqAeEngine
       case obj_name
       when "orchestration_stack", "orchestration_stack_retire_task"
         CLOUD
-      when "miq_request", "miq_provision", "vm_migrate_task", "vm_retire_task"
+      when "miq_request"
+        case prov_obj
+        when nil
+          nil
+        when PhysicalServerProvisionRequest
+          PHYSICAL_INFRA
+        else
+          vm_detect_category(prov_obj.source)
+        end
+      when "miq_provision", "vm_migrate_task", "vm_retire_task"
         vm_detect_category(prov_obj.source) if prov_obj
       when "service_retire_task"
         ""
       when "vm"
         vm_detect_category(prov_obj) if prov_obj
+      when "physical_server_provision_task"
+        PHYSICAL_INFRA
       else
         UNKNOWN
       end
