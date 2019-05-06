@@ -27,6 +27,11 @@ class MiqAeDomain < MiqAeNamespace
 
   include TenancyMixin
 
+  def self.with_tenant(tenant_id)
+    tenant = Tenant.find(tenant_id)
+    where(:tenant_id => tenant.ancestor_ids + [tenant_id])
+  end
+
   def self.enabled
     where(:enabled => true)
   end
