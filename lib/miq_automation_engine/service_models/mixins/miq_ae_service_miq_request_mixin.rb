@@ -7,6 +7,14 @@ module MiqAeServiceMiqRequestMixin
     object_send(:get_option, key)
   end
 
+  def get_option_decrypted(key)
+    object_send(:get_option_decrypted, key)
+  end
+
+  def option_encrypted?(key)
+    object_send(:option_encrypted?, key)
+  end
+
   def get_option_last(key)
     object_send(:get_option_last, key)
   end

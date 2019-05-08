@@ -2,6 +2,8 @@ module MiqAeMethodService
   class MiqAeServiceMiqRequestTask < MiqAeServiceModelBase
     require_relative "mixins/miq_ae_service_miq_request_mixin"
     include MiqAeServiceMiqRequestMixin
+    require_relative "mixins/miq_ae_service_dialog_option_mixin"
+    include MiqAeServiceDialogOptionMixin
 
     expose :execute, :method => :execute_queue, :override_return => true
     expose :cancel_requested?

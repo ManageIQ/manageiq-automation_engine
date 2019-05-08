@@ -6,6 +6,8 @@ module MiqAeMethodService
     include MiqAeServiceCustomAttributeMixin
     require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
     include MiqAeServiceRemoveFromVmdb
+    require_relative "mixins/miq_ae_service_dialog_option_mixin"
+    include MiqAeServiceDialogOptionMixin
 
     expose :retire_service_resources
     expose :automate_retirement_entrypoint
@@ -32,10 +34,6 @@ module MiqAeMethodService
 
     def dialog_options
       @object.options[:dialog] || {}
-    end
-
-    def get_dialog_option(key)
-      dialog_options[key]
     end
 
     def set_dialog_option(key, value)

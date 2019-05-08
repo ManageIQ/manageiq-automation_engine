@@ -6,10 +6,6 @@ module MiqAeMethodService
       options[:dialog] || {}
     end
 
-    def get_dialog_option(key)
-      dialog_options[key]
-    end
-
     def group_sequence_run_now?
       ar_method { @object.group_sequence_run_now? }
     end
