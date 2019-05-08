@@ -209,7 +209,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     it "create retire request" do
       allow(workspace).to receive(:disable_rbac)
       allow(Service).to receive(:find).with(service.id).and_return(service)
-      expect(service).to receive(:make_retire_request).with(user).and_return(miq_request)
+      expect(Service).to receive(:make_retire_request).with(service.id, user).and_return(miq_request)
 
       result = miq_ae_service.execute(:create_retire_request, svc_service)
       expect(result).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqRequest)
