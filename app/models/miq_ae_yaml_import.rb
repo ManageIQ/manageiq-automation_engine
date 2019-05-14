@@ -250,7 +250,7 @@ class MiqAeYamlImport
     end
 
     unless invalid_attributes.empty?
-      error_msg = "Error: Playbook method '#{ruby_method_file_name}' contains some invalid attributes:"
+      error_msg = _("Error: Playbook method '%{method_name}' contains below listed error(s):") % { :method_name => ruby_method_file_name }
       invalid_attributes.each do |attr|
         error_msg += "<br> * #{playbook_attr_error_msg(attr, options)}"
       end
