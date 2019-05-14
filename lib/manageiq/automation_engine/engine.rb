@@ -17,11 +17,11 @@ module ManageIQ
       config.autoload_paths << root.join("lib/miq_automation_engine").to_s
       config.autoload_paths << root.join("lib/miq_automation_engine/engine").to_s
 
-      def vmdb_plugin?
+      def self.vmdb_plugin?
         true
       end
 
-      def plugin_name
+      def self.plugin_name
         _('Automation Engine')
       end
     end
