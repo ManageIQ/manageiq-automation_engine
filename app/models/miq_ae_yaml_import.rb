@@ -230,23 +230,9 @@ class MiqAeYamlImport
 
   def convert_playbook_attributes(options, ruby_method_file_name)
     invalid_attributes = []
-    ae_manager = ManageIQ::Providers::EmbeddedAnsible::AutomationManager
-
     %w[repository playbook credential vault_credential cloud_credential].each do |attr|
       next unless options["#{attr}_name".to_sym]
-      klass = case attr
-              when 'repository'
-                AnsibleRepositoryController.model
-              when 'playbook'
-                ae_manager::Playbook
-              when 'credential'
-                ae_manager::Credential
-              when 'vault_credential'
-                ae_manager::VaultCredential
-              when 'cloud_credential'
-                ae_manager::CloudCredential
-              end
-      convert_playbook_attribute(options, klass, attr, invalid_attributes)
+      convert_playbook_attribute(options, attr, invalid_attributes)
     end
 
     unless invalid_attributes.empty?
@@ -259,13 +245,26 @@ class MiqAeYamlImport
     options.except!(:repository_name, :playbook_name, :credential_name, :vault_credential_name, :cloud_credential_name)
   end
 
-  def convert_playbook_attribute(options, klass, attr, invalid_attributes)
+  def convert_playbook_attribute(options, attr, invalid_attributes)
+    ae_manager = ManageIQ::Providers::EmbeddedAnsible::AutomationManager
+    klass = case attr
+            when 'repository'
+              AnsibleRepositoryController.model
+            when 'playbook'
+              ae_manager::Playbook
+            when 'credential'
+              ae_manager::Credential
+            when 'vault_credential'
+              ae_manager::VaultCredential
+            when 'cloud_credential'
+              ae_manager::CloudCredential
+            end
     related_obj = klass.find_by(:name => options["#{attr}_name".to_sym])
 
     if related_obj
       options["#{attr}_id".to_sym] = related_obj.id.to_s
     else
-      invalid_attributes << attr.to_s
+      invalid_attributes << attr
     end
   end
 
