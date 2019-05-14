@@ -33,9 +33,7 @@ module MiqAeEvent
   def self.raise_evm_event(event_name, target, inputs = {}, options = {})
     if target.kind_of?(Array)
       klass, id = target
-      klass = Object.const_get(klass)
-      target = klass.find_by(:id => id)
-      raise "Unable to find object with class: [#{klass}], Id: [#{id}]" if target.nil?
+      target = ApplicationRecord.const_get(klass).find(id)
     end
 
     call_automate(target, build_evm_event(event_name, inputs), 'Event', options)
@@ -117,13 +115,16 @@ module MiqAeEvent
   end
 
   def self.call_automate(obj, attrs, instance_name, options = {})
-    user = obj.tenant_identity
+    user = User.current_user || obj.tenant_identity
     raise "A user is needed to raise #{instance_name} to automate. [#{obj.class.name}] id:[#{obj.id}]" unless user
 
     q_options = {
       :miq_callback => options[:miq_callback],
       :priority     => MiqQueue::HIGH_PRIORITY,
-      :task_id      => nil          # Clear task_id to allow running synchronously under current worker process
+      :user_id      => user.id,
+      :group_id     => user.current_group.id,
+      :tenant_id    => user.current_tenant.id,
+      :task_id      => nil # Clear task_id to allow running synchronously under current worker process
     }
     q_options[:zone] = options[:zone] if options[:zone].present?
 

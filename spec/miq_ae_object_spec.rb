@@ -4,10 +4,10 @@ describe MiqAeEngine::MiqAeObject do
   before(:each) do
     MiqAeDatastore.reset
     @domain = 'SPEC_DOMAIN'
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     @model_data_dir = File.join(File.dirname(__FILE__), "data")
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "miq_ae_object_spec1"), @domain)
-    @vm      = FactoryGirl.create(:vm_vmware)
+    @vm      = FactoryBot.create(:vm_vmware)
     @ws      = MiqAeEngine.instantiate("/SYSTEM/EVM/AUTOMATE/test1", @user)
     @miq_obj = described_class.new(@ws, "#{@domain}/SYSTEM/EVM", "AUTOMATE", "test1")
   end
@@ -85,7 +85,7 @@ describe MiqAeEngine::MiqAeObject do
   end
 
   it "#process_args_as_attributes with an array" do
-    vm2 = FactoryGirl.create(:vm_vmware)
+    vm2 = FactoryBot.create(:vm_vmware)
     result = @miq_obj.process_args_as_attributes({"Array::vms" => "VmOrTemplate::#{@vm.id},VmOrTemplate::#{vm2.id}"})
     expect(result["vms"]).to be_kind_of(Array)
     expect(result["vms"].length).to eq(2)
@@ -95,7 +95,7 @@ describe MiqAeEngine::MiqAeObject do
     let(:result) { @miq_obj.process_args_as_attributes("Array::my_values" => my_values) }
 
     context "with an array containing invalid entries" do
-      let(:my_values) { "VmOrTemplate::#{@vm.id},fred::12,VmOrTemplate::#{FactoryGirl.create(:vm_vmware).id}" }
+      let(:my_values) { "VmOrTemplate::#{@vm.id},fred::12,VmOrTemplate::#{FactoryBot.create(:vm_vmware).id}" }
 
       it "raises an exception" do
         expect { @miq_obj.process_args_as_attributes("Array::vms" => my_values) }.to raise_exception MiqAeException::InvalidClass
@@ -103,7 +103,7 @@ describe MiqAeEngine::MiqAeObject do
     end
 
     context "with an array containing empty entries" do
-      let(:my_values) { "VmOrTemplate::#{@vm.id},,,VmOrTemplate::#{FactoryGirl.create(:vm_vmware).id}" }
+      let(:my_values) { "VmOrTemplate::#{@vm.id},,,VmOrTemplate::#{FactoryBot.create(:vm_vmware).id}" }
 
       it "ignores empty values and returns everything else" do
         expect(result["my_values"].size).to eq 2
@@ -129,8 +129,8 @@ describe MiqAeEngine::MiqAeObject do
 
     context "with an array containing disparate objects" do
       let!(:my_values) do
-        host    = FactoryGirl.create(:host)
-        ems     = FactoryGirl.create(:ems_vmware)
+        host    = FactoryBot.create(:host)
+        ems     = FactoryBot.create(:ems_vmware)
         "VmOrTemplate::#{@vm.id},Host::#{host.id},ExtManagementSystem::#{ems.id}"
       end
 
@@ -169,7 +169,7 @@ describe MiqAeEngine::MiqAeObject do
   end
 
   it "disabled inheritance" do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     create_state_ae_model(:name => 'LUIGI', :ae_class => 'CLASS1', :ae_namespace => 'A/C', :instance_name => 'FRED')
     klass = MiqAeClass.find_by_name('CLASS1')
     klass.update_attributes!(:inherits => '/LUIGI/A/C/missing')
@@ -219,16 +219,16 @@ describe MiqAeEngine::MiqAeObject do
                       :ae_fields => ae_fields, :ae_instances => ae_instances)
     end
 
-    let(:user) { FactoryGirl.create(:user_with_group, :email => 'requester@example.com') }
-    let(:ems) { FactoryGirl.create(:ems_vmware_with_authentication) }
-    let(:vm_template) { FactoryGirl.create(:template_vmware, :ext_management_system => ems) }
+    let(:user) { FactoryBot.create(:user_with_group, :email => 'requester@example.com') }
+    let(:ems) { FactoryBot.create(:ems_vmware_with_authentication) }
+    let(:vm_template) { FactoryBot.create(:template_vmware, :ext_management_system => ems) }
     let(:options) do
       {:src_vm_id => [vm_template.id, vm_template.name],
        :email     => "user@example.com"}
     end
 
     let(:request) do
-      FactoryGirl.create(:miq_provision_request,
+      FactoryBot.create(:miq_provision_request,
                          :provision_type => 'template',
                          :state => 'pending', :status => 'Ok',
                          :src_vm_id => vm_template.id,
@@ -249,9 +249,9 @@ describe MiqAeEngine::MiqAeObject do
   include Spec::Support::AutomationHelper
 
   context "resolve vmdb objects" do
-    let(:user) { FactoryGirl.create(:user_with_group) }
-    let(:ems) { FactoryGirl.create(:ems_vmware_with_authentication) }
-    let(:vm) { FactoryGirl.create(:vm_vmware, :ext_management_system => ems) }
+    let(:user) { FactoryBot.create(:user_with_group) }
+    let(:ems) { FactoryBot.create(:ems_vmware_with_authentication) }
+    let(:vm) { FactoryBot.create(:vm_vmware, :ext_management_system => ems) }
     let(:instance_name) { 'FRED' }
     let(:ae_instances) do
       {instance_name => {'vm'   => {:value => vm.id},
@@ -297,6 +297,29 @@ describe MiqAeEngine::MiqAeObject do
       expect(workspace.root['vm'].name).to eq(vm.name)
       expect(workspace.root['user'].name).to eq(user.name)
       expect(workspace.root['ems']).to be_nil
+    end
+  end
+end
+
+describe MiqAeEngine::MiqAeObject do
+  context "password" do
+    let(:p45) { "Pneumonoultramicroscopicsilicovolcanoconiosis" }
+    let(:p45_encrypted) { MiqAePassword.encrypt(p45) }
+
+    it "can decrypt passwords" do
+      expect(described_class.convert_value_based_on_datatype(p45_encrypted, 'password').encStr).to eq(p45_encrypted)
+    end
+
+    it "raises exception for bogus passwords" do
+      expect do
+        described_class.convert_value_based_on_datatype('gobbledygook', 'password')
+      end.to raise_exception(ManageIQ::Password::PasswordError)
+    end
+  end
+
+  context "integer" do
+    it "returns value to_i" do
+      %w(Integer integer Fixnum).each { |type| expect(described_class.convert_value_based_on_datatype("45", type)).to eq(45) }
     end
   end
 end

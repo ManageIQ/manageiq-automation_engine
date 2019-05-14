@@ -13,13 +13,18 @@ class MiqAeGitImport
     pre_import
     @options['git_dir'] = @git_repo.directory_name
     MiqAeDomain.find_by(:name => @options['domain']).try(:destroy) if @options['domain'] && !@preview
-    result = MiqAeYamlImportGitfs.new(@options['domain'] || '*', @options).import
-    domain = Array.wrap(result).first
+    domain = Array.wrap(single_domain_import).first
     post_import(domain) unless @preview
     domain
   end
 
   private
+
+  def single_domain_import
+    import_service = MiqAeYamlImportGitfs.new(@options['domain'] || '*', @options)
+    raise MiqAeException::InvalidDomain, _("multiple domains") if import_service.domain_files('*').size > 1
+    import_service.import
+  end
 
   def pre_import
     repo_from_id if @options['git_repository_id']
@@ -44,7 +49,7 @@ class MiqAeGitImport
 
   def create_repo
     @git_repo = GitRepository.find_or_create_by(:url => @options['git_url'])
-    @git_repo.update_attributes(:verify_ssl => @options['verify_ssl'] || OpenSSL::SSL::VERIFY_PEER)
+    @git_repo.update_attributes(:verify_ssl => @options['verify_ssl']) if @options['verify_ssl']
     if @options['userid'] && @options['password']
       @git_repo.update_authentication(:default => @options.slice(*AUTH_KEYS).symbolize_keys)
     end

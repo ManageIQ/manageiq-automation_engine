@@ -55,6 +55,7 @@ class MiqAeMethodCopy
     validate
     create_method
     @dest_method.inputs << add_inputs
+    @dest_method.options = @src_method.options
     @dest_method.save!
     @dest_method
   end
@@ -72,14 +73,15 @@ class MiqAeMethodCopy
       @dest_method.destroy if @overwrite
       raise "Instance #{@target_name} exists in #{@target_ns_fqname} class #{@target_class_name}" unless @overwrite
     end
-    @dest_method = MiqAeMethod.create!(:name         => @target_name,
-                                       :display_name => @src_method.display_name,
-                                       :description  => @src_method.description,
-                                       :scope        => @src_method.scope,
-                                       :language     => @src_method.language,
-                                       :location     => @src_method.location,
-                                       :data         => @src_method.data,
-                                       :class_id     => @dest_class.id)
+    @dest_method = MiqAeMethod.create!(:display_name     => @src_method.display_name,
+                                       :description      => @src_method.description,
+                                       :scope            => @src_method.scope,
+                                       :language         => @src_method.language,
+                                       :location         => @src_method.location,
+                                       :data             => @src_method.data,
+                                       :embedded_methods => @src_method.embedded_methods,
+                                       :class_id         => @dest_class.id,
+                                       :name             => @target_name)
   end
 
   def validate

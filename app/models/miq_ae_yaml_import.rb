@@ -15,6 +15,9 @@ class MiqAeYamlImport
   def import
     if @options.key?('import_dir') && !File.directory?(@options['import_dir'])
       raise MiqAeException::DirectoryNotFound, "Directory [#{@options['import_dir']}] not found"
+    elsif !User.current_user.nil? && @options['zip_file'] && domain_locked?(@options['import_as'])
+      # raises exception only for a local import into the locked domain
+      raise MiqAeException::DomainNotAccessible, 'locked domain'
     end
     start_import(@options['preview'], @domain_name)
   end
@@ -306,5 +309,11 @@ class MiqAeYamlImport
     return if domain_obj.name.downcase == MiqAeDatastore::MANAGEIQ_DOMAIN.downcase
     attrs = @options.slice('enabled', 'source')
     domain_obj.update_attributes(attrs) unless attrs.empty?
+  end
+
+  private
+
+  def domain_locked?(domain_name)
+    MiqAeDomain.find_by(:name => domain_name)&.contents_locked? ? true : false
   end
 end # class

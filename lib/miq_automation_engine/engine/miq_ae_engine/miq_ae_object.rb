@@ -31,8 +31,6 @@ module MiqAeEngine
     # Default conversion for Service Models
     SM_LOOKUP         = Hash.new { |_, k| k.classify }.merge(
       'ems'                    => 'ExtManagementSystem',
-      'host_provision'         => 'MiqHostProvision',
-      'host_provision_request' => 'MiqHostProvisionRequest',
       'policy'                 => 'MiqPolicy',
       'provision'              => 'MiqProvision',
       'provision_request'      => 'MiqProvisionRequest',
@@ -116,6 +114,7 @@ module MiqAeEngine
       # Make sure we found what we needed before proceeding
       raise MiqAeException::ClassNotFound, "Class [#{@class_fqname}] not found in MiqAeDatastore" if @aec.nil?
 
+      @workspace.add_obj_entry(@namespace, @klass, @instance, self)
       Benchmark.realtime_block(:inherit_time) do
         # Who do we inherit from
         @inherits = BASE_OBJECT
@@ -250,7 +249,7 @@ module MiqAeEngine
 
     def user_info_attributes(user)
       {'user' => user, 'tenant' => user.current_tenant, 'miq_group' => user.current_group}.each do |k, v|
-        value = MiqAeObject.convert_value_based_on_datatype(v.id, v.class.name)
+        value = MiqAeMethodService::MiqAeServiceModelBase.wrap_results(v)
         @attributes[k] = value unless value.nil?
       end
     end
@@ -272,7 +271,7 @@ module MiqAeEngine
       if args_key.include?(CLASS_SEPARATOR)
         key, klass = get_key_name_and_klass_from_key(args_key)
         value = args.delete(args_key)
-        args["#{key}_id"] = value unless @attributes.key?(key)
+        args["#{key}_id"] = value if attribute_for_vmdb_object?(klass, value) && !@attributes.key?(key)
         args[key] = MiqAeObject.convert_value_based_on_datatype(value, klass)
       else
         args[args_key.downcase] = args.delete(args_key) if args_key != args_key.downcase
@@ -386,6 +385,25 @@ module MiqAeEngine
       invoke_method(ns, klass, method_name, MiqAeUri.query2hash(query))
     end
 
+    def fetch_state_attribute(name, required = false)
+      if @workspace.persist_state_hash.key?(name)
+        @workspace.persist_state_hash[name]
+      elsif required
+        raise MiqAeException::AttributeNotFound, "State var #{name} not found"
+      end
+    end
+
+    def fetch_object_attribute(path, name, required = false)
+      o = @workspace.get_obj_from_path(path)
+      raise MiqAeException::ObjectNotFound, "Object Not Found for path=[#{path}]" if o.nil?
+
+      if o.attributes.key?(name.downcase)
+        o.attributes[name.downcase]
+      elsif required
+        raise MiqAeException::AttributeNotFound, "Attribute #{name} not found for object [#{path}]"
+      end
+    end
+
     def uri2value(uri, required = false)
       scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri)
 
@@ -403,18 +421,17 @@ module MiqAeEngine
           return @workspace.current_message if path.downcase == '!current_message'
           raise MiqAeException::MethodNotFound, "Method [#{path}] Not Found for Current Object"
         end
-        o = @workspace.get_obj_from_path(path)
-        raise MiqAeException::ObjectNotFound, "Object Not Found for path=[#{path}]"  if o.nil?
 
         frags          = fragment.split('.')
         attribute_name = frags.shift
         methods        = frags
 
-        if required && !o.attributes.key?(attribute_name.downcase)
-          raise MiqAeException::AttributeNotFound, "Attribute #{attribute_name} not found for object [#{path}]"
-        end
+        value = if path.casecmp("STATE_VAR").zero?
+                  fetch_state_attribute(attribute_name, required)
+                else
+                  fetch_object_attribute(path, attribute_name, required)
+                end
 
-        value          = o.attributes[attribute_name.downcase]
         begin
           methods.each { |meth| value = call_method(value, meth) }
         rescue => err
@@ -425,6 +442,23 @@ module MiqAeEngine
       end
 
       uri  # if it was not processed, return the original uri
+    end
+
+    def substitute_value(value, _type = nil, required = false)
+      Benchmark.current_realtime[:substitution_count] += 1
+      Benchmark.realtime_block(:substitution_time) do
+        value = value.gsub(RE_SUBST) do |_s|
+          subst   = uri2value($1, required)
+          subst &&= subst.to_s
+          # This encoding of relationship is not needed, until we can get a valid use case
+          # Based on RFC 3986 Section 2.4 "When to Encode or Decode"
+          # We are properly encoding when we send URL requests to external systems
+          # or building an automate request
+          # subst &&= URI.escape(subst, RE_URI_ESCAPE)  if type == :aetype_relationship
+          subst
+        end unless value.nil?
+        return value
+      end
     end
 
     private
@@ -525,10 +559,10 @@ module MiqAeEngine
       return false                                           if datatype == 'FalseClass'
       return Time.parse(value)                               if datatype == 'time' || datatype == 'Time'
       return value.to_sym                                    if datatype == 'symbol' || datatype == 'Symbol'
-      return value.to_i                                      if datatype == 'integer' || datatype == 'Fixnum'
+      return value.to_i                                      if %w(integer Integer Fixnum).include?(datatype)
       return value.to_f                                      if datatype == 'float' || datatype == 'Float'
       return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/)  if datatype == 'array' && value.class == String
-      return MiqAePassword.new(MiqAePassword.decrypt(value)) if datatype == 'password'
+      return decrypt_password(value) if datatype == 'password'
 
       if datatype &&
          (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
@@ -541,22 +575,13 @@ module MiqAeEngine
       value
     end
 
-    def substitute_value(value, _type = nil, required = false)
-      Benchmark.current_realtime[:substitution_count] += 1
-      Benchmark.realtime_block(:substitution_time) do
-        value = value.gsub(RE_SUBST) do |_s|
-          subst   = uri2value($1, required)
-          subst &&= subst.to_s
-          # This encoding of relationship is not needed, until we can get a valid use case
-          # Based on RFC 3986 Section 2.4 "When to Encode or Decode"
-          # We are properly encoding when we send URL requests to external systems
-          # or building an automate request
-          # subst &&= URI.escape(subst, RE_URI_ESCAPE)  if type == :aetype_relationship
-          subst
-        end unless value.nil?
-        return value
-      end
+    def self.decrypt_password(value)
+      MiqAePassword.new(MiqAePassword.decrypt(value))
+    rescue ManageIQ::Password::PasswordError => err
+      $miq_ae_logger.error("Error decrypting password #{err.message}. Possible cause: Password value was encrypted with a different encryption key")
+      raise
     end
+    private_class_method :decrypt_password
 
     def process_assertion(f, message, args)
       Benchmark.current_realtime[:assertion_count] += 1
@@ -828,6 +853,10 @@ module MiqAeEngine
       else
         return self[value]
       end
+    end
+
+    def attribute_for_vmdb_object?(klass, value)
+      klass.safe_constantize && value.to_i.nonzero?
     end
   end
 end

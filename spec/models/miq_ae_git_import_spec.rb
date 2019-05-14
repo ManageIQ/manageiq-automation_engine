@@ -5,13 +5,14 @@ describe MiqAeGitImport do
     let(:tag_name) { "SomeTag1" }
     let(:domain_name) { "BB8" }
     let(:url) { "http://www.example.com/x/y" }
+    let(:verify_ssl_disabled) { 0 }
     let(:domain) do
-      FactoryGirl.create(:miq_ae_git_domain,
+      FactoryBot.create(:miq_ae_git_domain,
                          :tenant => user.current_tenant,
                          :name   => domain_name)
     end
-    let(:repo) { FactoryGirl.create(:git_repository, :url => url) }
-    let(:user) { FactoryGirl.create(:user_with_group) }
+    let(:repo) { FactoryBot.create(:git_repository, :url => url, :verify_ssl => verify_ssl_disabled) }
+    let(:user) { FactoryBot.create(:user_with_group) }
     let(:branch_hash) do
       {'ref' => branch_name, 'ref_type' => MiqAeGitImport::BRANCH}
     end
@@ -20,8 +21,8 @@ describe MiqAeGitImport do
       {'ref' => tag_name, 'ref_type' => MiqAeGitImport::TAG}
     end
 
-    let(:branch) { FactoryGirl.create(:git_branch, :name => branch_name) }
-    let(:tag) { FactoryGirl.create(:git_tag, :name => tag_name) }
+    let(:branch) { FactoryBot.create(:git_branch, :name => branch_name) }
+    let(:tag) { FactoryBot.create(:git_tag, :name => tag_name) }
     let(:basic_options) do
       {
         'domain'    => domain_name,
@@ -42,6 +43,7 @@ describe MiqAeGitImport do
     include_context "variables"
     before do
       EvmSpecHelper.local_guid_miq_server_zone
+      allow(miq_ae_yaml_import_gitfs).to receive(:domain_files).and_return ['BB8/__domain__.yaml']
     end
 
     context "when the ref type and ref are valid" do
@@ -71,7 +73,7 @@ describe MiqAeGitImport do
               .and_return(miq_ae_yaml_import_gitfs)
             allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(domain)
             dom = miq_ae_git_import.import
-            expect(dom.attributes).to have_attributes(branch_hash)
+            expect(dom).to have_attributes(branch_hash)
           end
         end
 
@@ -98,6 +100,15 @@ describe MiqAeGitImport do
           allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(nil)
           expect { miq_ae_git_import.import }.to raise_error(MiqAeException::DomainNotFound)
         end
+
+        it "raises an exception with a message about multiple domains" do
+          expect(MiqAeYamlImportGitfs).to receive(:new).with(domain_name, import_options)
+            .and_return(miq_ae_yaml_import_gitfs)
+          allow(miq_ae_yaml_import_gitfs).to receive(:domain_files) { ['BB8/__domain__.yaml', 'BB8/__domain__.yaml'] }
+          expect { miq_ae_git_import.import }.to raise_exception(
+            MiqAeException::InvalidDomain, 'multiple domains'
+          )
+        end
       end
 
       context "when there are tags returned" do
@@ -121,7 +132,7 @@ describe MiqAeGitImport do
               .and_return(miq_ae_yaml_import_gitfs)
             allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(domain)
             dom = miq_ae_git_import.import
-            expect(dom.attributes).to have_attributes(tag_hash)
+            expect(dom).to have_attributes(tag_hash)
           end
         end
 
@@ -164,9 +175,17 @@ describe MiqAeGitImport do
             .and_return(miq_ae_yaml_import_gitfs)
           allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(domain)
           dom = miq_ae_git_import.import
-          expect(dom.attributes).to have_attributes(branch_hash)
+          expect(dom).to have_attributes(branch_hash)
           expect(repo.authentications.first.userid).to eq('fred')
           expect(repo.authentications.first.password).to eq('secret')
+        end
+
+        it "doesn't overwrite verify_ssl" do
+          expect(MiqAeYamlImportGitfs).to receive(:new).with(domain_name, import_options)
+            .and_return(miq_ae_yaml_import_gitfs)
+          allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(domain)
+          miq_ae_git_import.import
+          expect(repo.verify_ssl).to eq(verify_ssl_disabled)
         end
       end
     end

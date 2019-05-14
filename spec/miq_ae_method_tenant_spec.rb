@@ -1,8 +1,8 @@
 describe "MiqAeMethodWithTenat" do
   include Spec::Support::AutomationHelper
 
-  let(:user) { FactoryGirl.create(:user_with_group) }
-  let(:user2) { FactoryGirl.create(:user_with_group) }
+  let(:user) { FactoryBot.create(:user_with_group) }
+  let(:user2) { FactoryBot.create(:user_with_group) }
 
   before do
     method_script = "$evm.root['result'] = {:tenant_id => $evm.root['tenant'].id,

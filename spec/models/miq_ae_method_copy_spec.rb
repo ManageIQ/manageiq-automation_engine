@@ -70,6 +70,46 @@ describe MiqAeMethodCopy do
       meth2  = MiqAeMethod.find_by_class_id_and_name(class2.id, @src_method)
       validate_method(@meth1, meth2, MiqAeMethodCompare::CONGRUENT_METHOD)
     end
+
+    it 'copy method with embedded_methods' do
+      method = MiqAeMethod.create(
+        :name             => 'embedded_methods_test_method',
+        :embedded_methods => [@src_fqname],
+        :class_id         => MiqAeClass.first.id,
+        :scope            => 'instance',
+        :language         => 'ruby',
+        :location         => 'inline'
+      )
+      src_fqname  = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{method.name}"
+      method_copy = MiqAeMethodCopy.new(src_fqname).to_domain(@dest_domain, @dest_ns, true)
+      expect(method_copy.embedded_methods).to(eq(method.embedded_methods))
+    end
+
+    it 'copy playbook method' do
+      method = MiqAeMethod.create(
+        :name             => 'playbook_method',
+        :embedded_methods => [],
+        :class_id         => MiqAeClass.first.id,
+        :scope            => 'instance',
+        :language         => 'ruby',
+        :location         => 'playbook',
+        :options          => {
+          :repository_id       => "23",
+          :playbook_id         => "304",
+          :credential_id       => "10",
+          :vault_credential_id => "",
+          :verbosity           => "1",
+          :cloud_credential_id => "123",
+          :execution_ttl       => "2",
+          :hosts               => "201",
+          :log_output          => "always",
+          :become_enabled      => true
+        }
+      )
+      src_fqname  = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{method.name}"
+      method_copy = MiqAeMethodCopy.new(src_fqname).to_domain(@dest_domain, @dest_ns, true)
+      expect(method_copy.options).to(eq(method.options))
+    end
   end
 
   context 'copy onto itself' do
@@ -92,7 +132,7 @@ describe MiqAeMethodCopy do
       expect(miq_ae_method_copy).to receive(:to_domain).with(domain, nil, false).exactly(ids.length).times { miq_ae_method }
       new_ids = [miq_ae_method.id] * ids.length
       expect(miq_ae_method).to receive(:fqname).with(no_args).exactly(ids.length).times { fqname }
-      expect(MiqAeMethod).to receive(:find).with(an_instance_of(Fixnum)).exactly(ids.length).times { miq_ae_method }
+      expect(MiqAeMethod).to receive(:find).with(an_instance_of(Integer)).exactly(ids.length).times { miq_ae_method }
       expect(MiqAeMethodCopy).to receive(:new).with(fqname).exactly(ids.length).times { miq_ae_method_copy }
       expect(MiqAeMethodCopy.copy_multiple(ids, domain)).to match_array(new_ids)
     end

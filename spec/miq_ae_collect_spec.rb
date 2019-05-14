@@ -2,7 +2,7 @@ describe "MiqAeCollect" do
   before(:each) do
     MiqAeDatastore.reset
     @domain = "SPEC_DOMAIN"
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     @model_data_dir = File.join(File.dirname(__FILE__), "data")
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "collect_data"), @domain)
   end

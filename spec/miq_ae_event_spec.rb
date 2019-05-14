@@ -1,24 +1,24 @@
 describe MiqAeEvent do
-  let(:tenant)   { FactoryGirl.create(:tenant) }
-  let(:group)    { FactoryGirl.create(:miq_group, :tenant => tenant) }
+  let(:tenant)   { FactoryBot.create(:tenant) }
+  let(:group)    { FactoryBot.create(:miq_group, :tenant => tenant) }
   # admin user is needed to process Events
-  let(:admin)    { FactoryGirl.create(:user_with_group, :userid => "admin") }
-  let(:user)     { FactoryGirl.create(:user_with_group, :userid => "test", :miq_groups => [group]) }
-  let(:ems)      { FactoryGirl.create(:ext_management_system, :tenant => tenant) }
+  let(:admin)    { FactoryBot.create(:user_with_group, :userid => "admin") }
+  let(:user)     { FactoryBot.create(:user_with_group, :userid => "test", :miq_groups => [group]) }
+  let(:ems)      { FactoryBot.create(:ext_management_system, :tenant => tenant) }
 
   describe ".raise_ems_event" do
     context "with VM event" do
       let(:vm_group) { group }
       let(:vm_owner) { nil }
       let(:vm) do
-        FactoryGirl.create(:vm_vmware,
+        FactoryBot.create(:vm_vmware,
                            :ext_management_system => ems,
                            :miq_group             => vm_group,
                            :evm_owner             => vm_owner
                           )
       end
       let(:event) do
-        FactoryGirl.create(:ems_event,
+        FactoryBot.create(:ems_event,
                            :event_type        => "CreateVM_Task_Complete",
                            :source            => "VC",
                            :ems_id            => ems.id,
@@ -38,7 +38,7 @@ describe MiqAeEvent do
       end
 
       context "with group owned VM" do
-        let(:vm_group) { FactoryGirl.create(:miq_group, :tenant => FactoryGirl.create(:tenant)) }
+        let(:vm_group) { FactoryBot.create(:miq_group, :tenant => FactoryBot.create(:tenant)) }
 
         it "has tenant" do
           args = {:user_id => admin.id, :miq_group_id => vm_group.id, :tenant_id => vm_group.tenant.id}
@@ -55,7 +55,7 @@ describe MiqAeEvent do
       let(:vm_group) { group }
       let(:vm_owner) { nil }
       let(:vm) do
-        FactoryGirl.create(:vm_vmware,
+        FactoryBot.create(:vm_vmware,
                            :ext_management_system => ems,
                            :miq_group             => vm_group,
                            :evm_owner             => vm_owner
@@ -92,7 +92,7 @@ describe MiqAeEvent do
       end
 
       context "with zone" do
-        let(:zone) { FactoryGirl.create(:zone) }
+        let(:zone) { FactoryBot.create(:zone) }
         let(:zone_name) { zone.name }
         let(:options) do
           {:zone => zone.name}
@@ -116,7 +116,7 @@ describe MiqAeEvent do
       end
 
       context "with group owned VM" do
-        let(:vm_group) { FactoryGirl.create(:miq_group, :tenant => FactoryGirl.create(:tenant)) }
+        let(:vm_group) { FactoryBot.create(:miq_group, :tenant => FactoryBot.create(:tenant)) }
 
         it "has tenant" do
           args = {:user_id => admin.id, :miq_group_id => vm_group.id, :tenant_id => vm_group.tenant.id}
@@ -124,12 +124,21 @@ describe MiqAeEvent do
 
           MiqAeEvent.raise_evm_event("vm_create", vm, :vm => vm)
         end
+
+        it "has current user" do
+          User.with_user(user) do
+            args = {:user_id => user.id, :miq_group_id => user.current_group.id, :tenant_id => user.current_tenant.id}
+            expect(MiqAeEngine).to receive(:deliver_queue).with(hash_including(args), anything)
+
+            MiqAeEvent.raise_evm_event("vm_create", vm, :vm => vm)
+          end
+        end
       end
     end
 
     context "with Host event" do
       it "has tenant from provider" do
-        host = FactoryGirl.create(:host, :ext_management_system => ems)
+        host = FactoryBot.create(:host, :ext_management_system => ems)
         args = {
           :user_id      => admin.id,
           :miq_group_id => ems.tenant.default_miq_group.id,
@@ -141,7 +150,7 @@ describe MiqAeEvent do
       end
 
       it "without a provider, has tenant from root tenant" do
-        host = FactoryGirl.create(:host)
+        host = FactoryBot.create(:host)
 
         args = {
           :user_id      => admin.id,
@@ -157,7 +166,7 @@ describe MiqAeEvent do
     context "with MiqServer event" do
       it "has tenant" do
         miq_server = EvmSpecHelper.local_miq_server(:is_master => true)
-        worker = FactoryGirl.create(:miq_worker, :miq_server_id => miq_server.id)
+        worker = FactoryBot.create(:miq_worker, :miq_server_id => miq_server.id)
         args   = {:user_id      => admin.id,
                   :miq_group_id => admin.current_group.id,
                   :tenant_id    => admin.current_group.current_tenant.id
@@ -170,8 +179,8 @@ describe MiqAeEvent do
 
     context "with Storage event" do
       it "has tenant" do
-        storage = FactoryGirl.create(:storage, :name => "test_storage_vmfs", :store_type => "VMFS")
-        FactoryGirl.create(:host, :name => "test_host", :hostname => "test_host", :state => 'on', :ems_id => ems.id, :storages => [storage])
+        storage = FactoryBot.create(:storage, :name => "test_storage_vmfs", :store_type => "VMFS")
+        FactoryBot.create(:host, :name => "test_host", :hostname => "test_host", :state => 'on', :ems_id => ems.id, :storages => [storage])
         args = {:user_id      => admin.id,
                 :miq_group_id => ems.tenant.default_miq_group.id,
                 :tenant_id    => ems.tenant.id
@@ -184,7 +193,7 @@ describe MiqAeEvent do
 
     context "with MiqRequest event" do
       it "has tenant" do
-        request = FactoryGirl.create(:vm_reconfigure_request, :requester => user)
+        request = FactoryBot.create(:vm_reconfigure_request, :requester => user)
         args    = {:user_id      => user.id,
                    :miq_group_id => user.current_group.id,
                    :tenant_id    => user.current_tenant.id
@@ -198,7 +207,7 @@ describe MiqAeEvent do
     context "with Service event" do
       let(:service_group) { group }
       let(:service_owner) { nil }
-      let(:service)       { FactoryGirl.create(:service, :miq_group => service_group, :evm_owner => service_owner) }
+      let(:service)       { FactoryBot.create(:service, :miq_group => service_group, :evm_owner => service_owner) }
 
       context "with user owned service" do
         let(:service_owner) { user }
@@ -212,7 +221,7 @@ describe MiqAeEvent do
       end
 
       context "with group owned service" do
-        let(:service_group) { FactoryGirl.create(:miq_group, :tenant => FactoryGirl.create(:tenant)) }
+        let(:service_group) { FactoryBot.create(:miq_group, :tenant => FactoryBot.create(:tenant)) }
 
         it "has tenant" do
           args = {:user_id => admin.id, :miq_group_id => service_group.id, :tenant_id => service_group.tenant.id}
@@ -225,11 +234,11 @@ describe MiqAeEvent do
   end
 
   describe '.build_evm_event' do
-    let(:host) { FactoryGirl.create(:host_vmware_esx, :ext_management_system => ems) }
-    let(:ems_cluster) { FactoryGirl.create(:ems_cluster, :ext_management_system => ems) }
+    let(:host) { FactoryBot.create(:host_vmware_esx, :ext_management_system => ems) }
+    let(:ems_cluster) { FactoryBot.create(:ems_cluster, :ext_management_system => ems) }
 
     it 'has no object in attrs sent to queue' do
-      FactoryGirl.create(:miq_event_definition, :name => 'host_add_to_cluster')
+      FactoryBot.create(:miq_event_definition, :name => 'host_add_to_cluster')
       args = {
         :user_id      => admin.id,
         :miq_group_id => ems.tenant.default_miq_group.id,

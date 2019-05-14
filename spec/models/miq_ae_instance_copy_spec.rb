@@ -102,7 +102,7 @@ describe MiqAeInstanceCopy do
       expect(ins_copy).to receive(:to_domain).with(domain, nil, false).exactly(ids.length).times { ins }
       new_ids = [ins.id] * ids.length
       expect(ins).to receive(:fqname).with(no_args).exactly(ids.length).times { fqname }
-      expect(MiqAeInstance).to receive(:find).with(an_instance_of(Fixnum)).exactly(ids.length).times { ins }
+      expect(MiqAeInstance).to receive(:find).with(an_instance_of(Integer)).exactly(ids.length).times { ins }
       expect(MiqAeInstanceCopy).to receive(:new).with(fqname, true).exactly(1).times { ins_copy }
       expect(MiqAeInstanceCopy).to receive(:new).with(fqname, false).exactly(ids.length - 1).times { ins_copy }
       expect(MiqAeInstanceCopy.copy_multiple(ids, domain)).to match_array(new_ids)

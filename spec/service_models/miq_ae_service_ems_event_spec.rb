@@ -1,10 +1,10 @@
 describe MiqAeMethodService::MiqAeServiceEmsEvent do
   before(:each) do
-    @ems           = FactoryGirl.create(:ems_vmware_with_authentication,
-                                        :zone => FactoryGirl.create(:zone)
+    @ems           = FactoryBot.create(:ems_vmware_with_authentication,
+                                        :zone => FactoryBot.create(:zone)
                                        )
-    @vm            = FactoryGirl.create(:vm_vmware)
-    @ems_event     = FactoryGirl.create(:ems_event,
+    @vm            = FactoryBot.create(:vm_vmware)
+    @ems_event     = FactoryBot.create(:ems_event,
                                         :vm_or_template        => @vm,
                                         :ext_management_system => @ems
                                        )
@@ -18,7 +18,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     end
 
     it "when sync" do
-      expect(EmsRefresh).to receive(:queue_refresh).once.with([@ems], nil, :create_task => true).and_return([FactoryGirl.create(:miq_task, :state => "Finished")])
+      expect(EmsRefresh).to receive(:queue_refresh).once.with([@ems], nil, :create_task => true).and_return([FactoryBot.create(:miq_task, :state => "Finished")])
       @service_event.refresh("src_vm", true)
     end
 
@@ -63,7 +63,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
   context "#policy" do
     before(:each) do
       @event = "vm_clone_start"
-      @host  = FactoryGirl.create(:host)
+      @host  = FactoryBot.create(:host)
       @vm.update_attributes(:host => @host)
     end
 
@@ -177,7 +177,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
   end
 
   it "#src_vm_disconnect_storage" do
-    expect_any_instance_of(VmOrTemplate).to receive("disconnect_storage".to_sym).once
+    expect_any_instance_of(VmOrTemplate).not_to receive("disconnect_storage".to_sym).once
     @service_event.src_vm_disconnect_storage
   end
 end

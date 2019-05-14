@@ -4,12 +4,10 @@ module MiqAeMethodService
     include MiqAeServiceMiqRequestMixin
 
     expose :execute, :method => :execute_queue, :override_return => true
-    expose :miq_request,       :association => true
-    expose :miq_request_task,  :association => true
-    expose :miq_request_tasks, :association => true
-    expose :source,            :association => true
-    expose :destination,       :association => true
-    expose :tenant,            :association => true
+    expose :cancel_requested?
+    expose :canceling?
+    expose :canceled?
+
     undef :phase_context
 
     def message=(msg)

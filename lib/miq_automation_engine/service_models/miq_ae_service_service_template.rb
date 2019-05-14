@@ -1,10 +1,5 @@
 module MiqAeMethodService
   class MiqAeServiceServiceTemplate < MiqAeServiceModelBase
-    expose :service_templates, :association => true
-    expose :services,          :association => true
-    expose :service_resources, :association => true
-    expose :tenant,            :association => true
-
     def owner=(owner)
       if owner.nil? || owner.kind_of?(MiqAeMethodService::MiqAeServiceUser)
         if owner.nil?

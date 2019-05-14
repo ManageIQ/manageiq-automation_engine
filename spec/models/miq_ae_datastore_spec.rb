@@ -94,8 +94,24 @@ describe MiqAeDatastore do
     expect(MiqAeMethod.count).to         eq(3)
   end
 
-  it ".default_domain_names" do
-    expect(MiqAeDatastore.default_domain_names).to include("ManageIQ")
+  describe ".default_domain_names" do
+    describe "vmdb plugin domains" do
+      it "includes MIQ" do
+        expect(MiqAeDatastore.default_domain_names).to include('ManageIQ')
+      end
+    end
+
+    describe "legacy domains" do
+      it "includes system domain" do
+        stub_const("MiqAeDatastore::DATASTORE_DIRECTORY", ManageIQ::AutomationEngine::Engine.root.join('spec/models/miq_ae_datastore/data/automate_domain_list_tests'))
+        expect(MiqAeDatastore.default_domain_names).to include('drew_test_system')
+      end
+
+      it "doesn't include non-system domain" do
+        stub_const("MiqAeDatastore::DATASTORE_DIRECTORY", ManageIQ::AutomationEngine::Engine.root.join('spec/models/miq_ae_datastore/data/automate_domain_list_tests'))
+        expect(MiqAeDatastore.default_domain_names).not_to include('drew_test_not_system')
+      end
+    end
   end
 
   it "temporary file cleanup for unsuccessful import" do
@@ -135,8 +151,8 @@ describe MiqAeDatastore do
     end
 
     it "#restore_attrs_for_domains" do
-      d1 = FactoryGirl.create(:miq_ae_system_domain, :priority => 10, :name => "DOM1")
-      d2 = FactoryGirl.create(:miq_ae_domain_enabled, :priority => 11, :name => "DOM2")
+      d1 = FactoryBot.create(:miq_ae_system_domain, :priority => 10, :name => "DOM1")
+      d2 = FactoryBot.create(:miq_ae_domain_enabled, :priority => 11, :name => "DOM2")
       domain_attributes = MiqAeDatastore.preserved_attrs_for_domains
       d2.update_attributes(:priority => 6, :enabled => false)
       d1.update_attributes(:priority => 1, :enabled => true)

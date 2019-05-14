@@ -1,5 +1,9 @@
 module MiqAeMethodService
   class MiqAeServiceEmsEvent < MiqAeServiceEventStream
+    def manager_refresh(sync: false)
+      ar_method { @object.manager_refresh(:sync => sync) }
+    end
+
     def refresh(*targets, sync)
       ar_method { @object.refresh(*targets, sync) } unless targets.blank?
     end
@@ -29,7 +33,8 @@ module MiqAeMethodService
     end
 
     def src_vm_disconnect_storage
-      ar_method { @object.src_vm_disconnect_storage }
+      # Logic for storage disconnect has been moved to VmOrTemplate#disconnect_inv
+      # This method is kept for compatibility and will be removed in a future version
     end
   end
 end

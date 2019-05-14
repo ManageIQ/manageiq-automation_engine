@@ -57,7 +57,7 @@ module MiqAeEngine
       if matching_domain
         parts[0]   = matching_domain
         updated_ns = parts.join('/')
-        $miq_ae_logger.info("Updated namespace [#{uri}  #{updated_ns}]")
+        $miq_ae_logger.info("Updated namespace [#{ManageIQ::Password.sanitize_string(uri)}  #{updated_ns}]")
       end
       updated_ns
     end

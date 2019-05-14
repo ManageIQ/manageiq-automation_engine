@@ -1,23 +1,27 @@
 module MiqAeMethodService
   class MiqAeServiceGenericObject < MiqAeServiceModelBase
+    require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
+    include MiqAeServiceRemoveFromVmdb
     require 'drb'
 
     def add_to_service(service)
       error_msg = "service must be a MiqAeServiceService"
       raise ArgumentError, error_msg unless service.kind_of?(MiqAeMethodService::MiqAeServiceService)
-      ar_method { wrap_results(Service.find_by(:id => service.id).add_resource!(@object)) }
+      ar_method { wrap_results(@object.add_to_service(Service.find_by(:id => service.id))) }
     end
 
     def remove_from_service(service)
       error_msg = "service must be a MiqAeServiceService"
       raise ArgumentError, error_msg unless service.kind_of?(MiqAeMethodService::MiqAeServiceService)
-      ar_method { wrap_results(Service.find_by(:id => service.id).remove_resource(@object)) }
+      ar_method { wrap_results(@object.remove_from_service(Service.find_by(:id => service.id))) }
     end
 
     private
 
     def ae_user_identity
-      @ae_user = MiqAeEngine::DrbRemoteInvoker.workspace.ae_user
+      workspace = MiqAeEngine::MiqAeWorkspaceRuntime.current || MiqAeEngine::DrbRemoteInvoker.workspace
+      raise 'Workspace not found when running generic object' unless workspace
+      @ae_user = workspace.ae_user
       ar_method { @object.ae_user_identity(@ae_user, @ae_user.current_group, @ae_user.current_tenant) }
     end
 

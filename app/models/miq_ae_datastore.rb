@@ -4,7 +4,6 @@ module MiqAeDatastore
   MANAGEIQ_DOMAIN = "ManageIQ"
   MANAGEIQ_PRIORITY = 0
   DATASTORE_DIRECTORY = Rails.root.join('db/fixtures/ae_datastore')
-  GIT_REPO_DIRECTORY = Rails.root.join('data/git_repos')
   DEFAULT_OBJECT_NAMESPACE = "$"
   TEMP_DOMAIN_PREFIX = "TEMP_DOMAIN"
   ALL_DOMAINS = "*"
@@ -130,7 +129,7 @@ module MiqAeDatastore
     seed_default_namespace
   end
 
-  def self.reset_domain(datastore_dir, domain_name, tenant)
+  private_class_method def self.reset_domain(datastore_dir, domain_name, tenant)
     _log.info("Resetting domain #{domain_name} from #{datastore_dir}")
     ns = MiqAeDomain.find_by_fqname(domain_name)
     ns.destroy if ns
@@ -140,6 +139,10 @@ module MiqAeDatastore
       ns.update_attributes!(:source   => MiqAeDomain::SYSTEM_SOURCE, :enabled => true,
                             :priority => MANAGEIQ_PRIORITY) if ns
     end
+  end
+
+  private_class_method def self.reset_domains(domains)
+    domains.each { |domain| reset_domain(domain.datastores_path.to_s, domain.name, Tenant.root_tenant) }
   end
 
   def self.seed_default_namespace
@@ -161,39 +164,50 @@ module MiqAeDatastore
   def self.reset_to_defaults
     saved_attrs = preserved_attrs_for_domains
 
-    reset_domains_from_legacy_directory
-    reset_domains_from_vmdb_plugins
+    reset_all_domains
 
     restore_attrs_for_domains(saved_attrs)
     reset_default_namespace
     MiqAeDomain.reset_priorities
   end
 
-  def self.reset_domains_from_legacy_directory
+  private_class_method def self.domains
+    legacy_domains + plugin_domains
+  end
+
+  private_class_method def self.default_domains
+    domains.select(&:system?)
+  end
+
+  private_class_method def self.legacy_domains
     domain_files = DATASTORE_DIRECTORY.join('*', MiqAeDomain::DOMAIN_YAML_FILENAME)
-    Dir.glob(domain_files).each do |domain_file|
-      domain_name = File.basename(File.dirname(domain_file))
-      reset_domain(DATASTORE_DIRECTORY, domain_name, Tenant.root_tenant)
+    domains = Dir.glob(domain_files).map do |domain_file|
+      Vmdb::Plugins::AutomateDomain.new(File.dirname(domain_file))
     end
+    filter_domains(domains)
   end
 
-  def self.reset_domains_from_vmdb_plugins
-    datastores_for_reset.each do |domain|
-      reset_domain(domain.datastores_path.to_s, domain.name, Tenant.root_tenant)
-    end
+  private_class_method def self.plugin_domains
+    filter_domains(Vmdb::Plugins.automate_domains)
   end
 
-  def self.datastores_for_reset
-    if Rails.env == "test" && ENV["AUTOMATE_DOMAINS"]
-      domains = ENV["AUTOMATE_DOMAINS"].split(",")
-      return Vmdb::Plugins.instance.registered_automate_domains.select { |i| domains.include?(i.name) }
-    end
+  private_class_method def self.filter_domains(domains)
+    return domains unless Rails.env.test? && ENV["AUTOMATE_DOMAINS"]
 
-    Vmdb::Plugins.instance.registered_automate_domains
+    filter = ENV["AUTOMATE_DOMAINS"].split(",")
+    domains.select { |i| filter.include?(i.name) }
+  end
+
+  private_class_method def self.domain_names
+    domains.collect(&:name)
   end
 
   def self.default_domain_names
-    Vmdb::Plugins.instance.system_automate_domains.collect(&:name)
+    default_domains.collect(&:name)
+  end
+
+  private_class_method def self.reset_all_domains
+    reset_domains(domains)
   end
 
   def self.seed
@@ -208,7 +222,7 @@ module MiqAeDatastore
         _log.info "Seeding... Complete"
       end
     end
-    _log.info "Reseting domain priorities at startup..."
+    _log.info("Resetting domain priorities at startup...")
     MiqAeDomain.reset_priorities
   end
 

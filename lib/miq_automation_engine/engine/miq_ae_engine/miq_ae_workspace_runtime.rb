@@ -5,6 +5,9 @@ module MiqAeEngine
     attr_accessor :datastore_cache, :persist_state_hash, :current_state_info
     attr_accessor :ae_user
     include MiqAeStateInfo
+    include MiqAeSerializeWorkspace
+    include MiqAeDeserializeWorkspace
+    include MiqAeObjectLookup
 
     attr_reader :nodes
 
@@ -20,6 +23,7 @@ module MiqAeEngine
       @state_machine_objects = []
       @ae_user = nil
       @rbac = false
+      initialize_obj_entries
     end
 
     delegate :prepend_namespace=, :to =>  :@dom_search
@@ -41,10 +45,13 @@ module MiqAeEngine
     end
 
     def self.instantiate(uri, user, attrs = {})
-      User.current_user = user
+       User.with_user(user) { instantiate_with_user(uri, user, attrs) }
+    end
+
+    def self.instantiate_with_user(uri, user, attrs)
       workspace = MiqAeWorkspaceRuntime.new(attrs)
-      workspace.instantiate(uri, user, nil)
       self.current = workspace
+      workspace.instantiate(uri, user, nil)
       workspace
     rescue MiqAeException
     ensure
@@ -92,7 +99,7 @@ module MiqAeEngine
     end
 
     def instantiate(uri, user, root = nil)
-      $miq_ae_logger.info("Instantiating [#{uri}]") if root.nil?
+      $miq_ae_logger.info("Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]") if root.nil?
       @ae_user = user
       @dom_search.ae_user = user
       scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri, "miqaedb")
@@ -117,6 +124,7 @@ module MiqAeEngine
       klass ||= current[:klass] if current
 
       pushed = false
+      is_state_machine = false
       raise MiqAeException::CyclicalRelationship, "cyclical reference: [#{MiqAeObject.fqname(ns, klass, instance)} with message=#{message}]" if cyclical?(ns, klass, instance, message)
 
       begin
@@ -132,6 +140,7 @@ module MiqAeEngine
             save_current_state_info(@state_machine_objects.last) unless @state_machine_objects.empty?
             @state_machine_objects.push(obj.object_name)
             reset_state_info(obj.object_name)
+            is_state_machine = true
           end
 
           obj.process_assertions(message)
@@ -161,7 +170,7 @@ module MiqAeEngine
         raise
       ensure
         @current.pop if pushed
-        pop_state_machine_info if obj && obj.state_machine? && self.root
+        pop_state_machine_info if is_state_machine && self.root
       end
 
       obj
@@ -316,11 +325,14 @@ module MiqAeEngine
         end
       else
         obj = find_named_ancestor(path)
+        # if not found try finding object in whole workspace
+        obj ||= find_obj_entry(path)
       end
       obj
     end
 
     def find_named_ancestor(path)
+      path = path[1..-1] if path[0] == '/'
       plist = path.split("/")
       raise MiqAeException::InvalidPathFormat, "Unsupported Path [#{path}]" if plist[0].blank?
       klass = plist.pop

@@ -10,9 +10,9 @@ describe MiqAeMethodService::MiqAeServiceServiceReconfigureTask do
 
   let(:ae_method) { ::MiqAeMethod.first }
   let(:options)   { {} }
-  let(:user)      { FactoryGirl.create(:user_with_group) }
+  let(:user)      { FactoryBot.create(:user_with_group) }
   let(:task)      do
-    FactoryGirl.create(:service_reconfigure_task,
+    FactoryBot.create(:service_reconfigure_task,
                        :state        => 'pending',
                        :status       => 'Ok',
                        :request_type => 'service_reconfigure',

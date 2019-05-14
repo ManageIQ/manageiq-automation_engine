@@ -11,6 +11,22 @@ module MiqAeEngine
       raise  MiqAeException::InvalidMethod, "Inline Method Language [#{aem.language}] not supported"
     end
 
+    def self.invoke_expression(aem, obj, inputs)
+      MiqAeEngine::MiqAeExpressionMethod.new(aem, obj, inputs).run
+    end
+
+    def self.invoke_playbook(aem, obj, inputs)
+      MiqAeEngine::MiqAePlaybookMethod.new(aem, obj, inputs).run
+    end
+
+    def self.invoke_ansible_job_template(aem, obj, inputs)
+      MiqAeEngine::MiqAeAnsibleTemplateMethod.new(aem, obj, inputs).run
+    end
+
+    def self.invoke_ansible_workflow_template(aem, obj, inputs)
+      MiqAeEngine::MiqAeAnsibleTemplateMethod.new(aem, obj, inputs).run
+    end
+
     def self.invoke_uri(aem, obj, _inputs)
       scheme, userinfo, host, port, registry, path, opaque, query, fragment = URI.split(aem.data)
       raise  MiqAeException::MethodNotFound, "Specified URI [#{aem.data}] in Method [#{aem.name}] has unsupported scheme of #{scheme}; supported scheme is file" unless scheme.downcase == "file"
@@ -45,7 +61,7 @@ module MiqAeEngine
       aem.inputs.each do |f|
         key   = f.name
         value = args[key]
-        value = obj.attributes[key] || f.default_value if value.nil?
+        value = obj.attributes[key] || obj.substitute_value(f.default_value) if value.nil?
         inputs[key] = MiqAeObject.convert_value_based_on_datatype(value, f["datatype"])
 
         if obj.attributes[key] && f["datatype"] != "string"
@@ -60,7 +76,7 @@ module MiqAeEngine
 
       if obj.workspace.readonly?
         $miq_ae_logger.info("Workspace Instantiation is READONLY -- skipping method [#{aem.fqname}] with inputs [#{inputs.inspect}]")
-      elsif ["inline", "builtin", "uri"].include?(aem.location.downcase.strip)
+      elsif %w(inline builtin uri expression playbook ansible_job_template ansible_workflow_template).include?(aem.location.downcase.strip)
         $miq_ae_logger.info("Invoking [#{aem.location}] method [#{aem.fqname}] with inputs [#{inputs.inspect}]")
         return MiqAeEngine::MiqAeMethod.send("invoke_#{aem.location.downcase.strip}", aem, obj, inputs)
       end
@@ -116,7 +132,7 @@ module MiqAeEngine
 
     def self.run_ruby_method(code)
       ActiveRecord::Base.connection_pool.release_connection
-      Bundler.with_clean_env do
+      with_automation_env do
         ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
           run_method(Gem.ruby) do |stdin|
             stdin.puts(code)
@@ -125,6 +141,21 @@ module MiqAeEngine
       end
     end
     private_class_method :run_ruby_method
+
+    def self.with_automation_env
+      gem_paths = (Gem.path + [Bundler.bundle_path.to_s]).uniq
+      Bundler.with_clean_env do
+        begin
+          backup = ENV.to_hash
+          ENV.replace(backup.merge("GEM_PATH" => gem_paths.join(File::PATH_SEPARATOR)))
+
+          yield
+        ensure
+          ENV.replace(backup)
+        end
+      end
+    end
+    private_class_method :with_automation_env
 
     def self.process_ruby_method_results(rc, msg)
       case rc
@@ -167,13 +198,13 @@ module MiqAeEngine
     private_class_method :invoke_inline_ruby
 
     def self.run_method(cmd)
-      require 'open4'
+      require 'open3'
       rc = nil
       threads = []
       method_pid = nil
       begin
-        status = Open4.popen4(*cmd) do |pid, stdin, stdout, stderr|
-          method_pid = pid
+        status = Open3.popen3(*cmd) do |stdin, stdout, stderr, wait_thread|
+          method_pid = wait_thread.pid
           yield stdin if block_given?
           stdin.close
           threads << Thread.new do
@@ -183,6 +214,7 @@ module MiqAeEngine
             stderr.each_line { |msg| $miq_ae_logger.error "Method STDERR: #{msg.strip}" }
           end
           threads.each(&:join)
+          wait_thread.value
         end
         rc  = status.exitstatus
         msg = "Method exited with rc=#{verbose_rc(rc)}"
@@ -215,7 +247,9 @@ module MiqAeEngine
     private_class_method :cleanup
 
     def self.bodies_and_line_numbers(obj, aem)
-      embeds = embedded_methods(obj.workspace, aem) << {:data => aem.data, :fqname => aem.fqname}
+      embeds = []
+      embedded_methods(obj.workspace, aem, embeds, aem.fqname)
+      embeds << {:data => aem.data, :fqname => aem.fqname}
       code_start = 0
       script_info = {}
       bodies = []
@@ -230,16 +264,24 @@ module MiqAeEngine
     end
     private_class_method :bodies_and_line_numbers
 
-    def self.embedded_methods(workspace, method_obj)
-      method_obj.embedded_methods.collect do |name|
+    def self.embedded_methods(workspace, method_obj, current_items, top)
+      method_obj.embedded_methods.each do |name|
         method_name, klass, ns = embedded_method_name(name)
         match_ns = workspace.overlay_method(ns, klass, method_name)
         cls = ::MiqAeClass.find_by_fqname("#{match_ns}/#{klass}")
         aem = ::MiqAeMethod.find_by(:class_id => cls.id, :name => method_name) if cls
         raise MiqAeException::MethodNotFound, "Embedded method #{name} not found" unless aem
-        fqname = "#{match_ns}/#{klass}/#{method_name}"
-        $miq_ae_logger.info("Loading embedded method #{fqname}")
-        {:data => aem.data, :fqname => fqname}
+        fqname = "/#{match_ns}/#{klass}/#{method_name}"
+        if top == fqname
+          $miq_ae_logger.info("Skipping #{fqname}, cannot reference the top method")
+        elsif loaded?(current_items, fqname)
+          $miq_ae_logger.info("Already loaded embedded method #{fqname}")
+        else
+          current_items << {:data => aem.data, :fqname => fqname}
+          $miq_ae_logger.info("Loading embedded method #{fqname}")
+          # Get the embedded methods for the this method
+          embedded_methods(workspace, aem, current_items, top)
+        end
       end
     end
     private_class_method :embedded_methods
@@ -250,5 +292,9 @@ module MiqAeEngine
       return parts.pop, parts.pop, parts.join('/')
     end
     private_class_method :embedded_method_name
+
+    def self.loaded?(current_items, fqname)
+      current_items.any? { |item| item[:fqname].casecmp(fqname).zero? }
+    end
   end
 end

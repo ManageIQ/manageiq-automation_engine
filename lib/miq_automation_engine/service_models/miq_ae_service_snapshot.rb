@@ -1,6 +1,5 @@
 module MiqAeMethodService
   class MiqAeServiceSnapshot < MiqAeServiceModelBase
-    expose :vm_or_template, :association => true
     expose :current?
     expose :get_current_snapshot
 

@@ -12,7 +12,7 @@ describe "MiqAeStateMachineRetry" do
     @max_retries     = 1
     @root_class      = "TOP_OF_THE_WORLD"
     @root_instance   = "EVEREST"
-    @user            = FactoryGirl.create(:user_with_group)
+    @user            = FactoryBot.create(:user_with_group)
     @automate_args   = {:namespace        => @namespace,
                         :class_name       => @root_class,
                         :instance_name    => @root_instance,
@@ -90,8 +90,8 @@ describe "MiqAeStateMachineRetry" do
   end
 
   def setup_model(method_script, max_time = nil)
-    dom = FactoryGirl.create(:miq_ae_domain, :enabled => true, :name => @domain)
-    ns  = FactoryGirl.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
+    dom = FactoryBot.create(:miq_ae_domain, :enabled => true, :name => @domain)
+    ns  = FactoryBot.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
     @ns_fqname = ns.fqname
     create_retry_class(:namespace => @ns_fqname, :name => @retry_class, :method_script => method_script)
     create_state_class({:namespace => @ns_fqname, :name => @state_class}, max_time)
@@ -106,7 +106,7 @@ describe "MiqAeStateMachineRetry" do
                                    :data => method_script,
                                    :language => 'ruby', 'params' => {}}}
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_instances' => ae_instances,
                                    'ae_methods'   => ae_methods))
@@ -119,7 +119,7 @@ describe "MiqAeStateMachineRetry" do
     fqname = "/#{@domain}/#{@namespace}/#{@retry_class}/#{@method_instance}"
     ae_instances = {@state_instance => {'state1' => {:value => fqname}}}
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_methods'   => {},
                                    'ae_instances' => ae_instances))
@@ -129,7 +129,7 @@ describe "MiqAeStateMachineRetry" do
     ae_fields = {'rel1' => {:aetype => 'relationship', :datatype => 'string'}}
     fqname = "/#{@domain}/#{@namespace}/#{@state_class}/#{@state_instance}"
     ae_instances = {@root_instance => {'rel1' => {:value => fqname}}}
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_methods'   => {},
                                    'ae_instances' => ae_instances))
@@ -150,7 +150,7 @@ describe "MiqAeStateMachineRetry" do
                               :data => script3,
                               :language => 'ruby', 'params' => {}}}
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_instances' => ae_instances,
                                    'ae_methods'   => ae_methods))
@@ -166,15 +166,15 @@ describe "MiqAeStateMachineRetry" do
     ae_instances = {@state_instance => {'state1' => {:value => fq1},
                                         'state2' => {:value => fq2},
                                         'state3' => {:value => fq3}}}
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_methods'   => {},
                                    'ae_instances' => ae_instances))
   end
 
   def create_restart_model(script1, script2, script3)
-    dom = FactoryGirl.create(:miq_ae_domain, :name => @domain)
-    ns  = FactoryGirl.create(:miq_ae_namespace, :parent => dom, :name => @namespace)
+    dom = FactoryBot.create(:miq_ae_domain, :name => @domain)
+    ns  = FactoryBot.create(:miq_ae_namespace, :parent => dom, :name => @namespace)
     @ns_fqname = ns.fqname
     create_multi_state_class(:namespace => @ns_fqname, :name => @state_class)
     attrs = {:namespace => @ns_fqname, :name => @retry_class}
@@ -268,5 +268,18 @@ describe "MiqAeStateMachineRetry" do
     expect(MiqQueue.count).to eq(2)
     q = MiqQueue.where(:state => 'ready').first
     expect(q[:server_guid]).to be_nil
+  end
+
+  it "it can preserve old state data" do
+    ae_state_data = {'old' => 1}
+    setup_model(retry_script)
+    send_ae_request_via_queue(@automate_args.merge(:ae_state_data => ae_state_data.to_yaml))
+    status, _message, ws = deliver_ae_request_from_queue
+    expect(status).not_to eq(MiqQueue::STATUS_ERROR)
+    expect(ws).not_to be_nil
+    expect(MiqQueue.count).to eq(2)
+    q = MiqQueue.where(:state => 'ready').first
+    expect(q[:server_guid]).to be_nil
+    expect(YAML.safe_load(q.args.first[:ae_state_data])).to eq(ae_state_data)
   end
 end

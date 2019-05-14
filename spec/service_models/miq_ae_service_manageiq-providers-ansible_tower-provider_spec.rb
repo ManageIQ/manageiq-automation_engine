@@ -1,6 +1,6 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_AnsibleTower_Provider do
-  let(:provider) { FactoryGirl.create(:provider_ansible_tower) }
-  let(:automation_manager) { FactoryGirl.create(:automation_manager_ansible_tower) }
+  let(:provider) { FactoryBot.create(:provider_ansible_tower) }
+  let(:automation_manager) { FactoryBot.create(:automation_manager_ansible_tower) }
 
   it "get the service model" do
     provider

@@ -2,7 +2,7 @@ describe MiqAeDomain do
   include Spec::Support::AutomationHelper
 
   before do
-    @user = FactoryGirl.create(:user_with_group)
+    @user = FactoryBot.create(:user_with_group)
     EvmSpecHelper.local_guid_miq_server_zone
     yaml_file = File.join(File.dirname(__FILE__), 'data', 'method_override.yaml')
     import_options = {'yaml_file' => yaml_file, 'preview' => false,

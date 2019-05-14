@@ -39,12 +39,25 @@ module MiqAeMethodService
 
     def self.inherited(subclass)
       # Skip for anonymous classes
-      expose_class_attributes(subclass) if subclass.name
+      return unless subclass.name
+      expose_class_attributes(subclass)
+      expose_class_associations(subclass)
+    end
+
+    def self.expose_class_associations(subclass)
+      subclass.class_eval do
+        ar_model_associations.each { |key| expose(key, :association => true) }
+      end
+    end
+
+    def self.ar_model_associations
+      model.reflections_with_virtual.except(:tags).keys - superclass_associations
     end
 
     def self.expose_class_attributes(subclass)
       subclass.class_eval do
         model.attribute_names.each do |attr|
+          next if model.private_method_defined?(attr)
           next if EXPOSED_ATTR_BLACK_LIST.any? { |rexp| attr =~ rexp }
           next if subclass.base_class != self && method_defined?(attr)
           expose attr
@@ -53,9 +66,11 @@ module MiqAeMethodService
     end
 
     def self.associations
-      @associations ||= []
-      super_assoc = superclass.respond_to?(:associations) ? superclass.associations : []
-      (super_assoc + @associations).sort
+      (superclass_associations + @associations ||= []).sort
+    end
+
+    def self.superclass_associations
+      superclass.try(:associations) || []
     end
 
     def associations
@@ -68,18 +83,18 @@ module MiqAeMethodService
 
     def self.association=(meth)
       @associations ||= []
-      @associations << meth.to_s unless @associations.include?(meth.to_s)
+      @associations << meth.to_s unless associations.include?(meth.to_s)
     end
 
     def self.base_class
       @base_class ||= begin
-        MiqAeMethodService.const_get("MiqAeService#{model.base_class.name}")
+        model_name_from_active_record_model(model.base_class).constantize
       end
     end
 
     def self.base_model
       @base_model ||= begin
-        MiqAeMethodService.const_get("MiqAeService#{model.base_model.name}")
+        model_name_from_active_record_model(model.base_model).constantize
       end
     end
 
@@ -114,6 +129,7 @@ module MiqAeMethodService
       Class.new(super_class) do |klass|
         ::MiqAeMethodService.const_set(model_to_service_model_name(ar_model), klass)
         expose_class_attributes(klass)
+        expose_class_associations(klass)
       end
     end
     private_class_method :dynamic_service_model_creation
@@ -163,13 +179,17 @@ module MiqAeMethodService
         self.association = method_name if options[:association]
         define_method(method_name) do |*params|
           method = options[:method] || method_name
-          ret = object_send(method, *params)
+          ret = User.with_user(self.class.workspace&.ae_user) { object_send(method, *params) }
           return options[:override_return] if options.key?(:override_return)
           options[:association] ? wrap_results(self.class.filter_objects(ret)) : wrap_results(ret)
         end
       end
     end
     private_class_method :expose
+
+    def self.workspace
+      MiqAeEngine::MiqAeWorkspaceRuntime.current || MiqAeEngine::DrbRemoteInvoker.workspace
+    end
 
     def self.wrap_results(results)
       ar_method do

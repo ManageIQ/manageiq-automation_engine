@@ -4,15 +4,14 @@ module MiqAeMethodService
     include MiqAeServiceMiqRequestMixin
 
     expose :miq_request_tasks, :association => true
-    expose :requester,         :association => true
     expose :resource,          :association => true
-    expose :source,            :association => true
-    expose :destination,       :association => true
-    expose :tenant,            :association => true
     expose :authorized?
     expose :approve,   :override_return => true
     expose :deny,      :override_return => true
     expose :pending,   :override_return => true
+    expose :cancel_requested?
+    expose :canceling?
+    expose :canceled?
 
     # For backward compatibility
     def miq_request
@@ -31,6 +30,10 @@ module MiqAeMethodService
 
     def description=(new_description)
       object_send(:update_attributes, :description => new_description)
+    end
+
+    def show_url
+      URI.join(MiqRegion.my_region.remote_ui_url, "miq_request/show/#{@object.id}").to_s
     end
   end
 end

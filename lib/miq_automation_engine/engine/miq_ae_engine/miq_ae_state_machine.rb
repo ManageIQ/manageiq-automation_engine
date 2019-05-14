@@ -8,14 +8,16 @@ module MiqAeEngine
       true
     end
 
-    def initialize_state_maxima_metadata
+    def initialize_state_maxima_metadata(field)
       @workspace.root['ae_state_started'] = Time.zone.now.utc.to_s  if @workspace.root['ae_state_started'].blank?
       @workspace.root['ae_state_retries'] = 0                  if @workspace.root['ae_state_retries'].blank?
+      @workspace.root['ae_state_max_retries'] = field['max_retries'].to_i
     end
 
     def reset_state_maxima_metadata
       @workspace.root['ae_state_started'] = ''
       @workspace.root['ae_state_retries'] = 0
+      @workspace.root['ae_state_max_retries'] = 0
     end
 
     def increment_state_retries
@@ -47,9 +49,12 @@ module MiqAeEngine
         $miq_ae_logger.warn("Skipping to state #{@workspace.root['ae_next_state']}")
         @workspace.root['ae_result'] = 'skip' if step == 'on_entry'
       end
+    rescue MiqAeException::StopInstantiation => e
+      $miq_ae_logger.error("State=<#{f['name']}> running #{step} raised exception: <#{e.message}>")
+      raise
     rescue => e
       error_message = "State=<#{f['name']}> running #{step} raised exception: <#{e.message}>"
-      $miq_ae_logger.error error_message
+      $miq_ae_logger.error(error_message)
       @workspace.root['ae_reason'] = error_message
       @workspace.root['ae_result'] = 'error'
     end
@@ -67,7 +72,7 @@ module MiqAeEngine
         return unless state_runnable?(f)
 
         # Ensure the metadata to deal with retries and timeouts is initialized
-        initialize_state_maxima_metadata
+        initialize_state_maxima_metadata(f)
 
         # Process on_entry method
         process_state_step_with_error_handling(f, 'on_entry') { process_state_method(f, 'on_entry') }
@@ -77,20 +82,20 @@ module MiqAeEngine
 
         # Check the ae_result and set the next state appropriately
         if   @workspace.root['ae_result'] == 'ok'
-          $miq_ae_logger.info "Processed State =[#{f['name']}]"
+          $miq_ae_logger.info("Processed State=[#{f['name']}]")
         elsif @workspace.root['ae_result'] == 'skip'
-          $miq_ae_logger.warn "Skipping State =[#{f['name']}]"
+          $miq_ae_logger.warn("Skipping State=[#{f['name']}]")
           return set_next_state(f, message)
-        elsif %w(retry restart).include?(@workspace.root['ae_result'])
+        elsif %w(retry restart async_launch).include?(@workspace.root['ae_result'])
           increment_state_retries
         elsif @workspace.root['ae_result'] == 'error'
-          $miq_ae_logger.warn "Error in State=[#{f['name']}]"
+          $miq_ae_logger.warn("Error in State=[#{f['name']}]")
           # Process on_error method
 
           return process_state_step_with_error_handling(f, 'on_error') do
             process_state_method(f, 'on_error')
             if @workspace.root['ae_result'] == 'continue'
-              $miq_ae_logger.warn "Resetting Error in State=[#{f['name']}]"
+              $miq_ae_logger.warn("Resetting Error in State=[#{f['name']}]")
               @workspace.root['ae_result'] = 'ok'
               set_next_state(f, message)
             end
@@ -98,11 +103,15 @@ module MiqAeEngine
         end
 
         state_in_retry = @workspace.root['ae_result'] == 'retry'
-        # Process on_exit method
-        process_state_step_with_error_handling(f, 'on_exit') do
-          process_state_method(f, 'on_exit')
-          if @workspace.root['ae_result'] == 'retry' && !state_in_retry
-            increment_state_retries
+        # Process on_exit method if not async_launch
+        if @workspace.root['ae_result'] == 'async_launch'
+          @workspace.root['ae_result'] = 'retry'
+        else
+          process_state_step_with_error_handling(f, 'on_exit') do
+            process_state_method(f, 'on_exit')
+            if @workspace.root['ae_result'] == 'retry' && !state_in_retry
+              increment_state_retries
+            end
           end
         end
         set_next_state(f, message)
@@ -112,7 +121,7 @@ module MiqAeEngine
     def process_state_relationship(f, message, args)
       relationship = get_value(f, :aetype_relationship)
       unless relationship.blank? || relationship.lstrip[0, 1] == '#'
-        $miq_ae_logger.info "Processing State=[#{f['name']}]"
+        $miq_ae_logger.info("Processing State=[#{f['name']}]")
         @workspace.root['ae_state_step'] = 'main'
         enforce_state_maxima(f)
         match_data = STATE_METHOD_REGEX.match(relationship)
@@ -122,7 +131,7 @@ module MiqAeEngine
           process_relationship_raw(relationship, message, args, f['name'], f['collect'])
           raise MiqAeException::MiqAeDatastoreError, "empty relationship" unless @rels[f['name']]
         end
-        $miq_ae_logger.info "Processed  State=[#{f['name']}] with Result=[#{@workspace.root['ae_result']}]"
+        $miq_ae_logger.info("Processed State=[#{f['name']}] with Result=[#{@workspace.root['ae_result']}]")
       end
     end
 
@@ -130,7 +139,7 @@ module MiqAeEngine
       f[method_name].split(";").each do |method|
         method = substitute_value(method.strip)
         unless method.blank? || method.lstrip[0, 1] == '#'
-          $miq_ae_logger.info "In State=[#{f['name']}], invoking [#{method_name}] method=[#{method}]"
+          $miq_ae_logger.info("In State=[#{f['name']}], invoking [#{method_name}] method=[#{method}]")
           @workspace.root['ae_status_state'] = method_name
           @workspace.root['ae_state']        = f['name']
           @workspace.root['ae_state_step'] = method_name
@@ -154,13 +163,13 @@ module MiqAeEngine
       if %w(skip ok).include?(@workspace.root['ae_result'])
         @workspace.root['ae_state'] = next_state(f['name'], message).to_s
         reset_state_maxima_metadata
-        $miq_ae_logger.info "Next State=[#{@workspace.root['ae_state']}]"
+        $miq_ae_logger.info("Next State=[#{@workspace.root['ae_state']}]")
         @workspace.root['ae_result'] = 'ok'
       elsif @workspace.root['ae_result'] == 'restart'
-        $miq_ae_logger.info "State=[#{f['name']}] has requested a restart"
+        $miq_ae_logger.info("State=[#{f['name']}] has requested a restart")
         @workspace.root['ae_result'] = 'retry'
         @workspace.root['ae_state'] = restart_state(message).to_s
-        $miq_ae_logger.info "Will restart at State=[#{@workspace.root['ae_state']}]"
+        $miq_ae_logger.info("Will restart at State=[#{@workspace.root['ae_state']}]")
       end
     end
 
@@ -173,7 +182,7 @@ module MiqAeEngine
     def validate_state(states)
       next_state = @workspace.root['ae_next_state']
       if next_state.present? && states.exclude?(next_state)
-        $miq_ae_logger.error "Next State=#{next_state} is invalid aborting state machine"
+        $miq_ae_logger.error("Next State=#{next_state} is invalid aborting state machine")
         raise MiqAeException::AbortInstantiation, "Invalid state specified <#{next_state}>"
       end
     end

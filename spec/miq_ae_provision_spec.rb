@@ -43,7 +43,7 @@ describe "MiqAeProvision" do
   context "Using provision yaml model" do
     before(:each) do
       @domain = 'SPEC_DOMAIN'
-      @user = FactoryGirl.create(:user_with_group)
+      @user = FactoryBot.create(:user_with_group)
       @model_data_dir = File.join(File.dirname(__FILE__), "data")
       MiqAeDatastore.reset
       EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "provision"), @domain)

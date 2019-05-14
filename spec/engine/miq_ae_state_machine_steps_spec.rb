@@ -1,6 +1,6 @@
 describe "MiqAeStateMachineSteps" do
   before do
-    @user                = FactoryGirl.create(:user_with_group)
+    @user                = FactoryBot.create(:user_with_group)
     @instance1           = 'instance1'
     @instance2           = 'instance2'
     @instance3           = 'instance3'
@@ -14,7 +14,8 @@ describe "MiqAeStateMachineSteps" do
     @fqname              = '/SPEC_DOMAIN/NS1/MY_STATE_MACHINE/MY_STATE_INSTANCE'
     @method_params       = {'ae_result'     => {:datatype => 'string', :default_value => 'ok'},
                             'ae_next_state' => {:datatype => 'string'},
-                            'raise'         => {:datatype => 'string'}
+                            'raise'         => {:datatype => 'string'},
+                            'exit_code'     => {:datatype => 'integer'}
                            }
     clear_domain
     setup_model
@@ -35,6 +36,7 @@ describe "MiqAeStateMachineSteps" do
       $evm.root['ae_result'] = inputs['ae_result']
       $evm.root['ae_next_state']  = inputs['ae_next_state'] unless inputs['ae_next_state'].blank?
       raise inputs['raise'] unless inputs['raise'].blank?
+      exit inputs['exit_code'] unless inputs['exit_code'].blank?
     RUBY
   end
 
@@ -50,12 +52,13 @@ describe "MiqAeStateMachineSteps" do
       $evm.root['ae_result'] = inputs['ae_result']
       $evm.root['ae_next_state']  = inputs['ae_next_state'] unless inputs['ae_next_state'].blank?
       raise inputs['raise'] unless inputs['raise'].blank?
+      exit inputs['exit_code'] unless inputs['exit_code'].blank?
     RUBY
   end
 
   def setup_model
-    dom = FactoryGirl.create(:miq_ae_domain, :enabled => true, :name => @domain)
-    ns  = FactoryGirl.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
+    dom = FactoryBot.create(:miq_ae_domain, :enabled => true, :name => @domain)
+    ns  = FactoryBot.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
     @ns_fqname = ns.fqname
     create_method_class(:namespace => @ns_fqname, :name => @method_class)
     create_state_class(:namespace => @ns_fqname, :name => @state_class)
@@ -81,7 +84,7 @@ describe "MiqAeStateMachineSteps" do
                                            :language => 'ruby', 'params' => @method_params}
                  }
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_instances' => ae_instances,
                                    'ae_methods'   => ae_methods))
@@ -91,9 +94,9 @@ describe "MiqAeStateMachineSteps" do
     all_steps = {'on_entry' => "common_state_method",
                  'on_exit'  => "common_state_method",
                  'on_error' => "common_state_method"}
-    ae_fields = {'state1' => {:aetype => 'state', :datatype => 'string', :priority => 1},
-                 'state2' => {:aetype => 'state', :datatype => 'string', :priority => 2},
-                 'state3' => {:aetype => 'state', :datatype => 'string', :priority => 3}}
+    ae_fields = {'state1' => {:aetype => 'state', :datatype => 'string', :priority => 1, :max_retries => 100},
+                 'state2' => {:aetype => 'state', :datatype => 'string', :priority => 2, :max_retries => 100},
+                 'state3' => {:aetype => 'state', :datatype => 'string', :priority => 3, :max_retries => 100}}
     state1_value = "/#{@domain}/#{@namespace}/#{@method_class}/#{@instance1}"
     state2_value = "/#{@domain}/#{@namespace}/#{@method_class}/#{@instance2}"
     state3_value = "/#{@domain}/#{@namespace}/#{@method_class}/#{@instance3}"
@@ -101,7 +104,7 @@ describe "MiqAeStateMachineSteps" do
                                         'state2' => {:value => state2_value}.merge(all_steps),
                                         'state3' => {:value => state3_value}.merge(all_steps)}}
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_methods'   => state_methods,
                                    'ae_instances' => ae_instances))
@@ -297,6 +300,21 @@ describe "MiqAeStateMachineSteps" do
     expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1 state2))
     expect(ws.root.attributes['step_on_error']).to be_nil
     expect(ws.root.attributes['ae_state_retries']).to eq(1)
+    expect(ws.root.attributes['ae_state_max_retries']).to eq(100)
+  end
+
+  it "dont execute the on_exit method if the state ends in async_launch" do
+    tweak_instance("/#{@domain}/#{@namespace}/#{@method_class}", @instance2,
+                   'ae_result', 'value', "async_launch")
+    tweak_instance("/#{@domain}/#{@namespace}/#{@state_class}", @state_instance,
+                   'state2', 'on_exit', "common_state_method(ae_result => 'retry')")
+    ws = MiqAeEngine.instantiate(@fqname, @user)
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1))
+    expect(ws.root.attributes['step_on_error']).to be_nil
+    expect(ws.root.attributes['ae_state_retries']).to eq(1)
+    expect(ws.root.attributes['ae_state_max_retries']).to eq(100)
   end
 
   it "allow for retry to be set on on_exit method" do
@@ -308,6 +326,7 @@ describe "MiqAeStateMachineSteps" do
     expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1 state2))
     expect(ws.root.attributes['step_on_error']).to be_nil
     expect(ws.root.attributes['ae_state_retries']).to eq(1)
+    expect(ws.root.attributes['ae_state_max_retries']).to eq(100)
   end
 
   it "non existent on_error method" do
@@ -329,5 +348,19 @@ describe "MiqAeStateMachineSteps" do
                    'state1', 'on_entry', "common_state_method(ae_next_state => 'state_missing')")
 
     expect { MiqAeEngine.instantiate(@fqname, @user) }.to raise_error(MiqAeException::AbortInstantiation)
+  end
+
+  it "ensure MIQ STOP is raised" do
+    tweak_instance("/#{@domain}/#{@namespace}/#{@state_class}", @state_instance,
+                   'state1', 'on_entry', "common_state_method(exit_code => 8)")
+    allow($miq_ae_logger).to receive(:info).with(/<AEMethod/)
+    allow($miq_ae_logger).to receive(:info).with(/MiqAeEngine: /)
+    allow($miq_ae_logger).to receive(:info).with(/Instantiating/)
+    allow($miq_ae_logger).to receive(:info).with(/In State/)
+    allow($miq_ae_logger).to receive(:info).with(/Updated namespace/)
+    allow($miq_ae_logger).to receive(:info).with(/Invoking/)
+
+    expect($miq_ae_logger).to receive(:info).with("Stopping instantiation because [Method exited with rc=MIQ_STOP]")
+    MiqAeEngine.instantiate(@fqname, @user)
   end
 end

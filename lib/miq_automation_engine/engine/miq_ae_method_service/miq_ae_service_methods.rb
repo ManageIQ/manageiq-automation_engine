@@ -7,12 +7,14 @@ module MiqAeMethodService
 
     SYNCHRONOUS = Rails.env.test?
 
-    def self.send_email(to, from, subject, body, content_type = nil)
+    def self.send_email(to, from, subject, body, content_type: nil, cc: nil, bcc: nil)
       ar_method do
         meth = SYNCHRONOUS ? :deliver : :deliver_queue
         options = {
           :to           => to,
           :from         => from,
+          :cc           => cc,
+          :bcc          => bcc,
           :subject      => subject,
           :content_type => content_type,
           :body         => body
@@ -112,6 +114,11 @@ module MiqAeMethodService
 
     def self.create_service_provision_request(svc_template, options = nil)
       result = svc_template.object_send(:provision_request, User.current_user, options)
+      MiqAeServiceModelBase.wrap_results(result)
+    end
+
+    def self.create_retire_request(obj)
+      result = obj.object_send(:make_retire_request, User.current_user)
       MiqAeServiceModelBase.wrap_results(result)
     end
 

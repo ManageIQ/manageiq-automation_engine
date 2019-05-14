@@ -1,24 +1,20 @@
-require 'miq-password'
+require 'manageiq-password'
 
-class MiqAePassword < MiqPassword
+class MiqAePassword < ManageIQ::Password
   def self.encrypt(str)
-    return str if str.blank? || self.encrypted?(str)
-    MiqPassword.encrypt(str)
-  end
-
-  def self.decrypt(str)
-    MiqPassword.decrypt(str)
+    return str if str.blank? || encrypted?(str)
+    super
   end
 
   def self.decrypt_if_password(obj)
-    obj.kind_of?(MiqAePassword) ? MiqPassword.decrypt(obj.encStr) : obj
+    obj.kind_of?(MiqAePassword) ? ManageIQ::Password.decrypt(obj.encStr) : obj
   end
 
   def to_s
-    "********"
+    MASK
   end
 
   def inspect
-    "\"#{self}\""
+    to_s.inspect
   end
 end

@@ -1,10 +1,10 @@
 describe MiqAeMethodService::MiqAeServiceClassification do
   before do
-    FactoryGirl.create(:classification_department_with_tags)
-    @cc_cat = FactoryGirl.create(:classification_cost_center_with_tags)
+    FactoryBot.create(:classification_department_with_tags)
+    @cc_cat = FactoryBot.create(:classification_cost_center_with_tags)
   end
 
-  let(:user) { FactoryGirl.create(:user_with_group) }
+  let(:user) { FactoryBot.create(:user_with_group) }
   let(:categories) { MiqAeMethodService::MiqAeServiceClassification.categories }
 
   it "get a list of categories" do

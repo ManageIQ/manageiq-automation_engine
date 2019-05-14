@@ -4,24 +4,19 @@ module MiqAeMethodService
     include MiqAeServiceRetirementMixin
     require_relative "mixins/miq_ae_service_custom_attribute_mixin"
     include MiqAeServiceCustomAttributeMixin
+    require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
+    include MiqAeServiceRemoveFromVmdb
 
     expose :retire_service_resources
     expose :automate_retirement_entrypoint
-    expose :service_resources, :association => true
-    expose :service_template,  :association => true
     expose :start
     expose :stop
     expose :suspend
     expose :shutdown_guest
-    expose :vms,                       :association => true
     expose :direct_vms,                :association => true
     expose :indirect_vms,              :association => true
     expose :root_service,              :association => true
-    expose :all_service_children,      :association => true
-    expose :direct_service_children,   :association => true
     expose :indirect_service_children, :association => true
-    expose :parent_service,            :association => true
-    expose :tenant,                    :association => true
 
     CREATE_ATTRIBUTES = [:name, :description, :service_template]
 
@@ -53,8 +48,7 @@ module MiqAeMethodService
 
     def name=(new_name)
       ar_method do
-        @object.name = new_name
-        @object.save
+        @object.update!(:name => new_name)
       end
     end
 
@@ -74,9 +68,9 @@ module MiqAeMethodService
         if service
           raise ArgumentError, "service must be a MiqAeServiceService" unless service.kind_of?(
             MiqAeMethodService::MiqAeServiceService)
-          @object.service = Service.find(service.id)
-        else
-          @object.service = nil
+          @object.add_to_service(Service.find(service.id))
+        elsif @object.parent.present?
+          @object.remove_from_service(@object.parent)
         end
         @object.save
       end
@@ -93,13 +87,6 @@ module MiqAeMethodService
       end
     end
 
-    def remove_from_vmdb
-      _log.info "Removing #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}>"
-      object_send(:destroy)
-      @object = nil
-      true
-    end
-
     def group=(group)
       if group.nil? || group.kind_of?(MiqAeMethodService::MiqAeServiceMiqGroup)
         if group.nil?
@@ -109,6 +96,10 @@ module MiqAeMethodService
         end
         @object.save
       end
+    end
+
+    def show_url
+      URI.join(MiqRegion.my_region.remote_ui_url, "service/show/#{@object.id}").to_s
     end
   end
 end

@@ -6,12 +6,17 @@ module MiqAeEngine
       orchestration_stack
       miq_request
       miq_provision
-      miq_host_provision
       vm_migrate_task
+      vm_retire_task
+      service_retire_task
+      orchestration_stack_retire_task
+      physical_server_provision_task
       platform_category
     ).freeze
     CLOUD          = 'cloud'.freeze
     INFRASTRUCTURE = 'infrastructure'.freeze
+    PHYSICAL_INFRA = 'physicalinfrastructure'.freeze
+    SERVICE        = 'service'.freeze
     UNKNOWN        = 'unknown'.freeze
 
     def self.miq_log_object(obj, _inputs)
@@ -31,7 +36,7 @@ module MiqAeEngine
     end
 
     def self.miq_send_email(_obj, inputs)
-      MiqAeMethodService::MiqAeServiceMethods.send_email(inputs["to"], inputs["from"], inputs["subject"], inputs["body"])
+      MiqAeMethodService::MiqAeServiceMethods.send_email(inputs["to"], inputs["from"], inputs["subject"], inputs["body"], :cc => inputs["cc"], :bcc => inputs["bcc"], :content_type => inputs["content_type"])
     end
 
     def self.miq_snmp_trap_v1(_obj, inputs)
@@ -59,13 +64,16 @@ module MiqAeEngine
     def self.miq_parse_automation_request(obj, _inputs)
       obj['target_component'], obj['target_class'], obj['target_instance'] =
         case obj['request']
-        when 'vm_provision'   then %w(VM   Lifecycle Provisioning)
-        when 'vm_retired'     then %w(VM   Lifecycle Retirement)
-        when 'vm_migrate'     then %w(VM   Lifecycle Migrate)
-        when 'host_provision' then %w(Host Lifecycle Provisioning)
+        when 'vm_provision'               then %w(VM            Lifecycle Provisioning)
+        when 'vm_retired'                 then %w(VM            Lifecycle Retirement)
+        when 'vm_retire'                  then %w(VM            Lifecycle Retirement)
+        when 'vm_migrate'                 then %w(VM            Lifecycle Migrate)
+        when 'service_retire'             then %w(Service       Lifecycle Retirement)
+        when 'orchestration_stack_retire' then %w(Orchestration Lifecycle Retirement)
         when 'configured_system_provision'
           obj.workspace.root['ae_provider_category'] = 'infrastructure'
-          %w(Configured_System Lifecycle Provisioning)
+          %w[Configured_System Lifecycle Provisioning]
+        when 'physical_server_provision' then %w[PhysicalServer Lifecycle Provisioning]
         end
       $miq_ae_logger.info("Request:<#{obj['request']}> Target Component:<#{obj['target_component']}> ")
       $miq_ae_logger.info("Target Class:<#{obj['target_class']}> Target Instance:<#{obj['target_instance']}>")
@@ -137,8 +145,9 @@ module MiqAeEngine
       event_object_from_workspace(obj).src_vm_destroy_all_snapshots
     end
 
-    def self.miq_src_vm_disconnect_storage(obj, _inputs)
-      event_object_from_workspace(obj).src_vm_disconnect_storage
+    def self.miq_src_vm_disconnect_storage(_obj, _inputs)
+      # Logic for storage disconnect has been moved to VmOrTemplate#disconnect_inv
+      # This method is kept for compatibility and will be removed in a future version
     end
 
     def self.miq_event_enforce_policy(obj, _inputs)
@@ -173,14 +182,25 @@ module MiqAeEngine
 
     def self.detect_category(obj_name, prov_obj)
       case obj_name
-      when "orchestration_stack"
+      when "orchestration_stack", "orchestration_stack_retire_task"
         CLOUD
-      when "miq_host_provision"
-        INFRASTRUCTURE
-      when "miq_request", "miq_provision", "vm_migrate_task"
+      when "miq_request"
+        case prov_obj
+        when nil
+          nil
+        when PhysicalServerProvisionRequest
+          PHYSICAL_INFRA
+        else
+          vm_detect_category(prov_obj.source)
+        end
+      when "miq_provision", "vm_migrate_task", "vm_retire_task"
         vm_detect_category(prov_obj.source) if prov_obj
+      when "service_retire_task"
+        ""
       when "vm"
         vm_detect_category(prov_obj) if prov_obj
+      when "physical_server_provision_task"
+        PHYSICAL_INFRA
       else
         UNKNOWN
       end
@@ -213,8 +233,6 @@ module MiqAeEngine
       case attr
       when "orchestration_stack"
         src_obj.ext_management_system.try(:provider_name)
-      when "miq_host_provision"
-        "vmware"
       when "miq_request", "miq_provision", "vm_migrate_task"
         src_obj.source.try(:provider_name)
       when "vm"

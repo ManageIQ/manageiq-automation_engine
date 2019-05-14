@@ -8,9 +8,9 @@ module MiqAeEngine
   DEFAULT_ATTRIBUTES = %w( User::user MiqServer::miq_server object_name )
 
   def self.instantiate(uri, user)
-    $miq_ae_logger.info("MiqAeEngine: Instantiating Workspace for URI=#{uri}")
+    $miq_ae_logger.info("MiqAeEngine: Instantiating Workspace for URI=#{ManageIQ::Password.sanitize_string(uri)}")
     workspace, t = Benchmark.realtime_block(:total_time) { MiqAeWorkspaceRuntime.instantiate(uri, user) }
-    $miq_ae_logger.info("MiqAeEngine: Instantiating Workspace for URI=#{uri}...Complete - Counts: #{format_benchmark_counts(t)}, Timings: #{format_benchmark_times(t)}")
+    $miq_ae_logger.info("MiqAeEngine: Instantiating Workspace for URI=#{ManageIQ::Password.sanitize_string(uri)}...Complete - Counts: #{format_benchmark_counts(t)}, Timings: #{format_benchmark_times(t)}")
     workspace
   end
 
@@ -27,75 +27,72 @@ module MiqAeEngine
     MiqQueue.put(options)
   end
 
-  def self.deliver(*args)
-    options = {}
-
-    case args.length
-    when 0
-      # options = nil
-    when 1
-      # options = Hash
-      options = args.first
-    else
-      # Legacy
-      options[:object_type]      = args.shift
-      options[:object_id]        = args.shift
-      options[:attrs]            = args.shift
-      options[:instance_name]    = args.shift
-      options[:user_id]          = args.shift
-      options[:state]            = args.shift
-      options[:automate_message] = args.shift
-      options[:ae_fsm_started]   = args.shift
-      options[:ae_state_started] = args.shift
-      options[:ae_state_retries] = args.shift
-    end
-
+  private_class_method def self.options_from_args(args)
+    options = args.first
     options[:instance_name] ||= 'AUTOMATION'
     options[:attrs] ||= {}
-    user_obj = ae_user_object(options)
+    options
+  end
 
-    object_type      = options[:object_type]
-    object_id        = options[:object_id]
-    state            = options[:state]
-    user_id          = options[:user_id]
-    ae_fsm_started   = options[:ae_fsm_started]
-    ae_state_started = options[:ae_state_started]
-    ae_state_retries = options[:ae_state_retries]
-    ae_state_data    = options[:ae_state_data]
-    ae_state_previous = options[:ae_state_previous]
-    vmdb_object      = nil
-    ae_result        = 'error'
+  private_class_method def self.automate_attrs_from_options(options)
+    automate_attrs = options[:attrs].dup
+    automate_attrs['User::user']        = options[:user_id]           unless options[:user_id].nil?
+    automate_attrs[:ae_state]           = options[:state]             unless options[:state].nil?
+    automate_attrs[:ae_fsm_started]     = options[:ae_fsm_started]    unless options[:ae_fsm_started].nil?
+    automate_attrs[:ae_state_started]   = options[:ae_state_started]  unless options[:ae_state_started].nil?
+    automate_attrs[:ae_state_retries]   = options[:ae_state_retries]  unless options[:ae_state_retries].nil?
+    automate_attrs['ae_state_data']     = options[:ae_state_data]     unless options[:ae_state_data].nil?
+    automate_attrs['ae_state_previous'] = options[:ae_state_previous] unless options[:ae_state_previous].nil?
+    automate_attrs
+  end
+
+  private_class_method def self.create_automation_object_options(options, vmdb_object)
+    automation_object_options = {}
+    automation_object_options[:vmdb_object] = vmdb_object                unless vmdb_object.nil?
+    automation_object_options[:class]       = options[:class_name]       unless options[:class_name].nil?
+    automation_object_options[:namespace]   = options[:namespace]        unless options[:namespace].nil?
+    automation_object_options[:fqclass]     = options[:fqclass_name]     unless options[:fqclass_name].nil?
+    automation_object_options[:message]     = options[:automate_message] unless options[:automate_message].nil?
+    automation_object_options
+  end
+
+  private_class_method def self.change_options_by_ws(options, ws)
+    options.delete(:ae_state_data)
+    options.delete(:ae_state_previous)
+    options[:state]             = ws.root['ae_state'] || options[:state]
+    options[:ae_fsm_started]    = ws.root['ae_fsm_started']
+    options[:ae_state_started]  = ws.root['ae_state_started']
+    options[:ae_state_retries]  = ws.root['ae_state_retries']
+    options[:ae_state_data]     = YAML.dump(ws.persist_state_hash) unless ws.persist_state_hash.empty?
+    options[:ae_state_previous] = YAML.dump(ws.current_state_info) unless ws.current_state_info.empty?
+  end
+
+  def self.deliver(*args)
+    options     = options_from_args(args)
+    user_obj    = ae_user_object(options)
+    state       = options[:state]
+    vmdb_object = nil
+    ae_result   = 'error'
+    miq_task    = MiqTask.find(options[:open_url_task_id]) if options[:open_url_task_id]
 
     begin
-      object_name = "#{object_type}.#{object_id}"
-      _log.info("Delivering #{options[:attrs].inspect} for object [#{object_name}] with state [#{state}] to Automate")
-      automate_attrs = options[:attrs].dup
+      miq_task&.state_active
+      object_name = "#{options[:object_type]}.#{options[:object_id]}"
+      _log.info("Delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate")
+      automate_attrs = automate_attrs_from_options(options)
 
-      if object_type
-        vmdb_object = object_type.constantize.find_by(:id => object_id)
-        automate_attrs[create_automation_attribute_key(vmdb_object)] = object_id
+      if options[:object_type]
+        vmdb_object = options[:object_type].constantize.find_by!(:id => options[:object_id])
+        automate_attrs[create_automation_attribute_key(vmdb_object)] = options[:object_id]
         vmdb_object.before_ae_starts(options) if vmdb_object.respond_to?(:before_ae_starts)
+        vmdb_object.mark_execution_servers if vmdb_object.respond_to?(:mark_execution_servers)
       end
 
-      automate_attrs['User::user']      = user_id            unless user_id.nil?
-      automate_attrs[:ae_state]         = state              unless state.nil?
-      automate_attrs[:ae_fsm_started]   = ae_fsm_started     unless ae_fsm_started.nil?
-      automate_attrs[:ae_state_started] = ae_state_started   unless ae_state_started.nil?
-      automate_attrs[:ae_state_retries] = ae_state_retries   unless ae_state_retries.nil?
-      automate_attrs['ae_state_data']   = ae_state_data      unless ae_state_data.nil?
-      automate_attrs['ae_state_previous'] = ae_state_previous  unless ae_state_previous.nil?
-
-      create_automation_object_options = {}
-      create_automation_object_options[:vmdb_object] = vmdb_object                unless vmdb_object.nil?
-      create_automation_object_options[:class]       = options[:class_name]       unless options[:class_name].nil?
-      create_automation_object_options[:namespace]   = options[:namespace]        unless options[:namespace].nil?
-      create_automation_object_options[:fqclass]     = options[:fqclass_name]     unless options[:fqclass_name].nil?
-      create_automation_object_options[:message]     = options[:automate_message] unless options[:automate_message].nil?
-      uri = create_automation_object(options[:instance_name], automate_attrs, create_automation_object_options)
+      uri = create_automation_object(options[:instance_name], automate_attrs, create_automation_object_options(options, vmdb_object))
       ws  = resolve_automation_object(uri, user_obj)
 
       if ws.nil? || ws.root.nil?
-        message = "Error delivering #{options[:attrs].inspect} for object [#{object_name}] with state [#{state}] to Automate: Empty Workspace"
+        message = "Error delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate: Empty Workspace"
         _log.error(message)
         return nil
       end
@@ -106,21 +103,17 @@ module MiqAeEngine
         if ae_result.casecmp('retry').zero?
           ae_retry_interval = ws.root['ae_retry_interval'].to_s.to_i_with_method
           deliver_on = Time.now.utc + ae_retry_interval
+          change_options_by_ws(options, ws)
 
-          options[:state]            = ws.root['ae_state'] || state
-          options[:ae_fsm_started]   = ws.root['ae_fsm_started']
-          options[:ae_state_started] = ws.root['ae_state_started']
-          options[:ae_state_retries] = ws.root['ae_state_retries']
-          options[:ae_state_data]    = YAML.dump(ws.persist_state_hash) unless ws.persist_state_hash.empty?
-          options[:ae_state_previous] = YAML.dump(ws.current_state_info) unless ws.current_state_info.empty?
-
-          message = "Requeuing #{options.inspect} for object [#{object_name}] with state [#{options[:state]}] to Automate for delivery in [#{ae_retry_interval}] seconds"
+          message = "Requeuing #{ManageIQ::Password.sanitize_string(options.inspect)} for object [#{object_name}] with state [#{options[:state]}] to Automate for delivery in [#{ae_retry_interval}] seconds"
           _log.info(message)
           queue_options = {:deliver_on => deliver_on}
           queue_options[:server_guid] = MiqServer.my_guid if ws.root['ae_retry_server_affinity']
+          miq_task&.state_queued
           deliver_queue(options, queue_options)
         else
           if ae_result.casecmp('error').zero?
+            miq_task&.update_message(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
             message = "Error delivering #{options[:attrs].inspect} for object [#{object_name}] with state [#{state}] to Automate: #{ws.root['ae_message']}"
             _log.error(message)
           end
@@ -131,9 +124,14 @@ module MiqAeEngine
       return ws
     rescue MiqAeException::Error => err
       message = "Error delivering #{automate_attrs.inspect} for object [#{object_name}] with state [#{state}] to Automate: #{err.message}"
+      miq_task&.error(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
       _log.error(message)
     ensure
       vmdb_object.after_ae_delivery(ae_result.to_s.downcase) if vmdb_object.respond_to?(:after_ae_delivery)
+      if miq_task && miq_task.state == MiqTask::STATE_ACTIVE
+        miq_task.update_message(MiqTask::MESSAGE_TASK_COMPLETED_SUCCESSFULLY) if miq_task.message == MiqTask::DEFAULT_MESSAGE
+        miq_task.state_finished
+      end
     end
   end
 
@@ -260,7 +258,6 @@ module MiqAeEngine
     options[:instance_name] = name
 
     options[:attrs] = create_ae_attrs(attrs, name, options[:vmdb_object])
-    options[:message] = options[:attrs][:message]
 
     # uri
     path = MiqAePath.new(:ae_namespace => options[:namespace],
@@ -298,16 +295,18 @@ module MiqAeEngine
     raise "User object not passed in" unless user_obj.kind_of?(User)
     uri = create_automation_object(uri, attr, options) if attr
     options[:uri] = uri
-    MiqAeWorkspaceRuntime.instantiate(uri, user_obj, :readonly => readonly).tap do
+    MiqAeWorkspaceRuntime.instantiate(uri, user_obj, :readonly => readonly).tap do |ws|
       $miq_ae_logger.debug { ws.to_expanded_xml }
     end
   end
 
   def self.ae_user_object(options = {})
     raise "user_id not specified in Automation request" if options[:user_id].blank?
-    # raise "group_id not specified in Automation request" if options[:miq_group_id].blank?
+    # raise "miq_group_id not specified in Automation request" if options[:miq_group_id].blank?
+
     User.find_by!(:id => options[:user_id]).tap do |obj|
-      # obj.current_group = MiqGroup.find_by!(:id => options[:miq_group_id])
+      obj.current_group = MiqGroup.find_by!(:id => options[:miq_group_id]) unless options[:miq_group_id] == obj.current_group.id
+      $miq_ae_logger.info("User [#{obj.userid}] with current group ID [#{obj.current_group.id}] name [#{obj.current_group.description}]")
     end
   end
 end

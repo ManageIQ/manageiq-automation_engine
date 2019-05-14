@@ -9,7 +9,7 @@ describe "MiqAeMethodDispatch" do
     @namespace       = 'NS1'
     @root_class      = "TOP_OF_THE_WORLD"
     @root_instance   = "EVEREST"
-    @user            = FactoryGirl.create(:user_with_group)
+    @user            = FactoryBot.create(:user_with_group)
     @automate_args   = {:namespace        => @namespace,
                         :class_name       => @root_class,
                         :instance_name    => @root_instance,
@@ -17,7 +17,8 @@ describe "MiqAeMethodDispatch" do
                         :miq_group_id     => @user.current_group.id,
                         :tenant_id        => @user.current_tenant.id,
                         :automate_message => 'create'}
-    allow(MiqServer).to receive(:my_zone).and_return('default')
+    zone = FactoryBot.create(:zone)
+    allow(MiqServer).to receive(:my_zone).and_return(zone.name)
     @pidfile = File.join(Dir.mktmpdir, "rip_van_winkle.pid")
     clear_domain
   end
@@ -55,8 +56,8 @@ describe "MiqAeMethodDispatch" do
   end
 
   def setup_model(method_script)
-    dom = FactoryGirl.create(:miq_ae_domain, :enabled => true, :name => @domain)
-    ns  = FactoryGirl.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
+    dom = FactoryBot.create(:miq_ae_domain, :enabled => true, :name => @domain)
+    ns  = FactoryBot.create(:miq_ae_namespace, :parent_id => dom.id, :name => @namespace)
     @ns_fqname = ns.fqname
     create_method_class(:namespace => @ns_fqname, :name => @method_class,
                         :method_script => method_script)
@@ -75,7 +76,7 @@ describe "MiqAeMethodDispatch" do
                                    :data => method_script,
                                    :language => 'ruby', 'params' => params}}
 
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_instances' => ae_instances,
                                    'ae_methods'   => ae_methods))
@@ -85,7 +86,7 @@ describe "MiqAeMethodDispatch" do
     ae_fields = {'rel1' => {:aetype => 'relationship', :datatype => 'string'}}
     fqname = "/#{@domain}/#{@namespace}/#{@method_class}/#{@method_instance}"
     ae_instances = {@root_instance => {'rel1' => {:value => fqname}}}
-    FactoryGirl.create(:miq_ae_class, :with_instances_and_methods,
+    FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
                        attrs.merge('ae_fields'    => ae_fields,
                                    'ae_methods'   => {},
                                    'ae_instances' => ae_instances))

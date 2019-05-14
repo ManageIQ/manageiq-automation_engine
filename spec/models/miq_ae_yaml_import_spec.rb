@@ -20,14 +20,14 @@ describe MiqAeYamlImport do
     context "#import" do
       let(:path) { "path" }
       it "old namespace is preserved" do
-        dom = FactoryGirl.create(:miq_ae_domain, :name => domain)
+        dom = FactoryBot.create(:miq_ae_domain, :name => domain)
         domain_yaml = {
           'object_type' => 'domain',
           'version'     => '1.0',
           'object'      => {'attributes' => dom.attributes}
         }
-        ns = FactoryGirl.create(:miq_ae_namespace, :parent => dom)
-        FactoryGirl.create(:miq_ae_class, :namespace_id => ns.id)
+        ns = FactoryBot.create(:miq_ae_namespace, :parent => dom)
+        FactoryBot.create(:miq_ae_class, :namespace_id => ns.id)
 
         allow(miq_ae_yaml_import).to receive(:domain_folder).with(domain).and_return(path)
         allow(miq_ae_yaml_import).to receive(:namespace_files).with(path) { raise ArgumentError }
