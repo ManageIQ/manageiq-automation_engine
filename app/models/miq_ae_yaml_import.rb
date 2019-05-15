@@ -222,11 +222,71 @@ class MiqAeYamlImport
     if method_attributes['location'] == 'inline'
       data = load_method_ruby(ruby_method_file_name)
       method_yaml.store_path('object', 'attributes', 'data', data) if data
+    elsif method_attributes['location'] == 'playbook'
+      convert_playbook_attributes(method_attributes['options'], ruby_method_file_name)
     end
     method_obj = MiqAeMethod.find_by(:name => method_attributes['name'], :class_id => class_obj.id) unless class_obj.nil?
     track_stats('method', method_obj)
     method_obj ||= add_method(class_obj, method_yaml) unless @preview
     method_obj
+  end
+
+  def convert_playbook_attributes(options, ruby_method_file_name)
+    invalid_attributes = []
+    %w[repository playbook credential vault_credential cloud_credential].each do |attr|
+      next unless options["#{attr}_name".to_sym]
+      convert_playbook_attribute(options, attr, invalid_attributes)
+    end
+
+    unless invalid_attributes.empty?
+      error_msg = _("Error: Playbook method '%{method_name}' contains below listed error(s):") % { :method_name => ruby_method_file_name }
+      invalid_attributes.each do |attr|
+        error_msg += "<br> * #{playbook_attr_error_msg(attr, options)}"
+      end
+      raise MiqAeException::AttributeNotFound, error_msg
+    end
+    options.except!(:repository_name, :playbook_name, :credential_name, :vault_credential_name, :cloud_credential_name)
+  end
+
+  def convert_playbook_attribute(options, attr, invalid_attributes)
+    ae_manager = ManageIQ::Providers::EmbeddedAnsible::AutomationManager
+    klass = case attr
+            when 'repository'
+              AnsibleRepositoryController.model
+            when 'playbook'
+              ae_manager::Playbook
+            when 'credential'
+              ae_manager::Credential
+            when 'vault_credential'
+              ae_manager::VaultCredential
+            when 'cloud_credential'
+              ae_manager::CloudCredential
+            end
+    related_obj = klass.find_by(:name => options["#{attr}_name".to_sym])
+
+    if related_obj
+      options["#{attr}_id".to_sym] = related_obj.id.to_s
+    else
+      invalid_attributes << attr
+    end
+  end
+
+  def playbook_attr_error_msg(attr, options)
+    case attr
+    when 'repository'
+      _("Repository '#{options[:repository_name]}' not found in database. Please try and import this repo "\
+        "into this appliance and retry the import. If the repository has been deleted this import will never succeed.")
+    when 'playbook'
+      _("Playbook '#{options[:playbook_name]}' not found in repository '#{options[:repository_name]}', you  can refresh "\
+        "the repo or change the branch or tag and retry the import, if the playbook doesn't exist in the repo this "\
+        "import will never succeed, you can try importing by skiping this playbook using --skip_playbook pb1, pb2.")
+    when 'credential'
+      _("Credential '#{options[:credential_name]}' doesn't exist in the appliance, please add this credential and retry the import.")
+    when 'vault_credential'
+      _("Vault Credential '#{options[:vault_credential_name]}' doesn't exist in the appliance please add this credential and retry the import.")
+    when 'cloud_credential'
+      _("Cloud Credential '#{options[:cloud_credential_name]}' doesn't exist in the appliance please add this credential and retry the import.")
+    end
   end
 
   def track_stats(level, object)

@@ -674,6 +674,86 @@ describe MiqAeDatastore do
     end
   end
 
+  context "import and export with playbook method type" do
+    let(:miq_ae_class) { MiqAeClass.first }
+    let(:manager)      { FactoryBot.create(:embedded_automation_manager_ansible) }
+    let(:repo)         { FactoryBot.create(:embedded_ansible_configuration_script_source) }
+    let(:playbook)     { FactoryBot.create(:embedded_playbook, :manager => manager) }
+    let(:cred)         { FactoryBot.create(:embedded_ansible_credential, :manager => manager, :name => 'cred') }
+    let(:vault_cred)   { FactoryBot.create(:embedded_ansible_vault_credential, :manager => manager, :name => 'vault_cred') }
+    let(:cloud_cred)   { FactoryBot.create(:embedded_ansible_cloud_credential, :manager => manager, :name => 'cloud_cred') }
+    let(:method) do
+      FactoryBot.create(
+        :miq_ae_method,
+        :class_id   => MiqAeClass.find_by(:name => miq_ae_class.name).id,
+        :name       => 'playbook_method',
+        :scope      => "instance",
+        :language   => "ruby",
+        :location   => "playbook",
+        :attributes => { 'options' => {
+          :repository_id       => repo.id.to_s,
+          :playbook_id         => playbook.id.to_s,
+          :credential_id       => cred.id.to_s,
+          :vault_credential_id => vault_cred.id.to_s,
+          :verbosity           => "",
+          :cloud_credential_id => cloud_cred.id.to_s,
+          :execution_ttl       => "256",
+          :hosts               => "localhost",
+          :log_output          => "on_error",
+          :become_enabled      => false
+        }}
+      )
+    end
+
+    before do
+      method
+      File.open(@yaml_file, 'w') { |f| f.write("dummy domain data") }
+      @export_options = {'yaml_file' => @yaml_file, 'overwrite' => true}
+      @import_options = {'yaml_file' => @yaml_file}
+      @domain_counts['meth'] += 1
+    end
+
+    it 'import without related object from attributes fails' do
+      export_model(@manageiq_domain.name, @export_options)
+      playbook.delete
+      expect { reset_and_import(@export_dir, @manageiq_domain.name, @import_options) }
+        .to(raise_error(MiqAeException::AttributeNotFound))
+    end
+
+    it 'imported playbook method contains all related attributes' do
+      export_model(@manageiq_domain.name, @export_options)
+      reset_and_import(@export_dir, @manageiq_domain.name, @import_options)
+      check_counts(@domain_counts)
+      check_playbook_attributes(false)
+    end
+
+    it 'skips the convert of missing related object ID' do
+      playbook.delete
+      export_model(@manageiq_domain.name, @export_options)
+      reset_and_import(@export_dir, @manageiq_domain.name, @import_options)
+      check_counts(@domain_counts)
+      check_playbook_attributes(true)
+    end
+
+    def check_playbook_attributes(skip_playbook)
+      opt = MiqAeMethod.find_by(:name => method.name).attributes['options']
+      if skip_playbook
+        expect(opt[:playbook_id]).to be_nil
+      else
+        expect(opt[:playbook_id]).to eq(playbook.id.to_s)
+      end
+      expect(opt[:repository_id]).to eq(repo.id.to_s)
+      expect(opt[:credential_id]).to eq(cred.id.to_s)
+      expect(opt[:vault_credential_id]).to eq(vault_cred.id.to_s)
+      expect(opt[:verbosity]).to be_empty
+      expect(opt[:cloud_credential_id]).to eq(cloud_cred.id.to_s)
+      expect(opt[:execution_ttl]).to eq('256')
+      expect(opt[:hosts]).to eq('localhost')
+      expect(opt[:log_output]).to eq("on_error")
+      expect(opt[:become_enabled]).to be_falsey
+    end
+  end
+
   def import(import_dir, domain, options = {})
     options = {'import_dir' => import_dir} if options.empty?
     import_options = {'preview' => false,
