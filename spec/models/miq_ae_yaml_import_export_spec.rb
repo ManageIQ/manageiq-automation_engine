@@ -738,19 +738,19 @@ describe MiqAeDatastore do
     def check_playbook_attributes(skip_playbook)
       opt = MiqAeMethod.find_by(:name => method.name).attributes['options']
       if skip_playbook
-        expect(opt[:playbook_id]).to(be_nil)
+        expect(opt[:playbook_id]).to be_nil
       else
-        expect(opt[:playbook_id]).to(eq(playbook.id.to_s))
+        expect(opt[:playbook_id]).to eq(playbook.id.to_s)
       end
-      expect(opt[:repository_id]).to(eq(repo.id.to_s))
-      expect(opt[:credential_id]).to(eq(cred.id.to_s))
-      expect(opt[:vault_credential_id]).to(eq(vault_cred.id.to_s))
-      expect(opt[:verbosity]).to(eq(''))
-      expect(opt[:cloud_credential_id]).to(eq(cloud_cred.id.to_s))
-      expect(opt[:execution_ttl]).to(eq('256'))
-      expect(opt[:hosts]).to(eq('localhost'))
-      expect(opt[:log_output]).to(eq("on_error"))
-      expect(opt[:become_enabled]).to(be_falsey)
+      expect(opt[:repository_id]).to eq(repo.id.to_s)
+      expect(opt[:credential_id]).to eq(cred.id.to_s)
+      expect(opt[:vault_credential_id]).to eq(vault_cred.id.to_s)
+      expect(opt[:verbosity]).to be_empty
+      expect(opt[:cloud_credential_id]).to eq(cloud_cred.id.to_s)
+      expect(opt[:execution_ttl]).to eq('256')
+      expect(opt[:hosts]).to eq('localhost')
+      expect(opt[:log_output]).to eq("on_error")
+      expect(opt[:become_enabled]).to be_falsey
     end
   end
 
