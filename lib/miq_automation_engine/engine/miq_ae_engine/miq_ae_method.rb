@@ -36,7 +36,7 @@ module MiqAeEngine
       end
 
       # Create the filename corresponding to the URI specification
-      fname = ae_methods_dir.join(path)
+      fname = ae_methods_dir.join(uri.path)
       raise  MiqAeException::MethodNotFound, "Method [#{aem.data}] Not Found (fname=#{fname})" unless File.exist?(fname)
       cmd = "#{aem.language} #{fname}"
       invoke_external(cmd, obj.workspace)
