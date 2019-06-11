@@ -1,5 +1,8 @@
 module MiqAeMethodService
   class MiqAeServiceVm < MiqAeServiceVmOrTemplate
+    require_relative "mixins/miq_ae_external_url_mixin"
+    include MiqAeExternalUrlMixin
+
     def remote_console_url=(url)
       object_send(:remote_console_url=, url, MiqAeEngine::DrbRemoteInvoker.workspace.ae_user.id)
     end

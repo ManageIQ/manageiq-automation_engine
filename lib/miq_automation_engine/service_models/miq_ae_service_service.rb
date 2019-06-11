@@ -6,6 +6,8 @@ module MiqAeMethodService
     include MiqAeServiceCustomAttributeMixin
     require_relative "mixins/miq_ae_service_remove_from_vmdb_mixin"
     include MiqAeServiceRemoveFromVmdb
+    require_relative "mixins/miq_ae_external_url_mixin"
+    include MiqAeExternalUrlMixin
 
     expose :retire_service_resources
     expose :automate_retirement_entrypoint
