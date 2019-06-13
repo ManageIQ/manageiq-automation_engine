@@ -4,7 +4,7 @@ describe "MiqAeDiscovery" do
     @admin  = User.super_admin || FactoryBot.create(:user_with_group, :userid => "admin")
     @tenant = Tenant.root_tenant
     @group  = FactoryBot.create(:miq_group, :tenant => @tenant)
-    @ems    = FactoryBot.create(:ext_management_system, :tenant => @tenant)
+    @ems    = FactoryBot.create(:ems_vmware, :tenant => @tenant)
     @vm     = FactoryBot.create(:vm_vmware, :miq_group => @group)
     @event  = FactoryBot.create(:ems_event, :event_type => "CreateVM_Task_Complete",
                                 :source => "VC", :ems_id => @ems.id, :vm_or_template_id => @vm.id)
