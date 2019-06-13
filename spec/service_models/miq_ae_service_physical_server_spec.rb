@@ -19,7 +19,7 @@ describe MiqAeMethodService::MiqAeServicePhysicalServer do
     before { allow(ems.class).to receive(:ems_type).and_return('THE_EMS_TYPE') }
 
     let(:server) { FactoryBot.create(:physical_server, :ext_management_system => ems) }
-    let(:ems)    { FactoryBot.create(:ems_physical_infra) }
+    let(:ems)    { FactoryBot.create(:ems_redfish_physical_infra) }
 
     subject { MiqAeMethodService::MiqAeServicePhysicalServer.find(server.id) }
 

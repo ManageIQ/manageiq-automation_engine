@@ -4,7 +4,7 @@ describe MiqAeEvent do
   # admin user is needed to process Events
   let(:admin)    { FactoryBot.create(:user_with_group, :userid => "admin") }
   let(:user)     { FactoryBot.create(:user_with_group, :userid => "test", :miq_groups => [group]) }
-  let(:ems)      { FactoryBot.create(:ext_management_system, :tenant => tenant) }
+  let(:ems)      { FactoryBot.create(:ems_vmware, :tenant => tenant) }
 
   describe ".raise_ems_event" do
     context "with VM event" do
