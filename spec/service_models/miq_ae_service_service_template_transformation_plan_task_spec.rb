@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceServiceTemplateTransformationPlanTask do
-  let(:ems) { FactoryBot.create(:ems_vmware, :zone => FactoryBot.create(:zone), :api_version => '4.2.4') }
+  let(:ems) { FactoryBot.create(:ext_management_system, :zone => FactoryBot.create(:zone), :api_version => '4.2.4') }
   let(:host) { FactoryBot.create(:host_redhat, :ext_management_system => ems) }
   let(:vm) { FactoryBot.create(:vm_openstack) }
   let(:conversion_host_1) { FactoryBot.create(:conversion_host, :resource => host) }
