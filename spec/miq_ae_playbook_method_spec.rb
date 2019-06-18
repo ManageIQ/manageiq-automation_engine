@@ -66,11 +66,15 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         expect(playbook).to receive(:run) do |args|
           expect(args['test']).to eq(13)
           expect(args[:extra_vars][:manageiq]['automate_workspace']).to eq(aw.href_slug)
+          expect(args[:extra_vars]['var1']).to eq('a')
+          expect(args[:extra_vars]['var2']).to eq(1)
           expect(%w(api_url api_token) - args[:extra_vars][:manageiq].keys).to be_empty
           expect(%w(url token) - args[:extra_vars][:manageiq_connection].keys).to be_empty
           miq_task.id
         end
 
+        persist_hash['ansible_stats_var1'] = 'a'
+        persist_hash['ansible_stats_var2'] = 1
         ap = described_class.new(aem, obj, inputs)
         ap.run
 
@@ -176,7 +180,6 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
         allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
         allow(obj).to receive(:substitute_value).and_return(resolved_hosts)
-        allow(workspace).to receive(:update_workspace)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
       end
 
@@ -202,7 +205,9 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "state finishes succesfully" do
+        miq_task.task_results = {'ansible_stats' => {'var1' => 'testing', 'var2' => true}}
         miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
+
         persist_hash[method_key] = miq_task.id
         persist_hash['automate_workspace_guid'] = aw.guid
 
@@ -213,6 +218,8 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         expect(root_object['ae_result']).to eq('ok')
         expect(persist_hash[method_key]).to be_nil
         expect(persist_hash['automate_workspace_guid']).to be_nil
+        expect(persist_hash['ansible_stats_var1']).to eq('testing')
+        expect(persist_hash['ansible_stats_var2']).to be true
         expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
       end
 
