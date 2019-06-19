@@ -139,7 +139,7 @@ module MiqAeEngine
     private_class_method :verbose_rc
 
     def self.run_ruby_method(code)
-      ActiveRecord::Base.connection_pool.release_connection
+      ActiveRecord::Base.connection_pool.release_connection unless Rails.env.test?
       with_automation_env do
         ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
           run_method(Gem.ruby) do |stdin|
