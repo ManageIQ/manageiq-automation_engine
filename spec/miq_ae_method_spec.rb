@@ -1,4 +1,5 @@
 describe MiqAeMethod do
+  include Spec::Support::AutomationHelper
   context "needing datatore" do
     before(:each) do
       MiqAeDatastore.reset
@@ -125,6 +126,29 @@ describe MiqAeMethod do
       # print "\nEVMGet =>", $service->EVMGet($miq_token, "#tester");
       #
       # exit 0;
+    end
+  end
+
+  context "null coalescing" do
+    let(:user) { FactoryBot.create(:user_with_group) }
+    let(:m_params) { {'arg1' => {'datatype' => MiqAeField::NULL_COALESCING_DATATYPE, 'default_value' => '${#field1} || location'}} }
+
+    before do
+      method_script = "$evm.root['result'] = $evm.inputs"
+      create_ae_model_with_method(:method_script => method_script, :ae_class => 'AUTOMATE',
+                                  :ae_namespace  => 'EVM', :instance_name => 'test1',
+                                  :method_params => m_params,
+                                  :method_name   => 'test', :name => 'TEST_DOMAIN')
+    end
+
+    it "uses default when variable missing" do
+      ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test1", user)
+      expect(ws.root['result']['arg1']).to eql('location')
+    end
+
+    it "first non nil value" do
+      ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?field1=department", user)
+      expect(ws.root['result']['arg1']).to eql('department')
     end
   end
 end
