@@ -2,6 +2,8 @@ module MiqAeEngine
   class MiqAeAnsibleMethodBase
     include AnsibleExtraVarsMixin
 
+    ANSIBLE_STATS_PREFIX = 'ansible_stats_'.freeze
+    ANSIBLE_STATS_PREFIX_LEN = ANSIBLE_STATS_PREFIX.size
     METHOD_KEY_SUFFIX = "_ansible_method_task_id".freeze
     MIN_RETRY_INTERVAL = 1.minute
 
@@ -38,10 +40,20 @@ module MiqAeEngine
       @workspace.root['ae_state_started'].present?
     end
 
-    def process_result
+    def process_result(task = nil)
       @aw.reload
       @workspace.update_workspace(@aw.output) if @aw.output
+      ansible_stats_from_task(task).each { |k, v| @workspace.persist_state_hash[k] = v }
       reset
+    end
+
+    def ansible_stats_from_task(task)
+      stats = task.task_results&.dig('ansible_stats')
+      return {} unless stats
+
+      stats.each_with_object({}) do |(attr, val), obj|
+        obj["#{ANSIBLE_STATS_PREFIX}#{attr}"] = val
+      end
     end
 
     def reset
@@ -52,7 +64,7 @@ module MiqAeEngine
     def wait_for_method(task_id)
       task = MiqTask.wait_for_taskid(task_id)
       raise MiqAeException::Error, task.message unless task.status == "Ok"
-      process_result
+      process_result(task)
     ensure
       reset
     end
@@ -72,7 +84,7 @@ module MiqAeEngine
       end
 
       @workspace.root['ae_result'] = 'ok'
-      process_result
+      process_result(task)
     end
 
     def mark_for_retry(task_id)
@@ -120,9 +132,17 @@ module MiqAeEngine
 
     def build_options_hash
       @aem.options.tap do |config_info|
-        config_info[:extra_vars] = MiqAeEngine::MiqAeReference.encode(@inputs)
+        config_info[:extra_vars] = MiqAeEngine::MiqAeReference.encode(@inputs.merge(ansible_stats_from_ws))
         config_info[:extra_vars][:manageiq] = method_manageiq_env
         config_info[:extra_vars][:manageiq_connection] = manageiq_connection_env(@workspace.ae_user)
+      end
+    end
+
+    def ansible_stats_from_ws
+      @workspace.persist_state_hash.each_with_object({}) do |(attr, val), obj|
+        if attr.start_with?(ANSIBLE_STATS_PREFIX)
+          obj[attr[ANSIBLE_STATS_PREFIX_LEN..-1]] = val
+        end
       end
     end
 
