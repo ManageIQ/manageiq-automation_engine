@@ -88,6 +88,10 @@ module MiqAeMethodService
       @persist_state_hash.delete(name)
     end
 
+    def ansible_stats_vars
+      MiqAeEngine::MiqAeAnsibleMethodBase.ansible_stats_from_hash(@persist_state_hash)
+    end
+
     def prepend_namespace=(ns)
       @workspace.prepend_namespace = ns
     end
