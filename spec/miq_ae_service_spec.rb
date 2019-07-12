@@ -126,6 +126,13 @@ describe MiqAeMethodService::MiqAeService do
         expect(miq_ae_service.state_var_exist?('name')).to(be_truthy)
       end
     end
+
+    it 'ansible_stats_vars' do
+      allow(workspace).to(receive(:disable_rbac))
+      expect(miq_ae_service.ansible_stats_vars).to eq({})
+      miq_ae_service.instance_eval { @persist_state_hash = { 'ansible_stats_var1' => 'value1', 'ansible_stats_var2' => 'value2', 'var3' => 'value3' } }
+      expect(miq_ae_service.ansible_stats_vars).to eq('var1' => 'value1', 'var2' => 'value2')
+    end
   end
 end
 

@@ -13,6 +13,12 @@ module MiqAeEngine
       workspace.persist_state_hash.delete_if { |key, _| key.to_s.match(/#{METHOD_KEY_SUFFIX}$/) }
     end
 
+    def self.ansible_stats_from_hash(hash)
+      hash.each_with_object({}) do |(attr, val), obj|
+        obj[attr[ANSIBLE_STATS_PREFIX_LEN..-1]] = val if attr.start_with?(ANSIBLE_STATS_PREFIX)
+      end
+    end
+
     def initialize(aem, obj, inputs)
       @workspace = obj.workspace
       @inputs    = inputs
@@ -139,11 +145,7 @@ module MiqAeEngine
     end
 
     def ansible_stats_from_ws
-      @workspace.persist_state_hash.each_with_object({}) do |(attr, val), obj|
-        if attr.start_with?(ANSIBLE_STATS_PREFIX)
-          obj[attr[ANSIBLE_STATS_PREFIX_LEN..-1]] = val
-        end
-      end
+      self.class.ansible_stats_from_hash(@workspace.persist_state_hash)
     end
 
     def miq_request_task
