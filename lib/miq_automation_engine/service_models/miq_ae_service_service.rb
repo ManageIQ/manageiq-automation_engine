@@ -48,6 +48,31 @@ module MiqAeMethodService
       end
     end
 
+    def service_vars_options
+      @object.options[:service_vars] ||= HashWithIndifferentAccess.new
+    end
+
+    def get_service_vars_option(key)
+      service_vars_options[key]
+    end
+
+    def set_service_vars_option(key, value)
+      ar_method do
+        service_vars_options[key] = value
+        @object.update(:options => @object.options)
+      end
+    end
+
+    def delete_service_vars_option(key)
+      return unless service_vars_options&.key?(key)
+
+      ar_method do
+        service_vars_options.delete(key).tap do
+          @object.update(:options => @object.options)
+        end
+      end
+    end
+
     def name=(new_name)
       ar_method do
         @object.update!(:name => new_name)

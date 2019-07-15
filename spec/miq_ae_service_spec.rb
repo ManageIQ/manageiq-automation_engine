@@ -134,6 +134,63 @@ describe MiqAeMethodService::MiqAeService do
       expect(miq_ae_service.ansible_stats_vars).to eq('var1' => 'value1', 'var2' => 'value2')
     end
   end
+
+  context 'service_var method' do
+    let(:user) { FactoryBot.create(:user_with_group) }
+
+    def invoke_ae
+      MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?Service::service=#{@service.id}", user)
+    end
+
+    before do
+      Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
+      @ae_method = ::MiqAeMethod.first
+
+      @parent = FactoryBot.create(:service)
+      @service = FactoryBot.create(:service, :service => @parent)
+    end
+
+    it 'set_service_var' do
+      method = "$evm.set_service_var('var1', 'value1')"
+      @ae_method.update(:data => method)
+      invoke_ae
+
+      @parent.reload
+      @service.reload
+
+      expect(@parent.options.dig(:service_vars, 'var1')).to eq('value1')
+      expect(@service.options.dig(:service_vars)).not_to be_present
+    end
+
+    it 'service_var_exists?' do
+      @parent.update(:options => {:service_vars => {'var1' => 'value1'}})
+      method = "$evm.root['var1_exists'] = $evm.service_var_exists?('var1'); $evm.root['var2_exists'] = $evm.service_var_exists?('var2')"
+      @ae_method.update(:data => method)
+      result = invoke_ae
+
+      expect(result.root['var1_exists']).to be true
+      expect(result.root['var2_exists']).to be false
+    end
+
+    it 'get_service_var' do
+      @parent.update(:options => {:service_vars => {'var1' => 'value1'}})
+      method = "$evm.root['var1'] = $evm.get_service_var('var1'); $evm.root['var2'] = $evm.get_service_var('var2')"
+      @ae_method.update(:data => method)
+      result = invoke_ae
+
+      expect(result.root['var1']).to eq('value1')
+      expect(result.root['var2']).to be nil
+    end
+
+    it 'delete_service_var' do
+      @parent.update(:options => {:service_vars => {'var1' => 'value1'}})
+      method = "$evm.delete_service_var('var1'); $evm.root['var1'] = $evm.get_service_var('var1')"
+      @ae_method.update(:data => method)
+      result = invoke_ae
+
+      expect(result.root['var1']).to be nil
+    end
+  end
 end
 
 describe MiqAeMethodService::MiqAeService do
