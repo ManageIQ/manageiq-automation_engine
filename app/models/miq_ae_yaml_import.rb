@@ -274,18 +274,23 @@ class MiqAeYamlImport
   def playbook_attr_error_msg(attr, options)
     case attr
     when 'repository'
-      _("Repository '#{options[:repository_name]}' not found in database. Please try and import this repo "\
-        "into this appliance and retry the import. If the repository has been deleted this import will never succeed.")
+      _("Repository '%{repository_name}' not found in database. Please try and import this repo "\
+        "into this appliance and retry the import. If the repository has been deleted this import will never succeed.") \
+        % {:repository_name => options[:repository_name]}
     when 'playbook'
-      _("Playbook '#{options[:playbook_name]}' not found in repository '#{options[:repository_name]}', you  can refresh "\
+      _("Playbook '%{playbook_name}' not found in repository '%{repository_name}', you  can refresh "\
         "the repo or change the branch or tag and retry the import, if the playbook doesn't exist in the repo this "\
-        "import will never succeed, you can try importing by skiping this playbook using --skip_playbook pb1, pb2.")
+        "import will never succeed, you can try importing by skiping this playbook using --skip_playbook pb1, pb2.") \
+        % {:playbook_name => options[:playbook_name], :repository_name => options[:repository_name]}
     when 'credential'
-      _("Credential '#{options[:credential_name]}' doesn't exist in the appliance, please add this credential and retry the import.")
+      _("Credential '%{credential_name}' doesn't exist in the appliance, please add this credential and retry the import.") \
+        % {:credential_name => options[:credential_name]}
     when 'vault_credential'
-      _("Vault Credential '#{options[:vault_credential_name]}' doesn't exist in the appliance please add this credential and retry the import.")
+      _("Vault Credential '%{vault_credential_name}' doesn't exist in the appliance please add this credential and retry the import.") \
+        % {:vault_credential_name => options[:vault_credential_name]}
     when 'cloud_credential'
-      _("Cloud Credential '#{options[:cloud_credential_name]}' doesn't exist in the appliance please add this credential and retry the import.")
+      _("Cloud Credential '%{cloud_credential_name}' doesn't exist in the appliance please add this credential and retry the import.") \
+        % {:cloud_credential_name => options[:cloud_credential_name]}
     end
   end
 
