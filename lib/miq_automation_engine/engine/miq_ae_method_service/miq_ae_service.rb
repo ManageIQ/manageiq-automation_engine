@@ -92,6 +92,33 @@ module MiqAeMethodService
       MiqAeEngine::MiqAeAnsibleMethodBase.ansible_stats_from_hash(@persist_state_hash)
     end
 
+    def set_service_var(name, value)
+      if service_object.nil?
+        $miq_ae_logger.error("Service object not found in root object, set_service_var skipped for #{name} = #{value}")
+        return
+      end
+
+      service_object.root_service.set_service_vars_option(name, value)
+    end
+
+    def service_var_exists?(name)
+      return false unless service_object
+
+      service_object.root_service.service_vars_options.key?(name)
+    end
+
+    def get_service_var(name)
+      return unless service_var_exists?(name)
+
+      service_object.root_service.get_service_vars_option(name)
+    end
+
+    def delete_service_var(name)
+      return unless service_var_exists?(name)
+
+      service_object.root_service.delete_service_vars_option(name)
+    end
+
     def prepend_namespace=(ns)
       @workspace.prepend_namespace = ns
     end
@@ -331,6 +358,10 @@ module MiqAeMethodService
     end
 
     private
+
+    def service_object
+      current['service'] || root['service']
+    end
 
     def editable_instance?(path)
       dom, = MiqAeEngine::MiqAePath.get_domain_ns_klass_inst(path)
