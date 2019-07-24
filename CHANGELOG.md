@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-6
+## Unreleased as of Sprint 116 ending 2019-07-22
+
+### Fixed
+- Add service_vars to pass variables between catalog items in a bundle [(#338)](https://github.com/ManageIQ/manageiq-automation_engine/pull/338)
+- Add helper method ansible_stats_vars [(#336)](https://github.com/ManageIQ/manageiq-automation_engine/pull/336)
+- Support for opening URL from the UI through automate. [(#328)](https://github.com/ManageIQ/manageiq-automation_engine/pull/328)
+- Add scope to list automate domains from ancestors tenants [(#318)](https://github.com/ManageIQ/manageiq-automation_engine/pull/318)
+
+## Hammer-6 - Released 2019-05-22
 
 ### Added
 - Add functionality for bcc/cc [(#313)](https://github.com/ManageIQ/manageiq-automation_engine/pull/313)
