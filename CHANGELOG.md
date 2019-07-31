@@ -5,13 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Unreleased as of Sprint 116 ending 2019-07-22
+## Ivanchuk Beta1
 
 ### Fixed
 - Add service_vars to pass variables between catalog items in a bundle [(#338)](https://github.com/ManageIQ/manageiq-automation_engine/pull/338)
 - Add helper method ansible_stats_vars [(#336)](https://github.com/ManageIQ/manageiq-automation_engine/pull/336)
 - Support for opening URL from the UI through automate. [(#328)](https://github.com/ManageIQ/manageiq-automation_engine/pull/328)
 - Add scope to list automate domains from ancestors tenants [(#318)](https://github.com/ManageIQ/manageiq-automation_engine/pull/318)
+- Set current user for exposed methods in automate. [(#302)](https://github.com/ManageIQ/manageiq-automation_engine/pull/302)
+- Don't set User.current_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
+- Redirect writable_storages to writable_accessible_storages [(#292)](https://github.com/ManageIQ/manageiq-automation_engine/pull/292)
+- Reset System Domains Missing RedHat Domain [(#274)](https://github.com/ManageIQ/manageiq-automation_engine/pull/274)
 
 ## Hammer-6 - Released 2019-05-22
 
@@ -21,26 +25,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Add resource to conversion_host to pass validation [(#275)](https://github.com/ManageIQ/manageiq-automation_engine/pull/275)
 
-## Unreleased as of Sprint 107 ending 2019-03-18
-
-### Fixed
-- Set current user for exposed methods in automate. [(#302)](https://github.com/ManageIQ/manageiq-automation_engine/pull/302)
-
 ## Hammer-3 - Released 2019-03-06
 
 ### Fixed
 - Don't overwrite message in create_automation_object [(#287)](https://github.com/ManageIQ/manageiq-automation_engine/pull/287)
-
-## Unreleased as of Sprint 105 ending 2019-02-18
-
-### Fixed
-- Don't set User.current_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
-- Redirect writable_storages to writable_accessible_storages [(#292)](https://github.com/ManageIQ/manageiq-automation_engine/pull/292)
-
-## Unreleased as of Sprint 103 ending 2019-01-21
-
-### Fixed
-- Reset System Domains Missing RedHat Domain [(#274)](https://github.com/ManageIQ/manageiq-automation_engine/pull/274)
 
 ## Hammer-1 - Released 2019-01-15
 
