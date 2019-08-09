@@ -193,11 +193,6 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   context "#create_retire_request" do
     let(:options) { {:fred => :flintstone} }
     let(:user) { FactoryBot.create(:user_with_group) }
-    let(:service) { FactoryBot.create(:service) }
-    let(:miq_request) { FactoryBot.create(:service_retire_request, :userid => user.id) }
-    let(:svc_service) do
-      MiqAeMethodService::MiqAeServiceService.find(service.id)
-    end
     let(:workspace) do
       double("MiqAeEngine::MiqAeWorkspaceRuntime",
              :root               => options,
@@ -206,13 +201,26 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     end
     let(:miq_ae_service) { MiqAeMethodService::MiqAeService.new(workspace) }
 
-    it "create retire request" do
+    before do
       allow(workspace).to receive(:disable_rbac)
-      allow(Service).to receive(:find).with(service.id).and_return(service)
-      expect(service).to receive(:make_retire_request).with(user).and_return(miq_request)
+    end
 
-      result = miq_ae_service.execute(:create_retire_request, svc_service)
-      expect(result).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqRequest)
+    %w[OrchestrationStack Service Vm].each do |klass|
+      it "with retireable #{klass}" do
+        obj = FactoryBot.create(klass.underscore.to_sym)
+        svc_obj = "MiqAeMethodService::MiqAeService#{klass}".constantize.find(obj.id)
+        expect(klass.constantize).to receive(:make_retire_request)
+          .with(obj.id, user).and_return(FactoryBot.create("#{klass.underscore}_retire_request".to_sym, :requester => user))
+
+        result = miq_ae_service.execute(:create_retire_request, svc_obj)
+        expect(result).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqRequest)
+      end
+    end
+
+    it "with non-retireable class" do
+      obj = FactoryBot.create(:host)
+      svc_obj = MiqAeMethodService::MiqAeServiceHost.find(obj.id)
+      expect { miq_ae_service.execute(:create_retire_request, svc_obj) }.to raise_error(MiqAeException::MethodNotFound)
     end
   end
 end

@@ -118,8 +118,8 @@ module MiqAeMethodService
     end
 
     def self.create_retire_request(obj)
-      result = obj.object_send(:make_retire_request, User.current_user)
-      MiqAeServiceModelBase.wrap_results(result)
+      obj_class = obj.object_class.base_model.name.constantize
+      MiqAeServiceModelBase.wrap_results(obj_class.make_retire_request(obj.id, User.current_user))
     end
 
     def self.drb_undumped(klass)
