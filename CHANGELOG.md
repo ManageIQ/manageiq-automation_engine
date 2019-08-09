@@ -5,15 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Ivanchuk Beta1
+## Hammer-10
+
+### Fixed
+- Don't set User.current_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
+- Set current user for exposed methods in automate. [(#302)](https://github.com/ManageIQ/manageiq-automation_engine/pull/302)
+
+## Ivanchuk Beta1 - Release 2019-07-29
 
 ### Fixed
 - Add service_vars to pass variables between catalog items in a bundle [(#338)](https://github.com/ManageIQ/manageiq-automation_engine/pull/338)
 - Add helper method ansible_stats_vars [(#336)](https://github.com/ManageIQ/manageiq-automation_engine/pull/336)
 - Support for opening URL from the UI through automate. [(#328)](https://github.com/ManageIQ/manageiq-automation_engine/pull/328)
 - Add scope to list automate domains from ancestors tenants [(#318)](https://github.com/ManageIQ/manageiq-automation_engine/pull/318)
-- Set current user for exposed methods in automate. [(#302)](https://github.com/ManageIQ/manageiq-automation_engine/pull/302)
-- Don't set User.current_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
 - Redirect writable_storages to writable_accessible_storages [(#292)](https://github.com/ManageIQ/manageiq-automation_engine/pull/292)
 - Reset System Domains Missing RedHat Domain [(#274)](https://github.com/ManageIQ/manageiq-automation_engine/pull/274)
 
