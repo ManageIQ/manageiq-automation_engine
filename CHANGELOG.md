@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-6
+## Hammer-10
+
+### Fixed
+- Replace User.current_user with User.with_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
+- Set current user for exposed methods in automate. [(#302)](https://github.com/ManageIQ/manageiq-automation_engine/pull/302)
+
+## Hammer-6 - Released 2019-05-22
 
 ### Added
 - Add functionality for bcc/cc [(#313)](https://github.com/ManageIQ/manageiq-automation_engine/pull/313)
