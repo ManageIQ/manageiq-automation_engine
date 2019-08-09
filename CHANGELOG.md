@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ## Hammer-10
 
 ### Fixed
-- Don't set User.with_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
+- Replace User.current_user with User.with_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
 - Set current user for exposed methods in automate. [(#302)](https://github.com/ManageIQ/manageiq-automation_engine/pull/302)
 
 ## Ivanchuk Beta1 - Release 2019-07-29
