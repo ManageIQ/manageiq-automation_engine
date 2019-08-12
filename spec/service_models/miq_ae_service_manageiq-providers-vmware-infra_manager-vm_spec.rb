@@ -1,6 +1,8 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm do
-  let(:vm)         { FactoryBot.create(:vm_vmware) }
-  let(:service_vm) { MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.find(vm.id) }
+  let(:vm)             { FactoryBot.create(:vm_vmware) }
+  let(:folder)         { FactoryBot.create(:ems_folder) }
+  let(:service_vm)     { MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.find(vm.id) }
+  let(:service_folder) { MiqAeMethodService::MiqAeServiceEmsFolder.find(folder.id) }
 
   before do
     zone = FactoryBot.create(:zone)
@@ -32,6 +34,16 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
       @base_queue_options.merge(
         :method_name => 'set_memory',
         :args        => [100])
+    )
+  end
+
+  it "#move_into_folder" do
+    service_vm.move_into_folder(service_folder)
+
+    expect(MiqQueue.first).to have_attributes(
+      @base_queue_options.merge(
+        :method_name => 'move_into_folder'
+      )
     )
   end
 
