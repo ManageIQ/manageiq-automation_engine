@@ -363,7 +363,7 @@ module MiqAeMethodService
     end
 
     def ==(other)
-      self.id == other.id && self.class == other.class
+      self.class == other.class && id == other.id
     end
   end
 end
