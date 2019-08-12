@@ -15,5 +15,11 @@ module MiqAeMethodService
     def remove_disk(disk_name, options = {})
       sync_or_async_ems_operation(options[:sync], "remove_disk", [disk_name, options])
     end
+
+    def move_into_folder(folder, options = {})
+      raise ArgumentError, "must be kind of MiqAeServiceEmsFolder" unless folder.kind_of?(MiqAeMethodService::MiqAeServiceEmsFolder)
+
+      sync_or_async_ems_operation(options[:sync], "move_into_folder", [folder.id])
+    end
   end
 end
