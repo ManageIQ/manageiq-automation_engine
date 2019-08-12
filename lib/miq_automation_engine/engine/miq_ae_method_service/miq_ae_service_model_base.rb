@@ -361,5 +361,9 @@ module MiqAeMethodService
     def ar_method(&block)
       self.class.ar_method(&block)
     end
+
+    def ==(other)
+      self.id == other.id && self.class == other.class
+    end
   end
 end
