@@ -127,6 +127,13 @@ describe MiqAeMethodService::MiqAeService do
       end
     end
 
+    it 'get_state_vars' do
+      allow(workspace).to(receive(:disable_rbac))
+      expect(miq_ae_service.get_state_vars).to eq({})
+      miq_ae_service.instance_eval { @persist_state_hash = { 'var1' => 'value1', 'var2' => 'value2' } }
+      expect(miq_ae_service.get_state_vars).to eq('var1' => 'value1', 'var2' => 'value2')
+    end
+
     it 'ansible_stats_vars' do
       allow(workspace).to(receive(:disable_rbac))
       expect(miq_ae_service.ansible_stats_vars).to eq({})
