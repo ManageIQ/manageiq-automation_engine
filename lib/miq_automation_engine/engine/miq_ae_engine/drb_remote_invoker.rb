@@ -117,6 +117,8 @@ begin
 
   DRbObject.send(:undef_method, :inspect)
   DRbObject.send(:undef_method, :id) if DRbObject.respond_to?(:id)
+  # undefine Object#display which would be called over service#display
+  DRbObject.send(:undef_method, :display)
 
   DRb.start_service
   $evmdrb = DRbObject.new_with_uri(MIQ_URI)
