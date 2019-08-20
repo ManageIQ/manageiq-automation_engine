@@ -18,6 +18,11 @@ module MiqAeMethodService
       ar_method { wrap_results(@object.remove_from_service(Service.find_by(:id => service.id))) }
     end
 
+    # This method is called by YAML.dump when miq_task#queue_callback sets the result into miq_task.task_results.
+    def encode_with(*args)
+      ar_method { wrap_results(@object.encode_with(*args)) }
+    end
+
     private
 
     def ae_user_identity
