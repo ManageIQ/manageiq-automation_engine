@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Hammer-10
+## Unreleased as of Sprint 118 - 2019-08-19
+
+### Added
+- Add method $evm.get_state_vars [(#345)](https://github.com/ManageIQ/manageiq-automation_engine/pull/345)
+- Expose move_into_folder on the engine [(#344)](https://github.com/ManageIQ/manageiq-automation_engine/pull/344)
+
+### Fixed
+- Add external_url= capability to Tenant. [(#350)](https://github.com/ManageIQ/manageiq-automation_engine/pull/350)
+- Undefine Kernel#display which would be called over service#display for DRbObject [(#349)](https://github.com/ManageIQ/manageiq-automation_engine/pull/349)
+- Override equality comparison method for MiqAeServiceModelBase [(#348)](https://github.com/ManageIQ/manageiq-automation_engine/pull/348)
+
+## Hammer-10 - Released 2019-08-14
 
 ### Fixed
 - Replace User.current_user with User.with_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
