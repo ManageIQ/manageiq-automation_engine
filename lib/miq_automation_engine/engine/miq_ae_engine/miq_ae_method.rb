@@ -69,7 +69,7 @@ module MiqAeEngine
       aem.inputs.each do |f|
         key   = f.name
         value = args[key]
-        value = obj.attributes[key] || obj.substitute_value(f.default_value) if value.nil?
+        value = obj.attributes[key] || obj.get_value(f) if value.nil?
         inputs[key] = MiqAeObject.convert_value_based_on_datatype(value, f["datatype"])
 
         if obj.attributes[key] && f["datatype"] != "string"
