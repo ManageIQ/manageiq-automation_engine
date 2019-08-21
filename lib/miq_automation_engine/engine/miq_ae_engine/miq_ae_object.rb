@@ -461,6 +461,10 @@ module MiqAeEngine
       end
     end
 
+    def get_value(field, type = nil, required = false)
+      field['datatype'] == MiqAeField::NULL_COALESCING_DATATYPE ? get_null_coalesced_value(field) : get_field_value(field, type, required)
+    end
+
     private
 
     def call_method(obj, method)
@@ -517,10 +521,10 @@ module MiqAeEngine
       aem
     end
 
-    def get_value(f, type = nil, required = false)
+    def get_field_value(f, type = nil, required = false)
       value = f['value']
       value = f['default_value'] if value.blank?
-      value = substitute_value(value, type, required) if f['substitute'] == true
+      value = substitute_value(value, type, required) if f['substitute']
       value
     end
 
@@ -609,13 +613,7 @@ module MiqAeEngine
     def process_attribute(f, _message, _args, value = nil)
       Benchmark.current_realtime[:attribute_count] += 1
       Benchmark.realtime_block(:attribute_time) do
-        if value.nil?
-          value = if f['datatype'] == MiqAeField::NULL_COALESCING_DATATYPE
-                    get_null_coalesced_value(f)
-                  else
-                    get_value(f)
-                  end
-        end
+        value = get_value(f) if value.nil?
         value = MiqAeObject.convert_value_based_on_datatype(value, f['datatype'])
         @attributes[f['name'].downcase] = value unless value.nil?
         process_collect(f['collect'], nil) unless f['collect'].blank?
