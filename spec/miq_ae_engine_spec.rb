@@ -793,6 +793,20 @@ describe MiqAeEngine do
     expect(my_objects_array.length).to eq(0)
     expect(my_objects_array).to eq([])
   end
+
+  context ".return_result" do
+    let(:workspace) { double('MiqAeEngine::MiqAeWorkspaceRuntime') }
+
+    it "returns workspace if result_format=nil" do
+      expect(MiqAeEngine.return_result(workspace, {})).to eq(workspace)
+    end
+
+    it "returns not workspace if result_format='ignore'" do
+      expect(MiqAeEngine.return_result(workspace, "result_format" => 'ignore')).to eq('Ok')
+      msg = "return value on success"
+      expect(MiqAeEngine.return_result(workspace, "result_format" => 'ignore', "result_on_success" => msg)).to eq(msg)
+    end
+  end
 end
 
 describe MiqAeEngine do

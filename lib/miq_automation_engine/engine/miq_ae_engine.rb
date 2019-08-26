@@ -121,7 +121,7 @@ module MiqAeEngine
         end
       end
 
-      return ws
+      return_result(ws, options[:attrs])
     rescue MiqAeException::Error => err
       message = "Error delivering #{automate_attrs.inspect} for object [#{object_name}] with state [#{state}] to Automate: #{err.message}"
       miq_task&.error(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
@@ -132,6 +132,13 @@ module MiqAeEngine
         miq_task.update_message(MiqTask::MESSAGE_TASK_COMPLETED_SUCCESSFULLY) if miq_task.message == MiqTask::DEFAULT_MESSAGE
         miq_task.state_finished
       end
+    end
+  end
+
+  def self.return_result(workspace, options)
+    case options["result_format"]
+    when 'ignore' then options["result_on_success"] || 'Ok'
+    when nil then workspace
     end
   end
 
