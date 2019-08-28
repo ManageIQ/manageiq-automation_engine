@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Ivanchuk Beta1
+## Ivanchuk RC1
+
+### Added
+- Expose move_into_folder on the engine [(#344)](https://github.com/ManageIQ/manageiq-automation_engine/pull/344)
+
+### Fixed
+- Override equality comparison method for MiqAeServiceModelBase [(#348)](https://github.com/ManageIQ/manageiq-automation_engine/pull/348)
+- Fix the issue with null coalescing fields as input parameters. [(#334)](https://github.com/ManageIQ/manageiq-automation_engine/pull/334)
+- Fix call to make_retire_request. [(#321)](https://github.com/ManageIQ/manageiq-automation_engine/pull/321)
+
+## Ivanchuk Beta1 - Release 2019-07-29
 
 ### Fixed
 - Add service_vars to pass variables between catalog items in a bundle [(#338)](https://github.com/ManageIQ/manageiq-automation_engine/pull/338)
