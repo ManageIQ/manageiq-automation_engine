@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Ivanchuk RC1
+## Unreleased as of Sprint 119 - 2019-09-02
+
+### Added
+- Add MiqAeEngine.return_result. [(#354)](https://github.com/ManageIQ/manageiq-automation_engine/pull/354)
+
+### Fixed
+- Fix the issue with null coalescing fields as input parameters. [(#334)](https://github.com/ManageIQ/manageiq-automation_engine/pull/334)
+
+## Ivanchuk RC1 - Released 2019-08-27
 
 ### Added
 - Expose move_into_folder on the engine [(#344)](https://github.com/ManageIQ/manageiq-automation_engine/pull/344)
