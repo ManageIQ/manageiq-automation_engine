@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Ivanchuk RC1
+## Ivanchuk-1
+
+### Fixed
+- Undefine Kernel#display which would be called over service#display for DRbObject [(#349)](https://github.com/ManageIQ/manageiq-automation_engine/pull/349)
+
+## Ivanchuk RC1 - Released 2019-08-27
 
 ### Added
 - Expose move_into_folder on the engine [(#344)](https://github.com/ManageIQ/manageiq-automation_engine/pull/344)
