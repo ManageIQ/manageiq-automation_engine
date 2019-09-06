@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Ivanchuk-1
+
+### Fixed
+- Undefine Kernel#display which would be called over service#display for DRbObject [(#349)](https://github.com/ManageIQ/manageiq-automation_engine/pull/349)
+
 ## Unreleased as of Sprint 119 - 2019-09-02
 
 ### Added
@@ -30,7 +35,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Add external_url= capability to Tenant. [(#350)](https://github.com/ManageIQ/manageiq-automation_engine/pull/350)
-- Undefine Kernel#display which would be called over service#display for DRbObject [(#349)](https://github.com/ManageIQ/manageiq-automation_engine/pull/349)
 
 ## Hammer-10 - Released 2019-08-14
 
