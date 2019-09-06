@@ -163,6 +163,80 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     expect(ct.entries.collect(&:name).include?('fred')).to be_truthy
   end
 
+  context "#tag_delete!" do
+    let(:ct) { FactoryBot.create(:classification_department_with_tags) }
+    let(:entry_name) { ct.entries.first.name }
+
+    it "could delete tag if it is not assigned" do
+      tag_name = "/managed/#{ct.name}/#{entry_name}"
+      expect(Tag.exists?(:name => tag_name)).to be_truthy
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_delete!, #{ct.name.inspect}, #{entry_name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be_truthy
+      expect(Tag.exists?(:name => tag_name)).to be_falsey
+    end
+
+    it "could not delete tag if it is assigned" do
+      assignment_tag = "/chargeback_rate/assigned_to/vm/tag/managed/#{ct.name}/#{entry_name}"
+      Tag.create!(:name => assignment_tag)
+      expect(Tag.exists?(:name => assignment_tag)).to be_truthy
+
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_delete!, #{ct.name.inspect}, #{entry_name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect { invoke_ae.root(@ae_result_key) }.to raise_error(MiqAeException::UnknownMethodRc)
+      expect(Tag.exists?(:name => assignment_tag)).to be_truthy
+    end
+
+    it "raises error if entry does not exist" do
+      entry_not_exist = "entry_not_exist"
+      tag_name = "/managed/#{ct.name}/#{entry_not_exist}"
+      expect(Tag.exists?(:name => tag_name)).to be_falsey
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_delete!, #{ct.name.inspect}, #{entry_not_exist.inspect})"
+      @ae_method.update(:data => method)
+
+      expect { invoke_ae.root(@ae_result_key) }.to raise_error(MiqAeException::UnknownMethodRc)
+    end
+  end
+
+  context "#tag_delete" do
+    let(:ct) { FactoryBot.create(:classification_department_with_tags) }
+    let(:entry_name) { ct.entries.first.name }
+
+    it "could delete tag if it is not assigned" do
+      tag_name = "/managed/#{ct.name}/#{entry_name}"
+      expect(Tag.exists?(:name => tag_name)).to be_truthy
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_delete, #{ct.name.inspect}, #{entry_name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be true
+      expect(Tag.exists?(:name => tag_name)).to be_falsey
+    end
+
+    it "return falses if the tag is assigned" do
+      assignment_tag = "/chargeback_rate/assigned_to/vm/tag/managed/#{ct.name}/#{entry_name}"
+      Tag.create!(:name => assignment_tag)
+      expect(Tag.exists?(:name => assignment_tag)).to be_truthy
+
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_delete, #{ct.name.inspect}, #{entry_name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be false
+      expect(Tag.exists?(:name => assignment_tag)).to be_truthy
+    end
+
+    it "returns false if entry does not exist" do
+      entry_not_exist = "entry_not_exist"
+      tag_name = "/managed/#{ct.name}/#{entry_not_exist}"
+      expect(Tag.exists?(:name => tag_name)).to be_falsey
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_delete, #{ct.name.inspect}, #{entry_not_exist.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be false
+    end
+  end
+
   context "#create_service_provision_request" do
     let(:options) { {:fred => :flintstone} }
     let(:svc_options) { {:dialog_style => "medium"} }

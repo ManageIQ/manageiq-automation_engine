@@ -99,6 +99,27 @@ module MiqAeMethodService
       end
     end
 
+    def self.tag_delete!(category, entry)
+      ar_method do
+        cat = Classification.find_by_name(category)
+        raise "Category <#{category}> does not exist" if cat.nil?
+
+        ent = cat.find_entry_by_name(entry)
+        raise "Entry <#{entry}> does not exist" if ent.nil?
+
+        raise "This tag has assignments. Please delete assignments before deleting the tag." if AssignmentMixin.all_assignments(ent.tag.name).present?
+
+        ent.destroy!
+      end
+    end
+
+    def self.tag_delete(category, entry)
+      tag_delete!(category, entry)
+      true
+    rescue StandardError
+      false
+    end
+
     def self.create_provision_request(*args)
       # Need to add the username into the array of params
       # TODO: This code should pass a real username, similar to how the web-service
