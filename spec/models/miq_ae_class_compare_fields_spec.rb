@@ -1,7 +1,7 @@
 describe MiqAeClassCompareFields do
   before do
     @domain = 'SPEC_DOMAIN'
-    @namespace   = 'NS1'
+    @namespace = 'NS1'
     @yaml_folder = File.join(File.dirname(__FILE__), 'miq_ae_copy_data')
     MiqAeDatastore.reset
     @export_dir = Dir.mktmpdir
@@ -13,7 +13,7 @@ describe MiqAeClassCompareFields do
 
   context "same fields" do
     before do
-      @yaml_file   = File.join(@yaml_folder, 'class_copy1.yaml')
+      @yaml_file = File.join(@yaml_folder, 'class_copy1.yaml')
       EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
       prep_class_file_names("CLASS1")
     end
@@ -33,7 +33,7 @@ describe MiqAeClassCompareFields do
 
   context "same fields mixed case" do
     before do
-      @yaml_file   = File.join(@yaml_folder, 'class_copy2.yaml')
+      @yaml_file = File.join(@yaml_folder, 'class_copy2.yaml')
       EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
       prep_class_file_names("CLASS1", "MIXED_CASE_NAMES")
     end
@@ -54,7 +54,7 @@ describe MiqAeClassCompareFields do
 
   context "same field but aetype changes" do
     before do
-      @yaml_file   = File.join(@yaml_folder, 'class_copy3.yaml')
+      @yaml_file = File.join(@yaml_folder, 'class_copy3.yaml')
       EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
       prep_class_file_names("CLASS1", "CLASS_AETYPE_OFF")
     end
@@ -75,7 +75,7 @@ describe MiqAeClassCompareFields do
 
   context "same field but datatype changes" do
     before do
-      @yaml_file   = File.join(@yaml_folder, 'class_copy4.yaml')
+      @yaml_file = File.join(@yaml_folder, 'class_copy4.yaml')
       EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
       prep_class_file_names("CLASS1", "CLASS_DATATYPE_OFF")
     end
@@ -97,7 +97,7 @@ describe MiqAeClassCompareFields do
 
   context "same fields but priority changes" do
     before do
-      @yaml_file   = File.join(@yaml_folder, 'class_copy5.yaml')
+      @yaml_file = File.join(@yaml_folder, 'class_copy5.yaml')
       EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
       prep_class_file_names("CLASS1", "CLASS_PRIORITY_OFF")
     end
@@ -118,7 +118,7 @@ describe MiqAeClassCompareFields do
 
   context "mostly same fields except a new additon" do
     before do
-      @yaml_file   = File.join(@yaml_folder, 'class_copy6.yaml')
+      @yaml_file = File.join(@yaml_folder, 'class_copy6.yaml')
       EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
       prep_class_file_names("CLASS_ADD_A_FIELD", "CLASS1")
     end
@@ -139,7 +139,7 @@ describe MiqAeClassCompareFields do
 
   context "mostly same fields except a deletion of a in use field" do
     before do
-      @yaml_file   = File.join(@yaml_folder, 'class_copy7.yaml')
+      @yaml_file = File.join(@yaml_folder, 'class_copy7.yaml')
       EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
       prep_class_file_names("CLASS_IN_USE_FIELD_DELETED", "CLASS1")
     end
@@ -160,7 +160,7 @@ describe MiqAeClassCompareFields do
 
   context "mostly same fields except a deletion of a field not in use" do
     before do
-      @yaml_file   = File.join(@yaml_folder, 'class_copy8.yaml')
+      @yaml_file = File.join(@yaml_folder, 'class_copy8.yaml')
       EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
       prep_class_file_names("CLASS_FIELD_DELETED", "CLASS1")
     end

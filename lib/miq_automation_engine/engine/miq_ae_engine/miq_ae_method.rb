@@ -8,6 +8,7 @@ module MiqAeEngine
 
     def self.invoke_inline(aem, obj, inputs)
       return invoke_inline_ruby(aem, obj, inputs) if aem.language.downcase.strip == "ruby"
+
       raise  MiqAeException::InvalidMethod, "Inline Method Language [#{aem.language}] not supported"
     end
 
@@ -41,14 +42,15 @@ module MiqAeEngine
 
       # Create the filename corresponding to the URI specification
       fname = ae_methods_dir.join(uri.path)
-      raise  MiqAeException::MethodNotFound, "Method [#{aem.data}] Not Found (fname=#{fname})" unless File.exist?(fname)
+      raise MiqAeException::MethodNotFound, "Method [#{aem.data}] Not Found (fname=#{fname})" unless File.exist?(fname)
+
       cmd = "#{aem.language} #{fname}"
       invoke_external(cmd, obj.workspace)
     end
 
     def self.invoke_builtin(aem, obj, inputs)
       mname = "miq_#{aem.data.blank? ? aem.name.downcase : aem.data.downcase}"
-      raise  MiqAeException::MethodNotFound, "Built-In Method [#{mname}] does not exist" unless MiqAeBuiltinMethod.public_methods.collect(&:to_s).include?(mname)
+      raise MiqAeException::MethodNotFound, "Built-In Method [#{mname}] does not exist" unless MiqAeBuiltinMethod.public_methods.collect(&:to_s).include?(mname)
 
       # Create service, since built-in method may be calling things that assume there is one
       svc = MiqAeMethodService::MiqAeService.new(obj.workspace)
@@ -224,7 +226,7 @@ module MiqAeEngine
           threads.each(&:join)
           wait_thread.value
         end
-        rc  = status.exitstatus
+        rc = status.exitstatus
         msg = "Method exited with rc=#{verbose_rc(rc)}"
         method_pid = nil
         threads = []
@@ -279,6 +281,7 @@ module MiqAeEngine
         cls = ::MiqAeClass.lookup_by_fqname("#{match_ns}/#{klass}")
         aem = ::MiqAeMethod.find_by(:class_id => cls.id, :name => method_name) if cls
         raise MiqAeException::MethodNotFound, "Embedded method #{name} not found" unless aem
+
         fqname = "/#{match_ns}/#{klass}/#{method_name}"
         if top == fqname
           $miq_ae_logger.info("Skipping #{fqname}, cannot reference the top method")

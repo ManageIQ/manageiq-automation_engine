@@ -30,12 +30,12 @@ module MiqAeEngine
     RE_HASH           = /(\w+)\s*=>\s*(\d+|\"[^\"]+\"|\'[^\']+\'|\w+)/.freeze
     # Default conversion for Service Models
     SM_LOOKUP         = Hash.new { |_, k| k.classify }.merge(
-      'ems'                    => 'ExtManagementSystem',
-      'policy'                 => 'MiqPolicy',
-      'provision'              => 'MiqProvision',
-      'provision_request'      => 'MiqProvisionRequest',
-      'request'                => 'MiqRequest',
-      'server'                 => 'MiqServer'
+      'ems'               => 'ExtManagementSystem',
+      'policy'            => 'MiqPolicy',
+      'provision'         => 'MiqProvision',
+      'provision_request' => 'MiqProvisionRequest',
+      'request'           => 'MiqRequest',
+      'server'            => 'MiqServer'
     )
     NULL_COALESCING_OPERATOR = '||'.freeze
     attr_accessor :attributes, :namespace, :klass, :instance, :object_name, :instance_methods, :workspace, :current_field, :current_message
@@ -102,7 +102,7 @@ module MiqAeEngine
                 attrs[key] = attrib unless attrib.blank?
               end
             end
-            @fields[f.name]  = attrs
+            @fields[f.name] = attrs
             @fields_ordered << f.name
           end
         end
@@ -310,6 +310,7 @@ module MiqAeEngine
     def process_filtered_fields(aetypes, message, args = {})
       fields(message).each do |f|
         next unless aetypes.include?(f['aetype'])
+
         begin
           @current_field   = f
           @current_message = message
@@ -339,11 +340,13 @@ module MiqAeEngine
 
     def message_parse(message)
       return ['create'] if message.blank?
+
       message.split(MESSAGE_SEPARATOR).collect { |m| m.strip.downcase }
     end
 
     def children(name = nil)
       return node_children if name.nil?
+
       @rels[name]
     end
 
@@ -421,6 +424,7 @@ module MiqAeEngine
       if scheme == 'miqaews'
         if path.starts_with?('!')
           return @workspace.current_message if path.downcase == '!current_message'
+
           raise MiqAeException::MethodNotFound, "Method [#{path}] Not Found for Current Object"
         end
 
@@ -443,7 +447,7 @@ module MiqAeEngine
         return value
       end
 
-      uri  # if it was not processed, return the original uri
+      uri # if it was not processed, return the original uri
     end
 
     def substitute_value(value, _type = nil, required = false)
@@ -474,6 +478,7 @@ module MiqAeEngine
     def call_method(obj, method)
       result = RE_METHOD_CALL.match(method)
       raise MiqAeException::InvalidMethod, "invalid method calling syntax: [#{method}]" if result.nil?
+
       if result[2]
         args = result[2]
         args = result[2][1..-1].to_sym if result[2][0] == ':'
@@ -506,6 +511,7 @@ module MiqAeEngine
       end
 
       raise MiqAeException::MethodNotFound, "Method [#{method_name}] not found in class [#{fq}]" if aem.nil?
+
       begin
         @workspace.push_method(method_name)
         return MiqAeEngine::MiqAeMethod.invoke(self, aem, args)
@@ -555,6 +561,7 @@ module MiqAeEngine
     def self.convert_boolean_value(value)
       return true   if value.to_s.downcase == 'true' || value == '1'
       return false  if value.to_s.downcase == 'false' || value == '0'
+
       value
     end
 
@@ -636,7 +643,7 @@ module MiqAeEngine
       $miq_ae_logger.info("Following Relationship [#{relationship}]")
       if relationship.include?('*')
         rels = []
-        wildcard_expand(relationship).each do|r|
+        wildcard_expand(relationship).each do |r|
           Benchmark.current_realtime[:relationship_followed_count] += 1
           rels << @workspace.instantiate(r, @workspace.ae_user, self)
         end
@@ -651,6 +658,7 @@ module MiqAeEngine
 
     def process_collects(what, rels)
       return if rels.nil? || what.nil?
+
       what.to_s.split(COLLECT_SEPARATOR).each { |expr| process_collect(expr, rels) }
     end
 
@@ -685,7 +693,7 @@ module MiqAeEngine
     end
 
     def process_collect_array(_expr, rels, result)
-      lh       = result[1].strip          unless result[1].nil?
+      lh       = result[1].strip unless result[1].nil?
       contents = result[2].strip
       method   = result[3].strip.downcase unless result[3].nil?
 
@@ -711,6 +719,7 @@ module MiqAeEngine
 
     def array_value(array, method)
       return array if array.nil? || array.compact.empty?
+
       case method
       when 'rsort'                  then array.sort.reverse
       when 'sort'                   then array.sort
@@ -727,11 +736,11 @@ module MiqAeEngine
     end
 
     def process_collect_hash(expr, rels, result)
-      lh       = result[1].strip          unless result[1].nil?
+      lh       = result[1].strip unless result[1].nil?
       contents = result[2].strip
       method   = result[3].strip.downcase unless result[3].nil?
 
-      hash  = {}
+      hash = {}
       hashes = contents.split(ENUM_SEPARATOR)
       hashes.each do |hash_contents|
         hash_details = hash_contents.split('=>')
@@ -764,19 +773,19 @@ module MiqAeEngine
             hash[left]       = self[right]
           end
         elsif ltype == :value
-            hash[rels[left]] = rels[right]
+          hash[rels[left]] = rels[right]
         else
-            hash[left]       = rels[right]
+          hash[left]       = rels[right]
         end
       end
       process_collect_set_attribute(lh, hash) unless hash.length.zero?
     end
 
     def process_collect_string(_expr, rels, result)
-      cattr   = result[1].strip          unless result[1].nil?
+      cattr   = result[1].strip unless result[1].nil?
       name    = result[2].strip
       method  = result[3].strip.downcase unless result[3].nil?
-      cattr ||= name                     unless rels.nil?  # Set cattr to name ONLY if coming from relationship
+      cattr ||= name                     unless rels.nil? # Set cattr to name ONLY if coming from relationship
 
       value = if rels.kind_of?(Array)
                 rels.collect { |r| r[name] }
@@ -800,7 +809,8 @@ module MiqAeEngine
 
       aec = fetch_class(MiqAeClass.fqname(ns, klass))
       return [] unless aec
-      aec.ae_instances.search(instance).collect do|i|
+
+      aec.ae_instances.search(instance).collect do |i|
         path = MiqAePath.new(:ae_namespace => ns, :ae_class => klass, :ae_instance => i).to_s
         MiqAeUri.join(scheme, userinfo, host, port, registry, path, opaque, query, fragment)
       end.sort

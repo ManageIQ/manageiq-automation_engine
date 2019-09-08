@@ -7,13 +7,16 @@ class MiqAeInstanceYaml
 
   def field_names
     raise "ae instance object has not been initialize" unless @ae_instance_obj
+
     @ae_instance_obj['object']['fields'].collect(&:keys).flatten
   end
 
   def field_value_hash(name)
     raise "ae instance object has not been initialize" unless @ae_instance_obj
+
     value = @ae_instance_obj['object']['fields'].detect { |item| item.keys[0].casecmp(name).zero? }
     raise "field name #{name} not found in instance #{@filename}" if value.nil?
+
     value[name]
   end
 end

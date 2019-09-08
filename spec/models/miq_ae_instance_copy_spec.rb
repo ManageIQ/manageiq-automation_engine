@@ -10,7 +10,7 @@ describe MiqAeInstanceCopy do
     @dest_instance = 'default2'
     @dest_ns       = 'NSX/NSY'
     @src_fqname    = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{@src_instance}"
-    @yaml_file   = File.join(File.dirname(__FILE__), 'miq_ae_copy_data', 'miq_ae_instance_copy.yaml')
+    @yaml_file = File.join(File.dirname(__FILE__), 'miq_ae_copy_data', 'miq_ae_instance_copy.yaml')
     MiqAeDatastore.reset
     EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @src_domain)
   end

@@ -75,7 +75,7 @@ describe MiqAeDatastore do
 
   it ".backup" do
     expect_any_instance_of(MiqAeYamlExportZipfs).to receive(:export).once
-    MiqAeDatastore.backup('zip_file'  => 'dummy', 'overwrite' => true)
+    MiqAeDatastore.backup('zip_file' => 'dummy', 'overwrite' => true)
   end
 
   it ".upload" do
@@ -131,7 +131,7 @@ describe MiqAeDatastore do
   end
 
   describe "restore" do
-    let(:miq_ae_yaml_import_zipfs)  { double("MiqAeYamlImportZipfs") }
+    let(:miq_ae_yaml_import_zipfs) { double("MiqAeYamlImportZipfs") }
     let(:dummy_zipfile) { File.expand_path(File.join(File.dirname(__FILE__), "/miq_ae_datastore/data/dummy.zip")) }
 
     before do

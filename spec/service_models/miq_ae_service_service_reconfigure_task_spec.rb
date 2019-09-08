@@ -2,7 +2,7 @@ describe MiqAeMethodService::MiqAeServiceServiceReconfigureTask do
   include Spec::Support::AutomationHelper
 
   before do
-    method_script   = "$evm.root['result'] = $evm.root['service_reconfigure_task'].status"
+    method_script = "$evm.root['result'] = $evm.root['service_reconfigure_task'].status"
     create_ae_model_with_method(:method_script => method_script, :ae_class => 'AUTOMATE',
                                 :ae_namespace  => 'EVM', :instance_name => 'test1',
                                 :method_name   => 'test', :name => 'TEST_DOMAIN')
@@ -13,10 +13,10 @@ describe MiqAeMethodService::MiqAeServiceServiceReconfigureTask do
   let(:user)      { FactoryBot.create(:user_with_group) }
   let(:task)      do
     FactoryBot.create(:service_reconfigure_task,
-                       :state        => 'pending',
-                       :status       => 'Ok',
-                       :request_type => 'service_reconfigure',
-                       :options      => options)
+                      :state        => 'pending',
+                      :status       => 'Ok',
+                      :request_type => 'service_reconfigure',
+                      :options      => options)
   end
 
   def invoke_ae

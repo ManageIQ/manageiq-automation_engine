@@ -5,8 +5,9 @@ begin
   $evm.log("info", "Inline Method: least_utilized -- vm=[#{vm.name}]")
   raise "VM not specified" if vm.nil?
 
-  ems  = vm.ext_management_system
+  ems = vm.ext_management_system
   raise "EMS not found for VM [#{vm.name}" if vm.nil?
+
   host = storage = nil
   min_registered_vms = nil
   ems.hosts.each do |h|

@@ -7,7 +7,7 @@ describe MiqAeEngine::MiqAeWorkspaceRuntime do
 
   describe "#instantiate" do
     it "returns workspace" do
-      expect(MiqAeEngine::MiqAeWorkspaceRuntime.instantiate("/a/b/c", user)).to be_a_kind_of(MiqAeEngine::MiqAeWorkspaceRuntime) 
+      expect(MiqAeEngine::MiqAeWorkspaceRuntime.instantiate("/a/b/c", user)).to be_a_kind_of(MiqAeEngine::MiqAeWorkspaceRuntime)
     end
   end
 end

@@ -22,9 +22,7 @@ class MiqAeGitImport
 
   def single_domain_import
     import_service = MiqAeYamlImportGitfs.new(@options['domain'] || '*', @options)
-    if import_service.domain_files('*').size > 1
-      raise MiqAeException::InvalidDomain, _("Multiple Domain import is not supported.")
-    end
+    raise MiqAeException::InvalidDomain, _("Multiple Domain import is not supported.") if import_service.domain_files('*').size > 1
 
     import_service.import
   end
@@ -89,6 +87,7 @@ class MiqAeGitImport
     unless match
       raise ArgumentError, "#{@options['ref_type'].titleize} #{@options['ref']} doesn't exist in repository"
     end
+
     @options['ref'] = match.name
   end
 end

@@ -28,9 +28,9 @@ describe MiqAeDatastore::XmlExport do
 
     it "sorts the miq ae classes and returns the correct xml" do
       expect(miq_ae_class2).to receive(:to_export_xml) do |options|
-        expect(options[:builder].target!).to eq <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<MiqAeDatastore version="1.0">
+        expect(options[:builder].target!).to eq <<~XML
+          <?xml version="1.0" encoding="UTF-8"?>
+          <MiqAeDatastore version="1.0">
         XML
         expect(options[:skip_instruct]).to be_truthy
         expect(options[:indent]).to eq(2)
@@ -38,10 +38,10 @@ describe MiqAeDatastore::XmlExport do
       end
 
       expect(miq_ae_class1).to receive(:to_export_xml) do |options|
-        expect(options[:builder].target!).to eq <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<MiqAeDatastore version="1.0">
-  <class2/>
+        expect(options[:builder].target!).to eq <<~XML
+          <?xml version="1.0" encoding="UTF-8"?>
+          <MiqAeDatastore version="1.0">
+            <class2/>
         XML
         expect(options[:skip_instruct]).to be_truthy
         expect(options[:indent]).to eq(2)
@@ -49,11 +49,11 @@ describe MiqAeDatastore::XmlExport do
       end
 
       expect(custom_button).to receive(:to_export_xml) do |options|
-        expect(options[:builder].target!).to eq <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<MiqAeDatastore version="1.0">
-  <class2/>
-  <class1/>
+        expect(options[:builder].target!).to eq <<~XML
+          <?xml version="1.0" encoding="UTF-8"?>
+          <MiqAeDatastore version="1.0">
+            <class2/>
+            <class1/>
         XML
         expect(options[:skip_instruct]).to be_truthy
         expect(options[:indent]).to eq(2)

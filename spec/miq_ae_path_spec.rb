@@ -35,7 +35,7 @@ describe MiqAeEngine::MiqAePath do
     ae_namespace = "TEST_NAMESPACE"
     ae_class     = "TEST_CLASS"
     ae_instance  = "TEST_INSTANCE"
-    parts =  {
+    parts = {
       :ae_namespace => ae_namespace,
       :ae_class     => ae_class,
       :ae_instance  => ae_instance
@@ -52,7 +52,7 @@ describe MiqAeEngine::MiqAePath do
     ae_namespace = "TEST_NAMESPACE"
     ae_class     = "TEST_CLASS"
     ae_instance  = "TEST_INSTANCE"
-    parts =  {
+    parts = {
       :ae_namespace => ae_namespace,
       :ae_class     => ae_class,
       :ae_instance  => ae_instance
@@ -73,7 +73,7 @@ describe MiqAeEngine::MiqAePath do
       @ae_namespace = "TEST_NAMESPACE"
       @ae_class     = "TEST_CLASS"
       @ae_instance  = "TEST_INSTANCE"
-      @parts =  {
+      @parts = {
         :ae_namespace => @ae_namespace,
         :ae_class     => @ae_class,
         :ae_instance  => @ae_instance

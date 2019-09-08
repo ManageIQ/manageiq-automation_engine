@@ -160,6 +160,7 @@ module MiqAeEngine
     threshold  = (total_time * BENCHMARK_TIME_THRESHOLD_PERCENT) if total_time.kind_of?(Numeric) # only show times > threshold of the total
     bm.keys.select { |k| k.to_s.downcase =~ /_time$/ }.sort_by(&:to_s).each do |k|
       next unless bm[k] >= threshold
+
       formatted << ', ' unless formatted.blank?
       formatted << "#{k}=>#{bm[k]}"
     end
@@ -195,8 +196,9 @@ module MiqAeEngine
   end
 
   def self.create_automation_attribute_key(object, attr_name = nil)
-    klass_name  = create_automation_attribute_class_name(object)
+    klass_name = create_automation_attribute_class_name(object)
     return klass_name.to_s if automation_attribute_is_array?(klass_name)
+
     attr_name ||= create_automation_attribute_name(object)
     "#{klass_name}::#{attr_name}"
   end
@@ -212,11 +214,13 @@ module MiqAeEngine
   def self.create_automation_attributes_string(hash)
     args = create_automation_attributes(hash)
     return args if args.kind_of?(String)
+
     args.collect { |a| a.join("=") }.join("&")
   end
 
   def self.create_automation_attributes(hash)
     return hash if hash.kind_of?(String)
+
     hash.each_with_object({}) do |kv, args|
       key, value = create_automation_attribute(*kv)
       args[key] = value
@@ -246,8 +250,9 @@ module MiqAeEngine
 
   def self.set_automation_attributes_from_objects(objects, attrs_hash)
     Array.wrap(objects).compact.each do |object|
-      key   = create_automation_attribute_key(object)
+      key = create_automation_attribute_key(object)
       raise "Key: #{key} already exists in hash" if attrs_hash.key?(key)
+
       value = create_automation_attribute_value(object)
       attrs_hash[key] = value
     end
@@ -274,15 +279,17 @@ module MiqAeEngine
   end
 
   def self.create_ae_attrs(attrs, name, vmdb_object, objects = [MiqServer.my_server, User.current_user])
-    ae_attrs  = attrs.dup
+    ae_attrs = attrs.dup
     ae_attrs['object_name'] = name
 
     # Prepare for conversion to Automate MiqAeService objects (process vmdb_object first in case it is a User or MiqServer)
     ([vmdb_object] + objects).each do |object|
       next if object.nil?
+
       key           = create_automation_attribute_key(object)
       partial_key   = ae_attrs.keys.detect { |k| k.to_s.ends_with?(key.split("::").last.downcase) }
       next if partial_key # do NOT override any specified
+
       ae_attrs[key] = create_automation_attribute_value(object)
     end
 
@@ -291,7 +298,7 @@ module MiqAeEngine
 
     array_objects = ae_attrs.keys.find_all { |key| automation_attribute_is_array?(key) }
     array_objects.each do |o|
-      ae_attrs[o] = ae_attrs[o].first   if ae_attrs[o].kind_of?(Array)
+      ae_attrs[o] = ae_attrs[o].first if ae_attrs[o].kind_of?(Array)
     end
     ae_attrs
   end
@@ -300,6 +307,7 @@ module MiqAeEngine
   # returns workspace
   def self.resolve_automation_object(uri, user_obj, attr = nil, options = {}, readonly = false)
     raise "User object not passed in" unless user_obj.kind_of?(User)
+
     uri = create_automation_object(uri, attr, options) if attr
     options[:uri] = uri
     MiqAeWorkspaceRuntime.instantiate(uri, user_obj, :readonly => readonly).tap do |ws|
@@ -309,6 +317,7 @@ module MiqAeEngine
 
   def self.ae_user_object(options = {})
     raise "user_id not specified in Automation request" if options[:user_id].blank?
+
     # raise "miq_group_id not specified in Automation request" if options[:miq_group_id].blank?
 
     User.find_by!(:id => options[:user_id]).tap do |obj|

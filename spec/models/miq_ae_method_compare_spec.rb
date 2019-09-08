@@ -1,9 +1,9 @@
 describe MiqAeMethodCompare do
   before do
     @domain = 'SPEC_DOMAIN'
-    @namespace   = 'NS1'
-    @classname   = 'CLASS1'
-    @yaml_file   = File.join(File.dirname(__FILE__), 'miq_ae_copy_data', 'miq_ae_method_copy.yaml')
+    @namespace = 'NS1'
+    @classname = 'CLASS1'
+    @yaml_file = File.join(File.dirname(__FILE__), 'miq_ae_copy_data', 'miq_ae_method_copy.yaml')
     MiqAeDatastore.reset
     EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
     @export_dir = Dir.mktmpdir

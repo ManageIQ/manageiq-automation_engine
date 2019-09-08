@@ -4,7 +4,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplate do
       Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
       @ae_method     = ::MiqAeMethod.first
       @ae_result_key = 'foo'
-      @service_template   = FactoryBot.create(:service_template)
+      @service_template = FactoryBot.create(:service_template)
       @user = FactoryBot.create(:user_with_group)
     end
 
@@ -33,8 +33,8 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplate do
 
   context "associations" do
     before do
-      service_template          = FactoryBot.create(:service_template)
-      @service_service_template  = MiqAeMethodService::MiqAeServiceServiceTemplate.find(service_template.id)
+      service_template = FactoryBot.create(:service_template)
+      @service_service_template = MiqAeMethodService::MiqAeServiceServiceTemplate.find(service_template.id)
     end
 
     it "#services" do
@@ -48,7 +48,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplate do
     context "with a service resource" do
       before do
         @service_resource = FactoryBot.create(:service_resource,
-                                               :service_template_id => @service_service_template.id)
+                                              :service_template_id => @service_service_template.id)
       end
 
       it "#service_resources" do

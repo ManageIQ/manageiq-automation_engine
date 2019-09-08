@@ -24,7 +24,7 @@ module MiqAeEngine
       $miq_ae_logger.info("Dumping Object")
 
       $miq_ae_logger.info("Listing Object Attributes:")
-      obj.attributes.sort.each { |k, v|  $miq_ae_logger.info("\t#{k}: #{v}") }
+      obj.attributes.sort.each { |k, v| $miq_ae_logger.info("\t#{k}: #{v}") }
       $miq_ae_logger.info("===========================================")
     end
 
@@ -86,6 +86,7 @@ module MiqAeEngine
       vm = prov.vm_template
       ems = vm.ext_management_system
       raise "EMS not found for VM [#{vm.name}" if ems.nil?
+
       min_running_vms = nil
       result = {}
       ems.hosts.each do |h|
@@ -166,12 +167,14 @@ module MiqAeEngine
     def self.event_object_from_workspace(obj)
       event = obj.workspace.get_obj_from_path("/")['event_stream']
       raise MiqAeException::MethodParmMissing, "Event not specified" if event.nil?
+
       event
     end
     private_class_method :event_object_from_workspace
 
     def self.vm_detect_category(prov_obj_source)
       return nil unless prov_obj_source.respond_to?(:cloud)
+
       prov_obj_source.cloud ? CLOUD : INFRASTRUCTURE
     end
     private_class_method :vm_detect_category
@@ -231,6 +234,7 @@ module MiqAeEngine
 
     def self.detect_vendor(src_obj, attr)
       return unless src_obj
+
       case attr
       when "orchestration_stack"
         src_obj.ext_management_system.try(:provider_name)
@@ -243,12 +247,14 @@ module MiqAeEngine
 
     def self.emsevent_provider_name(event_stream)
       return nil if event_stream.ext_management_system.nil?
+
       event_stream.ext_management_system.try(:provider_name)
     end
     private_class_method :emsevent_provider_name
 
     def self.emsevent_manager_type(event_stream)
       return nil if event_stream.ext_management_system.nil?
+
       manager_type = event_stream.ext_management_system.try(:manager_type).downcase
       manager_type == "infra" ? INFRASTRUCTURE : manager_type
     end
@@ -266,8 +272,10 @@ module MiqAeEngine
       if emsevent?(event_stream)
         provider_name = emsevent_provider_name(event_stream)
         raise "EMS event - Invalid provider" if provider_name.blank?
+
         manager_type = emsevent_manager_type(event_stream)
         raise "EMS event - Invalid manager type" if manager_type.blank?
+
         obj.workspace.root['event_path'] = "/#{provider_name}/EMSEvent/#{manager_type}/Event"
       else
         obj.workspace.root['event_path'] = "/System/Event/#{event_stream.event_namespace}/#{event_stream.source}"

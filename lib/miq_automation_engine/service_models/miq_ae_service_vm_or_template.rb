@@ -25,7 +25,6 @@ module MiqAeMethodService
     expose :refresh, :method => :refresh_ems
     expose :evacuate
 
-
     METHODS_WITH_NO_ARGS = %w[start stop suspend unregister collect_running_processes shutdown_guest standby_guest reboot_guest].freeze
     METHODS_WITH_NO_ARGS.each do |m|
       define_method(m) do

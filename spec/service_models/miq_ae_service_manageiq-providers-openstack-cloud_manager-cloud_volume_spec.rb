@@ -23,7 +23,8 @@ describe MiqAeMethodService::MiqAeServiceUser do
     expect(MiqQueue.last).to have_attributes(
       @base_queue_options.merge(
         :method_name => 'backup_create',
-        :args        => [{:name => "test backup", :incremental => false}])
+        :args        => [{:name => "test backup", :incremental => false}]
+      )
     )
   end
 
@@ -33,7 +34,8 @@ describe MiqAeMethodService::MiqAeServiceUser do
     expect(MiqQueue.last).to have_attributes(
       @base_queue_options.merge(
         :method_name => 'backup_restore',
-        :args        => ["1234"])
+        :args        => ["1234"]
+      )
     )
   end
 end

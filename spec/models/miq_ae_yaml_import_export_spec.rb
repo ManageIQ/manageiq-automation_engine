@@ -231,7 +231,7 @@ describe MiqAeDatastore do
       def assert_all_domains_imported(export_options, import_options)
         export_model(MiqAeYamlImportExportMixin::ALL_DOMAINS, export_options)
         reset_and_import(@export_dir, MiqAeYamlImportExportMixin::ALL_DOMAINS, import_options)
-        check_counts('dom'  => 2, 'ns'    => 6,  'class' => 8, 'inst'  => 20,
+        check_counts('dom'  => 2, 'ns'    => 6,  'class' => 8, 'inst' => 20,
                      'meth' => 8, 'field' => 24, 'value' => 16)
       end
 
@@ -273,7 +273,7 @@ describe MiqAeDatastore do
 
       def add_extra_items_to_customer_domain
         @customer_domain = MiqAeDomain.find_by_name("customer")
-        n    = FactoryBot.create(:miq_ae_namespace, :name => "bonus_namespace_2", :parent_id => @customer_domain.id)
+        n = FactoryBot.create(:miq_ae_namespace, :name => "bonus_namespace_2", :parent_id => @customer_domain.id)
         n_c1 = FactoryBot.create(:miq_ae_class, :name => "bonus_test_class_3", :namespace_id => n.id)
         FactoryBot.create(:miq_ae_instance, :name => "bonus_test_instance1", :class_id => n_c1.id)
       end
@@ -376,7 +376,7 @@ describe MiqAeDatastore do
     def assert_import_as(export_options, import_options)
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
-      check_counts('dom'  => 2, 'ns'    => 6,  'class' => 8,  'inst'  => 20,
+      check_counts('dom'  => 2, 'ns'    => 6,  'class' => 8, 'inst' => 20,
                    'meth' => 8, 'field' => 24, 'value' => 16)
       expect(MiqAeDomain.lookup_by_fqname(import_options['import_as'])).not_to be_nil
     end
@@ -425,7 +425,7 @@ describe MiqAeDatastore do
     def assert_import_namespace_only(export_options, import_options)
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
-      check_counts('dom'  => 1, 'ns'    => 2, 'class' => 3, 'inst'  => 6,
+      check_counts('dom'  => 1, 'ns'    => 2, 'class' => 3, 'inst' => 6,
                    'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
@@ -449,7 +449,7 @@ describe MiqAeDatastore do
     def assert_import_multipart_namespace_only(export_options, import_options)
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
-      check_counts('dom'  => 1, 'ns'    => 2, 'class' => 1, 'inst'  => 1,
+      check_counts('dom'  => 1, 'ns'    => 2, 'class' => 1, 'inst' => 1,
                    'meth' => 0, 'field' => 0, 'value' => 0)
     end
 
@@ -476,7 +476,7 @@ describe MiqAeDatastore do
     def assert_import_class_only(export_options, import_options)
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
-      check_counts('dom'  => 1,  'ns'    => 1, 'class' => 1, 'inst'  => 2,
+      check_counts('dom'  => 1, 'ns' => 1, 'class' => 1, 'inst' => 2,
                    'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
@@ -501,7 +501,7 @@ describe MiqAeDatastore do
     def assert_single_namespace_export(export_options, import_options)
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
-      check_counts('dom'  => 1, 'ns'    => 2, 'class' => 3, 'inst'  => 6,
+      check_counts('dom'  => 1, 'ns'    => 2, 'class' => 3, 'inst' => 6,
                    'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
@@ -525,7 +525,7 @@ describe MiqAeDatastore do
     def assert_multi_namespace_export(export_options, import_options)
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
-      check_counts('dom'  => 1, 'ns'    => 2, 'class' => 1, 'inst'  => 1,
+      check_counts('dom'  => 1, 'ns'    => 2, 'class' => 1, 'inst' => 1,
                    'meth' => 0, 'field' => 0, 'value' => 0)
     end
 
@@ -534,17 +534,17 @@ describe MiqAeDatastore do
       options['export_dir'] = @export_dir
       export_model(@manageiq_domain.name, options)
       reset_and_import(@export_dir, @manageiq_domain.name)
-      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst'  => 2,
+      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst' => 2,
                    'meth' => 3, 'field' => 6, 'value' => 4)
       @manageiq_domain = MiqAeNamespace.lookup_by_fqname('manageiq', false)
       @aen1_aec1       = MiqAeClass.lookup_by_name('manageiq_test_class_1')
       @aen1_aec1_aei2  = FactoryBot.create(:miq_ae_instance,
-                                            :name     => 'test_instance3',
-                                            :class_id => @aen1_aec1.id)
+                                           :name     => 'test_instance3',
+                                           :class_id => @aen1_aec1.id)
       setup_export_dir
       export_model(@manageiq_domain.name, options)
       MiqAeImport.new(@manageiq_domain.name, 'preview' => false, 'import_dir' => @export_dir).import
-      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst'  => 3,
+      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst' => 3,
                    'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
@@ -571,7 +571,7 @@ describe MiqAeDatastore do
     def assert_class_with_methods_export(export_options, import_options)
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
-      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst'  => 2,
+      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst' => 2,
                    'meth' => 3, 'field' => 6, 'value' => 4)
     end
 
@@ -649,7 +649,7 @@ describe MiqAeDatastore do
     def assert_class_without_methods(export_options, import_options)
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
-      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst'  => 3,
+      check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst' => 3,
                    'meth' => 0, 'field' => 0, 'value' => 0)
     end
   end
@@ -789,23 +789,23 @@ describe MiqAeDatastore do
   def create_field(class_obj, instance_obj, method_obj, options)
     if method_obj.nil?
       field = FactoryBot.create(:miq_ae_field,
-                                 :class_id      => class_obj.id,
-                                 :name          => options['name'],
-                                 :aetype        => options['type'],
-                                 :datatype      => options['datatype'],
-                                 :priority      => 1,
-                                 :substitute    => true,
-                                 :default_value => options['default_value'])
+                                :class_id      => class_obj.id,
+                                :name          => options['name'],
+                                :aetype        => options['type'],
+                                :datatype      => options['datatype'],
+                                :priority      => 1,
+                                :substitute    => true,
+                                :default_value => options['default_value'])
       create_field_value(instance_obj, field, options) unless options['value'].nil?
     else
       FactoryBot.create(:miq_ae_field,
-                         :method_id     => method_obj.id,
-                         :name          => options['name'],
-                         :aetype        => options['type'],
-                         :datatype      => options['datatype'],
-                         :priority      => 1,
-                         :substitute    => true,
-                         :default_value => options['value'])
+                        :method_id     => method_obj.id,
+                        :name          => options['name'],
+                        :aetype        => options['type'],
+                        :datatype      => options['datatype'],
+                        :priority      => 1,
+                        :substitute    => true,
+                        :default_value => options['value'])
     end
   end
 
@@ -865,42 +865,42 @@ describe MiqAeDatastore do
     n1_1_c1  = FactoryBot.create(:miq_ae_class,     :name => "#{domain_name}_test_class_4",   :namespace_id => n1_1.id)
     n1_c1_i1 = FactoryBot.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n1_c1.id)
     n1_c1_m1 = FactoryBot.create(:miq_ae_method,
-                                  :class_id => n1_c1.id,
-                                  :name     => 'test1',
-                                  :scope    => "instance",
-                                  :language => "ruby",
-                                  # Method with no data
-                                  :location => "inline")
-    FactoryBot.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n1_1_c1.id)
+                                 :class_id => n1_c1.id,
+                                 :name     => 'test1',
+                                 :scope    => "instance",
+                                 :language => "ruby",
+                                 # Method with no data
+                                 :location => "inline")
+    FactoryBot.create(:miq_ae_instance, :name => "#{domain_name}_test_instance1", :class_id => n1_1_c1.id)
     FactoryBot.create(:miq_ae_method,
-                       :class_id => n1_c1.id,
-                       :name     => 'test2',
-                       :scope    => "instance",
-                       :language => "ruby",
-                       :location => "builtin")
+                      :class_id => n1_c1.id,
+                      :name     => 'test2',
+                      :scope    => "instance",
+                      :language => "ruby",
+                      :location => "builtin")
     FactoryBot.create(:miq_ae_method,
-                       :class_id => n1_c1.id,
-                       :name     => 'test3',
-                       :scope    => "instance",
-                       :language => "ruby",
-                       :data     => @expression_data,
-                       :location => "expression")
-    FactoryBot.create(:miq_ae_instance,  :name => 'test_instance2', :class_id => n1_c1.id)
+                      :class_id => n1_c1.id,
+                      :name     => 'test3',
+                      :scope    => "instance",
+                      :language => "ruby",
+                      :data     => @expression_data,
+                      :location => "expression")
+    FactoryBot.create(:miq_ae_instance, :name => 'test_instance2', :class_id => n1_c1.id)
     create_fields(n1_c1, n1_c1_i1, n1_c1_m1)
 
-    n1_c2     = FactoryBot.create(:miq_ae_class,     :name => "#{domain_name}_test_class_2",   :namespace_id => n1.id)
-    3.times {   FactoryBot.create(:miq_ae_instance,  :class_id => n1_c2.id) }
-    n2        = FactoryBot.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_2",    :parent_id => domain.id)
-    n2_c1     = FactoryBot.create(:miq_ae_class,     :name => "#{domain_name}_test_class_3",   :namespace_id => n2.id)
-    n2_c1_i1  = FactoryBot.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n2_c1.id)
-    3.times {   FactoryBot.create(:miq_ae_instance,  :class_id => n2_c1.id) }
+    n1_c2 = FactoryBot.create(:miq_ae_class, :name => "#{domain_name}_test_class_2", :namespace_id => n1.id)
+    3.times { FactoryBot.create(:miq_ae_instance, :class_id => n1_c2.id) }
+    n2 = FactoryBot.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_2", :parent_id => domain.id)
+    n2_c1 = FactoryBot.create(:miq_ae_class, :name => "#{domain_name}_test_class_3", :namespace_id => n2.id)
+    n2_c1_i1 = FactoryBot.create(:miq_ae_instance, :name => "#{domain_name}_test_instance1", :class_id => n2_c1.id)
+    3.times {   FactoryBot.create(:miq_ae_instance, :class_id => n2_c1.id) }
     n2_c1_m1 =  FactoryBot.create(:miq_ae_method,
-                                   :class_id => n2_c1.id,
-                                   :name     => 'namespace2_method_test1',
-                                   :scope    => "instance",
-                                   :language => "ruby",
-                                   :data     => "puts 1",
-                                   :location => "inline")
+                                  :class_id => n2_c1.id,
+                                  :name     => 'namespace2_method_test1',
+                                  :scope    => "instance",
+                                  :language => "ruby",
+                                  :data     => "puts 1",
+                                  :location => "inline")
     create_fields(n2_c1, n2_c1_i1, n2_c1_m1)
   end
 
@@ -941,7 +941,7 @@ describe MiqAeDatastore do
     MiqAeDomain.all.each do |d|
       d.ae_namespaces.each { |ns| ns_count += child_namespace_count(ns) }
     end
-    expect(ns_count).to eql(counts['ns'])    if counts.key?('ns')
+    expect(ns_count).to eql(counts['ns']) if counts.key?('ns')
     expect(MiqAeClass.count).to eql(counts['class']) if counts.key?('class')
     check_class_component_counts counts
     validate_additional_columns
@@ -956,6 +956,7 @@ describe MiqAeDatastore do
   def validate_additional_columns
     klass = MiqAeClass.lookup_by_name(@class_name)
     return unless klass
+
     klass.ae_instances.each do |inst|
       inst.ae_values.select { |v| v.value == @relations_value }.each do |rel|
         validate_relation(rel.attributes)
@@ -968,8 +969,8 @@ describe MiqAeDatastore do
   end
 
   def check_class_component_counts(counts)
-    expect(MiqAeInstance.count).to eql(counts['inst'])  if counts.key?('inst')
-    expect(MiqAeMethod.count).to eql(counts['meth'])  if counts.key?('meth')
+    expect(MiqAeInstance.count).to eql(counts['inst']) if counts.key?('inst')
+    expect(MiqAeMethod.count).to eql(counts['meth']) if counts.key?('meth')
     expect(MiqAeField.count).to eql(counts['field']) if counts.key?('field')
     expect(MiqAeValue.count).to eql(counts['value']) if counts.key?('value')
   end

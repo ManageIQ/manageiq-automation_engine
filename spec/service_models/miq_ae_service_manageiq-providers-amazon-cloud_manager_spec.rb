@@ -5,7 +5,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Amazon_CloudManager 
     @availability_zone      = FactoryBot.create(:availability_zone)
     @ems.availability_zones << @availability_zone
     @ems.flavors << @flavor
-    @ems_amazon             = MiqAeMethodService::MiqAeServiceManageIQ_Providers_Amazon_CloudManager.find(@ems.id)
+    @ems_amazon = MiqAeMethodService::MiqAeServiceManageIQ_Providers_Amazon_CloudManager.find(@ems.id)
   end
 
   it "#flavors" do

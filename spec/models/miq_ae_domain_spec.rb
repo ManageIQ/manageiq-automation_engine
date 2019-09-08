@@ -295,8 +295,8 @@ describe MiqAeDomain do
     let(:url) { "http://www.example.com/x/y" }
     let(:dom1) do
       FactoryBot.create(:miq_ae_git_domain,
-                         :tenant => @user.current_tenant,
-                         :name   => domain_name)
+                        :tenant => @user.current_tenant,
+                        :name   => domain_name)
     end
     let(:dom2) { FactoryBot.create(:miq_ae_domain) }
     let(:repo) { FactoryBot.create(:git_repository, :url => url) }
@@ -360,7 +360,7 @@ describe MiqAeDomain do
     ae_instances = {'instance1' => {'field1' => {:value => 'hello world'}}}
 
     FactoryBot.create(:miq_ae_domain, :with_small_model, :with_instances,
-                       attrs.merge('ae_fields' => ae_fields, 'ae_instances' => ae_instances))
+                      attrs.merge('ae_fields' => ae_fields, 'ae_instances' => ae_instances))
   end
 
   def create_model_with_methods(attrs = {})
@@ -369,7 +369,7 @@ describe MiqAeDomain do
                                 :data => 'puts "Hello World"',
                                 :language => 'ruby', 'params' => {}}}
     FactoryBot.create(:miq_ae_domain, :with_small_model, :with_methods,
-                       attrs.merge('ae_methods' => ae_methods))
+                      attrs.merge('ae_methods' => ae_methods))
   end
 
   def create_multiple_domains

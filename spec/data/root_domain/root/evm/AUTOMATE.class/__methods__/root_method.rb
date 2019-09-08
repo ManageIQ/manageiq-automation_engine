@@ -5,5 +5,5 @@ begin
           end
           $evm.log("info", "#{@method} - Root:<$evm.root> End Attributes")
           $evm.log("info", $evm.class.name)
-          $evm.root['method_executed']  = "root"
+          $evm.root['method_executed'] = "root"
         end

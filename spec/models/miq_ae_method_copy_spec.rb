@@ -80,7 +80,7 @@ describe MiqAeMethodCopy do
         :language         => 'ruby',
         :location         => 'inline'
       )
-      src_fqname  = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{method.name}"
+      src_fqname = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{method.name}"
       method_copy = MiqAeMethodCopy.new(src_fqname).to_domain(@dest_domain, @dest_ns, true)
       expect(method_copy.embedded_methods).to(eq(method.embedded_methods))
     end
@@ -106,7 +106,7 @@ describe MiqAeMethodCopy do
           :become_enabled      => true
         }
       )
-      src_fqname  = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{method.name}"
+      src_fqname = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{method.name}"
       method_copy = MiqAeMethodCopy.new(src_fqname).to_domain(@dest_domain, @dest_ns, true)
       expect(method_copy.options).to(eq(method.options))
     end

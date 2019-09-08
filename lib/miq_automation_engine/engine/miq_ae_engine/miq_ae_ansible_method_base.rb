@@ -108,6 +108,7 @@ module MiqAeEngine
     def wait_for_method(task_id)
       task = MiqTask.wait_for_taskid(task_id)
       raise MiqAeException::Error, task.message unless task.status == "Ok"
+
       process_result(task)
     ensure
       reset
@@ -117,6 +118,7 @@ module MiqAeEngine
       task = MiqTask.find(task_id)
       raise MiqAeException::Error, "Task id #{task_id} not found" unless task
       return mark_for_retry(task_id) unless task.state == MiqTask::STATE_FINISHED
+
       post_process_status(task)
     end
 

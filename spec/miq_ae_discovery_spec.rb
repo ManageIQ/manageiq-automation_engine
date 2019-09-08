@@ -26,8 +26,7 @@ describe "MiqAeDiscovery" do
                "ExtManagementSystem::ems" => @ems.id,
                :ems_id                    => @ems.id,
                "VmOrTemplate::vm"         => @vm.id,
-               :vm_id                     => @vm.id,
-      }
+               :vm_id                     => @vm.id}
 
       args = {:object_type      => "EmsEvent",
               :object_id        => @event.id,
@@ -39,7 +38,7 @@ describe "MiqAeDiscovery" do
               :automate_message => nil}
 
       expect(MiqAeEngine).to receive(:deliver_queue).with(args, anything)
-       MiqAeEvent.raise_ems_event(@event)
+      MiqAeEvent.raise_ems_event(@event)
     end
   end
 

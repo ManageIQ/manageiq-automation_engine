@@ -30,6 +30,7 @@ class MiqAeInstanceCompareValues
   def status
     return CONGRUENT_INSTANCE if congruent?
     return COMPATIBLE_INSTANCE if compatible?
+
     INCOMPATIBLE_INSTANCE
   end
 
@@ -76,6 +77,7 @@ class MiqAeInstanceCompareValues
     old_value.each do |property, data|
       next if IGNORE_PROPERTY_NAMES.include?(property)
       next if data == new_value[property]
+
       hash = {'property'   => property,
               'old_data'   => data,
               'new_data'   => new_value[property],

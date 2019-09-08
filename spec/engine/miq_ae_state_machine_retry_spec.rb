@@ -107,9 +107,9 @@ describe "MiqAeStateMachineRetry" do
                                    :language => 'ruby', 'params' => {}}}
 
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_instances' => ae_instances,
-                                   'ae_methods'   => ae_methods))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_instances' => ae_instances,
+                                  'ae_methods'   => ae_methods))
   end
 
   def create_state_class(attrs = {}, max_time = nil)
@@ -120,9 +120,9 @@ describe "MiqAeStateMachineRetry" do
     ae_instances = {@state_instance => {'state1' => {:value => fqname}}}
 
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_methods'   => {},
-                                   'ae_instances' => ae_instances))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_methods'   => {},
+                                  'ae_instances' => ae_instances))
   end
 
   def create_root_class(attrs = {})
@@ -130,9 +130,9 @@ describe "MiqAeStateMachineRetry" do
     fqname = "/#{@domain}/#{@namespace}/#{@state_class}/#{@state_instance}"
     ae_instances = {@root_instance => {'rel1' => {:value => fqname}}}
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_methods'   => {},
-                                   'ae_instances' => ae_instances))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_methods'   => {},
+                                  'ae_instances' => ae_instances))
   end
 
   def create_method_class(attrs, script1, script2, script3)
@@ -151,9 +151,9 @@ describe "MiqAeStateMachineRetry" do
                               :language => 'ruby', 'params' => {}}}
 
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_instances' => ae_instances,
-                                   'ae_methods'   => ae_methods))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_instances' => ae_instances,
+                                  'ae_methods'   => ae_methods))
   end
 
   def create_multi_state_class(attrs = {})
@@ -167,9 +167,9 @@ describe "MiqAeStateMachineRetry" do
                                         'state2' => {:value => fq2},
                                         'state3' => {:value => fq3}}}
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_methods'   => {},
-                                   'ae_instances' => ae_instances))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_methods'   => {},
+                                  'ae_instances' => ae_instances))
   end
 
   def create_restart_model(script1, script2, script3)

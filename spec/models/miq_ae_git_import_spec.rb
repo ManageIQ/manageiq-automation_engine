@@ -8,8 +8,8 @@ describe MiqAeGitImport do
     let(:verify_ssl_disabled) { 0 }
     let(:domain) do
       FactoryBot.create(:miq_ae_git_domain,
-                         :tenant => user.current_tenant,
-                         :name   => domain_name)
+                        :tenant => user.current_tenant,
+                        :name   => domain_name)
     end
     let(:repo) { FactoryBot.create(:git_repository, :url => url, :verify_ssl => verify_ssl_disabled) }
     let(:user) { FactoryBot.create(:user_with_group) }
@@ -70,7 +70,7 @@ describe MiqAeGitImport do
         shared_examples_for "#import that has a valid branch" do
           it "runs successfully" do
             expect(MiqAeYamlImportGitfs).to receive(:new).with(domain_name, import_options)
-              .and_return(miq_ae_yaml_import_gitfs)
+                                                         .and_return(miq_ae_yaml_import_gitfs)
             allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(domain)
             dom = miq_ae_git_import.import
             expect(dom).to have_attributes(branch_hash)
@@ -96,14 +96,14 @@ describe MiqAeGitImport do
 
         it "import fails with domain not found" do
           expect(MiqAeYamlImportGitfs).to receive(:new).with(domain_name, import_options)
-            .and_return(miq_ae_yaml_import_gitfs)
+                                                       .and_return(miq_ae_yaml_import_gitfs)
           allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(nil)
           expect { miq_ae_git_import.import }.to raise_error(MiqAeException::DomainNotFound)
         end
 
         it "raises an exception with a message about multiple domains" do
           expect(MiqAeYamlImportGitfs).to receive(:new).with(domain_name, import_options)
-            .and_return(miq_ae_yaml_import_gitfs)
+                                                       .and_return(miq_ae_yaml_import_gitfs)
           allow(miq_ae_yaml_import_gitfs).to receive(:domain_files) { ['BB8/__domain__.yaml', 'BB8/__domain__.yaml'] }
           expect { miq_ae_git_import.import }.to raise_exception(
             MiqAeException::InvalidDomain, 'Multiple Domain import is not supported.'
@@ -129,7 +129,7 @@ describe MiqAeGitImport do
         shared_examples_for "#import that has a valid tag" do
           it "imports correctly" do
             expect(MiqAeYamlImportGitfs).to receive(:new).with(domain_name, import_options)
-              .and_return(miq_ae_yaml_import_gitfs)
+                                                         .and_return(miq_ae_yaml_import_gitfs)
             allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(domain)
             dom = miq_ae_git_import.import
             expect(dom).to have_attributes(tag_hash)
@@ -172,7 +172,7 @@ describe MiqAeGitImport do
 
         it "imports correctly" do
           expect(MiqAeYamlImportGitfs).to receive(:new).with(domain_name, import_options)
-            .and_return(miq_ae_yaml_import_gitfs)
+                                                       .and_return(miq_ae_yaml_import_gitfs)
           allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(domain)
           dom = miq_ae_git_import.import
           expect(dom).to have_attributes(branch_hash)
@@ -182,7 +182,7 @@ describe MiqAeGitImport do
 
         it "doesn't overwrite verify_ssl" do
           expect(MiqAeYamlImportGitfs).to receive(:new).with(domain_name, import_options)
-            .and_return(miq_ae_yaml_import_gitfs)
+                                                       .and_return(miq_ae_yaml_import_gitfs)
           allow(miq_ae_yaml_import_gitfs).to receive(:import).and_return(domain)
           miq_ae_git_import.import
           expect(repo.verify_ssl).to eq(verify_ssl_disabled)

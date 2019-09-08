@@ -2,7 +2,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   before do
     @user = FactoryBot.create(:user_with_group)
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
-    @ae_method     = ::MiqAeMethod.first
+    @ae_method = ::MiqAeMethod.first
     @ae_result_key = 'foo'
   end
 
@@ -12,7 +12,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
   context "exposes ActiveSupport methods" do
     it "nil#blank?" do
-      method   = "$evm.root['#{@ae_result_key}'] = nil.blank?"
+      method = "$evm.root['#{@ae_result_key}'] = nil.blank?"
       @ae_method.update(:data => method)
       ae_object = invoke_ae.root(@ae_result_key)
       expect(ae_object).to be_truthy
@@ -64,7 +64,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     to      = "wilma@bedrock.gov"
     from    = "fred@bedrock.gov"
     inputs  = {:to => to, :from => from}
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v1, #{inputs.inspect})"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v1, #{inputs.inspect})"
     @ae_method.update(:data => method)
 
     stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
@@ -74,11 +74,12 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
     stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
     expect(MiqQueue).to receive(:put).with(
-        :class_name  => "MiqSnmp",
-        :method_name => "trap_v1",
-        :args        => [inputs],
-        :role        => "notifier",
-        :zone        => nil).once
+      :class_name  => "MiqSnmp",
+      :method_name => "trap_v1",
+      :args        => [inputs],
+      :role        => "notifier",
+      :zone        => nil
+    ).once
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_truthy
   end
@@ -87,7 +88,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     to      = "wilma@bedrock.gov"
     from    = "fred@bedrock.gov"
     inputs  = {:to => to, :from => from}
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v2, #{inputs.inspect})"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v2, #{inputs.inspect})"
     @ae_method.update(:data => method)
 
     stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
@@ -97,17 +98,18 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
     stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
     expect(MiqQueue).to receive(:put).with(
-        :class_name  => "MiqSnmp",
-        :method_name => "trap_v2",
-        :args        => [inputs],
-        :role        => "notifier",
-        :zone        => nil).once
+      :class_name  => "MiqSnmp",
+      :method_name => "trap_v2",
+      :args        => [inputs],
+      :role        => "notifier",
+      :zone        => nil
+    ).once
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_truthy
   end
 
   it "#vm_templates" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.execute(:vm_templates)"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:vm_templates)"
     @ae_method.update(:data => method)
 
     expect(invoke_ae.root(@ae_result_key)).to be_empty

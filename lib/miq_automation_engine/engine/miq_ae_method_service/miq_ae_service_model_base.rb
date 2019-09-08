@@ -15,6 +15,7 @@ module MiqAeMethodService
 
     def self.method_missing(m, *args)
       return wrap_results(filter_objects(model.send(m, *args))) if class_method_exposed?(m)
+
       super
     rescue ActiveRecord::RecordNotFound
       raise MiqAeException::ServiceNotFound, "Service Model not found"
@@ -41,6 +42,7 @@ module MiqAeMethodService
     def self.inherited(subclass)
       # Skip for anonymous classes
       return unless subclass.name
+
       expose_class_attributes(subclass)
       expose_class_associations(subclass)
     end
@@ -61,6 +63,7 @@ module MiqAeMethodService
           next if model.private_method_defined?(attr)
           next if EXPOSED_ATTR_BLACK_LIST.any? { |rexp| attr =~ rexp }
           next if subclass.base_class != self && method_defined?(attr)
+
           expose attr
         end
       end
@@ -144,6 +147,7 @@ module MiqAeMethodService
 
     def self.ar_model?(the_model)
       return false unless the_model
+
       the_model < ApplicationRecord || false
     end
 
@@ -172,16 +176,19 @@ module MiqAeMethodService
 
     def self.expose(*args)
       raise ArgumentError, "must pass at least one method name" if args.empty? || args.first.kind_of?(Hash)
+
       options = args.last.kind_of?(Hash) ? args.pop : {}
       raise ArgumentError, "cannot have :method option if there is more than one method name specified" if options.key?(:method) && args.length != 1
 
       args.each do |method_name|
         next if method_name.to_sym == :id
+
         self.association = method_name if options[:association]
         define_method(method_name) do |*params|
           method = options[:method] || method_name
           ret = User.with_user(self.class.workspace&.ae_user) { object_send(method, *params) }
           return options[:override_return] if options.key?(:override_return)
+
           options[:association] ? wrap_results(self.class.filter_objects(ret)) : wrap_results(ret)
         end
       end

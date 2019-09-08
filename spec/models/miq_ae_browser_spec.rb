@@ -33,8 +33,8 @@ describe MiqAeBrowser do
                                              "perform" => { :value => "" } } }
 
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       :name => "Learning", :namespace => "/Liszt/SelectedWorks",
-                       :ae_fields => learning_fields, :ae_methods => {}, :ae_instances => learning_instances)
+                      :name => "Learning", :namespace => "/Liszt/SelectedWorks",
+                      :ae_fields => learning_fields, :ae_methods => {}, :ae_instances => learning_instances)
 
     @user = FactoryBot.create(:user_with_group)
     @browser = described_class.new(@user)

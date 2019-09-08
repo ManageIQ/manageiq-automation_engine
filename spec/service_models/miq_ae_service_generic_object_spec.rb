@@ -115,7 +115,7 @@ describe MiqAeMethodService::MiqAeServiceGenericObject do
   end
 
   describe '#convert_params_to_ar_model' do
-    subject    { service_go.send(:convert_params_to_ar_model, @args) }
+    subject { service_go.send(:convert_params_to_ar_model, @args) }
 
     before do
       allow(DRb).to receive_message_chain('front.workspace.ae_user').and_return(user)

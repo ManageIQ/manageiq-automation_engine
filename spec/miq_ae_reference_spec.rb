@@ -2,7 +2,7 @@ describe MiqAeEngine::MiqAeReference do
   context "vmdb objects" do
     let(:user) do
       FactoryBot.create(:user_with_group, :userid   => "admin",
-                                           :settings => {:display => { :timezone => "UTC"}})
+                                          :settings => {:display => {:timezone => "UTC"}})
     end
     let(:host) { FactoryBot.create(:host) }
     let(:vm) { FactoryBot.create(:vm_vmware, :host => host) }
@@ -21,7 +21,7 @@ describe MiqAeEngine::MiqAeReference do
   context "passwords" do
     let(:user) do
       FactoryBot.create(:user_with_group, :userid   => "admin",
-                                           :settings => {:display => { :timezone => "UTC"}})
+                                          :settings => {:display => {:timezone => "UTC"}})
     end
     let(:password) { "ca$hc0w" }
     let(:miq_password) { MiqAePassword.new(password) }

@@ -28,9 +28,9 @@ describe "MiqAeStateMachine" do
     ae_instances = {@other1 => {'var1' => {:value => "1"}},
                     @other3 => {'var1' => {:value => "3"}}}
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_instances' => ae_instances,
-                                   'ae_methods'   => {}))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_instances' => ae_instances,
+                                  'ae_methods'   => {}))
   end
 
   def create_state_class(attrs = {})
@@ -40,7 +40,7 @@ describe "MiqAeStateMachine" do
                               :message => 'create', :priority => 2, :collect => 'var1'},
                  'state3' => {:aetype => 'state', :datatype => 'string', :max_retries => 10,
                               :message => 'create', :priority => 3, :collect => 'var1'}}
-    fqname1    = "/#{@domain}/#{@namespace}/#{@other_class}/#{@other1}"
+    fqname1 = "/#{@domain}/#{@namespace}/#{@other_class}/#{@other1}"
     missing_fq = "/#{@domain}/#{@namespace}/#{@other_class}/#{@other2}"
     fqname3    = "/#{@domain}/#{@namespace}/#{@other_class}/#{@other3}"
     ae_instances = {@state_instance1 => {'state1' => {:value => missing_fq},
@@ -51,13 +51,12 @@ describe "MiqAeStateMachine" do
                                          'state3' => {:value => fqname3}},
                     @state_instance3 => {'state1' => {:value => fqname1},
                                          'state2' => {:value => fqname3},
-                                         'state3' => {:value => missing_fq}}
-                   }
+                                         'state3' => {:value => missing_fq}}}
 
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_methods'   => {},
-                                   'ae_instances' => ae_instances))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_methods'   => {},
+                                  'ae_instances' => ae_instances))
   end
 
   it "missing instance in first slot" do

@@ -21,7 +21,8 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     expect(MiqQueue.first).to have_attributes(
       @base_queue_options.merge(
         :method_name => 'set_number_of_cpus',
-        :args        => [1])
+        :args        => [1]
+      )
     )
   end
 
@@ -31,7 +32,8 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     expect(MiqQueue.first).to have_attributes(
       @base_queue_options.merge(
         :method_name => 'set_memory',
-        :args        => [100])
+        :args        => [100]
+      )
     )
   end
 
@@ -51,17 +53,19 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     expect(MiqQueue.first).to have_attributes(
       @base_queue_options.merge(
         :method_name => 'add_disk',
-        :args        => ['disk_1', 100, :thin_provisioned => true])
+        :args        => ['disk_1', 100, :thin_provisioned => true]
+      )
     )
   end
 
-  it "#remove_from_disk async"do
+  it "#remove_from_disk async" do
     service_vm.remove_from_disk(false)
 
     expect(MiqQueue.first).to have_attributes(
       @base_queue_options.merge(
         :method_name => 'vm_destroy',
-        :args        => [])
+        :args        => []
+      )
     )
   end
 

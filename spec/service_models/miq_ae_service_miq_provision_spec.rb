@@ -9,7 +9,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     @options       = {}
     @options[:src_vm_id] = [@vm_template.id, @vm_template.name]
     @options[:pass]      = 1
-    @user        = FactoryBot.create(:user_with_group, :name => 'Fred Flintstone',  :userid => 'fred')
+    @user = FactoryBot.create(:user_with_group, :name => 'Fred Flintstone', :userid => 'fred')
     @miq_provision = FactoryBot.create(:miq_provision, :provision_type => 'template', :state => 'pending', :status => 'Ok', :options => @options, :userid => @user.userid)
   end
 
@@ -23,7 +23,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     @miq_provision.miq_provision_request = miq_provision_request
     @miq_provision.save!
 
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].miq_request"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].miq_request"
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqRequest)
@@ -35,7 +35,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     @miq_provision.miq_provision_request = miq_provision_request
     @miq_provision.save!
 
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].miq_provision_request"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].miq_provision_request"
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqProvisionRequest)
@@ -43,7 +43,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#vm" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].vm"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].vm"
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_nil
@@ -58,7 +58,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#vm_template" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].vm_template"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].vm_template"
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqTemplate)
@@ -66,7 +66,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#execute" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].execute"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].execute"
     @ae_method.update(:data => method)
 
     expect_any_instance_of(MiqProvision).to receive(:execute_queue).once
@@ -74,7 +74,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#request_type" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].request_type"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].request_type"
     @ae_method.update(:data => method)
 
     %w[template clone_to_vm clone_to_template].each do |provision_type|
@@ -84,7 +84,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#register_automate_callback - no previous callbacks" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].register_automate_callback(:first_time_out, 'do_something_great')"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].register_automate_callback(:first_time_out, 'do_something_great')"
     @ae_method.update(:data => method)
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
     expect(@miq_provision.options[:callbacks]).to be_nil
@@ -95,7 +95,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#register_automate_callback - with previous callbacks" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].register_automate_callback(:first_time_out, 'do_something_great')"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].register_automate_callback(:first_time_out, 'do_something_great')"
     @ae_method.update(:data => method)
     expect(@miq_provision.options[:callbacks]).to be_nil
     opts = @miq_provision.options.dup
@@ -119,7 +119,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#target_type" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].target_type"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].target_type"
     @ae_method.update(:data => method)
 
     %w[clone_to_template].each do |provision_type|
@@ -141,7 +141,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     end
 
     it "eligible_iso_images" do
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_iso_images"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_iso_images"
       @ae_method.update(:data => method)
       result = invoke_ae.root(@ae_result_key)
       expect(result).to be_kind_of(Array)
@@ -161,7 +161,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
   context "#source_type" do
     before do
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].source_type"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].source_type"
       @ae_method.update(:data => method)
     end
 
@@ -186,7 +186,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     end
 
     it "#eligible_customization_templates" do
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_customization_templates"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_customization_templates"
       @ae_method.update(:data => method)
       result = invoke_ae.root(@ae_result_key)
       expect(result).to be_kind_of(Array)
@@ -213,7 +213,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     end
 
     it "#eligible_resource_pools" do
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_resource_pools"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_resource_pools"
       @ae_method.update(:data => method)
       result = invoke_ae.root(@ae_result_key)
       expect(result).to be_kind_of(Array)

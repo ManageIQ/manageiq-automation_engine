@@ -17,19 +17,18 @@ describe "MultipleStateMachineSteps" do
     @state_class3        = 'SM3'
     @state_instance      = 'MY_STATE_INSTANCE'
     @fqname              = '/SPEC_DOMAIN/NS1/SM1/MY_STATE_INSTANCE'
-    @miq_server      = FactoryBot.create(:miq_server)
-    @user                = FactoryBot.create(:user_with_group)
-    @method_params       = {'ae_result'     => {:datatype => 'string', 'default_value' => 'ok'},
-                            'ae_next_state' => {:datatype => 'string'},
-                            'raise'         => {:datatype => 'string'}
-                           }
-    @automate_args   = {:namespace        => "#{@domain}/#{@namespace}",
-                        :class_name       => @state_class1,
-                        :instance_name    => @state_instance,
-                        :user_id          => @user.id,
-                        :miq_group_id     => @user.current_group_id,
-                        :tenant_id        => @user.current_tenant.id,
-                        :automate_message => 'create'}
+    @miq_server = FactoryBot.create(:miq_server)
+    @user = FactoryBot.create(:user_with_group)
+    @method_params = {'ae_result'     => {:datatype => 'string', 'default_value' => 'ok'},
+                      'ae_next_state' => {:datatype => 'string'},
+                      'raise'         => {:datatype => 'string'}}
+    @automate_args = {:namespace        => "#{@domain}/#{@namespace}",
+                      :class_name       => @state_class1,
+                      :instance_name    => @state_instance,
+                      :user_id          => @user.id,
+                      :miq_group_id     => @user.current_group_id,
+                      :tenant_id        => @user.current_tenant.id,
+                      :automate_message => 'create'}
     zone = FactoryBot.create(:zone)
     allow(MiqServer).to receive(:my_zone).and_return(zone.name)
     allow(MiqServer).to receive(:my_server).and_return(@miq_server)
@@ -98,15 +97,14 @@ describe "MultipleStateMachineSteps" do
                    'raise'         => {:value => ""}}
     ae_instances = {@instance1 => inst_values, @instance2 => inst_values,
                     @instance3 => inst_values}
-    ae_methods = {@common_method_name  => {:scope => 'instance', :location => 'inline',
+    ae_methods = {@common_method_name => {:scope => 'instance', :location => 'inline',
                                            :data => common_method_script,
-                                           :language => 'ruby', :params => @method_params}
-                 }
+                                           :language => 'ruby', :params => @method_params}}
 
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_instances' => ae_instances,
-                                   'ae_methods'   => ae_methods))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_instances' => ae_instances,
+                                  'ae_methods'   => ae_methods))
   end
 
   def create_state_class(attrs = {})
@@ -117,7 +115,7 @@ describe "MultipleStateMachineSteps" do
                  'on_error' => "common_state_method"}
     ae_fields = {"#{stem}_1" => {:aetype => 'state', :datatype => 'string', :priority => 1, :max_retries => 1},
                  "#{stem}_2" => {:aetype => 'state', :datatype => 'string', :priority => 2,
-                                 :max_retries => @max_retries, :message  => 'create'},
+                                 :max_retries => @max_retries, :message => 'create'},
                  "#{stem}_3" => {:aetype => 'state', :datatype => 'string', :priority => 3, :max_retries => 3},
                  "#{stem}_4" => {:aetype => 'state', :datatype => 'string', :priority => 4, :max_retries => 4}}
     state1_value = "/#{@domain}/#{@namespace}/#{@method_class}/#{@instance1}"
@@ -129,16 +127,15 @@ describe "MultipleStateMachineSteps" do
                                         "#{stem}_4" => {:value => state3_value}.merge(all_steps)}}
 
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_methods'   => state_methods,
-                                   'ae_instances' => ae_instances))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_methods'   => state_methods,
+                                  'ae_instances' => ae_instances))
   end
 
   def state_methods
     {@common_state_method => {:scope => 'instance', :location => 'inline',
                               :data => common_state_method_script,
-                              :language => 'ruby', 'params' => @method_params}
-    }
+                              :language => 'ruby', 'params' => @method_params}}
   end
 
   def tweak_instance(class_fqname, instance, field_name, attribute, value)

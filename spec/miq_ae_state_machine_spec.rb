@@ -44,7 +44,7 @@ describe "MiqAeStateMachine" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
     c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "VM")
     i1 = c1.ae_instances.detect { |i| i.name == "ProvisionCheck" }
-    f1 = c1.ae_fields.detect    { |f| f.name == "execute"   }
+    f1 = c1.ae_fields.detect    { |f| f.name == "execute" }
     i1.set_field_attribute(f1, "provision_check(result => 'error')", :value)
 
     ws = MiqAeEngine.instantiate("/SYSTEM/EVENT/VM_PROVISION_REQUESTED_NEW", @user)
@@ -60,7 +60,7 @@ describe "MiqAeStateMachine" do
 
     c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "VM")
     i1 = c1.ae_instances.detect { |i| i.name == "ProvisionCheck" }
-    f1 = c1.ae_fields.detect    { |f| f.name == "execute"   }
+    f1 = c1.ae_fields.detect    { |f| f.name == "execute" }
     i1.set_field_attribute(f1, "provision_check(result => 'exception')", :value)
 
     ws = MiqAeEngine.instantiate("/SYSTEM/EVENT/VM_PROVISION_REQUESTED_NEW", @user)
@@ -93,7 +93,7 @@ describe "MiqAeStateMachine" do
 
     c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
     i1 = c1.ae_instances.detect { |i| i.name == "Provisioning" }
-    f1 = c1.ae_fields.detect    { |f| f.name == "AcquireIPAddress"   }
+    f1 = c1.ae_fields.detect    { |f| f.name == "AcquireIPAddress" }
     method_string = "update_provision_status(status => 'Testing on entry method',status_state => 'on_entry')"
     i1.set_field_attribute(f1, method_string, :on_entry)
 
@@ -113,7 +113,7 @@ describe "MiqAeStateMachine" do
 
     c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
     i1 = c1.ae_instances.detect { |i| i.name == "Provisioning" }
-    f1 = c1.ae_fields.detect    { |f| f.name == "AcquireIPAddress"   }
+    f1 = c1.ae_fields.detect    { |f| f.name == "AcquireIPAddress" }
     method_string = "SPEC_DOMAIN/factory/method.test_class_method(status => 'Testing class on entry method',status_state => 'on_entry')"
     i1.set_field_attribute(f1, method_string, :on_entry)
     ws = MiqAeEngine.instantiate("#{@domain}/Factory/statemachine/Provisioning", @user)

@@ -30,6 +30,7 @@ class MiqAeClassCompareFields
   def status
     return CONGRUENT_SCHEMA if congruent?
     return COMPATIBLE_SCHEMA if compatible?
+
     INCOMPATIBLE_SCHEMA
   end
 
@@ -76,6 +77,7 @@ class MiqAeClassCompareFields
     old_field.each do |property, value|
       next if IGNORE_PROPERTY_NAMES.include?(property)
       next if value == new_field[property]
+
       hash = {'property'   => property,
               'old_value'  => value,
               'new_value'  => new_field[property],

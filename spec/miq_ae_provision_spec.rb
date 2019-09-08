@@ -52,7 +52,7 @@ describe "MiqAeProvision" do
     it "should instantiate lease_times" do
       ws = MiqAeEngine.instantiate("/EVMApplications/Provisioning/Information/Default#get_lease_times", @user)
       expect(ws).not_to be_nil
-      ttls  = ws.root("ttls")
+      ttls = ws.root("ttls")
       expect(ttls.class.name).to eq("Hash")
       expect(ttls.length).to eq(5)
     end

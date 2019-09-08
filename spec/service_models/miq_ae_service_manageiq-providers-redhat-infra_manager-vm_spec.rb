@@ -41,7 +41,8 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Redhat_InfraManager_
     expect(MiqQueue.first).to have_attributes(
       @base_queue_options.merge(
         :method_name => 'add_disk',
-        :args        => ['disk_1', 100, {:interface => "IDE", :bootable => true}])
+        :args        => ['disk_1', 100, {:interface => "IDE", :bootable => true}]
+      )
     )
   end
 end

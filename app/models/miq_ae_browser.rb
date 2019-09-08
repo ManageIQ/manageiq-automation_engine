@@ -35,6 +35,7 @@ class MiqAeBrowser
 
   def initialize(user = User.current_user)
     raise "Must be authenticated before using #{self.class.name}" unless user
+
     @user = user
     @waypoint_ids = MiqAeClass.waypoint_ids_for_state_machines
   end
@@ -115,11 +116,13 @@ class MiqAeBrowser
   def find_domain(domain_name, options)
     domain = domains(options).find { |d| domain_name.casecmp(d[:ae_object].name).zero? }
     raise "Invalid Automate Domain #{domain_name} specified" if domain.blank?
+
     domain
   end
 
   def children(object, options = {})
     return [] unless object
+
     filter_ae_objects(ae_children(object.ae_object), options).collect do |ae_object|
       object_from_ae_object("#{object.fqname}/#{ae_object.name}", ae_object)
     end
@@ -134,6 +137,7 @@ class MiqAeBrowser
 
   def filter_ae_objects(ae_objects, options)
     return ae_objects unless options[:state_machines]
+
     ae_objects.select do |obj|
       klass_name = obj.class.name
       if klass_name == "MiqAeInstance"

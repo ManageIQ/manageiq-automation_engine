@@ -58,6 +58,7 @@ class MiqAeDomain < MiqAeNamespace
   def lock_contents!
     return if source == USER_LOCKED_SOURCE # already locked
     raise MiqAeException::CannotLock, "Cannot lock non user domains" unless source == USER_SOURCE
+
     self.source = USER_LOCKED_SOURCE
     save!
   end
@@ -65,6 +66,7 @@ class MiqAeDomain < MiqAeNamespace
   def unlock_contents!
     return if source == USER_SOURCE # already unlocked
     raise MiqAeException::CannotUnlock, "Cannot unlock non user domains" unless source == USER_LOCKED_SOURCE
+
     self.source = USER_SOURCE
     save!
   end
@@ -114,6 +116,7 @@ class MiqAeDomain < MiqAeNamespace
   def self.version_from_schema(path)
     about_file = path.join("System/About#{CLASS_DIR_SUFFIX}/#{CLASS_YAML_FILENAME}")
     return unless about_file.file?
+
     class_yaml = YAML.load_file(about_file)
     fields = class_yaml.fetch_path('object', 'schema') if class_yaml.kind_of?(Hash)
     version_field = fields.try(:detect) { |f| f.fetch_path('field', 'name') == 'version' }
@@ -134,10 +137,10 @@ class MiqAeDomain < MiqAeNamespace
     self.ref_type = ref_type
     info = latest_ref_info
     update!(:last_import_on => Time.now.utc,
-                       :commit_sha     => info['commit_sha'],
-                       :commit_message => info['commit_message'],
-                       :commit_time    => info['commit_time'],
-                       :source         => REMOTE_SOURCE)
+            :commit_sha     => info['commit_sha'],
+            :commit_message => info['commit_message'],
+            :commit_time    => info['commit_time'],
+            :source         => REMOTE_SOURCE)
   end
 
   def git_enabled?
@@ -151,6 +154,7 @@ class MiqAeDomain < MiqAeNamespace
   def latest_ref_info
     raise MiqAeException::InvalidDomain, "Not Git enabled" unless git_enabled?
     raise "No branch or tag selected for this domain" if ref.nil? && ref_type.nil?
+
     case ref_type
     when MiqAeGitImport::BRANCH
       git_repository.branch_info(ref)
@@ -161,6 +165,7 @@ class MiqAeDomain < MiqAeNamespace
 
   def display_name
     return self[:display_name] unless git_enabled?
+
     "#{domain_name} (#{ref})"
   end
 

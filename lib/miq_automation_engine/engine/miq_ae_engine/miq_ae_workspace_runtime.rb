@@ -26,7 +26,7 @@ module MiqAeEngine
       initialize_obj_entries
     end
 
-    delegate :prepend_namespace=, :to =>  :@dom_search
+    delegate :prepend_namespace=, :to => :@dom_search
 
     def readonly?
       @readonly
@@ -45,7 +45,7 @@ module MiqAeEngine
     end
 
     def self.instantiate(uri, user, attrs = {})
-       User.with_user(user) { instantiate_with_user(uri, user, attrs) }
+      User.with_user(user) { instantiate_with_user(uri, user, attrs) }
     end
 
     def self.instantiate_with_user(uri, user, attrs)
@@ -74,7 +74,7 @@ module MiqAeEngine
     def datastore(klass, key)
       if DATASTORE_CACHE
         @datastore_cache[klass] ||= {}
-        @datastore_cache[klass][key] = yield      unless @datastore_cache[klass].key?(key)
+        @datastore_cache[klass][key] = yield unless @datastore_cache[klass].key?(key)
         @datastore_cache[klass][key]
       else
         yield
@@ -84,6 +84,7 @@ module MiqAeEngine
     def varget(uri)
       obj = current_object
       raise MiqAeException::ObjectNotFound, "Current Object Not Found" if obj.nil?
+
       obj.uri2value(uri)
     end
 
@@ -91,7 +92,8 @@ module MiqAeEngine
       scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri)
       if scheme == "miqaews"
         o = get_obj_from_path(path)
-        raise MiqAeException::ObjectNotFound, "Object Not Found for path=[#{path}]"  if o.nil?
+        raise MiqAeException::ObjectNotFound, "Object Not Found for path=[#{path}]" if o.nil?
+
         o[fragment] = value
         return true
       end
@@ -120,7 +122,7 @@ module MiqAeEngine
       ns, klass, instance = MiqAePath.split(path)
       ns = overlay_namespace(scheme, uri, ns, klass, instance)
       current = @current.last
-      ns ||= current[:ns]    if current
+      ns ||= current[:ns] if current
       klass ||= current[:klass] if current
 
       pushed = false
@@ -151,6 +153,7 @@ module MiqAeEngine
           raise MiqAeException::ObjectNotFound, "Object [#{path}] not found" if obj.nil?
         elsif ["miqaemethod", "method"].include?(scheme)
           raise MiqAeException::MethodNotFound, "No Current Object" if current[:object].nil?
+
           return current[:object].process_method_via_uri(uri)
         end
         obj.process_fields(message)
@@ -219,6 +222,7 @@ module MiqAeEngine
 
     def obj_to_dot(g, obj)
       return nil if obj.nil?
+
       o = g.add_node(obj.object_name)
       # o["MiqAeClass"]     = obj.klass
       # o["MiqAeNamespace"] = obj.namespace
@@ -280,6 +284,7 @@ module MiqAeEngine
     def current(elem = nil)
       c = @current.last
       return c if elem.nil? || c.nil?
+
       c[elem]
     end
 
@@ -300,6 +305,7 @@ module MiqAeEngine
     def root(attrib = nil)
       return nil if roots.empty?
       return roots.first if attrib.nil?
+
       roots.first.attributes[attrib.downcase]
     end
 
@@ -316,9 +322,11 @@ module MiqAeEngine
 
       if path == "/"
         return roots[0] if obj.nil?
+
         loop do
           parent = obj.node_parent
           return obj if parent.nil?
+
           obj = parent
         end
       elsif path[0, 1] == "."
@@ -342,6 +350,7 @@ module MiqAeEngine
       path = path[1..-1] if path[0] == '/'
       plist = path.split("/")
       raise MiqAeException::InvalidPathFormat, "Unsupported Path [#{path}]" if plist[0].blank?
+
       klass = plist.pop
       ns    = plist.length.zero? ? "*" : plist.join('/')
 
@@ -349,6 +358,7 @@ module MiqAeEngine
       while (obj = obj.node_parent)
         next unless klass.casecmp(obj.klass).zero?
         break if ns == "*"
+
         ns_split = obj.namespace.split('/')
         ns_split.shift # sans domain
         break if ns.casecmp(ns_split.join('/')).zero?

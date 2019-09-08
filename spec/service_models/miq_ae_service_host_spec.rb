@@ -2,7 +2,7 @@ describe MiqAeMethodService::MiqAeServiceHost do
   before do
     @user = FactoryBot.create(:user_with_group)
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
-    @ae_method     = ::MiqAeMethod.first
+    @ae_method = ::MiqAeMethod.first
     @ae_result_key = 'foo'
     @host = FactoryBot.create(:host)
   end

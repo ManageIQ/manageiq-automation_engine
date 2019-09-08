@@ -9,6 +9,7 @@ module MiqAeEngine
       obj = path == "root" ? root : find_object(root, path)
       $miq_ae_logger.error("Object #{path} not found in workspace") unless obj
       raise MiqAeException::Error, "object not found #{path}" unless obj
+
       update_obj_attributes(obj, attributes, user)
     end
 
@@ -20,6 +21,7 @@ module MiqAeEngine
 
     def find_object(obj, object_name)
       return obj if obj.object_name == object_name
+
       obj.children.each do |child|
         found = find_object(child, object_name)
         return found if found

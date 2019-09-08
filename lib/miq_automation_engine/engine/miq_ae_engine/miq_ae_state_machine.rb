@@ -33,13 +33,16 @@ module MiqAeEngine
     def enforce_max_retries(f)
       return if f['max_retries'].blank?
       return if f['max_retries'].to_i >= @workspace.root['ae_state_retries'].to_i
+
       raise "number of retries <#{@workspace.root['ae_state_retries']}> exceeded maximum of <#{f['max_retries']}>"
     end
 
     def enforce_max_time(f)
       return if f['max_time'].blank?
+
       lapsed = Time.zone.now.utc - Time.zone.parse(@workspace.root['ae_state_started'])
       return if f['max_time'].to_i_with_method > lapsed
+
       raise "time in state <#{lapsed} seconds> exceeded maximum of <#{f['max_time']}>"
     end
 
@@ -82,7 +85,7 @@ module MiqAeEngine
         process_state_step_with_error_handling(f) { process_state_relationship(f, message, args) } if state_runnable?(f)
 
         # Check the ae_result and set the next state appropriately
-        if   @workspace.root['ae_result'] == 'ok'
+        if @workspace.root['ae_result'] == 'ok'
           $miq_ae_logger.info("Processed State=[#{f['name']}]")
         elsif @workspace.root['ae_result'] == 'skip'
           $miq_ae_logger.warn("Skipping State=[#{f['name']}]")
@@ -157,8 +160,9 @@ module MiqAeEngine
       state_name = @workspace.root['ae_next_state'].presence || current
       states = fields(message).collect { |f| f['name'] if f['aetype'] == 'state' }.compact
       validate_state(states)
-      index  = states.index(state_name)
+      index = states.index(state_name)
       return nil if index.nil?
+
       @workspace.root['ae_next_state'].blank? ? states[index + 1] : states[index]
     end
 

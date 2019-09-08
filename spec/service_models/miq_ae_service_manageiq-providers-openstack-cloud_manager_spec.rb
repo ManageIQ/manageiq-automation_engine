@@ -5,7 +5,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManag
     @availability_zone      = FactoryBot.create(:availability_zone_openstack)
     @ems.availability_zones << @availability_zone
     @ems.flavors << @flavor
-    @ems_openstack          = MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager.find(@ems.id)
+    @ems_openstack = MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager.find(@ems.id)
   end
 
   it "#flavors" do

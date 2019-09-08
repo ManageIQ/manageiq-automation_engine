@@ -16,6 +16,7 @@ class MiqAeYamlImport
     if @options.key?('import_dir') && !File.directory?(@options['import_dir'])
       raise MiqAeException::DirectoryNotFound, "Directory [#{@options['import_dir']}] not found"
     end
+
     start_import(@options['preview'], @domain_name)
   end
 
@@ -23,6 +24,7 @@ class MiqAeYamlImport
     if @options['import_as'] && !new_domain_name_valid?
       raise MiqAeException::InvalidDomain, "Error - New domain exists already, #{@options['import_as']}"
     end
+
     @preview = preview
     _log.info("Import options: <#{@options}> preview: <#{@preview}>")
     _log.info("Importing domain:    <#{domain_name}>")
@@ -253,6 +255,7 @@ class MiqAeYamlImport
     invalid_attributes = []
     %w[repository playbook credential vault_credential cloud_credential].each do |attr|
       next unless options["#{attr}_name".to_sym]
+
       convert_playbook_attribute(options, attr, invalid_attributes)
     end
 
@@ -330,6 +333,7 @@ class MiqAeYamlImport
 
   def update(domain_obj)
     return if domain_obj.name.downcase == MiqAeDatastore::MANAGEIQ_DOMAIN.downcase
+
     attrs = @options.slice('enabled', 'source')
     domain_obj.update(attrs) unless attrs.empty?
   end
