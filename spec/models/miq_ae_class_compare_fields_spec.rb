@@ -74,7 +74,7 @@ describe MiqAeClassCompareFields do
   end
 
   context "same field but datatype changes" do
-    before(:each) do
+    before do
       @yaml_file   = File.join(@yaml_folder, 'class_copy4.yaml')
       EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
       prep_class_file_names("CLASS1", "CLASS_DATATYPE_OFF")

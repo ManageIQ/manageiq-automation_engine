@@ -80,7 +80,7 @@ describe MiqAeDomain do
   end
 
   context "same class names across domains" do
-    before(:each) do
+    before do
       create_model(:name => 'DOM1', :priority => 10)
     end
 
@@ -98,7 +98,7 @@ describe MiqAeDomain do
   end
 
   context "same instance names across domains" do
-    before(:each) do
+    before do
       create_model(:name => 'DOM1', :priority => 10)
     end
 
@@ -121,7 +121,7 @@ describe MiqAeDomain do
   end
 
   context "same method names across domains" do
-    before(:each) do
+    before do
       create_model_with_methods(:name => 'DOM1', :priority => 10)
     end
 

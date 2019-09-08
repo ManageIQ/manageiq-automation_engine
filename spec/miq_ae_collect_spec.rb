@@ -1,5 +1,5 @@
 describe "MiqAeCollect" do
-  before(:each) do
+  before do
     MiqAeDatastore.reset
     @domain = "SPEC_DOMAIN"
     @user = FactoryBot.create(:user_with_group)

@@ -1,7 +1,7 @@
 describe MiqAeMethodService::MiqAeServiceServiceReconfigureTask do
   include Spec::Support::AutomationHelper
 
-  before(:each) do
+  before do
     method_script   = "$evm.root['result'] = $evm.root['service_reconfigure_task'].status"
     create_ae_model_with_method(:method_script => method_script, :ae_class => 'AUTOMATE',
                                 :ae_namespace  => 'EVM', :instance_name => 'test1',

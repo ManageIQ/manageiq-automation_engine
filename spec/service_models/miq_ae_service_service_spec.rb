@@ -3,7 +3,7 @@ describe MiqAeMethodService::MiqAeServiceService do
   let(:service_service) { MiqAeMethodService::MiqAeServiceService.find(service.id) }
   let(:user)            { FactoryBot.create(:user_with_group) }
 
-  before(:each) do
+  before do
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
@@ -66,7 +66,7 @@ describe MiqAeMethodService::MiqAeServiceService do
   end
 
   context "#parent_service=" do
-    before(:each) do
+    before do
       @parent = FactoryBot.create(:service, :name => "parent_service")
     end
 

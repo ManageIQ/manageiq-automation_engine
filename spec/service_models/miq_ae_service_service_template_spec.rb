@@ -1,6 +1,6 @@
 describe MiqAeMethodService::MiqAeServiceServiceTemplate do
   context "through an automation method" do
-    before(:each) do
+    before do
       Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
       @ae_method     = ::MiqAeMethod.first
       @ae_result_key = 'foo'

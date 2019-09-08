@@ -9,7 +9,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManag
         "MiqAeMethodService::MiqAeServiceManageIQ_Providers_#{t.camelize}_CloudManager_#{part.to_s.camelize}".constantize
       end
 
-      before(:each) do
+      before do
         vm                   =  FactoryBot.create("vm_#{t}".to_sym)
         vm.availability_zone =  FactoryBot.create("availability_zone_#{t}".to_sym)
         vm.flavor            =  FactoryBot.create("flavor_#{t}".to_sym)

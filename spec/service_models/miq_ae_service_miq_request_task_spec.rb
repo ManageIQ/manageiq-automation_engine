@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
-  before(:each) do
+  before do
     @user = FactoryBot.create(:user_with_group)
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
@@ -106,7 +106,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
   end
 
   context "#message=" do
-    before(:each) do
+    before do
       @message = 'message1'
       method   = "$evm.root['miq_request_task'].message = '#{@message}'"
       @ae_method.update_attributes(:data => method)

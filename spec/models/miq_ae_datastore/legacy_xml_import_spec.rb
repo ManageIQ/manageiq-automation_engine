@@ -17,7 +17,7 @@ describe "LegacyXMLImport" do
     </MiqAeDatastore>
     )
   end
-  before(:each) do
+  before do
     Tenant.seed
     # hide deprecation warning
     expect(MiqAeDatastore).to receive(:xml_deprecated_warning)

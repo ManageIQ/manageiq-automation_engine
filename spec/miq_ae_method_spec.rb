@@ -1,7 +1,7 @@
 describe MiqAeMethod do
   include Spec::Support::AutomationHelper
   context "needing datatore" do
-    before(:each) do
+    before do
       MiqAeDatastore.reset
       @user = FactoryBot.create(:user_with_group)
       @domain = 'SPEC_DOMAIN'

@@ -2,7 +2,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
   let(:vm)         { FactoryBot.create(:vm_vmware, :name => "template1", :location => "abc/abc.vmx") }
   let(:service_vm) { MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.find(vm.id) }
 
-  before(:each) do
+  before do
     @user = FactoryBot.create(:user_with_group)
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
@@ -68,7 +68,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
   end
 
   context "with a service" do
-    before(:each) do
+    before do
       @service = FactoryBot.create(:service)
     end
 

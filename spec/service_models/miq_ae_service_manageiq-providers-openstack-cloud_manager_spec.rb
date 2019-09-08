@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager do
-  before(:each) do
+  before do
     @ems                    = FactoryBot.create(:ems_openstack)
     @flavor                 = FactoryBot.create(:flavor_openstack)
     @availability_zone      = FactoryBot.create(:availability_zone_openstack)
