@@ -145,6 +145,96 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
   end
 
+  context "#category_delete!" do
+    let(:ct) { FactoryBot.create(:classification, :name => "test_category") }
+
+    it "warns about non-existence of category" do
+      ct_not_exist = "ct_not_exist"
+      expect(Classification.find_by_name(ct_not_exist)).to be_nil
+
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete!, #{ct_not_exist.inspect})"
+      @ae_method.update(:data => method)
+
+      expect { invoke_ae.root(@ae_result_key) }.to raise_error(MiqAeException::UnknownMethodRc)
+    end
+
+    it "deletes category if there is no entry" do
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete!, #{ct.name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be_truthy
+      expect(Classification.find_by_name(ct.name)).to be_nil
+    end
+
+    it "deletes category if there is no assignment" do
+      FactoryBot.create(:classification_tag, :name => "test_entry", :parent => ct)
+
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete!, #{ct.name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be_truthy
+      expect(Classification.find_by_name(ct.name)).to be_nil
+    end
+
+    it "could not delete category if there is assignment" do
+      FactoryBot.create(:classification_tag, :name => "test_entry", :parent => ct)
+      assignment_tag = "/chargeback_rate/assigned_to/vm/tag/managed/test_category/test_entry"
+      Tag.create!(:name => assignment_tag)
+      expect(Tag.exists?(:name => assignment_tag)).to be true
+
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete!, #{ct.name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect { invoke_ae.root(@ae_result_key) }.to raise_error(MiqAeException::UnknownMethodRc)
+      expect(Classification.find_by_name(ct.name)).to_not be_nil
+    end
+  end
+
+  context "#category_delete" do
+    let(:ct) { FactoryBot.create(:classification, :name => "test_category") }
+
+    it "returns false if category does not exist" do
+      ct_not_exist = "ct_not_exist"
+      expect(Classification.find_by_name(ct_not_exist)).to be_nil
+
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete, #{ct_not_exist.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be false
+    end
+
+    it "deletes category if there is no entry" do
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete, #{ct.name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be true
+      expect(Classification.find_by_name(ct.name)).to be_nil
+    end
+
+    it "deletes category if there is no assignment" do
+      FactoryBot.create(:classification_tag, :name => "test_entry", :parent => ct)
+
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete, #{ct.name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be true
+      expect(Classification.find_by_name(ct.name)).to be_nil
+    end
+
+    it "returns false if there is assignment" do
+      FactoryBot.create(:classification_tag, :name => "test_entry", :parent => ct)
+      assignment_tag = "/chargeback_rate/assigned_to/vm/tag/managed/test_category/test_entry"
+      Tag.create!(:name => assignment_tag)
+      expect(Tag.exists?(:name => assignment_tag)).to be true
+
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete, #{ct.name.inspect})"
+      @ae_method.update(:data => method)
+
+      expect(invoke_ae.root(@ae_result_key)).to be false
+      expect(Classification.find_by_name(ct.name)).to_not be_nil
+    end
+  end
+
   it "#tag_exists?" do
     ct = FactoryBot.create(:classification_department_with_tags)
     method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_exists?, #{ct.name.inspect}, #{ct.entries.first.name.inspect})"
