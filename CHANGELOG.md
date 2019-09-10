@@ -27,9 +27,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Added
 - Add MiqAeEngine.return_result. [(#354)](https://github.com/ManageIQ/manageiq-automation_engine/pull/354)
 
-### Fixed
-- Fix the issue with null coalescing fields as input parameters. [(#334)](https://github.com/ManageIQ/manageiq-automation_engine/pull/334)
-
 ## Unreleased as of Sprint 118 - 2019-08-19
 
 ### Added
