@@ -7,28 +7,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## Ivanchuk-1
 
-### Fixed
-- Undefine Kernel#display which would be called over service#display for DRbObject [(#349)](https://github.com/ManageIQ/manageiq-automation_engine/pull/349)
-
-## Ivanchuk RC1 - Released 2019-08-27
-
 ### Added
 - Expose move_into_folder on the engine [(#344)](https://github.com/ManageIQ/manageiq-automation_engine/pull/344)
 
 ### Fixed
+- Undefine Kernel#display which would be called over service#display for DRbObject [(#349)](https://github.com/ManageIQ/manageiq-automation_engine/pull/349)
 - Override equality comparison method for MiqAeServiceModelBase [(#348)](https://github.com/ManageIQ/manageiq-automation_engine/pull/348)
 - Fix the issue with null coalescing fields as input parameters. [(#334)](https://github.com/ManageIQ/manageiq-automation_engine/pull/334)
 - Fix call to make_retire_request. [(#321)](https://github.com/ManageIQ/manageiq-automation_engine/pull/321)
-
-## Ivanchuk Beta1 - Release 2019-07-29
-
-### Fixed
 - Add service_vars to pass variables between catalog items in a bundle [(#338)](https://github.com/ManageIQ/manageiq-automation_engine/pull/338)
 - Add helper method ansible_stats_vars [(#336)](https://github.com/ManageIQ/manageiq-automation_engine/pull/336)
 - Support for opening URL from the UI through automate. [(#328)](https://github.com/ManageIQ/manageiq-automation_engine/pull/328)
 - Add scope to list automate domains from ancestors tenants [(#318)](https://github.com/ManageIQ/manageiq-automation_engine/pull/318)
-- Set current user for exposed methods in automate. [(#302)](https://github.com/ManageIQ/manageiq-automation_engine/pull/302)
-- Don't set User.current_user [(#293)](https://github.com/ManageIQ/manageiq-automation_engine/pull/293)
 - Redirect writable_storages to writable_accessible_storages [(#292)](https://github.com/ManageIQ/manageiq-automation_engine/pull/292)
 - Reset System Domains Missing RedHat Domain [(#274)](https://github.com/ManageIQ/manageiq-automation_engine/pull/274)
 
