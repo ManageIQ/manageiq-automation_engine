@@ -151,7 +151,7 @@ describe MiqAeEngine::MiqAeObject do
       let(:my_values) { "abc,xyz,,1" }
 
       it "stores the values as an array of strings" do
-        expect(result["my_values"]).to eq(%w(abc xyz 1))
+        expect(result["my_values"]).to eq(%w[abc xyz 1])
       end
     end
 
@@ -319,7 +319,7 @@ describe MiqAeEngine::MiqAeObject do
 
   context "integer" do
     it "returns value to_i" do
-      %w(Integer integer Fixnum).each { |type| expect(described_class.convert_value_based_on_datatype("45", type)).to eq(45) }
+      %w[Integer integer Fixnum].each { |type| expect(described_class.convert_value_based_on_datatype("45", type)).to eq(45) }
     end
   end
 end

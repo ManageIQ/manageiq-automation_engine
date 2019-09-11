@@ -56,7 +56,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
 
     it "when target is an array" do
       expect(EmsRefresh).to receive(:queue_refresh).once.with([@ems], nil, :create_task => false)
-      @service_event.refresh(%w(src_vm dest_vm), false)
+      @service_event.refresh(%w[src_vm dest_vm], false)
     end
   end
 

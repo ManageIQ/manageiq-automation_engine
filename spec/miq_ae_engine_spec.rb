@@ -454,7 +454,7 @@ describe MiqAeEngine do
     end
 
     it 'with an Array of attrs' do
-      array = [%w(key value), %w(key1 value1)]
+      array = [%w[key value], %w[key1 value1]]
       expect(MiqAeEngine.create_automation_attributes(array)).to eq('key' => 'value', 'key1' => 'value1')
     end
   end

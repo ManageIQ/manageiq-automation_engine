@@ -2,9 +2,9 @@ class MiqAeYamlExport
   include Vmdb::Logging
   include MiqAeYamlImportExportMixin
   attr_accessor :namespace, :klass, :instance, :method, :zip
-  NEW_LINE = "\n"
-  MANIFEST_FILE_NAME = '.manifest.yaml'
-  FILE_EXTENSIONS = {'ruby' => '.rb', 'perl' => '.pl'}
+  NEW_LINE = "\n".freeze
+  MANIFEST_FILE_NAME = '.manifest.yaml'.freeze
+  FILE_EXTENSIONS = {'ruby' => '.rb', 'perl' => '.pl'}.freeze
 
   def initialize(domain, options)
     @domain        = domain

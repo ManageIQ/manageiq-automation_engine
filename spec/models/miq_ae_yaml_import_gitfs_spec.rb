@@ -3,11 +3,11 @@ describe MiqAeYamlImportGitfs do
     @git_db = "TestGit.git"
     @ae_db_dir = Dir.mktmpdir
     @default_hash = {:a => "one", :b => "two", :c => "three"}
-    @dirnames = %w(A B c)
-    @namespaces = %w(NS1 NS2)
-    @classes    = %w(CLASS1 CLASS2)
-    @instances  = %w(INSTANCE1 INSTANCE2)
-    @methods    = %w(METHOD1 METHOD2 METHOD3)
+    @dirnames = %w[A B c]
+    @namespaces = %w[NS1 NS2]
+    @classes    = %w[CLASS1 CLASS2]
+    @instances  = %w[INSTANCE1 INSTANCE2]
+    @methods    = %w[METHOD1 METHOD2 METHOD3]
   end
 
   def build_git_repository(domain_name, domain_dir)

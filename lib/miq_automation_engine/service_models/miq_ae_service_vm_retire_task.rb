@@ -2,7 +2,7 @@ module MiqAeMethodService
   class MiqAeServiceVmRetireTask < MiqAeServiceMiqRequestTask
     def statemachine_task_status
       ar_method do
-        if %w(finished).include?(@object.state)
+        if %w[finished].include?(@object.state)
           @object.status.to_s.downcase == 'error' ? 'error' : 'ok'
         else
           'retry'

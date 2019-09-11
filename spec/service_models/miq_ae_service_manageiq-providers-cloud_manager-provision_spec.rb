@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceMiqProvision do
-  %w(amazon openstack google azure).each do |t|
+  %w[amazon openstack google azure].each do |t|
     context "for #{t}" do
       before do
         @provider      = FactoryBot.create("ems_#{t}_with_authentication".to_sym)
@@ -19,7 +19,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
       let(:ae_svc_prov) { MiqAeMethodService::MiqAeServiceMiqProvision.find(@miq_provision.id) }
 
       context "#request_type" do
-        %w(template clone_to_vm clone_to_template).each do |request_type|
+        %w[template clone_to_vm clone_to_template].each do |request_type|
           it "should set #{request_type} for #{t}" do
             @miq_provision.update_attributes(:request_type => request_type)
             expect(ae_svc_prov.provision_type).to eq(request_type)
@@ -33,7 +33,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
           expect(ae_svc_prov.target_type).to eq('template')
         end
 
-        %w(template clone_to_vm).each do |provision_type|
+        %w[template clone_to_vm].each do |provision_type|
           it provision_type.to_s do
             @miq_provision.update_attributes(:provision_type => provision_type)
             expect(ae_svc_prov.target_type).to eq('vm')

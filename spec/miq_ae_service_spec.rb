@@ -91,11 +91,11 @@ describe MiqAeMethodService::MiqAeService do
 
     it "loads cloud networks" do
       allow(workspace).to receive(:disable_rbac)
-      items = %w(
+      items = %w[
         ManageIQ_Providers_Openstack_NetworkManager_CloudNetwork
         ManageIQ_Providers_Openstack_NetworkManager_CloudNetwork_Private
         ManageIQ_Providers_Openstack_NetworkManager_CloudNetwork_Public
-      )
+      ]
       items.each do |name|
         expect(miq_ae_service.vmdb(name)).to be("#{prefix}#{name}".constantize)
       end

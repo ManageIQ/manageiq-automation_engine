@@ -3,12 +3,12 @@ class MiqAeInstanceCompareValues
   attr_reader :incompatibilities
   attr_reader :fields_in_use
   attr_reader :adds
-  IGNORE_PROPERTY_NAMES  = %w(name owner created_on updated_on updated_by
-                              updated_by_user_id id class_id instance_id field_id)
-  WARNING_PROPERTY_NAMES = %w(priority message display_name default_value substitute
+  IGNORE_PROPERTY_NAMES  = %w[name owner created_on updated_on updated_by
+                              updated_by_user_id id class_id instance_id field_id].freeze
+  WARNING_PROPERTY_NAMES = %w[priority message display_name default_value substitute
                               visibility collect scope description condition on_entry
-                              on_exit on_error max_retries max_time)
-  ERROR_PROPERTY_NAMES   = %w(aetype datatype)
+                              on_exit on_error max_retries max_time].freeze
+  ERROR_PROPERTY_NAMES   = %w[aetype datatype].freeze
 
   CONGRUENT_INSTANCE = 1
   COMPATIBLE_INSTANCE = 2

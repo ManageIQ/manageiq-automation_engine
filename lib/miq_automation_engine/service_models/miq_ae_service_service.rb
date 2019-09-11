@@ -20,7 +20,7 @@ module MiqAeMethodService
     expose :root_service,              :association => true
     expose :indirect_service_children, :association => true
 
-    CREATE_ATTRIBUTES = [:name, :description, :service_template]
+    CREATE_ATTRIBUTES = [:name, :description, :service_template].freeze
 
     def self.create(options = {})
       attributes = options.symbolize_keys.slice(*CREATE_ATTRIBUTES)
