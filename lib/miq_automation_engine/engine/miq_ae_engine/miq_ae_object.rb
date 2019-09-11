@@ -165,7 +165,7 @@ module MiqAeEngine
           ns = fetch_namespace(ns)
           return nil if ns.nil?
 
-          ns.ae_classes.detect { |c| name.casecmp(c.name) == 0 }
+          ns.ae_classes.detect { |c| name.casecmp(c.name).zero? }
         end
       end.first
     end
@@ -174,7 +174,7 @@ module MiqAeEngine
       Benchmark.current_realtime[:fetch_instance_count] += 1
       Benchmark.realtime_block(:fetch_instance_time) do
         @workspace.datastore(@class_fqname.downcase.to_sym, iname.downcase) do
-          @aec.ae_instances.detect { |i| iname.casecmp(i.name) == 0 }
+          @aec.ae_instances.detect { |i| iname.casecmp(i.name).zero? }
         end
       end.first
     end
@@ -702,7 +702,7 @@ module MiqAeEngine
         elems.each { |e| array << rels[e] }
       end
 
-      return if array.length == 0
+      return if array.length.zero?
 
       process_collect_set_attribute(lh, array_value(array, method))
     end
@@ -768,7 +768,7 @@ module MiqAeEngine
           end
         end
       end
-      process_collect_set_attribute(lh, hash) unless hash.length == 0
+      process_collect_set_attribute(lh, hash) unless hash.length.zero?
     end
 
     def process_collect_string(_expr, rels, result)
@@ -813,10 +813,10 @@ module MiqAeEngine
       klass       = nil
       ns          = nil
 
-      unless parts.length == 0
+      unless parts.length.zero?
         parts = parts.pop.split(PATH_SEPARATOR)
         klass = parts.pop
-        ns    = parts.join(PATH_SEPARATOR) unless parts.length == 0
+        ns    = parts.join(PATH_SEPARATOR) unless parts.length.zero?
       end
 
       [ns, klass, method_name].each { |k| k.downcase! unless k.nil? }

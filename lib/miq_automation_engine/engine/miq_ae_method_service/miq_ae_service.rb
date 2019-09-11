@@ -272,7 +272,7 @@ module MiqAeMethodService
       aec = MiqAeClass.find_by_namespace_and_name(ns, klass)
       return false if aec.nil?
 
-      aei = aec.ae_instances.detect { |i| instance.casecmp(i.name) == 0 }
+      aei = aec.ae_instances.detect { |i| instance.casecmp(i.name).zero? }
       return false unless aei.nil?
 
       aei = MiqAeInstance.create(:name => instance, :class_id => aec.id)
@@ -358,7 +358,7 @@ module MiqAeMethodService
       aec = MiqAeClass.find_by_namespace_and_name("#{dom}/#{ns}", klass)
       return nil if aec.nil?
 
-      aec.ae_instances.detect { |i| instance.casecmp(i.name) == 0 }
+      aec.ae_instances.detect { |i| instance.casecmp(i.name).zero? }
     end
 
     private

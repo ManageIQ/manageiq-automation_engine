@@ -24,9 +24,9 @@ class MiqAeMethodYaml
   end
 
   def method_file_name
-    return nil if location.casecmp('builtin') == 0
-    return nil if location.casecmp('uri') == 0
-    return @filename.gsub('.yaml', '.rb') if language.casecmp('ruby') == 0
+    return nil if location.casecmp('builtin').zero?
+    return nil if location.casecmp('uri').zero?
+    return @filename.gsub('.yaml', '.rb') if language.casecmp('ruby').zero?
   end
 
   def field_names
@@ -38,7 +38,7 @@ class MiqAeMethodYaml
   def field_value_hash(name)
     raise "ae_method_obj has not been set" unless @ae_method_obj
     define_instance_variables
-    value = @ae_method_obj['object']['inputs'].detect { |item| item['field']['name'].casecmp(name) == 0 }
+    value = @ae_method_obj['object']['inputs'].detect { |item| item['field']['name'].casecmp(name).zero? }
     raise "field name #{name} not found in instance #{@filename}" if value.nil?
     value['field']
   end

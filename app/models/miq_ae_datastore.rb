@@ -252,7 +252,7 @@ module MiqAeDatastore
 
   def self.get_domain_index(domains, name, enabled)
     domains.to_a.index do |dom|
-      dom.name.casecmp(name) == 0 && (enabled ? dom.enabled == enabled : true)
+      dom.name.casecmp(name).zero? && (enabled ? dom.enabled == enabled : true)
     end
   end
 

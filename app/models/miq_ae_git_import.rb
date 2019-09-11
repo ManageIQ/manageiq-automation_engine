@@ -78,10 +78,10 @@ class MiqAeGitImport
     case @options['ref_type']
     when BRANCH
       other_name = "origin/#{@options['ref']}"
-      match = @git_repo.git_branches.detect { |branch| branch.name.casecmp(@options['ref']) == 0 }
-      match ||= @git_repo.git_branches.detect { |branch| branch.name.casecmp(other_name) == 0 }
+      match = @git_repo.git_branches.detect { |branch| branch.name.casecmp(@options['ref']).zero? }
+      match ||= @git_repo.git_branches.detect { |branch| branch.name.casecmp(other_name).zero? }
     when TAG
-      match = @git_repo.git_tags.detect { |tag| tag.name.casecmp(@options['ref']) == 0 }
+      match = @git_repo.git_tags.detect { |tag| tag.name.casecmp(@options['ref']).zero? }
     end
     unless match
       raise ArgumentError, "#{@options['ref_type'].titleize} #{@options['ref']} doesn't exist in repository"

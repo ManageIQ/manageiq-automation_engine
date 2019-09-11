@@ -108,12 +108,12 @@ class MiqAeBrowser
   def find_base_object(path, options)
     parts = path.split('/').select { |p| p != "" }
     object = find_domain(parts[0], options)
-    parts[1..-1].each { |part| object = children(object, options).find { |obj| part.casecmp(obj.ae_object.name) == 0 } }
+    parts[1..-1].each { |part| object = children(object, options).find { |obj| part.casecmp(obj.ae_object.name).zero? } }
     object
   end
 
   def find_domain(domain_name, options)
-    domain = domains(options).find { |d| domain_name.casecmp(d[:ae_object].name) == 0 }
+    domain = domains(options).find { |d| domain_name.casecmp(d[:ae_object].name).zero? }
     raise "Invalid Automate Domain #{domain_name} specified" if domain.blank?
     domain
   end
