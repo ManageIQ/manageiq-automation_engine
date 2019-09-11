@@ -80,6 +80,26 @@ module MiqAeMethodService
       end
     end
 
+    def self.category_delete!(category)
+      ar_method do
+        cat = Classification.find_by_name(category)
+        raise "Category <#{category}> does not exist" if cat.nil?
+
+        if cat.entries.any? { |ent| AssignmentMixin.all_assignments(ent.tag.name).present? }
+          raise "This category contains tags which have been assigned. Please delete assignments before deleting the category."
+        end
+
+        cat.destroy!
+      end
+    end
+
+    def self.category_delete(category)
+      category_delete!(category)
+      true
+    rescue StandardError
+      false
+    end
+
     def self.tag_exists?(category, entry)
       ar_method do
         cat = Classification.find_by_name(category)
