@@ -1,11 +1,8 @@
 module Spec
   module Support
     class MiqAeMockObject
-      attr_reader :parent
       attr_reader :children
-      attr_accessor :namespace
-      attr_accessor :klass
-      attr_accessor :instance
+      attr_accessor :instance, :klass, :namespace, :parent
 
       def initialize(hash = {})
         @object_hash = HashWithIndifferentAccess.new(hash)
@@ -14,10 +11,6 @@ module Spec
 
       def attributes
         @object_hash
-      end
-
-      def parent=(obj)
-        @parent = obj
       end
 
       def [](attr)

@@ -96,7 +96,7 @@ module MiqAeDatastore
     def self.process_field_value(aei, field)
       options = {}
       fname = field["name"]
-      ae_field = aei.ae_class.ae_fields.detect { |f| fname.casecmp(f.name) == 0 }
+      ae_field = aei.ae_class.ae_fields.detect { |f| fname.casecmp(f.name).zero? }
       raise MiqAeException::FieldNotFound, "Field [#{fname}] not found in MiqAeDatastore" if ae_field.nil?
       options[:ae_field] = ae_field
       value = field["value"] || field["content"]

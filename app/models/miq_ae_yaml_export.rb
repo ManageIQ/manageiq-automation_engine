@@ -44,7 +44,7 @@ class MiqAeYamlExport
   end
 
   def write_namespace(dom_obj, namespace)
-    write_multipart_namespace_files(namespace) if namespace.split('/').count > 0
+    write_multipart_namespace_files(namespace) if namespace.split('/').count.positive?
     ns_obj = get_namespace_object(namespace)
     _log.info("Exporting domain:    <#{@domain}> namespace: <#{namespace}>")
     write_domain_file(dom_obj)
@@ -287,6 +287,6 @@ class MiqAeYamlExport
 
   def domain_accessible?
     return true unless @tenant
-    @tenant.ae_domains.any? { |dom| dom.name.casecmp(@domain) == 0 }
+    @tenant.ae_domains.any? { |dom| dom.name.casecmp(@domain).zero? }
   end
 end

@@ -10,8 +10,9 @@ module Spec
       include MiqAeMethodService::MiqAeServiceObjectCommon
       include MiqAeMethodService::MiqAeServiceModelLegacy
 
-      attr_reader :root, :object
-      attr_accessor :inputs
+      attr_reader :root
+      attr_writer :current_object
+      attr_accessor :inputs, :object
 
       def initialize(root, persist_state_hash = {})
         @root = root
@@ -19,16 +20,8 @@ module Spec
         @inputs = {}
       end
 
-      def current_object=(obj)
-        @current_object = obj
-      end
-
       def current
         @current_object
-      end
-
-      def object=(obj)
-        @object = obj
       end
 
       def set_state_var(name, value)

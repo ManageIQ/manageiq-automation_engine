@@ -336,7 +336,7 @@ module MiqAeEngine
       plist = path.split("/")
       raise MiqAeException::InvalidPathFormat, "Unsupported Path [#{path}]" if plist[0].blank?
       klass = plist.pop
-      ns    = (plist.length == 0) ? "*" : plist.join('/')
+      ns    = plist.length.zero? ? "*" : plist.join('/')
 
       obj = current_object
       while (obj = obj.node_parent)

@@ -12,7 +12,7 @@ class MiqAeClassYaml
 
   def field_hash(name)
     raise "class object has not been set" unless @ae_class_obj
-    field = @ae_class_obj['object']['schema'].detect { |f| f['field']['name'].casecmp(name) == 0 }
+    field = @ae_class_obj['object']['schema'].detect { |f| f['field']['name'].casecmp(name).zero? }
     raise "field #{name} not found in yaml class #{@filename}" if field.nil?
     field['field']
   end

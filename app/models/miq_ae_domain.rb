@@ -195,11 +195,11 @@ class MiqAeDomain < MiqAeNamespace
   end
 
   def self.any_enabled?
-    MiqAeDomain.enabled.count > 0
+    MiqAeDomain.enabled.count.positive?
   end
 
   def self.any_unlocked?
-    MiqAeDomain.where(:source => USER_SOURCE).count > 0
+    MiqAeDomain.where(:source => USER_SOURCE).count.positive?
   end
 
   def self.all_unlocked

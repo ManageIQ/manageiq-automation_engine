@@ -77,7 +77,7 @@ class MiqAeInstanceCopy
     src_field = @src_class.ae_fields.detect { |f| f.id == field_id }
     raise "Field id #{field_id} not found in source class #{@src_class.name}" if src_field.nil?
     dest_field = @dest_class.ae_fields.detect { |f| f.name == src_field.name }
-    return nil if dest_field.nil? && @class_schema_status & @flags > 0
+    return nil if dest_field.nil? && (@class_schema_status & @flags).positive?
     raise "Field name #{src_field.name} not found in target class #{@dest_class.name}" if dest_field.nil?
     dest_field.id
   end
@@ -99,7 +99,7 @@ class MiqAeInstanceCopy
     find_or_create_class
     return unless @validate_schema
     @class_schema_status = MiqAeClassCompareFields.new(@src_class, @dest_class).compare
-    raise "Instance cannot be copied, automation class schema mismatch" if @flags & @class_schema_status == 0
+    raise "Instance cannot be copied, automation class schema mismatch" if (@flags & @class_schema_status).zero?
   end
 
   def check_duplicity(domain, ns, instance_name)
