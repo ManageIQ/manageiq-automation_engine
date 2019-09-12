@@ -95,7 +95,7 @@ module MiqAeEngine
 
     def find_instance_id(instance_name, class_id)
       return nil if instance_name.nil? || class_id.nil?
-      instance_name = ::ActiveRecordQueryParts.glob_to_sql_like(instance_name).downcase
+      instance_name = ::ActiveRecordQueryParts.glob_to_sql_like(instance_name.dup).downcase
       ae_instance_filter = MiqAeInstance.arel_table[:name].lower.matches(instance_name)
       ae_instances = MiqAeInstance.where(ae_instance_filter).where(:class_id => class_id)
       ae_instances.first.try(:id)
