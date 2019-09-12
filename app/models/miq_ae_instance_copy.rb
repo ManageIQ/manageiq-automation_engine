@@ -1,8 +1,8 @@
 class MiqAeInstanceCopy
   attr_accessor :flags
   include MiqAeCopyMixin
-  DELETE_PROPERTIES = %w(id instance_id field_id updated_on created_on
-                         updated_by updated_by_user_id)
+  DELETE_PROPERTIES = %w[id instance_id field_id updated_on created_on
+                         updated_by updated_by_user_id].freeze
 
   def initialize(instance_fqname, validate_schema = true)
     @src_domain, @partial_ns, @ae_class, @instance_name = MiqAeInstanceCopy.split(instance_fqname, true)

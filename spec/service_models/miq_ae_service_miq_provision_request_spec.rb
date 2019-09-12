@@ -76,7 +76,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].request_type"
     @ae_method.update_attributes(:data => method)
 
-    %w( template clone_to_vm clone_to_template ).each do |provision_type|
+    %w[template clone_to_vm clone_to_template].each do |provision_type|
       @miq_provision_request.update_attributes(:provision_type => provision_type)
       expect(invoke_ae.root(@ae_result_key)).to eq(@miq_provision_request.provision_type)
     end
@@ -86,12 +86,12 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].target_type"
     @ae_method.update_attributes(:data => method)
 
-    %w( clone_to_template ).each do |provision_type|
+    %w[clone_to_template].each do |provision_type|
       @miq_provision_request.update_attributes(:provision_type => provision_type)
       expect(invoke_ae.root(@ae_result_key)).to eq('template')
     end
 
-    %w( template clone_to_vm ).each do |provision_type|
+    %w[template clone_to_vm].each do |provision_type|
       @miq_provision_request.update_attributes(:provision_type => provision_type)
       expect(invoke_ae.root(@ae_result_key)).to eq('vm')
     end

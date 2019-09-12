@@ -19,12 +19,12 @@ describe MiqAeBrowser do
 
     create_ae_model(@liszt_domain.merge(:ae_fields    => @composition_fields,
                                         :ae_instances => @liszt_piano_compositions))
-    @state_machine_fqnames = %w(
+    @state_machine_fqnames = %w[
       /Liszt
       /Liszt/SelectedWorks
       /Liszt/SelectedWorks/Learning
       /Liszt/SelectedWorks/Learning/Campanella
-    )
+    ]
 
     learning_fields = { "study"   => { :aetype => "state", :datatype => "string" },
                         "perform" => { :aetype => "state", :datatype => "string" } }
@@ -47,7 +47,7 @@ describe MiqAeBrowser do
 
   it "can query root domains" do
     res = @browser.search(nil, :depth => 1)
-    expect(res.pluck(:name)).to match_array(%w(Chopin Liszt))
+    expect(res.pluck(:name)).to match_array(%w[Chopin Liszt])
   end
 
   it "can query a domain base object" do
@@ -57,18 +57,18 @@ describe MiqAeBrowser do
 
   it "defaults to sub-tree search" do
     res = @browser.search("/Chopin")
-    expect(res.pluck(:name)).to match_array(%w(Chopin SelectedWorks Piano Nocturnes Ballades Scherzos))
+    expect(res.pluck(:name)).to match_array(%w[Chopin SelectedWorks Piano Nocturnes Ballades Scherzos])
   end
 
   it "supports sub-tree search" do
     res = @browser.search("/Liszt", :depth => nil)
-    expect(res.pluck(:name)).to match_array(%w(Liszt SelectedWorks Piano Rhapsodies Etudes Learning Campanella))
+    expect(res.pluck(:name)).to match_array(%w[Liszt SelectedWorks Piano Rhapsodies Etudes Learning Campanella])
   end
 
   it "sub-tree search on root gets all objects" do
     res = @browser.search("/", :depth => nil)
-    all_nodes = %w(Chopin SelectedWorks Piano Nocturnes Ballades Scherzos
-                   Liszt SelectedWorks Piano Rhapsodies Etudes Learning Campanella)
+    all_nodes = %w[Chopin SelectedWorks Piano Nocturnes Ballades Scherzos
+                   Liszt SelectedWorks Piano Rhapsodies Etudes Learning Campanella]
     expect(res.pluck(:name)).to match_array(all_nodes)
   end
 
@@ -83,23 +83,23 @@ describe MiqAeBrowser do
 
   it "supports serialized output with first level children objects" do
     res = @browser.search("/Chopin/SelectedWorks/Piano", :depth => 1, :serialize => true)
-    expected_chopin_piano_works = %w(
+    expected_chopin_piano_works = %w[
       /Chopin/SelectedWorks/Piano
       /Chopin/SelectedWorks/Piano/Nocturnes
       /Chopin/SelectedWorks/Piano/Ballades
       /Chopin/SelectedWorks/Piano/Scherzos
-    )
+    ]
     expect(res.collect { |h| h["fqname"] }).to match_array(expected_chopin_piano_works)
   end
 
   it "supports serialized output with n-level children objects" do
     res = @browser.search("/Liszt", :depth => 2, :serialize => true)
-    expected_liszt_works = %w(
+    expected_liszt_works = %w[
       /Liszt
       /Liszt/SelectedWorks
       /Liszt/SelectedWorks/Piano
       /Liszt/SelectedWorks/Learning
-    )
+    ]
     expect(res.collect { |h| h["fqname"] }).to match_array(expected_liszt_works)
   end
 

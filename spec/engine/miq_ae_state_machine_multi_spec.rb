@@ -156,8 +156,8 @@ describe "MultipleStateMachineSteps" do
   end
 
   it "process all states" do
-    all_states = %w(SM1_1 SM1_3 SM1_4 SM2_1 SM2_3 SM2_4 SM3_1 SM3_3 SM3_4)
-    guard_states = all_states + %w(SM1_2 SM2_2 SM3_2)
+    all_states = %w[SM1_1 SM1_3 SM1_4 SM2_1 SM2_3 SM2_4 SM3_1 SM3_3 SM3_4]
+    guard_states = all_states + %w[SM1_2 SM2_2 SM3_2]
     send_ae_request_via_queue(@automate_args)
     _status, _message, ws = deliver_ae_request_from_queue
 
@@ -180,11 +180,11 @@ describe "MultipleStateMachineSteps" do
     send_ae_request_via_queue(@automate_args)
     _status, _message, ws = deliver_ae_request_from_queue
 
-    all_states = %w(SM1_1 SM2_1)
-    on_entry_states = %w(SM1_1 SM1_2 SM2_1 SM2_2 SM3_1)
+    all_states = %w[SM1_1 SM2_1]
+    on_entry_states = %w[SM1_1 SM1_2 SM2_1 SM2_2 SM3_1]
     expect(ws.root.attributes['states_executed']).to match_array(all_states)
     expect(ws.root.attributes['step_on_exit']).to match_array(all_states)
-    expect(ws.root.attributes['step_on_error']).to match_array(%w(SM3_1 SM2_2 SM1_2))
+    expect(ws.root.attributes['step_on_error']).to match_array(%w[SM3_1 SM2_2 SM1_2])
     expect(ws.root.attributes['step_on_entry']).to match_array(on_entry_states)
   end
 
@@ -200,13 +200,13 @@ describe "MultipleStateMachineSteps" do
     send_ae_request_via_queue(@automate_args)
     _status, _message, ws = deliver_ae_request_from_queue
 
-    all_states = %w(SM1_1 SM1_3 SM1_4 SM2_1 SM2_3 SM2_4 SM3_3 SM3_4)
-    guard_states = all_states + %w(SM1_2 SM2_2 SM3_1 SM3_2)
+    all_states = %w[SM1_1 SM1_3 SM1_4 SM2_1 SM2_3 SM2_4 SM3_3 SM3_4]
+    guard_states = all_states + %w[SM1_2 SM2_2 SM3_1 SM3_2]
 
     expect(ws.root.attributes['states_executed']).to match_array(all_states)
     expect(ws.root.attributes['step_on_entry']).to match_array(guard_states)
-    expect(ws.root.attributes['step_on_exit']).to match_array(guard_states - %w(SM3_1))
-    expect(ws.root.attributes['step_on_error']).to match_array(%w(SM3_1))
+    expect(ws.root.attributes['step_on_exit']).to match_array(guard_states - %w[SM3_1])
+    expect(ws.root.attributes['step_on_error']).to match_array(%w[SM3_1])
   end
 
   it "one of the lower state machine causes a retry" do
@@ -218,20 +218,20 @@ describe "MultipleStateMachineSteps" do
                    "common_state_method(ae_result => 'retry')")
     send_ae_request_via_queue(@automate_args)
     _status, _message, ws = deliver_ae_request_from_queue
-    all_states = %w(SM1_1 SM2_1)
+    all_states = %w[SM1_1 SM2_1]
     expect(ws.root.attributes['states_executed']).to match_array(all_states)
-    expect(ws.root.attributes['step_on_entry']).to match_array(all_states + %w(SM1_2 SM2_2 SM3_1))
+    expect(ws.root.attributes['step_on_entry']).to match_array(all_states + %w[SM1_2 SM2_2 SM3_1])
     (@max_retries).times do
       status, _message, ws = deliver_ae_request_from_queue
       expect(status).not_to eq(MiqQueue::STATUS_ERROR)
       expect(ws).not_to be_nil
-      expect(ws.root.attributes['step_on_entry']).to match_array(%w(SM1_2 SM2_2 SM3_1))
+      expect(ws.root.attributes['step_on_entry']).to match_array(%w[SM1_2 SM2_2 SM3_1])
     end
 
     status, _message, ws = deliver_ae_request_from_queue
     expect(status).not_to eq(MiqQueue::STATUS_ERROR)
     expect(ws).not_to be_nil
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(SM1_2))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[SM1_2])
 
     expect(deliver_ae_request_from_queue).to be_nil
   end

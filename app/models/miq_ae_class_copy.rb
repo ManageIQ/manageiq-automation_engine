@@ -1,7 +1,7 @@
 class MiqAeClassCopy
   include MiqAeCopyMixin
-  DELETE_PROPERTIES = %w(updated_by updated_by_user_id updated_on id
-                         created_on updated_on method_id owner class_id)
+  DELETE_PROPERTIES = %w[updated_by updated_by_user_id updated_on id
+                         created_on updated_on method_id owner class_id].freeze
 
   def initialize(class_fqname)
     @class_fqname = class_fqname

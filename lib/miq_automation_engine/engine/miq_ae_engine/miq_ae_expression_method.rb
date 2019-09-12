@@ -6,7 +6,7 @@ module MiqAeEngine
       @name = method_obj.name
       @workspace = obj.workspace
       @inputs = inputs
-      @attributes = inputs['distinct'] || inputs['attributes'] || %w(name)
+      @attributes = inputs['distinct'] || inputs['attributes'] || %w[name]
       load_expression(method_obj.data)
       process_filter
     end

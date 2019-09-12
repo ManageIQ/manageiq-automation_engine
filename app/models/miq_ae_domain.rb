@@ -6,7 +6,7 @@ class MiqAeDomain < MiqAeNamespace
   VALID_SOURCES  = [SYSTEM_SOURCE, REMOTE_SOURCE, USER_SOURCE, USER_LOCKED_SOURCE].freeze
   LOCKED_SOURCES = [SYSTEM_SOURCE, REMOTE_SOURCE, USER_LOCKED_SOURCE].freeze
   EDITABLE_PROPERTIES_FOR_REMOTES = [:priority, :enabled].freeze
-  AUTH_KEYS = %w(userid password).freeze
+  AUTH_KEYS = %w[userid password].freeze
 
   default_scope { where(:parent_id => nil).where(arel_table[:name].not_eq("$")) }
   validates_inclusion_of :parent_id, :in => [nil], :message => 'should be nil for Domain'

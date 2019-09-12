@@ -97,7 +97,7 @@ describe MiqAeMethod do
       expect(ws.root("int")).to    eq(5)
       expect(ws.root("float")).to  eq(5.87)
       expect(ws.root("symbol")).to eq(:test)
-      expect(ws.root("array")).to  match_array(%w(1 2 3))
+      expect(ws.root("array")).to  match_array(%w[1 2 3])
     end
 
     it "properly processes console web services" do

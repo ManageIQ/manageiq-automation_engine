@@ -43,7 +43,7 @@ describe MiqAeDomain do
     end
 
     it "after all domains are deleted" do
-      %w(TEST1 TEST2 TEST3 TEST4).each { |name| MiqAeDomain.find_by_fqname(name).destroy }
+      %w[TEST1 TEST2 TEST3 TEST4].each { |name| MiqAeDomain.find_by_fqname(name).destroy }
       d1 = FactoryBot.create(:miq_ae_domain, :name => 'TEST1')
       expect(d1.priority).to eql(1)
     end
@@ -91,7 +91,7 @@ describe MiqAeDomain do
 
     it "get same named classes" do
       create_multiple_domains
-      expected = %w(/DOM2/A/b/C/cLaSS1 /DOM1/A/B/C/CLASS1 /DOM3/a/B/c/CLASs1)
+      expected = %w[/DOM2/A/b/C/cLaSS1 /DOM1/A/B/C/CLASS1 /DOM3/a/B/c/CLASs1]
       result = MiqAeClass.get_homonymic_across_domains(@user, '/DOM1/A/B/C/CLASS1', true)
       expect(expected).to match_string_array_ignorecase(result.collect(&:fqname))
     end
@@ -109,12 +109,12 @@ describe MiqAeDomain do
 
     it "get same named instances" do
       create_multiple_domains
-      expected = %w(
+      expected = %w[
         /DOM5/A/B/C/CLASS1/instance1
         /DOM2/A/b/C/cLaSS1/instance1
         /DOM1/A/B/C/CLASS1/instance1
         /DOM3/a/B/c/CLASs1/instance1
-      )
+      ]
       result = MiqAeInstance.get_homonymic_across_domains(@user, '/DOM1/A/B/C/CLASS1/instance1')
       expect(expected).to match_string_array_ignorecase(result.collect(&:fqname))
     end
@@ -132,7 +132,7 @@ describe MiqAeDomain do
 
     it "get same named methods" do
       create_multiple_domains_with_methods
-      expected = %w(/DOM2/A/b/C/cLaSS1/method1 /DOM1/A/B/C/CLASS1/method1 /DOM3/a/B/c/CLASs1/method1)
+      expected = %w[/DOM2/A/b/C/cLaSS1/method1 /DOM1/A/B/C/CLASS1/method1 /DOM3/a/B/c/CLASs1/method1]
       result = MiqAeMethod.get_homonymic_across_domains(@user, '/DOM1/A/B/C/CLASS1/method1', true)
       expect(expected).to match_string_array_ignorecase(result.collect(&:fqname))
     end
@@ -278,7 +278,7 @@ describe MiqAeDomain do
       FactoryBot.create(:miq_ae_domain, :name => 'U1', :tenant => @user.current_tenant)
       FactoryBot.create(:miq_ae_domain, :name => 'U2', :tenant => @user.current_tenant)
 
-      ordered_names = %w(ManageIQ Z B A U1 U2)
+      ordered_names = %w[ManageIQ Z B A U1 U2]
       MiqAeDomain.reset_priorities
       expect(MiqAeDomain.all.order('priority').collect(&:name)).to eq(ordered_names)
     end

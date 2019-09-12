@@ -1,12 +1,12 @@
 module MiqAeDatastore
-  XML_VERSION = "1.0"
-  XML_VERSION_MIN_SUPPORTED = "1.0"
-  MANAGEIQ_DOMAIN = "ManageIQ"
+  XML_VERSION = "1.0".freeze
+  XML_VERSION_MIN_SUPPORTED = "1.0".freeze
+  MANAGEIQ_DOMAIN = "ManageIQ".freeze
   MANAGEIQ_PRIORITY = 0
   DATASTORE_DIRECTORY = Rails.root.join('db/fixtures/ae_datastore')
-  DEFAULT_OBJECT_NAMESPACE = "$"
-  TEMP_DOMAIN_PREFIX = "TEMP_DOMAIN"
-  ALL_DOMAINS = "*"
+  DEFAULT_OBJECT_NAMESPACE = "$".freeze
+  TEMP_DOMAIN_PREFIX = "TEMP_DOMAIN".freeze
+  ALL_DOMAINS = "*".freeze
   PRESERVED_ATTRS = [:priority, :enabled, :source].freeze
 
   # deprecated module

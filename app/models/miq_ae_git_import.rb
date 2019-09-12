@@ -1,5 +1,5 @@
 class MiqAeGitImport
-  AUTH_KEYS = %w(userid password).freeze
+  AUTH_KEYS = %w[userid password].freeze
   BRANCH = 'branch'.freeze
   TAG    = 'tag'.freeze
   DEFAULT_BRANCH = 'origin/master'.freeze

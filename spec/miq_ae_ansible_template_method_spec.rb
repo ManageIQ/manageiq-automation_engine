@@ -64,8 +64,8 @@ describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
         expect(template).to receive(:run_with_miq_job) do |args|
           expect(args['test']).to eq(13)
           expect(args[:extra_vars][:manageiq]['automate_workspace']).to eq(aw.href_slug)
-          expect(%w(api_url api_token) - args[:extra_vars][:manageiq].keys).to be_empty
-          expect(%w(url token) - args[:extra_vars][:manageiq_connection].keys).to be_empty
+          expect(%w[api_url api_token] - args[:extra_vars][:manageiq].keys).to be_empty
+          expect(%w[url token] - args[:extra_vars][:manageiq_connection].keys).to be_empty
           miq_task.id
         end
 

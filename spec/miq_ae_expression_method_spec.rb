@@ -33,7 +33,7 @@ describe MiqAeEngine::MiqAeExpressionMethod do
                                 :method_script => vm_search)
     ws = MiqAeEngine.instantiate('/GAULS/ASTERIX/DOGMATIX', user)
 
-    expect(ws.root.attributes['values']).to match_array(%w(test_2.1 test_3.1))
+    expect(ws.root.attributes['values']).to match_array(%w[test_2.1 test_3.1])
   end
 
   it "expression_method dialog_hash" do
@@ -72,7 +72,7 @@ describe MiqAeEngine::MiqAeExpressionMethod do
     ws = MiqAeEngine.instantiate('/GAULS/ASTERIX/DOGMATIX', user)
 
     expect(ws.root.attributes['ae_result']).to eq('warn')
-    expect(ws.root.attributes['values']).to match_array(%w(nada))
+    expect(ws.root.attributes['values']).to match_array(%w[nada])
   end
 
   it "expression_method result attr" do
@@ -85,7 +85,7 @@ describe MiqAeEngine::MiqAeExpressionMethod do
                                 :method_script => vm_search)
     ws = MiqAeEngine.instantiate('/GAULS/ASTERIX/DOGMATIX', user)
 
-    expect(ws.root.attributes['vitalstatistix']).to match_array(%w(test_2.1 test_3.1))
+    expect(ws.root.attributes['vitalstatistix']).to match_array(%w[test_2.1 test_3.1])
   end
 
   it "expression_method distinct" do

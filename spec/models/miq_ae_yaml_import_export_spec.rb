@@ -196,7 +196,7 @@ describe MiqAeDatastore do
 
   context "domain_only_attributes" do
     it "namespace should not contain domain only attributes" do
-      domain_only_attrs = %w(source top_level_namespace)
+      domain_only_attrs = %w[source top_level_namespace]
       export_model(@manageiq_domain.name)
       namespace_file = File.join(@export_dir, @manageiq_domain.name, @aen1.name, '__namespace__.yaml')
       data = YAML.load_file(namespace_file)

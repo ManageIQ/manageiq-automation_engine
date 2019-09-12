@@ -1,7 +1,7 @@
 module MiqAeEngine
   class MiqAeBuiltinMethod
     # All Class Methods beginning with miq_ are callable from the engine
-    ATTRIBUTE_LIST = %w(
+    ATTRIBUTE_LIST = %w[
       vm
       orchestration_stack
       miq_request
@@ -12,7 +12,7 @@ module MiqAeEngine
       orchestration_stack_retire_task
       physical_server_provision_task
       platform_category
-    ).freeze
+    ].freeze
     CLOUD          = 'cloud'.freeze
     INFRASTRUCTURE = 'infrastructure'.freeze
     PHYSICAL_INFRA = 'physicalinfrastructure'.freeze
@@ -64,12 +64,12 @@ module MiqAeEngine
     def self.miq_parse_automation_request(obj, _inputs)
       obj['target_component'], obj['target_class'], obj['target_instance'] =
         case obj['request']
-        when 'vm_provision'               then %w(VM            Lifecycle Provisioning)
-        when 'vm_retired'                 then %w(VM            Lifecycle Retirement)
-        when 'vm_retire'                  then %w(VM            Lifecycle Retirement)
-        when 'vm_migrate'                 then %w(VM            Lifecycle Migrate)
-        when 'service_retire'             then %w(Service       Lifecycle Retirement)
-        when 'orchestration_stack_retire' then %w(Orchestration Lifecycle Retirement)
+        when 'vm_provision'               then %w[VM            Lifecycle Provisioning]
+        when 'vm_retired'                 then %w[VM            Lifecycle Retirement]
+        when 'vm_retire'                  then %w[VM            Lifecycle Retirement]
+        when 'vm_migrate'                 then %w[VM            Lifecycle Migrate]
+        when 'service_retire'             then %w[Service       Lifecycle Retirement]
+        when 'orchestration_stack_retire' then %w[Orchestration Lifecycle Retirement]
         when 'configured_system_provision'
           obj.workspace.root['ae_provider_category'] = 'infrastructure'
           %w[Configured_System Lifecycle Provisioning]

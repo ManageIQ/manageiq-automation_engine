@@ -5,7 +5,7 @@ Dir.glob(Pathname.new(__dir__).join("miq_ae_engine/*.rb")) do |file|
 end
 
 module MiqAeEngine
-  DEFAULT_ATTRIBUTES = %w( User::user MiqServer::miq_server object_name )
+  DEFAULT_ATTRIBUTES = %w[User::user MiqServer::miq_server object_name].freeze
 
   def self.instantiate(uri, user)
     $miq_ae_logger.info("MiqAeEngine: Instantiating Workspace for URI=#{ManageIQ::Password.sanitize_string(uri)}")

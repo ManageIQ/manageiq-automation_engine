@@ -86,7 +86,7 @@ module MiqAeEngine
         elsif @workspace.root['ae_result'] == 'skip'
           $miq_ae_logger.warn("Skipping State=[#{f['name']}]")
           return set_next_state(f, message)
-        elsif %w(retry restart async_launch).include?(@workspace.root['ae_result'])
+        elsif %w[retry restart async_launch].include?(@workspace.root['ae_result'])
           increment_state_retries
         elsif @workspace.root['ae_result'] == 'error'
           $miq_ae_logger.warn("Error in State=[#{f['name']}]")
@@ -160,7 +160,7 @@ module MiqAeEngine
     end
 
     def set_next_state(f, message)
-      if %w(skip ok).include?(@workspace.root['ae_result'])
+      if %w[skip ok].include?(@workspace.root['ae_result'])
         @workspace.root['ae_state'] = next_state(f['name'], message).to_s
         reset_state_maxima_metadata
         $miq_ae_logger.info("Next State=[#{@workspace.root['ae_state']}]")

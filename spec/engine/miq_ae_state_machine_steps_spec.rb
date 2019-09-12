@@ -133,7 +133,7 @@ describe "MiqAeStateMachineSteps" do
 
   it "process all states" do
     all_instance_names = [@instance1, @instance2, @instance3]
-    all_state_names    = %w(state1 state2 state3)
+    all_state_names    = %w[state1 state2 state3]
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
     expect(ws.root.attributes['states_executed']).to match_array(all_instance_names)
@@ -148,9 +148,9 @@ describe "MiqAeStateMachineSteps" do
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1))
-    expect(ws.root.attributes['step_on_error']).to match_array(%w(state2))
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1])
+    expect(ws.root.attributes['step_on_error']).to match_array(%w[state2])
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2])
   end
 
   it "one of the state has an error" do
@@ -159,9 +159,9 @@ describe "MiqAeStateMachineSteps" do
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1))
-    expect(ws.root.attributes['step_on_error']).to match_array(%w(state2))
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1])
+    expect(ws.root.attributes['step_on_error']).to match_array(%w[state2])
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2])
   end
 
   it "goto a specific state from on_entry" do
@@ -172,8 +172,8 @@ describe "MiqAeStateMachineSteps" do
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
     expect(ws.root.attributes['states_executed']).to match_array([@instance3])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state3))
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state3))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state3])
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state3])
     expect(ws.root.attributes['step_on_error']).to be_nil
   end
 
@@ -183,8 +183,8 @@ describe "MiqAeStateMachineSteps" do
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance3])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1 state3))
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state3))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1 state3])
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state3])
     expect(ws.root.attributes['step_on_error']).to be_nil
   end
 
@@ -197,9 +197,9 @@ describe "MiqAeStateMachineSteps" do
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance3])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state3))
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state3))
-    expect(ws.root.attributes['step_on_error']).to match_array(%w(state1))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state3])
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state3])
+    expect(ws.root.attributes['step_on_error']).to match_array(%w[state1])
   end
 
   it "goto a specific state from main state" do
@@ -208,8 +208,8 @@ describe "MiqAeStateMachineSteps" do
     ws = MiqAeEngine.instantiate(@fqname, @user)
 
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance3])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1 state3))
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state3))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1 state3])
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state3])
     expect(ws.root.attributes['step_on_error']).to be_nil
   end
 
@@ -220,10 +220,10 @@ describe "MiqAeStateMachineSteps" do
                    'state2', 'on_entry', "common_state_method(ae_result => 'error')")
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['states_executed']).to match_array([@instance1])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1))
-    expect(ws.root.attributes['step_on_error']).to match_array(%w(state2))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1])
+    expect(ws.root.attributes['step_on_error']).to match_array(%w[state2])
   end
 
   it "on_exit has an error" do
@@ -233,9 +233,9 @@ describe "MiqAeStateMachineSteps" do
                    'state2', 'on_exit', "common_state_method(ae_result => 'error')")
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['step_on_error']).to be_nil
   end
 
@@ -246,10 +246,10 @@ describe "MiqAeStateMachineSteps" do
                    'ae_result', 'value', "error")
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2 state3))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2 state3])
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2, @instance3])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1 state3))
-    expect(ws.root.attributes['step_on_error']).to match_array(%w(state2))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1 state3])
+    expect(ws.root.attributes['step_on_error']).to match_array(%w[state2])
   end
 
   it "skip a state" do
@@ -257,9 +257,9 @@ describe "MiqAeStateMachineSteps" do
                    'state1', 'on_entry', "common_state_method(ae_result => 'skip')")
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2 state3))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2 state3])
     expect(ws.root.attributes['states_executed']).to match_array([@instance2, @instance3])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state2 state3))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state2 state3])
     expect(ws.root.attributes['step_on_error']).to be_nil
   end
 
@@ -269,10 +269,10 @@ describe "MiqAeStateMachineSteps" do
                    'state2', 'on_entry', "does_not_exist(ae_result => 'skip')")
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1])
     expect(ws.root.attributes['states_executed']).to match_array([@instance1])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1))
-    expect(ws.root.attributes['step_on_error']).to match_array(%w(state2))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1])
+    expect(ws.root.attributes['step_on_error']).to match_array(%w[state2])
   end
 
   it "non existent on_exit method" do
@@ -283,9 +283,9 @@ describe "MiqAeStateMachineSteps" do
                    'state2', 'on_exit', "does_not_exist(ae_result => 'skip')")
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1])
     expect(ws.root.attributes['step_on_error']).to be_nil
   end
 
@@ -295,9 +295,9 @@ describe "MiqAeStateMachineSteps" do
     tweak_instance("/#{@domain}/#{@namespace}/#{@state_class}", @state_instance,
                    'state2', 'on_exit', "common_state_method(ae_result => 'retry')")
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['step_on_error']).to be_nil
     expect(ws.root.attributes['ae_state_retries']).to eq(1)
     expect(ws.root.attributes['ae_state_max_retries']).to eq(100)
@@ -309,9 +309,9 @@ describe "MiqAeStateMachineSteps" do
     tweak_instance("/#{@domain}/#{@namespace}/#{@state_class}", @state_instance,
                    'state2', 'on_exit', "common_state_method(ae_result => 'retry')")
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1])
     expect(ws.root.attributes['step_on_error']).to be_nil
     expect(ws.root.attributes['ae_state_retries']).to eq(1)
     expect(ws.root.attributes['ae_state_max_retries']).to eq(100)
@@ -321,9 +321,9 @@ describe "MiqAeStateMachineSteps" do
     tweak_instance("/#{@domain}/#{@namespace}/#{@state_class}", @state_instance,
                    'state2', 'on_exit', "common_state_method(ae_result => 'retry')")
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['step_on_error']).to be_nil
     expect(ws.root.attributes['ae_state_retries']).to eq(1)
     expect(ws.root.attributes['ae_state_max_retries']).to eq(100)
@@ -337,9 +337,9 @@ describe "MiqAeStateMachineSteps" do
                    'state2', 'on_error', "does_not_exist(ae_result => 'skip')")
 
     ws = MiqAeEngine.instantiate(@fqname, @user)
-    expect(ws.root.attributes['step_on_entry']).to match_array(%w(state1 state2))
+    expect(ws.root.attributes['step_on_entry']).to match_array(%w[state1 state2])
     expect(ws.root.attributes['states_executed']).to match_array([@instance1, @instance2])
-    expect(ws.root.attributes['step_on_exit']).to match_array(%w(state1))
+    expect(ws.root.attributes['step_on_exit']).to match_array(%w[state1])
     expect(ws.root.attributes['step_on_error']).to be_nil
   end
 

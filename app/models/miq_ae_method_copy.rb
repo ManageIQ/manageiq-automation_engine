@@ -1,7 +1,7 @@
 class MiqAeMethodCopy
   include MiqAeCopyMixin
-  DELETE_PROPERTIES = %w(id class_id method_id field_id updated_on created_on
-                         updated_by updated_by_user_id)
+  DELETE_PROPERTIES = %w[id class_id method_id field_id updated_on created_on
+                         updated_by updated_by_user_id].freeze
 
   def initialize(method_fqname)
     @src_domain, @partial_ns, @ae_class, @method_name = MiqAeMethodCopy.split(method_fqname, true)

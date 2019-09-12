@@ -91,7 +91,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].request_type"
     @ae_method.update_attributes(:data => method)
 
-    %w( template clone_to_vm clone_to_template ).each do |provision_type|
+    %w[template clone_to_vm clone_to_template].each do |provision_type|
       @miq_provision.update_attributes(:provision_type => provision_type)
       expect(invoke_ae.root(@ae_result_key)).to eq(@miq_provision.provision_type)
     end
@@ -129,12 +129,12 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].target_type"
     @ae_method.update_attributes(:data => method)
 
-    %w( clone_to_template ).each do |provision_type|
+    %w[clone_to_template].each do |provision_type|
       @miq_provision.update_attributes(:provision_type => provision_type)
       expect(invoke_ae.root(@ae_result_key)).to eq('template')
     end
 
-    %w( template clone_to_vm ).each do |provision_type|
+    %w[template clone_to_vm].each do |provision_type|
       @miq_provision.update_attributes(:provision_type => provision_type)
       expect(invoke_ae.root(@ae_result_key)).to eq('vm')
     end
@@ -344,7 +344,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
       @ae_method.update_attributes(:data => method)
       invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:sysprep_custom_spec]).to eq([@cs.id, @cs.name])
-      expect(@miq_provision.reload.options[:sysprep_enabled]).to eq(%w(fields Specification))
+      expect(@miq_provision.reload.options[:sysprep_enabled]).to eq(%w[fields Specification])
     end
 
     it "#set_customization_spec passing the name of the spec" do
@@ -355,7 +355,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
       @ae_method.update_attributes(:data => method)
       invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:sysprep_custom_spec]).to eq([@cs.id, @cs.name])
-      expect(@miq_provision.reload.options[:sysprep_enabled]).to eq(%w(fields Specification))
+      expect(@miq_provision.reload.options[:sysprep_enabled]).to eq(%w[fields Specification])
     end
   end
 

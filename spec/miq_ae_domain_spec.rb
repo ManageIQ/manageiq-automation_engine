@@ -45,8 +45,8 @@ describe MiqAeDomain do
       update_domain_attributes('inert', :priority => 10, :enabled => false)
       update_domain_attributes('evm1', :priority => 100, :enabled => true)
       update_domain_attributes('evm2', :priority => 100, :enabled => true)
-      @enabled_domains = %w(evm2 evm1 user root)
-      @all_domains = %w(evm2 evm1 inert user root)
+      @enabled_domains = %w[evm2 evm1 user root]
+      @all_domains = %w[evm2 evm1 inert user root]
     end
 
     def update_domain_attributes(domain_name, attrs)

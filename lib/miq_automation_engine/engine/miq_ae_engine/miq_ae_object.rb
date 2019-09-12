@@ -3,31 +3,31 @@ require_relative 'miq_ae_state_machine'
 module MiqAeEngine
   class MiqAeObject
     include MiqAeStateMachine
-    PATH_SEPARATOR    = '/'
-    MESSAGE_SEPARATOR = ','
-    ENUM_SEPARATOR    = ','
-    CLASS_SEPARATOR   = '::'
-    COLLECT_SEPARATOR = ';'
-    METHOD_SEPARATOR  = '.'
-    DEFAULT_INSTANCE  = '.default'
+    PATH_SEPARATOR    = '/'.freeze
+    MESSAGE_SEPARATOR = ','.freeze
+    ENUM_SEPARATOR    = ','.freeze
+    CLASS_SEPARATOR   = '::'.freeze
+    COLLECT_SEPARATOR = ';'.freeze
+    METHOD_SEPARATOR  = '.'.freeze
+    DEFAULT_INSTANCE  = '.default'.freeze
     MISSING_INSTANCE  = '.missing'
-    OPAQUE_PASSWORD   = '********'
-    FIELD_ATTRIBUTES  = %w( collect on_entry on_exit on_error max_retries max_time )
-    FIELD_VALUES      = %w( value default_value )
+    OPAQUE_PASSWORD   = '********'.freeze
+    FIELD_ATTRIBUTES  = %w[collect on_entry on_exit on_error max_retries max_time].freeze
+    FIELD_VALUES      = %w[value default_value].freeze
     FIELD_ALLKEYS     = FIELD_VALUES + FIELD_ATTRIBUTES
 
-    BASE_NAMESPACE    = '$'
-    BASE_CLASS        = 'object'
+    BASE_NAMESPACE    = '$'.freeze
+    BASE_CLASS        = 'object'.freeze
     BASE_OBJECT       = [BASE_NAMESPACE, BASE_CLASS].join(PATH_SEPARATOR)
-    RE_METHOD_CALL    = /^[\s]*([\.\/\w]+)[\s]*(?:\((.*)\))?[\s]*$/
+    RE_METHOD_CALL    = /^[\s]*([\.\/\w]+)[\s]*(?:\((.*)\))?[\s]*$/.freeze
     RE_URI_ESCAPE     = Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")
-    RE_SUBST          = /\$\{([^}]+)\}/
-    RE_COLLECT_ARRAY  = /^[\s]*(?:([\.\/\w]+)[\s]*=[\s]*)?\[(.*)\](?:\.([^.]+))?/
-    RE_COLLECT_HASH   = /^[\s]*(?:([\.\/\w]+)[\s]*=[\s]*)?\{(.*)\}(?:\.([^.]*))*/
-    RE_COLLECT_STRING = /^[\s]*(?:([\.\/\w]+)[\s]*=[\s]*)?([\w]+)(?:\.([^.]*))*/
+    RE_SUBST          = /\$\{([^}]+)\}/.freeze
+    RE_COLLECT_ARRAY  = /^[\s]*(?:([\.\/\w]+)[\s]*=[\s]*)?\[(.*)\](?:\.([^.]+))?/.freeze
+    RE_COLLECT_HASH   = /^[\s]*(?:([\.\/\w]+)[\s]*=[\s]*)?\{(.*)\}(?:\.([^.]*))*/.freeze
+    RE_COLLECT_STRING = /^[\s]*(?:([\.\/\w]+)[\s]*=[\s]*)?([\w]+)(?:\.([^.]*))*/.freeze
     # key => value {, key => value }*
     #                     Key    =>   number | "string" | 'string' | variable
-    RE_HASH           = /(\w+)\s*=>\s*(\d+|\"[^\"]+\"|\'[^\']+\'|\w+)/
+    RE_HASH           = /(\w+)\s*=>\s*(\d+|\"[^\"]+\"|\'[^\']+\'|\w+)/.freeze
     # Default conversion for Service Models
     SM_LOOKUP         = Hash.new { |_, k| k.classify }.merge(
       'ems'                    => 'ExtManagementSystem',
@@ -563,7 +563,7 @@ module MiqAeEngine
       return false                                           if datatype == 'FalseClass'
       return Time.parse(value)                               if datatype == 'time' || datatype == 'Time'
       return value.to_sym                                    if datatype == 'symbol' || datatype == 'Symbol'
-      return value.to_i                                      if %w(integer Integer Fixnum).include?(datatype)
+      return value.to_i                                      if %w[integer Integer Fixnum].include?(datatype)
       return value.to_f                                      if datatype == 'float' || datatype == 'Float'
       return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/)  if datatype == 'array' && value.class == String
       return decrypt_password(value) if datatype == 'password'

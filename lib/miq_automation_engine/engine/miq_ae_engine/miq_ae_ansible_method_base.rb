@@ -132,7 +132,7 @@ module MiqAeEngine
     end
 
     def current_info
-      list = %w(namespace class instance message method)
+      list = %w[namespace class instance message method]
       list.each.with_object({}) { |m, hash| hash[m] = @workspace.send("current_#{m}".to_sym) }
     end
 

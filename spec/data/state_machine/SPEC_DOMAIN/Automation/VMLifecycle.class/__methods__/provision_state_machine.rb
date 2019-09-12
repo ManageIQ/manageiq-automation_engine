@@ -1,4 +1,4 @@
-STEPS   = %w(
+STEPS = %w[
   initial
   acquireIPAddress
   acquireMACAddress
@@ -11,7 +11,7 @@ STEPS   = %w(
   activateCMDB
   emailOwner
   final
-)
+].freeze
 
 DESCRIPTION = {
   STEPS[0]  => "Provisioning Initializing",
@@ -26,7 +26,7 @@ DESCRIPTION = {
   STEPS[9]  => "Activating VM in CMDB",
   STEPS[10] => "Emailing VM Owner",
   STEPS[11] => "Provisioning Complete",
-}
+}.freeze
 
 def on_state_change(_from, _to, _message)
 end

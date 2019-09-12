@@ -3,13 +3,13 @@ class MiqAeMethodCompare
   attr_reader :incompatibilities
   attr_reader :fields_in_use
   attr_reader :adds
-  IGNORE_PROPERTY_NAMES  = %w(name owner created_on updated_on updated_by
-                              updated_by_user_id id class_id instance_id field_id)
-  WARNING_PROPERTY_NAMES = %w(priority message display_name default_value substitute
+  IGNORE_PROPERTY_NAMES  = %w[name owner created_on updated_on updated_by
+                              updated_by_user_id id class_id instance_id field_id].freeze
+  WARNING_PROPERTY_NAMES = %w[priority message display_name default_value substitute
                               visibility collect scope description condition on_entry
-                              on_exit on_error max_retries max_time)
-  ERROR_PROPERTY_NAMES   = %w(aetype datatype)
-  MAIN_METHOD_ATTRIBUTES = %w(scope language location data)
+                              on_exit on_error max_retries max_time].freeze
+  ERROR_PROPERTY_NAMES   = %w[aetype datatype].freeze
+  MAIN_METHOD_ATTRIBUTES = %w[scope language location data].freeze
 
   CONGRUENT_METHOD = 1
   COMPATIBLE_METHOD = 2

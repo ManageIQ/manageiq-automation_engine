@@ -63,7 +63,7 @@ module MiqAeDatastore
           priority += 1
           f["message"] ||= MiqAeField.default('message')
           f["priority"] ||= priority
-          f['substitute'] = MiqAeField.default('substitute') unless %w(true false).include?(f['substitute'])
+          f['substitute'] = MiqAeField.default('substitute') unless %w[true false].include?(f['substitute'])
           f['substitute'] = true  if f['substitute'] == 'true'
           f['substitute'] = false if f['substitute'] == 'false'
           default_value = f.delete("content")
@@ -74,7 +74,7 @@ module MiqAeDatastore
             f["collect"] = REXML::Text.unnormalize(f["collect"].strip)
           end
 
-          %w(on_entry on_exit on_error max_retries max_time).each do |k|
+          %w[on_entry on_exit on_error max_retries max_time].each do |k|
             f[k] = REXML::Text.unnormalize(f[k].strip) unless f[k].blank?
           end
 
@@ -102,7 +102,7 @@ module MiqAeDatastore
       value = field["value"] || field["content"]
       value.strip! unless value.blank?
       options[:value]    = value
-      %w(collect on_entry on_exit on_error max_retries max_time).each do |key|
+      %w[collect on_entry on_exit on_error max_retries max_time].each do |key|
         next if field[key].blank?
         options[key.to_sym] = REXML::Text.unnormalize(field[key].strip)
       end
