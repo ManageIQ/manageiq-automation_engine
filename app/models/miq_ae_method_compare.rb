@@ -60,8 +60,8 @@ class MiqAeMethodCompare
   end
 
   def add_to_incompatibilities_if_different(method)
-    old_value = @old_method.send(method) if @old_method.respond_to? method
-    new_value = @new_method.send(method) if @new_method.respond_to? method
+    old_value = @old_method.send(method) if @old_method.respond_to?(method)
+    new_value = @new_method.send(method) if @new_method.respond_to?(method)
     return if old_value == new_value
     @incompatibilities << {'attribute' => method, 'old_data' => old_value, 'new_data' => new_value}
   end

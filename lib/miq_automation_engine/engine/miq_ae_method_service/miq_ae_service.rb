@@ -133,7 +133,7 @@ module MiqAeMethodService
       MiqAeServiceObject.new(obj, self)
     rescue => e
       $miq_ae_logger.error("instantiate failed : #{e.message}")
-      return nil
+      nil
     end
 
     def object(path = nil)
@@ -236,7 +236,7 @@ module MiqAeMethodService
     def create_notification(values_hash = {})
       create_notification!(values_hash)
     rescue
-      return nil
+      nil
     end
 
     def create_notification!(values_hash = {})
@@ -257,12 +257,12 @@ module MiqAeMethodService
     end
 
     def instance_exists?(path)
-      _log.info "<< path=#{path.inspect}"
-      !!(__find_instance_from_path(path))
+      _log.info("<< path=#{path.inspect}")
+      !!__find_instance_from_path(path)
     end
 
     def instance_create(path, values_hash = {})
-      _log.info "<< path=#{path.inspect}, values_hash=#{values_hash.inspect}"
+      _log.info("<< path=#{path.inspect}, values_hash=#{values_hash.inspect}")
 
       return false unless editable_instance?(path)
 
@@ -282,13 +282,13 @@ module MiqAeMethodService
     end
 
     def instance_get_display_name(path)
-      _log.info "<< path=#{path.inspect}"
+      _log.info("<< path=#{path.inspect}")
       aei = __find_instance_from_path(path)
       aei.try(:display_name)
     end
 
     def instance_set_display_name(path, display_name)
-      _log.info "<< path=#{path.inspect}, display_name=#{display_name.inspect}"
+      _log.info("<< path=#{path.inspect}, display_name=#{display_name.inspect}")
       aei = __find_instance_from_path(path)
       return false if aei.nil?
 
@@ -297,7 +297,7 @@ module MiqAeMethodService
     end
 
     def instance_update(path, values_hash)
-      _log.info "<< path=#{path.inspect}, values_hash=#{values_hash.inspect}"
+      _log.info("<< path=#{path.inspect}, values_hash=#{values_hash.inspect}")
       return false unless editable_instance?(path)
 
       aei = __find_instance_from_path(path)
@@ -308,7 +308,7 @@ module MiqAeMethodService
     end
 
     def instance_find(path, options = {})
-      _log.info "<< path=#{path.inspect}"
+      _log.info("<< path=#{path.inspect}")
       result = {}
 
       ns, klass, instance = MiqAeEngine::MiqAePath.split(path)
@@ -333,7 +333,7 @@ module MiqAeMethodService
     end
 
     def instance_get(path)
-      _log.info "<< path=#{path.inspect}"
+      _log.info("<< path=#{path.inspect}")
       aei = __find_instance_from_path(path)
       return nil if aei.nil?
 
@@ -341,7 +341,7 @@ module MiqAeMethodService
     end
 
     def instance_delete(path)
-      _log.info "<< path=#{path.inspect}"
+      _log.info("<< path=#{path.inspect}")
       return false unless editable_instance?(path)
 
       aei = __find_instance_from_path(path)

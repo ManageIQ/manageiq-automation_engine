@@ -192,11 +192,11 @@ module MiqAeEngine
 
     def attribute_value_to_xml(value, xml)
       case value.class.to_s
-      when 'MiqAePassword'            then xml.Password OPAQUE_PASSWORD
-      when 'String'                   then xml.String   value
-      when 'Fixnum'                   then xml.Fixnum   value
-      when 'Symbol'                   then xml.Symbol   value.to_s
-      when 'TrueClass', 'FalseClass'  then xml.Boolean  value.to_s
+      when 'MiqAePassword'            then xml.Password(OPAQUE_PASSWORD)
+      when 'String'                   then xml.String(value)
+      when 'Fixnum'                   then xml.Fixnum(value)
+      when 'Symbol'                   then xml.Symbol(value.to_s)
+      when 'TrueClass', 'FalseClass'  then xml.Boolean(value.to_s)
       when /MiqAeMethodService::(.*)/ then xml.tag!($1.gsub(/::/, '-'), :object_id => value.object_id, :id => value.id)
       when 'Array'                    then xml.Array  do
         value.each_index do |i|
@@ -209,10 +209,10 @@ module MiqAeEngine
         end
       end
       when 'DRb::DRbUnknown'
-        $miq_ae_logger.error "Found DRbUnknown for value: #{value.inspect} in XML: #{xml.inspect}"
-        xml.String value
+        $miq_ae_logger.error("Found DRbUnknown for value: #{value.inspect} in XML: #{xml.inspect}")
+        xml.String(value)
       else
-        xml.tag!(value.class.to_s.gsub(/::/, '-')) { xml.cdata! value.inspect }
+        xml.tag!(value.class.to_s.gsub(/::/, '-')) { xml.cdata!(value.inspect) }
       end
     end
 
@@ -273,8 +273,8 @@ module MiqAeEngine
         value = args.delete(args_key)
         args["#{key}_id"] = value if attribute_for_vmdb_object?(klass, value) && !@attributes.key?(key)
         args[key] = MiqAeObject.convert_value_based_on_datatype(value, klass)
-      else
-        args[args_key.downcase] = args.delete(args_key) if args_key != args_key.downcase
+      elsif args_key != args_key.downcase
+        args[args_key.downcase] = args.delete(args_key)
       end
     end
 
@@ -637,12 +637,11 @@ module MiqAeEngine
           Benchmark.current_realtime[:relationship_followed_count] += 1
           rels << @workspace.instantiate(r, @workspace.ae_user, self)
         end
-        process_collects(collect, rels)
       else
         Benchmark.current_realtime[:relationship_followed_count] += 1
         rels = @workspace.instantiate(relationship, @workspace.ae_user, self)
-        process_collects(collect, rels)
       end
+      process_collects(collect, rels)
       @rels[name] = rels
       $miq_ae_logger.info("Followed  Relationship [#{relationship}]")
     end
@@ -673,11 +672,11 @@ module MiqAeEngine
 
       parts = k.split(PATH_SEPARATOR)
       left = parts.pop
-      unless parts.empty?
+      if parts.empty?
+        obj = self
+      else
         path = parts.first.blank? ? PATH_SEPARATOR : parts.join(PATH_SEPARATOR)
         obj = @workspace.get_obj_from_path(path)
-      else
-        obj = self
       end
       obj.attributes[left.downcase] = v unless obj.nil?
     end
@@ -760,12 +759,10 @@ module MiqAeEngine
           else
             hash[left]       = self[right]
           end
-        else
-          if ltype == :value
+        elsif ltype == :value
             hash[rels[left]] = rels[right]
-          else
+        else
             hash[left]       = rels[right]
-          end
         end
       end
       process_collect_set_attribute(lh, hash) unless hash.length.zero?
@@ -777,13 +774,13 @@ module MiqAeEngine
       method  = result[3].strip.downcase unless result[3].nil?
       cattr ||= name                     unless rels.nil?  # Set cattr to name ONLY if coming from relationship
 
-      if rels.kind_of?(Array)
-        value = rels.collect { |r| r[name] }
-      elsif rels.nil?
-        value = self[name]
-      else
-        value = rels[name]
-      end
+      value = if rels.kind_of?(Array)
+                rels.collect { |r| r[name] }
+              elsif rels.nil?
+                self[name]
+              else
+                rels[name]
+              end
       process_collect_set_attribute(cattr, value)
     end
 
@@ -791,7 +788,7 @@ module MiqAeEngine
       return [] if rel.blank?
 
       scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(rel)
-      return [rel] unless MiqAePath.has_wildcard?(path)
+      return [rel] unless MiqAePath.wildcard?(path)
 
       ns, klass, instance = MiqAePath.split(path)
 
@@ -840,16 +837,16 @@ module MiqAeEngine
     def classify_value(value)
       if value.starts_with?("'")
         raise "Unmatched Single Quoted String <#{e}> in Collect" unless value.ends_with?("'")
-        return value[1..-2]
+        value[1..-2]
       elsif value.starts_with?("\"")
         raise "Unmatched Double Quoted String <#{e}> in Collect" unless value.ends_with?("\"")
-        return value[1..-2]
+        value[1..-2]
       elsif /^[+-]?[0-9]+\s*$/.match(value)
-        return value.to_i
+        value.to_i
       elsif /^[-+]?[0-9]+\.[0-9]+\s*$/.match(value)
-        return value.to_f
+        value.to_f
       else
-        return self[value]
+        self[value]
       end
     end
 
