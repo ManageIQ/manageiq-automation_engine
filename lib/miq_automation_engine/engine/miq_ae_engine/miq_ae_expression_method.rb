@@ -23,7 +23,7 @@ module MiqAeEngine
     def load_expression(data)
       raise MiqAeException::MethodExpressionEmpty, "Empty expression" if data.blank?
       begin
-        hash = YAML.load(data)
+        hash = YAML.safe_load(data, [Symbol])
         if hash[:expression] && hash[:db]
           @exp = hash[:expression]
           @exp_object = hash[:db]

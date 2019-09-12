@@ -17,7 +17,7 @@ class MiqAeYamlExportConsolidated < MiqAeYamlExport
     path = File.join(base_path, export_hash['output_filename']).split('/')
     path.shift  if base_path[0, 1] == '/'
     data = export_hash['export_data']
-    data = YAML.load(data) if export_hash['output_filename'].ends_with?('.yaml')
+    data = YAML.safe_load(data, [Symbol, Time], [], :aliases => true) if export_hash['output_filename'].ends_with?('.yaml')
     path << data
     @yaml_model.store_path(*path)
   end

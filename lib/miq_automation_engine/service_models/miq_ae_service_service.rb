@@ -105,22 +105,22 @@ module MiqAeMethodService
 
     def owner=(owner)
       if owner.nil? || owner.kind_of?(MiqAeMethodService::MiqAeServiceUser)
-        if owner.nil?
-          @object.evm_owner = nil
-        else
-          @object.evm_owner = User.find_by(:id => owner.id)
-        end
+        @object.evm_owner = if owner.nil?
+                              nil
+                            else
+                              User.find_by(:id => owner.id)
+                            end
         @object.save
       end
     end
 
     def group=(group)
       if group.nil? || group.kind_of?(MiqAeMethodService::MiqAeServiceMiqGroup)
-        if group.nil?
-          @object.miq_group = nil
-        else
-          @object.miq_group = MiqGroup.find_by(:id => group.id)
-        end
+        @object.miq_group = if group.nil?
+                              nil
+                            else
+                              MiqGroup.find_by(:id => group.id)
+                            end
         @object.save
       end
     end

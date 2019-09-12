@@ -17,7 +17,7 @@ module MiqAeEngine
     end
 
     def load_previous_state_info(yaml)
-      @current_state_info = YAML.load(yaml)
+      @current_state_info = YAML.safe_load(yaml)
     end
   end
 end

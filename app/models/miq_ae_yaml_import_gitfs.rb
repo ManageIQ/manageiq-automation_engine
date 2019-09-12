@@ -87,7 +87,7 @@ class MiqAeYamlImportGitfs < MiqAeYamlImport
   end
 
   def load_file(file)
-    YAML.load(@gwt.read_file(file))
+    YAML.safe_load(@gwt.read_file(file), [Symbol])
   end
 
   def load_method_ruby(method_file_name)

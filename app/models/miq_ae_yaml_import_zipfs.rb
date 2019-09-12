@@ -94,7 +94,7 @@ class MiqAeYamlImportZipfs < MiqAeYamlImport
   end
 
   def load_file(file)
-    YAML.load(@zip.file.read(file))
+    YAML.safe_load(@zip.file.read(file))
   end
 
   def load_method_ruby(method_file_name)

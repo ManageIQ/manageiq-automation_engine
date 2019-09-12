@@ -321,4 +321,5 @@ class MiqAeYamlImport
   def domain_locked?(domain_name)
     MiqAeDomain.find_by(:name => domain_name)&.contents_locked? ? true : false
   end
-end # class
+end
+# class

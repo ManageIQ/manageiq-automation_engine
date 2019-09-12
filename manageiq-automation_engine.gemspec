@@ -1,4 +1,4 @@
-$:.push File.expand_path("../lib", __FILE__)
+$LOAD_PATH.push(File.expand_path('lib', __dir__))
 
 # Maintain your gem's version:
 require "manageiq/automation_engine/version"
@@ -15,8 +15,8 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,lib}/**/*", "LICENSE.txt", "Rakefile", "README.md"]
 
-  s.add_dependency "rubyzip", "~>1.2.2"
+  s.add_dependency("rubyzip", "~>1.2.2")
 
-  s.add_development_dependency "codeclimate-test-reporter", "~> 1.0.0"
-  s.add_development_dependency "simplecov"
+  s.add_development_dependency("codeclimate-test-reporter", "~> 1.0.0")
+  s.add_development_dependency("simplecov")
 end

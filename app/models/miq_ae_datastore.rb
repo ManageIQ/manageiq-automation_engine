@@ -213,13 +213,13 @@ module MiqAeDatastore
   def self.seed
     ns = MiqAeDomain.find_by_fqname(MANAGEIQ_DOMAIN)
     unless ns
-      _log.info "Seeding ManageIQ domain..."
+      _log.info("Seeding ManageIQ domain...")
       begin
         reset_to_defaults
       rescue => err
-        _log.error "Seeding... Reset failed, #{err.message}"
+        _log.error("Seeding... Reset failed, #{err.message}")
       else
-        _log.info "Seeding... Complete"
+        _log.info("Seeding... Complete")
       end
     end
     _log.info("Resetting domain priorities at startup...")
@@ -271,4 +271,5 @@ module MiqAeDatastore
     nsd, = ::MiqAeEngine::MiqAePath.split(path, options)
     MiqAeNamespace.find_by_fqname(nsd, false) != nil
   end
-end # module MiqAeDatastore
+end
+# module MiqAeDatastore

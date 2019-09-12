@@ -216,10 +216,10 @@ module MiqAeEngine
           yield stdin if block_given?
           stdin.close
           threads << Thread.new do
-            stdout.each_line { |msg| $miq_ae_logger.info "Method STDOUT: #{msg.strip}" }
+            stdout.each_line { |msg| $miq_ae_logger.info("Method STDOUT: #{msg.strip}") }
           end
           threads << Thread.new do
-            stderr.each_line { |msg| $miq_ae_logger.error "Method STDERR: #{msg.strip}" }
+            stderr.each_line { |msg| $miq_ae_logger.error("Method STDERR: #{msg.strip}") }
           end
           threads.each(&:join)
           wait_thread.value

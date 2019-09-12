@@ -110,7 +110,7 @@ module MiqAeEngine
       message = fragment.blank? ? "create" : fragment.downcase
       args = MiqAeUri.query2hash(query)
       if (ae_state_data = args.delete('ae_state_data'))
-        @persist_state_hash.merge!(YAML.load(ae_state_data))
+        @persist_state_hash.merge!(YAML.safe_load(ae_state_data, [Symbol]))
       end
 
       if (ae_state_previous = args.delete('ae_state_previous'))
@@ -131,7 +131,7 @@ module MiqAeEngine
         if scheme == "miqaedb"
           obj = MiqAeObject.new(self, ns, klass, instance)
 
-          @current.push({:ns => ns, :klass => klass, :instance => instance, :object => obj, :message => message})
+          @current.push(:ns => ns, :klass => klass, :instance => instance, :object => obj, :message => message)
           pushed = true
           @nodes << obj
           link_parent_child(root, obj) if root
@@ -202,7 +202,7 @@ module MiqAeEngine
       objs = path.nil? ? roots : get_obj_from_path(path)
       result = objs.collect { |obj| to_hash(obj) }.compact
       s = ""
-      XmlHash.from_hash({"MiqAeObject" => result}, :rootname => "MiqAeWorkspace").to_xml.write(s, 2)
+      XmlHash.from_hash({"MiqAeObject" => result}, {:rootname => "MiqAeWorkspace"}).to_xml.write(s, 2)
       s
     end
 
@@ -320,7 +320,8 @@ module MiqAeEngine
         until plist.empty?
           part = plist.shift
           next if part.blank? || part == "."
-          raise MiqAeException::InvalidPathFormat, "bad part [#{part}] in path [#{path}]" if (part != "..")
+          raise MiqAeException::InvalidPathFormat, "bad part [#{part}] in path [#{path}]" if part != ".."
+
           obj = obj.node_parent
         end
       else

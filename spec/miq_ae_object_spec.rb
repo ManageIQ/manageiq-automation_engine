@@ -69,7 +69,7 @@ describe MiqAeEngine::MiqAeObject do
   end
 
   it "#process_args_as_attributes with a single element array" do
-    result = @miq_obj.process_args_as_attributes({"Array::vms" => "VmOrTemplate::#{@vm.id}"})
+    result = @miq_obj.process_args_as_attributes("Array::vms" => "VmOrTemplate::#{@vm.id}")
     expect(result["vms"]).to be_kind_of(Array)
     expect(result["vms"].length).to eq(1)
   end
@@ -86,7 +86,7 @@ describe MiqAeEngine::MiqAeObject do
 
   it "#process_args_as_attributes with an array" do
     vm2 = FactoryBot.create(:vm_vmware)
-    result = @miq_obj.process_args_as_attributes({"Array::vms" => "VmOrTemplate::#{@vm.id},VmOrTemplate::#{vm2.id}"})
+    result = @miq_obj.process_args_as_attributes("Array::vms" => "VmOrTemplate::#{@vm.id},VmOrTemplate::#{vm2.id}")
     expect(result["vms"]).to be_kind_of(Array)
     expect(result["vms"].length).to eq(2)
   end
@@ -181,7 +181,7 @@ describe MiqAeEngine::MiqAeObject do
     it "should not raise an exception before exceeding max_time" do
       Timecop.freeze(Time.parse('2013-01-01 00:59:59 UTC')) do
         @ws.root['ae_state_started'] = '2013-01-01 00:00:00 UTC'
-        expect { @miq_obj.enforce_state_maxima({'max_time' => '1.hour'}) }.to_not raise_error
+        expect { @miq_obj.enforce_state_maxima('max_time' => '1.hour') }.to_not raise_error
       end
     end
 

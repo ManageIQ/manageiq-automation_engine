@@ -106,7 +106,7 @@ class MiqAeBrowser
   end
 
   def find_base_object(path, options)
-    parts = path.split('/').select { |p| p != "" }
+    parts = path.split('/').reject { |p| p == "" }
     object = find_domain(parts[0], options)
     parts[1..-1].each { |part| object = children(object, options).find { |obj| part.casecmp(obj.ae_object.name).zero? } }
     object
