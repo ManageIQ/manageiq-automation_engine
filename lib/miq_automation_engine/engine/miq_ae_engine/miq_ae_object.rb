@@ -10,7 +10,7 @@ module MiqAeEngine
     COLLECT_SEPARATOR = ';'.freeze
     METHOD_SEPARATOR  = '.'.freeze
     DEFAULT_INSTANCE  = '.default'.freeze
-    MISSING_INSTANCE  = '.missing'
+    MISSING_INSTANCE  = '.missing'.freeze
     OPAQUE_PASSWORD   = '********'.freeze
     FIELD_ATTRIBUTES  = %w[collect on_entry on_exit on_error max_retries max_time].freeze
     FIELD_VALUES      = %w[value default_value].freeze
