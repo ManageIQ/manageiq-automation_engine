@@ -13,7 +13,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   context "exposes ActiveSupport methods" do
     it "nil#blank?" do
       method   = "$evm.root['#{@ae_result_key}'] = nil.blank?"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       ae_object = invoke_ae.root(@ae_result_key)
       expect(ae_object).to be_truthy
     end
@@ -34,7 +34,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
     it "sends mail synchronous" do
       method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, {:bcc => #{options[:bcc].inspect}, :cc => #{options[:cc].inspect}, :content_type => #{options[:content_type].inspect}})"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
       expect(GenericMailer).to receive(:deliver).with(:automation_notification, options).once
       ae_object = invoke_ae.root(@ae_result_key)
@@ -47,7 +47,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       miq_server.server_roles << FactoryBot.create(:server_role, :name => 'notifier')
 
       method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, {:bcc => #{options[:bcc].inspect}, :cc => #{options[:cc].inspect}, :content_type => #{options[:content_type].inspect}})"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
       expect(MiqQueue).to receive(:put).with(
         :class_name  => 'GenericMailer',
@@ -65,7 +65,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     from    = "fred@bedrock.gov"
     inputs  = {:to => to, :from => from}
     method   = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v1, #{inputs.inspect})"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
     expect(MiqSnmp).to receive(:trap_v1).with(inputs).once
@@ -88,7 +88,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     from    = "fred@bedrock.gov"
     inputs  = {:to => to, :from => from}
     method   = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v2, #{inputs.inspect})"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
     expect(MiqSnmp).to receive(:trap_v2).with(inputs).once
@@ -108,7 +108,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
   it "#vm_templates" do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.execute(:vm_templates)"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     expect(invoke_ae.root(@ae_result_key)).to be_empty
 
@@ -123,7 +123,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   it "#category_exists?" do
     category = "flintstones"
     method   = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_exists?, #{category.inspect})"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     expect(invoke_ae.root(@ae_result_key)).to be_falsey
 
@@ -140,7 +140,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   end
 
   it "#category_create" do
-    @ae_method.update_attributes(:data => category_create_script)
+    @ae_method.update(:data => category_create_script)
 
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
   end
@@ -238,7 +238,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   it "#tag_exists?" do
     ct = FactoryBot.create(:classification_department_with_tags)
     method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_exists?, #{ct.name.inspect}, #{ct.entries.first.name.inspect})"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
   end
@@ -246,7 +246,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   it "#tag_create" do
     ct = FactoryBot.create(:classification_department_with_tags)
     method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_create, #{ct.name.inspect}, {:name => 'fred', :description => 'ABC'})"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
     ct.reload

@@ -12,7 +12,7 @@ describe MiqAeEngine::MiqAeBuiltinMethod do
     end
 
     it 'with policy prevented' do
-      event.update_attributes(:full_data => {:policy => {:prevented => true}})
+      event.update(:full_data => {:policy => {:prevented => true}})
       expect { subject }.to raise_error(MiqAeException::StopInstantiation)
     end
   end

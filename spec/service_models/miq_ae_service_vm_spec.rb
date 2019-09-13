@@ -24,7 +24,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
 
   it "#ems_custom_keys" do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].ems_custom_keys"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(Array)
     expect(ae_object).to be_empty
@@ -50,7 +50,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
     key    = 'key1'
     value  = 'value1'
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].ems_custom_get('#{key}')"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_nil
 
@@ -62,7 +62,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
   it "#remove_from_vmdb" do
     expect(VmOrTemplate.count).to eq(1)
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].remove_from_vmdb"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(VmOrTemplate.count).to eq(0)
   end
@@ -75,7 +75,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
     context "#add_to_service" do
       it "without a service relationship" do
         method = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].add_to_service($evm.vmdb('service').first)"
-        @ae_method.update_attributes(:data => method)
+        @ae_method.update(:data => method)
         ae_object = invoke_ae.root(@ae_result_key)
 
         expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceServiceResource)
@@ -85,7 +85,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
       it "with an existing service relationship" do
         @service.add_resource!(@vm)
         method = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].add_to_service($evm.vmdb('service').first)"
-        @ae_method.update_attributes(:data => method)
+        @ae_method.update(:data => method)
 
         expect { invoke_ae.root(@ae_result_key) }.to raise_error(MiqAeException::AbortInstantiation)
       end
@@ -94,7 +94,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
     context "#remove_from_service" do
       it "without a service relationship" do
         method = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].remove_from_service"
-        @ae_method.update_attributes(:data => method)
+        @ae_method.update(:data => method)
 
         expect(invoke_ae.root(@ae_result_key)).to be_nil
       end
@@ -102,7 +102,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
       it "with an existing service relationship" do
         @service.add_resource!(@vm)
         method = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].remove_from_service"
-        @ae_method.update_attributes(:data => method)
+        @ae_method.update(:data => method)
 
         expect(invoke_ae.root(@ae_result_key)).to be_kind_of(MiqAeMethodService::MiqAeServiceServiceResource)
       end
@@ -154,7 +154,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
   end
 
   it "#retires_on - today" do
-    vm.update_attributes(:retirement_last_warn => Time.zone.now)
+    vm.update(:retirement_last_warn => Time.zone.now)
     service_vm.retires_on = Time.zone.now
 
     vm.reload
@@ -163,7 +163,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
   end
 
   it "#retires_on - tomorrow" do
-    vm.update_attributes(
+    vm.update(
       :retired              => true,
       :retirement_last_warn => Time.zone.now,
       :retirement_state     => "retiring"
@@ -191,7 +191,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
 
   it "#extend_retires_on - future retirement date set" do
     Timecop.freeze(Time.zone.now) do
-      vm.update_attributes(
+      vm.update(
         :retired              => true,
         :retirement_last_warn => Time.zone.now,
         :retirement_state     => "retiring"

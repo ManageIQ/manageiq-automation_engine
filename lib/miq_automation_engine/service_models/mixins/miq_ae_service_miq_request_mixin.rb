@@ -19,7 +19,7 @@ module MiqAeServiceMiqRequestMixin
     ar_method do
       @object.with_lock do
         @object.options[key] = value
-        @object.update_attributes(:options => @object.options)
+        @object.update(:options => @object.options)
       end
     end
   end

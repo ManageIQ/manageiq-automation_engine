@@ -154,8 +154,8 @@ describe MiqAeDatastore do
       d1 = FactoryBot.create(:miq_ae_system_domain, :priority => 10, :name => "DOM1")
       d2 = FactoryBot.create(:miq_ae_domain_enabled, :priority => 11, :name => "DOM2")
       domain_attributes = MiqAeDatastore.preserved_attrs_for_domains
-      d2.update_attributes(:priority => 6, :enabled => false)
-      d1.update_attributes(:priority => 1, :enabled => true)
+      d2.update(:priority => 6, :enabled => false)
+      d1.update(:priority => 1, :enabled => true)
       expect(MiqAeDatastore.preserved_attrs_for_domains).not_to eq(domain_attributes)
       MiqAeDatastore.restore_attrs_for_domains(domain_attributes)
       expect(MiqAeDatastore.preserved_attrs_for_domains).to eq(domain_attributes)

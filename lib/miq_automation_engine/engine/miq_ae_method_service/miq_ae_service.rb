@@ -292,7 +292,7 @@ module MiqAeMethodService
       aei = __find_instance_from_path(path)
       return false if aei.nil?
 
-      aei.update_attributes(:display_name => display_name)
+      aei.update(:display_name => display_name)
       true
     end
 

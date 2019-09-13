@@ -333,7 +333,7 @@ describe MiqAeDomain do
 
     it "git repo branch changed" do
       expect_any_instance_of(GitRepository).to receive(:branch_info).with(branch_name).twice.and_return(new_info)
-      dom1.update_attributes(:ref => branch_name, :git_repository => repo,
+      dom1.update(:ref => branch_name, :git_repository => repo,
                              :ref_type => MiqAeGitImport::BRANCH, :commit_sha => commit_sha)
       expect(dom1.git_repo_changed?).to be_truthy
       expect(dom1.latest_ref_info).to eq(new_info)
@@ -341,14 +341,14 @@ describe MiqAeDomain do
 
     it "git repo tag changed" do
       expect(repo).to receive(:tag_info).with(tag_name).twice.and_return(new_info)
-      dom1.update_attributes(:ref => tag_name, :ref_type => MiqAeGitImport::TAG,
+      dom1.update(:ref => tag_name, :ref_type => MiqAeGitImport::TAG,
                              :git_repository => repo, :commit_sha => commit_sha)
       expect(dom1.git_repo_changed?).to be_truthy
       expect(dom1.latest_ref_info).to eq(new_info)
     end
 
     it "git repo tag changed with no branch or tag" do
-      dom1.update_attributes(:git_repository => repo, :commit_sha => commit_sha)
+      dom1.update(:git_repository => repo, :commit_sha => commit_sha)
 
       expect { dom1.git_repo_changed? }.to raise_error(RuntimeError)
     end

@@ -38,7 +38,7 @@ class MiqAeDomain < MiqAeNamespace
 
   def self.reset_priority_by_ordered_ids(ids)
     ids.each_with_index do |id, priority|
-      MiqAeDomain.find_by!(:id => id).update_attributes(:priority => priority + 1)
+      MiqAeDomain.find_by!(:id => id).update(:priority => priority + 1)
     end
   end
 
@@ -133,7 +133,7 @@ class MiqAeDomain < MiqAeNamespace
     self.git_repository = git_repo
     self.ref_type = ref_type
     info = latest_ref_info
-    update_attributes!(:last_import_on => Time.now.utc,
+    update!(:last_import_on => Time.now.utc,
                        :commit_sha     => info['commit_sha'],
                        :commit_message => info['commit_message'],
                        :commit_time    => info['commit_time'],
@@ -214,7 +214,7 @@ class MiqAeDomain < MiqAeNamespace
   def self.reset_priority_of_system_domains
     domains = MiqAeDomain.where('source = ? AND name <> ?',
                                 SYSTEM_SOURCE,  MiqAeDatastore::MANAGEIQ_DOMAIN).order('name DESC')
-    domains.each_with_index { |dom, index| dom.update_attributes(:priority => index + 1) }
+    domains.each_with_index { |dom, index| dom.update(:priority => index + 1) }
   end
 
   private_class_method :reset_priority_of_system_domains
@@ -223,7 +223,7 @@ class MiqAeDomain < MiqAeNamespace
     base = MiqAeDomain.where('source = ? AND name <> ?',
                              SYSTEM_SOURCE,  MiqAeDatastore::MANAGEIQ_DOMAIN).count
     domains = MiqAeDomain.where('source <> ?', SYSTEM_SOURCE)
-    domains.each { |dom| dom.update_attributes(:priority => base + dom.priority) }
+    domains.each { |dom| dom.update(:priority => base + dom.priority) }
   end
 
   private_class_method :reset_priority_of_non_system_domains

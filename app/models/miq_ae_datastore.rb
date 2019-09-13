@@ -136,7 +136,7 @@ module MiqAeDatastore
     import_yaml_dir(datastore_dir, domain_name, tenant)
     if domain_name.downcase == MANAGEIQ_DOMAIN.downcase
       ns = MiqAeDomain.find_by_fqname(MANAGEIQ_DOMAIN)
-      ns.update_attributes!(:source   => MiqAeDomain::SYSTEM_SOURCE, :enabled => true,
+      ns.update!(:source   => MiqAeDomain::SYSTEM_SOURCE, :enabled => true,
                             :priority => MANAGEIQ_PRIORITY) if ns
     end
   end
@@ -264,7 +264,7 @@ module MiqAeDatastore
   end
 
   def self.restore_attrs_for_domains(hash)
-    hash.each { |dom, attrs| MiqAeDomain.find_by_fqname(dom, false).update_attributes(attrs) }
+    hash.each { |dom, attrs| MiqAeDomain.find_by_fqname(dom, false).update(attrs) }
   end
 
   def self.path_includes_domain?(path, options = {})

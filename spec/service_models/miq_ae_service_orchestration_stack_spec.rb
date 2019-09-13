@@ -100,7 +100,7 @@ describe MiqAeMethodService::MiqAeServiceOrchestrationStack do
 
   context "#retires_on" do
     it "now" do
-      stack.update_attributes(:retirement_last_warn => Time.zone.now)
+      stack.update(:retirement_last_warn => Time.zone.now)
       service_stack.retires_on = Time.zone.now
       stack.reload
       expect(stack.retirement_last_warn).to be_nil
@@ -108,7 +108,7 @@ describe MiqAeMethodService::MiqAeServiceOrchestrationStack do
     end
 
     it "clears all previously set retirement fields when reset" do
-      stack.update_attributes(
+      stack.update(
         :retired              => true,
         :retirement_last_warn => Time.zone.today,
         :retirement_state     => "retiring"
@@ -137,7 +137,7 @@ describe MiqAeMethodService::MiqAeServiceOrchestrationStack do
 
   it "#extend_retires_on - future retirement date set" do
     Timecop.freeze(Time.zone.now) do
-      stack.update_attributes(
+      stack.update(
         :retired              => true,
         :retirement_last_warn => Time.zone.now,
         :retirement_state     => "retiring"
