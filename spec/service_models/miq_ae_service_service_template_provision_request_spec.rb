@@ -20,7 +20,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateProvisionRequest do
       approver = 'wilma'
       reason   = "Why Not?"
       method   = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_request'].approve('#{approver}', '#{reason}')"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       expect(MiqRequest).to receive(:find).with(@service_template_provision_request.id.to_s).and_return(@service_template_provision_request)
       expect(@service_template_provision_request).to receive(:approve).with(approver, reason).once
       expect(invoke_ae.root(@ae_result_key)).to be_truthy

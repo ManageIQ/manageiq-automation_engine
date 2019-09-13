@@ -23,7 +23,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     end
 
     it "when with multiple targets" do
-      @vm.update_attributes(:ext_management_system => @ems)
+      @vm.update(:ext_management_system => @ems)
       expect(EmsRefresh).to receive(:queue_refresh).once do |*args|
         expect(args[0]).to match_array([@ems, @vm])
       end
@@ -32,7 +32,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     end
 
     it "when target object is empty" do
-      @ems_event.update_attributes(:ext_management_system => nil)
+      @ems_event.update(:ext_management_system => nil)
       @service_event.reload
 
       expect(EmsRefresh).not_to receive(:queue_refresh)
@@ -64,7 +64,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     before(:each) do
       @event = "vm_clone_start"
       @host  = FactoryBot.create(:host)
-      @vm.update_attributes(:host => @host)
+      @vm.update(:host => @host)
     end
 
     it "when event raised" do
@@ -83,7 +83,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     end
 
     it "when ems event has no ems connected" do
-      @ems_event.update_attributes(:ext_management_system => nil)
+      @ems_event.update(:ext_management_system => nil)
       @service_event.reload
 
       expect(MiqEvent).not_to receive(:raise_evm_event)
@@ -96,7 +96,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     end
 
     it "when policy event is nil, try ems event's event_type" do
-      @ems_event.update_attributes(:event_type => "someEventType")
+      @ems_event.update(:event_type => "someEventType")
       @service_event.reload
 
       expect(MiqEvent).to receive(:raise_evm_event).with(@vm, "someEventType", anything)
@@ -104,7 +104,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     end
 
     it "when target object is nil" do
-      @ems_event.update_attributes(:vm_or_template => nil)
+      @ems_event.update(:vm_or_template => nil)
       @service_event.reload
 
       expect(MiqEvent).not_to receive(:raise_evm_event)
@@ -112,7 +112,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     end
 
     it "when policy source object is nil" do
-      @vm.update_attributes(:host => nil)
+      @vm.update(:host => nil)
 
       expect(MiqEvent).not_to receive(:raise_evm_event)
       @service_event.policy("src_vm", @event, "host")
@@ -153,7 +153,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     end
 
     it "when target object is nil" do
-      @ems_event.update_attributes(:vm_or_template => nil)
+      @ems_event.update(:vm_or_template => nil)
       @service_event.reload
 
       expect_any_instance_of(EmsEvent).to receive(:refresh).with("src_vm")
@@ -168,7 +168,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
     end
 
     it "when target object is nil" do
-      @ems_event.update_attributes(:vm_or_template => nil)
+      @ems_event.update(:vm_or_template => nil)
       @service_event.reload
 
       expect_any_instance_of(EmsEvent).to receive(:refresh).with("src_vm")

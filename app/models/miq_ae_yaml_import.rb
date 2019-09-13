@@ -91,7 +91,7 @@ class MiqAeYamlImport
       else
         import_all_namespaces(domain_folder, domain_obj, domain_name)
       end
-      update_attributes(domain_obj) if domain_obj
+      update(domain_obj) if domain_obj
       domain_obj
     end
   end
@@ -161,7 +161,7 @@ class MiqAeYamlImport
     track_stats('namespace', namespace_obj)
     namespace_obj ||= add_namespace(fqname) unless @preview
     attrs = namespace_yaml.fetch_path('object', 'attributes').slice('display_name', 'description')
-    namespace_obj.update_attributes(attrs) unless @preview
+    namespace_obj.update(attrs) unless @preview
     if @options['class_name']
       import_class(File.join(namespace_folder, "#{@options['class_name']}#{CLASS_DIR_SUFFIX}"), namespace_obj)
     else
@@ -310,10 +310,10 @@ class MiqAeYamlImport
     true
   end
 
-  def update_attributes(domain_obj)
+  def update(domain_obj)
     return if domain_obj.name.downcase == MiqAeDatastore::MANAGEIQ_DOMAIN.downcase
     attrs = @options.slice('enabled', 'source')
-    domain_obj.update_attributes(attrs) unless attrs.empty?
+    domain_obj.update(attrs) unless attrs.empty?
   end
 
   private

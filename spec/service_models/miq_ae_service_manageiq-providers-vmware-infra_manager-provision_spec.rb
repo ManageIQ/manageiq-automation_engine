@@ -39,7 +39,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
     it "#miq_request" do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].miq_request"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       ae_object = invoke_ae.root(@ae_result_key)
       expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqRequest)
       expect(ae_object.id).to eq(@miq_provision_request.id)
@@ -47,7 +47,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
     it "#miq_provision_request" do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].miq_provision_request"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       ae_object = invoke_ae.root(@ae_result_key)
       expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqProvisionRequest)
       [:id, :provision_type, :state, :status, :src_vm_id, :userid].each do |meth|
@@ -58,7 +58,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
   it "#vm" do
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].vm"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_nil
 
@@ -73,7 +73,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
   it "#vm_template" do
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].vm_template"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqTemplate)
     [:id, :name, :location].each { |meth| expect(ae_object.send(meth)).to eq(@vm_template.send(meth)) }
@@ -81,7 +81,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
   it "#execute" do
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].execute"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     expect_any_instance_of(MiqProvision).to receive(:execute_queue).once
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
@@ -89,10 +89,10 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
   it "#request_type" do
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].request_type"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     %w[template clone_to_vm clone_to_template].each do |provision_type|
-      @miq_provision.update_attributes(:provision_type => provision_type)
+      @miq_provision.update(:provision_type => provision_type)
       expect(invoke_ae.root(@ae_result_key)).to eq(@miq_provision.provision_type)
     end
   end
@@ -100,7 +100,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   it "#register_automate_callback - no previous callbacks" do
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision']"
     method += ".register_automate_callback(:first_time_out, 'do_something_great')"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
     expect(@miq_provision[:options][:callbacks]).to be_nil
     @miq_provision.reload
@@ -112,11 +112,11 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   it "#register_automate_callback - with previous callbacks" do
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision']"
     method += ".register_automate_callback(:first_time_out, 'do_something_great')"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     expect(@miq_provision[:options][:callbacks]).to be_nil
     opts = @miq_provision.options.dup
     opts[:callbacks] = {:next_time_around => 'do_something_better_yet'}
-    @miq_provision.update_attributes(:options => opts)
+    @miq_provision.update(:options => opts)
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
     @miq_provision.reload
     callback_hash = @miq_provision[:options][:callbacks]
@@ -127,15 +127,15 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
   it "#target_type" do
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].target_type"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     %w[clone_to_template].each do |provision_type|
-      @miq_provision.update_attributes(:provision_type => provision_type)
+      @miq_provision.update(:provision_type => provision_type)
       expect(invoke_ae.root(@ae_result_key)).to eq('template')
     end
 
     %w[template clone_to_vm].each do |provision_type|
-      @miq_provision.update_attributes(:provision_type => provision_type)
+      @miq_provision.update(:provision_type => provision_type)
       expect(invoke_ae.root(@ae_result_key)).to eq('vm')
     end
   end
@@ -153,7 +153,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
     it "eligible_iso_images" do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_iso_images"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       result = invoke_ae.root(@ae_result_key)
       expect(result).to be_kind_of(Array)
       expect(result.first.class).to eq(MiqAeMethodService::MiqAeServiceIsoImage)
@@ -164,7 +164,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
         prov = $evm.root['miq_provision']
         prov.eligible_iso_images.each {|iso| prov.set_iso_image(iso)}
       AUTOMATE_SCRIPT
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:iso_image_id]).to eq([@iso_image.id, @iso_image.name])
     end
@@ -173,7 +173,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   context "#source_type" do
     before(:each) do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].source_type"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
     end
 
     it "works with a template" do
@@ -242,7 +242,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   context "subclassing" do
     before do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision']"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
     end
 
     it "return sub class" do
@@ -261,28 +261,28 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     end
 
     it "#statemachine_task_status state not finished, status of error returns a retry" do
-      @miq_provision.update_attributes(:status => "Error")
+      @miq_provision.update(:status => "Error")
       expect(ae_svc_prov.status).to eq('retry')
     end
 
     it "#statemachine_task_status state not finished, status of ok returns a retry" do
-      @miq_provision.update_attributes(:status => "ok")
+      @miq_provision.update(:status => "ok")
       expect(ae_svc_prov.status).to eq('retry')
     end
 
     it "#statemachine_task_status finished state, status of error returns error " do
-      @miq_provision.update_attributes(:status => "Error", :state => "finished",
+      @miq_provision.update(:status => "Error", :state => "finished",
                                        :vm => FactoryBot.create(:vm_vmware))
       expect(ae_svc_prov.status).to eq('error')
     end
 
     it "#statemachine_task_status finished state, status of ok returns error " do
-      @miq_provision.update_attributes(:status => "Ok", :state => "finished")
+      @miq_provision.update(:status => "Ok", :state => "finished")
       expect(ae_svc_prov.status).to eq('error')
     end
 
     it "#statemachine_task_status finished state, status of ok returns ok " do
-      @miq_provision.update_attributes(:status => "Ok", :state => "finished", :vm => FactoryBot.create(:vm_vmware))
+      @miq_provision.update(:status => "Ok", :state => "finished", :vm => FactoryBot.create(:vm_vmware))
       expect(ae_svc_prov.status).to eq('ok')
     end
   end
@@ -297,7 +297,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
     it "#eligible_customization_templates" do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_customization_templates"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       result = invoke_ae.root(@ae_result_key)
       expect(result).to be_kind_of(Array)
       expect(result.first.class).to eq(MiqAeMethodService::MiqAeServiceCustomizationTemplate)
@@ -308,7 +308,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
         prov = $evm.root['miq_provision']
         prov.eligible_customization_templates.each {|ct| prov.set_customization_template(ct)}
       AUTOMATE_SCRIPT
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:customization_template_id]).to eq([@ct.id, @ct.name])
       expect(@miq_provision.reload.options[:customization_template_script]).to eq(@ct.script)
@@ -330,7 +330,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
     it "#eligible_customization_specs" do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_customization_specs"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       result = invoke_ae.root(@ae_result_key)
       expect(result).to be_kind_of(Array)
       expect(result.first.class).to eq(MiqAeMethodService::MiqAeServiceCustomizationSpec)
@@ -341,7 +341,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
         prov = $evm.root['miq_provision']
         prov.eligible_customization_specs.each {|cs| prov.set_customization_spec(cs)}
       AUTOMATE_SCRIPT
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:sysprep_custom_spec]).to eq([@cs.id, @cs.name])
       expect(@miq_provision.reload.options[:sysprep_enabled]).to eq(%w[fields Specification])
@@ -352,7 +352,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
         prov = $evm.root['miq_provision']
         prov.eligible_customization_specs.each {|cs| prov.set_customization_spec(cs.name)}
       AUTOMATE_SCRIPT
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:sysprep_custom_spec]).to eq([@cs.id, @cs.name])
       expect(@miq_provision.reload.options[:sysprep_enabled]).to eq(%w[fields Specification])
@@ -368,7 +368,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
     it "#eligible_storage_profiles" do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_storage_profiles"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       result = invoke_ae.root(@ae_result_key)
       expect(result).to be_kind_of(Array)
       expect(result.first.class).to eq(MiqAeMethodService::MiqAeServiceStorageProfile)
@@ -379,7 +379,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
         prov = $evm.root['miq_provision']
         prov.eligible_storage_profiles.each {|sp| prov.set_storage_profile(sp)}
       AUTOMATE_SCRIPT
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:placement_storage_profile]).to eq(
         [storage_profile.id, storage_profile.name]
@@ -396,7 +396,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
 
     it "#eligible_resource_pools" do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].eligible_resource_pools"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       result = invoke_ae.root(@ae_result_key)
       expect(result).to be_kind_of(Array)
       expect(result.first.class).to eq(MiqAeMethodService::MiqAeServiceResourcePool)
@@ -407,7 +407,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
         prov = $evm.root['miq_provision']
         prov.eligible_resource_pools.each {|rsc| prov.set_resource_pool(rsc)}
       AUTOMATE_SCRIPT
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:placement_rp_name]).to eq([@rsc.id, @rsc.name])
     end

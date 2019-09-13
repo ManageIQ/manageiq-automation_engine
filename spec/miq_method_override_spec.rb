@@ -31,7 +31,7 @@ describe MiqAeDomain do
 
     def set_enabled(domain, state)
       dom = MiqAeDomain.find_by_fqname(domain)
-      dom.update_attributes!(:enabled => state)
+      dom.update!(:enabled => state)
     end
   end
 end

@@ -51,19 +51,19 @@ describe MiqAeDomain do
 
     def update_domain_attributes(domain_name, attrs)
       dom = MiqAeDomain.find_by_fqname(domain_name)
-      dom.update_attributes!(attrs)
+      dom.update!(attrs)
     end
 
     context 'Domain Checks' do
       it 'cannot set parent_id in a domain object' do
         domain = MiqAeDomain.create!(:name => 'Fred', :tenant => root_tenant)
         ns = MiqAeNamespace.create!(:name => 'NS1')
-        expect { domain.update_attributes!(:parent_id => ns.id) }.to raise_error(ActiveRecord::RecordInvalid)
+        expect { domain.update!(:parent_id => ns.id) }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'can set other attributes in a domain object' do
         domain = MiqAeDomain.create!(:name => 'Fred', :tenant => root_tenant)
-        expect(domain.update_attributes!(:priority => 10)).to be_truthy
+        expect(domain.update!(:priority => 10)).to be_truthy
       end
     end
 
@@ -101,7 +101,7 @@ describe MiqAeDomain do
       it "an enabled namespace should get picked up if the instance exists" do
         n3 = MiqAeNamespace.find_by_fqname('inert')
         expect(n3.enabled?).to be_falsey
-        n3.update_attributes!(:enabled => true)
+        n3.update!(:enabled => true)
         assert_method_executed('evm/AUTOMATE/should_get_used', 'inert', @user)
       end
 

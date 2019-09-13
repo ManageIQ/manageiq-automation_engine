@@ -21,7 +21,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
       context "#request_type" do
         %w[template clone_to_vm clone_to_template].each do |request_type|
           it "should set #{request_type} for #{t}" do
-            @miq_provision.update_attributes(:request_type => request_type)
+            @miq_provision.update(:request_type => request_type)
             expect(ae_svc_prov.provision_type).to eq(request_type)
           end
         end
@@ -29,13 +29,13 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
       context "#target_type" do
         it "clone_to_template" do
-          @miq_provision.update_attributes(:provision_type => 'clone_to_template')
+          @miq_provision.update(:provision_type => 'clone_to_template')
           expect(ae_svc_prov.target_type).to eq('template')
         end
 
         %w[template clone_to_vm].each do |provision_type|
           it provision_type.to_s do
-            @miq_provision.update_attributes(:provision_type => provision_type)
+            @miq_provision.update(:provision_type => provision_type)
             expect(ae_svc_prov.target_type).to eq('vm')
           end
         end
@@ -43,12 +43,12 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
       context "#source_type" do
         it "works with a template" do
-          @cloud_image.update_attributes(:template => true)
+          @cloud_image.update(:template => true)
           expect(ae_svc_prov.source_type).to eq('template')
         end
 
         it "works with a vm" do
-          @cloud_image.update_attributes(:template => false)
+          @cloud_image.update(:template => false)
           expect(ae_svc_prov.source_type).to eq('vm')
         end
       end

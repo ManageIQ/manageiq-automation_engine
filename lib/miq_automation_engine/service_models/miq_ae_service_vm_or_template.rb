@@ -67,7 +67,7 @@ module MiqAeMethodService
 
     def unlink_storage
       _log.info "Unlinking storage on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}>"
-      object_send(:update_attributes, :storage_id => nil)
+      object_send(:update, :storage_id => nil)
       true
     end
 

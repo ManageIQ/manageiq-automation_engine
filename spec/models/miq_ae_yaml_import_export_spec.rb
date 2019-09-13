@@ -295,7 +295,7 @@ describe MiqAeDatastore do
 
       it "import single system domain" do
         options = {'yaml_file' => @yaml_file}
-        @customer_domain.update_attributes(:source => MiqAeDomain::SYSTEM_SOURCE)
+        @customer_domain.update(:source => MiqAeDomain::SYSTEM_SOURCE)
         assert_single_domain_import(options, options)
         dom = MiqAeDomain.find_by_fqname(@customer_domain.name, false)
         expect(dom).to be_enabled
@@ -663,7 +663,7 @@ describe MiqAeDatastore do
     it 'all domains' do
       import_options = {'zip_file' => @zip_file, 'restore' => true}
       export_options = {'zip_file' => @zip_file}
-      @customer_domain.update_attributes(:enabled => true)
+      @customer_domain.update(:enabled => true)
       export_model(MiqAeYamlImportExportMixin::ALL_DOMAINS, export_options)
       reset_and_import(@export_dir, MiqAeYamlImportExportMixin::ALL_DOMAINS, import_options)
       expect(MiqAeDomain.find_by_fqname(@manageiq_domain.name, false).priority).to eql(0)

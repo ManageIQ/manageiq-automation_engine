@@ -14,17 +14,17 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplate do
 
     context "#type_display" do
       it "with service_type of atomic" do
-        @service_template.update_attributes(:service_type => 'atomic')
+        @service_template.update(:service_type => 'atomic')
         method = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template'].type_display "
-        @ae_method.update_attributes(:data => method)
+        @ae_method.update(:data => method)
         type_display = invoke_ae.root(@ae_result_key)
         expect(type_display).to eq('Item')
       end
 
       it "with service_type of composite" do
-        @service_template.update_attributes(:service_type => 'composite')
+        @service_template.update(:service_type => 'composite')
         method = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template'].type_display "
-        @ae_method.update_attributes(:data => method)
+        @ae_method.update(:data => method)
         type_display = invoke_ae.root(@ae_result_key)
         expect(type_display).to eq('Bundle')
       end
@@ -60,7 +60,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplate do
 
       it "#service_templates" do
         sub_service_template = FactoryBot.create(:service_template)
-        @service_resource.update_attributes(:resource => sub_service_template)
+        @service_resource.update(:resource => sub_service_template)
         first_service_template = @service_service_template.service_templates.first
 
         expect(first_service_template).to    be_kind_of(MiqAeMethodService::MiqAeServiceServiceTemplate)

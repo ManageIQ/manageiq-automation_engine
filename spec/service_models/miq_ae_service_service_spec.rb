@@ -24,7 +24,7 @@ describe MiqAeMethodService::MiqAeServiceService do
   it "#remove_from_vmdb" do
     expect(Service.count).to eq(1)
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].remove_from_vmdb"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(Service.count).to eq(0)
   end
@@ -32,20 +32,20 @@ describe MiqAeMethodService::MiqAeServiceService do
   it "#set the service name" do
     expect(@service.name).to eq('test_service')
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].name = 'new_test_service' "
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     @service.reload
     expect(@service.name).to eq('new_test_service')
   end
 
   it "#raises error with service name that's nil" do
-    expect { @ae_method.update_attributes!(:name => nil) }.to raise_error(ActiveRecord::RecordInvalid)
+    expect { @ae_method.update!(:name => nil) }.to raise_error(ActiveRecord::RecordInvalid)
   end
 
   it "#set the service description" do
     expect(@service.description).to eq('test_description')
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].description = 'new_test_description' "
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     @service.reload
     expect(@service.description).to eq('new_test_description')
@@ -57,7 +57,7 @@ describe MiqAeMethodService::MiqAeServiceService do
       @service.save
 
       method = "$evm.root['service'].display = false"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae
 
       @service.reload
@@ -72,7 +72,7 @@ describe MiqAeMethodService::MiqAeServiceService do
 
     it "updates the parent service" do
       method = "$evm.root['service'].parent_service = $evm.vmdb('service').find(#{@parent.id})"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae
 
       @parent.reload
@@ -91,7 +91,7 @@ describe MiqAeMethodService::MiqAeServiceService do
 
     it "clears the parent service" do
       method = "$evm.root['service'].parent_service = nil"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae
 
       @parent.reload
@@ -101,7 +101,7 @@ describe MiqAeMethodService::MiqAeServiceService do
 
     it "validates the parent service" do
       method = "$evm.root['service'].parent_service = 'validate'"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
 
       expect { invoke_ae }.to raise_error(MiqAeException::AbortInstantiation)
     end
@@ -118,7 +118,7 @@ $evm.vmdb('service').create(:name             => '#{service_name}',
                             :description      => '#{description}',
                             :service_template => service_template)
 EOF
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
       invoke_ae
 
       service = Service.find_by(:name => service_name)
@@ -131,7 +131,7 @@ EOF
 
     it "requires a service name" do
       method = "$evm.vmdb('service').create()"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
 
       expect { invoke_ae }.to raise_error(MiqAeException::AbortInstantiation)
     end
@@ -139,7 +139,7 @@ EOF
     it "ignores attributes that cannot be overridden" do
       service_name = 'test service name'
       method = "$evm.vmdb('service').create(:name => '#{service_name}', :some_invalid_attr => 1)"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
 
       expect { invoke_ae }.to_not raise_error
       expect(Service.find_by(:name => service_name)).not_to be_nil
@@ -166,7 +166,7 @@ EOF
     service << vm
     # method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].retire_service_resources"
 
-    # @ae_method.update_attributes(:data => method)
+    # @ae_method.update(:data => method)
     expect(service.service_resources.size).to eq(1)
     expect(service.service_resources.first.resource.respond_to?(:retire_now)).to be_truthy
     service_service.retire_service_resources
@@ -206,7 +206,7 @@ EOF
   end
 
   it "#retires_on - today" do
-    service.update_attributes(:retirement_last_warn => Time.zone.now)
+    service.update(:retirement_last_warn => Time.zone.now)
     service_service.retires_on = Time.zone.now
     service.reload
     expect(service.retirement_last_warn).to be_nil
@@ -214,7 +214,7 @@ EOF
   end
 
   it "#retires_on - tomorrow" do
-    service.update_attributes(
+    service.update(
       :retired              => true,
       :retirement_last_warn => Time.zone.today,
       :retirement_state     => "retiring"
@@ -242,7 +242,7 @@ EOF
 
   it "#extend_retires_on - future retirement date set" do
     Timecop.freeze(Time.zone.now) do
-      service.update_attributes(
+      service.update(
         :retired              => true,
         :retirement_last_warn => Time.zone.now,
         :retirement_state     => "retiring"

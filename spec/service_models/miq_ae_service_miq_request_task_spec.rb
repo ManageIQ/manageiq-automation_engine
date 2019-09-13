@@ -14,18 +14,18 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
 
   it "#execute" do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].execute"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     expect_any_instance_of(MiqRequestTask).to receive(:execute_queue).once
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
   end
 
   it "#miq_request" do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].miq_request"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
 
     user        = FactoryBot.create(:user)
     miq_request = FactoryBot.create(:vm_migrate_request, :requester => user)
-    @miq_request_task.update_attributes(:miq_request => miq_request)
+    @miq_request_task.update(:miq_request => miq_request)
 
     result = invoke_ae.root(@ae_result_key)
     expect(result).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqRequest)
@@ -34,7 +34,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
 
   it "#options" do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].options"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     options = {:a => 1, :b => 'two'}
     expect_any_instance_of(MiqRequestTask).to receive(:options).once.and_return(options)
     expect(invoke_ae.root(@ae_result_key)).to eq(options)
@@ -43,7 +43,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
   it "#get_option" do
     key = 'key1'
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].get_option('#{key}')"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     value = 'three hundred'
     expect_any_instance_of(MiqRequestTask).to receive(:get_option).with(key).once.and_return(value)
     expect(invoke_ae.root(@ae_result_key)).to eq(value)
@@ -52,7 +52,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
   it "#get_option_last" do
     key = 'key1'
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].get_option_last('#{key}')"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     value = 'three hundred'
     expect_any_instance_of(MiqRequestTask).to receive(:get_option_last).with(key).once.and_return(value)
     expect(invoke_ae.root(@ae_result_key)).to eq(value)
@@ -60,11 +60,11 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
 
   it "#set_option" do
     options = {:a => 1, :b => 'two'}
-    @miq_request_task.update_attributes(:options => options)
+    @miq_request_task.update(:options => options)
     key     = 'foo'
     value   = 'bar'
     method   = "$evm.root['miq_request_task'].set_option('#{key}', '#{value}')"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     invoke_ae
     new_options = options.dup
     new_options[key] = value
@@ -74,7 +74,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
   it "#get_tag" do
     category = 'category1'
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].get_tag('#{category}')"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     value = 'three hundred'
     expect_any_instance_of(MiqRequestTask).to receive(:get_tag).with(category).once.and_return(value)
     expect(invoke_ae.root(@ae_result_key)).to eq(value)
@@ -82,7 +82,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
 
   it "#get_tags" do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].get_tags"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     tags = ['tag1', 'tag2']
     expect_any_instance_of(MiqRequestTask).to receive(:get_tags).once.and_return(tags)
     expect(invoke_ae.root(@ae_result_key)).to eq(tags)
@@ -91,7 +91,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
   it "#get_classification" do
     category = 'category1'
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].get_classification('#{category}')"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     value = 'three hundred'
     expect_any_instance_of(MiqRequestTask).to receive(:get_classification).with(category).once.and_return(value)
     expect(invoke_ae.root(@ae_result_key)).to eq(value)
@@ -99,7 +99,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
 
   it "#get_classifications" do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request_task'].get_classifications"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     classifications = ['classification1', 'classification2']
     expect_any_instance_of(MiqRequestTask).to receive(:get_classifications).once.and_return(classifications)
     expect(invoke_ae.root(@ae_result_key)).to eq(classifications)
@@ -109,17 +109,17 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
     before(:each) do
       @message = 'message1'
       method   = "$evm.root['miq_request_task'].message = '#{@message}'"
-      @ae_method.update_attributes(:data => method)
+      @ae_method.update(:data => method)
     end
 
     it "should call update_and_notify_parent when miq_request_task.state != 'finished'" do
-      @miq_request_task.update_attributes(:state => 'ok')
+      @miq_request_task.update(:state => 'ok')
       expect_any_instance_of(MiqRequestTask).to receive(:update_and_notify_parent).with(:message => @message).once
       invoke_ae
     end
 
     it "should not call update_and_notify_parent when miq_request_task.state == 'finished'" do
-      @miq_request_task.update_attributes(:state => 'finished')
+      @miq_request_task.update(:state => 'finished')
       expect_any_instance_of(MiqRequestTask).to receive(:update_and_notify_parent).with(:message => @message).never
       invoke_ae
     end
@@ -128,7 +128,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequestTask do
   it "#finished" do
     message = 'message1'
     method   = "$evm.root['miq_request_task'].finished('#{message}')"
-    @ae_method.update_attributes(:data => method)
+    @ae_method.update(:data => method)
     expect_any_instance_of(MiqRequestTask).to receive(:update_and_notify_parent).with(:state => 'finished', :message => message).once
     invoke_ae
   end
