@@ -171,12 +171,16 @@ module MiqAeMethodService
 
     def self.ar_method
       yield
-    rescue Exception => err
+    rescue Exception => err # rubocop:disable Lint/RescueException
       $miq_ae_logger.error("MiqAeServiceMethods.ar_method raised: <#{err.class}>: <#{err.message}>")
       $miq_ae_logger.error(err.backtrace.join("\n"))
       raise
     ensure
-      ActiveRecord::Base.connection_pool.release_connection rescue nil
+      begin
+        ActiveRecord::Base.connection_pool.release_connection
+      rescue StandardError
+        nil
+      end
     end
     private_class_method :ar_method
   end

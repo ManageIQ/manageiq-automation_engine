@@ -14,7 +14,7 @@ module MiqAeEngine
         playbook = PLAYBOOK_CLASS.find(playbook_options[:playbook_id])
         $miq_ae_logger.info("Calling playbook.run with playbook: #{playbook.inspect}")
         task_id = playbook.run(playbook_options)
-      rescue => err
+      rescue StandardError => err
         $miq_ae_logger.error("Playbook Method Ended with error #{err.message}")
         reset
         raise MiqAeException::AbortInstantiation, err.message

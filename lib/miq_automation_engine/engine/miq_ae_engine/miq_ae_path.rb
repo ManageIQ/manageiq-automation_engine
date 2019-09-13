@@ -44,7 +44,7 @@ module MiqAeEngine
       instance       = options[:has_instance_name] ? parts.pop : nil
       klass          = parts.pop
       ns             = parts.join('/')
-      [ns, klass, instance, attribute_name].each { |k| k.downcase! unless k.nil? } if options[:downcase]
+      [ns, klass, instance, attribute_name].each { |k| k&.downcase! } if options[:downcase]
       return ns, klass, instance, attribute_name
     end
 

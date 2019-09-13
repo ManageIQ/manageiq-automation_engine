@@ -79,10 +79,14 @@ describe MiqAeMethodCompare do
   def prep_method_file_names(meth1 = nil, meth2 = nil)
     @first_method = meth1 if meth1
     @second_method = meth2 if meth2
-    @method1_file = File.join(@export_dir, @domain, @namespace,
-                              "#{@classname}.class", '__methods__', "#{meth1}.yaml") if meth1
-    @method2_file = File.join(@export_dir, @domain, @namespace,
-                              "#{@classname}.class", '__methods__', "#{meth2}.yaml") if meth2
+    if meth1
+      @method1_file = File.join(@export_dir, @domain, @namespace,
+                                "#{@classname}.class", '__methods__', "#{meth1}.yaml")
+    end
+    if meth2
+      @method2_file = File.join(@export_dir, @domain, @namespace,
+                                "#{@classname}.class", '__methods__', "#{meth2}.yaml")
+    end
     @ns1 = MiqAeNamespace.lookup_by_fqname("#{@domain}/#{@namespace}")
     @class = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @classname)
   end

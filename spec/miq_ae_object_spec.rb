@@ -322,4 +322,11 @@ describe MiqAeEngine::MiqAeObject do
       %w[Integer integer Fixnum].each { |type| expect(described_class.convert_value_based_on_datatype("45", type)).to eq(45) }
     end
   end
+
+  context "data type is nil" do
+    it "returns original value" do
+      test_value = "test_value"
+      expect(described_class.convert_value_based_on_datatype(test_value, nil)).to eq(test_value)
+    end
+  end
 end

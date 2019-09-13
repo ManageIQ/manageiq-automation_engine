@@ -125,7 +125,7 @@ module MiqAeDatastore
 
   def self.reset_default_namespace
     ns = MiqAeNamespace.lookup_by_fqname(DEFAULT_OBJECT_NAMESPACE)
-    ns.destroy if ns
+    ns&.destroy
     seed_default_namespace
   end
 
@@ -136,8 +136,10 @@ module MiqAeDatastore
     import_yaml_dir(datastore_dir, domain_name, tenant)
     if domain_name.downcase == MANAGEIQ_DOMAIN.downcase
       ns = MiqAeDomain.lookup_by_fqname(MANAGEIQ_DOMAIN)
-      ns.update!(:source   => MiqAeDomain::SYSTEM_SOURCE, :enabled => true,
-                            :priority => MANAGEIQ_PRIORITY) if ns
+      if ns
+        ns.update!(:source => MiqAeDomain::SYSTEM_SOURCE, :enabled => true,
+                              :priority => MANAGEIQ_PRIORITY)
+      end
     end
   end
 
@@ -216,7 +218,7 @@ module MiqAeDatastore
       _log.info("Seeding ManageIQ domain...")
       begin
         reset_to_defaults
-      rescue => err
+      rescue StandardError => err
         _log.error("Seeding... Reset failed, #{err.message}")
       else
         _log.info("Seeding... Complete")

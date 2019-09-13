@@ -258,10 +258,11 @@ module MiqAeMethodService
     #   in a service model
     def initialize(obj)
       ar_klass = self.class.send(:model)
-      raise ArgumentError.new("#{ar_klass.name} Nil Object specified") if obj.nil?
+      raise ArgumentError, "#{ar_klass.name} Nil Object specified" if obj.nil?
       if obj.kind_of?(ActiveRecord::Base) && !obj.kind_of?(ar_klass)
-        raise ArgumentError.new("#{ar_klass.name} Object expected, but received #{obj.class.name}")
+        raise ArgumentError, "#{ar_klass.name} Object expected, but received #{obj.class.name}"
       end
+
       @object = obj.kind_of?(ar_klass) ? obj : ar_method { ar_klass.find_by(:id => obj) }
       raise MiqAeException::ServiceNotFound, "#{ar_klass.name} Object [#{obj}] not found" if @object.nil?
     end
@@ -318,11 +319,6 @@ module MiqAeMethodService
       model.respond_to?(:tags)
     end
 
-    def verify_taggable_model
-      raise MiqAeException::UntaggableModel, "Model #{self.class} doesn't support tagging" unless taggable?
-    end
-    private :verify_taggable_model
-
     def reload
       object_send(:reload)
       self # Return self to prevent the internal object from being returned
@@ -332,7 +328,7 @@ module MiqAeMethodService
       ar_method do
         begin
           @object.public_send(name, *params)
-        rescue Exception
+        rescue Exception # rubocop:disable Lint/RescueException
           $miq_ae_logger.error("The following error occurred during instance method <#{name}> for AR object <#{@object.inspect}>")
           raise
         end
@@ -351,12 +347,16 @@ module MiqAeMethodService
       # In UI Worker, query caching is enabled.  This causes problems in Automate DRb Server (e.g. reload does not refetch from SQL)
       ActiveRecord::Base.connection.clear_query_cache if ActiveRecord::Base.connection.query_cache_enabled
       yield
-    rescue Exception => err
+    rescue Exception => err # rubocop:disable Lint/RescueException
       $miq_ae_logger.error("MiqAeServiceModelBase.ar_method raised: <#{err.class}>: <#{err.message}>")
       $miq_ae_logger.error(err.backtrace.join("\n"))
       raise
     ensure
-      ActiveRecord::Base.connection_pool.release_connection rescue nil
+      begin
+        ActiveRecord::Base.connection_pool.release_connection
+      rescue StandardError
+        nil
+      end
     end
 
     def ar_method(&block)
@@ -365,6 +365,12 @@ module MiqAeMethodService
 
     def ==(other)
       self.class == other.class && id == other.id
+    end
+
+    private
+
+    def verify_taggable_model
+      raise MiqAeException::UntaggableModel, "Model #{self.class} doesn't support tagging" unless taggable?
     end
   end
 end

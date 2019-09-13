@@ -90,16 +90,17 @@ module MiqAeEngine
       result = {}
       ems.hosts.each do |h|
         next unless h.power_state == "on"
+
         nvms = h.vms.collect { |v| v if v.power_state == "on" }.compact.length
-        if min_running_vms.nil? || nvms < min_running_vms
-          storages = h.writable_storages.find_all { |s| s.free_space > vm.provisioned_storage } # Filter out storages that do not have enough free space for the Vm
-          s = storages.max_by(&:free_space)
-          unless s.nil?
-            result["host"]    = h
-            result["storage"] = s
-            min_running_vms   = nvms
-          end
-        end
+        next unless min_running_vms.nil? || nvms < min_running_vms
+
+        storages = h.writable_storages.find_all { |s| s.free_space > vm.provisioned_storage } # Filter out storages that do not have enough free space for the Vm
+        s = storages.max_by(&:free_space)
+        next if s.nil?
+
+        result["host"]    = h
+        result["storage"] = s
+        min_running_vms   = nvms
       end
 
       ["host", "storage"].each { |k| obj[k] = result[k] } unless result.empty?

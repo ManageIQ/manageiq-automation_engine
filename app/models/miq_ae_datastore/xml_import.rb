@@ -34,7 +34,7 @@ module MiqAeDatastore
     def self.process_method(input)
       fields             = input.delete("MiqAeField")
       input["data"]      = input.delete("content")
-      input["data"].strip! unless input["data"].nil?
+      input["data"]&.strip!
       aem                = MiqAeMethod.new(input)
 
       # Find or Create the Method Input Definitions
@@ -89,7 +89,7 @@ module MiqAeDatastore
       input.delete("content")
       aei = MiqAeInstance.new(input)
       aei.ae_class = aec
-      fields.each { |f| process_field_value(aei, f) } unless fields.nil?
+      fields&.each { |f| process_field_value(aei, f) }
       aei
     end
 
@@ -134,18 +134,19 @@ module MiqAeDatastore
         create_domain(domain_name) if domain_name
         ae_namespaces = {}
         Benchmark.realtime_block(:datastore_import_time) do
-          classes.each do |c|
+          classes&.each do |c|
             namespace = c.delete("namespace")
             next if namespace == '$'
+
             namespace = File.join(domain_name, namespace) if domain_name && namespace != "$"
             ae_namespaces[namespace] ||= Benchmark.realtime_block(:build_namespaces) do
               MiqAeNamespace.find_or_create_by_fqname(namespace)
             end.first
             c["ae_namespace"] = ae_namespaces[namespace]
             process_class(c)
-          end unless classes.nil?
+          end
 
-          buttons.each { |b| process_button(b) } unless buttons.nil?
+          buttons&.each { |b| process_button(b) }
         end
       end
 

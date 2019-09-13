@@ -11,22 +11,23 @@ begin
   min_registered_vms = nil
   ems.hosts.each do |h|
     next unless h.power_state == "on"
+
     nvms = h.vms.length
-    if min_registered_vms.nil? || nvms < min_registered_vms
-      s = h.storages.max_by(&:free_space)
-      unless s.nil?
-        host    = h
-        storage = s
-        min_registered_vms = nvms
-      end
-    end
+    next unless min_registered_vms.nil? || nvms < min_registered_vms
+
+    s = h.storages.max_by(&:free_space)
+    next if s.nil?
+
+    host    = h
+    storage = s
+    min_registered_vms = nvms
   end
 
   obj = $evm.object
   obj["host"]    = host    unless host.nil?
   obj["storage"] = storage unless storage.nil?
   exit MIQ_OK
-rescue => err
+rescue StandardError => err
   $evm.log("error", err.message)
   $evm.log("error", err.backtrace.join("\n"))
 end

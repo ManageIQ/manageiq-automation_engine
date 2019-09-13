@@ -112,12 +112,12 @@ describe MiqAeMethodService::MiqAeServiceService do
       service_template = FactoryBot.create(:service_template, :name => 'Dummy')
       service_name = 'service name'
       description = 'description'
-      method = <<EOF
-service_template = $evm.vmdb('service_template').find(#{service_template.id})
-$evm.vmdb('service').create(:name             => '#{service_name}',
+      method = <<-SCP
+        service_template = $evm.vmdb('service_template').find(#{service_template.id})
+        $evm.vmdb('service').create(:name             => '#{service_name}',
                             :description      => '#{description}',
                             :service_template => service_template)
-EOF
+      SCP
       @ae_method.update(:data => method)
       invoke_ae
 
