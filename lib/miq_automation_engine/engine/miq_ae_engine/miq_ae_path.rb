@@ -48,7 +48,7 @@ module MiqAeEngine
       return ns, klass, instance, attribute_name
     end
 
-    def self.has_wildcard?(path)
+    def self.wildcard?(path)
       return false if path.nil?
       path.last == "*"
     end

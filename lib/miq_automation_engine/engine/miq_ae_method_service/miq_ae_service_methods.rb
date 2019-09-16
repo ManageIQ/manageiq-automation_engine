@@ -164,7 +164,7 @@ module MiqAeMethodService
     end
 
     def self.drb_undumped(klass)
-      _log.info "Entered: klass=#{klass.name}"
+      _log.info("Entered: klass=#{klass.name}")
       klass.include(DRbUndumped) unless klass.ancestors.include?(DRbUndumped)
     end
     private_class_method :drb_undumped

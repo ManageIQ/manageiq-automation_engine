@@ -200,7 +200,7 @@ describe MiqAeEngine do
             :method_name => 'deliver',
             :zone        => MiqServer.my_zone,
             :role        => 'automate',
-            :msg_timeout => 60.minutes,
+            :msg_timeout => 60.minutes
           )
         end
 
@@ -216,7 +216,7 @@ describe MiqAeEngine do
             :method_name => 'deliver',
             :zone        => nil,
             :role        => 'automate',
-            :msg_timeout => 60.minutes,
+            :msg_timeout => 60.minutes
           )
         end
       end

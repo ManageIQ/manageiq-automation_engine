@@ -66,7 +66,7 @@ module MiqAeMethodService
     end
 
     def unlink_storage
-      _log.info "Unlinking storage on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}>"
+      _log.info("Unlinking storage on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}>")
       object_send(:update, :storage_id => nil)
       true
     end
@@ -85,7 +85,7 @@ module MiqAeMethodService
     end
 
     def ems_custom_set(attribute, value)
-      _log.info "Setting EMS Custom Key on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}> with key=#{attribute.inspect} to #{value.inspect}"
+      _log.info("Setting EMS Custom Key on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}> with key=#{attribute.inspect} to #{value.inspect}")
       sync_or_async_ems_operation(false, "set_custom_field", [attribute, value])
       true
     end
@@ -95,7 +95,7 @@ module MiqAeMethodService
 
       ar_method do
         @object.evm_owner = owner && owner.instance_variable_get("@object")
-        _log.info "Setting EVM Owning User on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}> to #{@object.evm_owner.inspect}"
+        _log.info("Setting EVM Owning User on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}> to #{@object.evm_owner.inspect}")
         @object.save
       end
     end
@@ -105,7 +105,7 @@ module MiqAeMethodService
 
       ar_method do
         @object.miq_group = group && group.instance_variable_get("@object")
-        _log.info "Setting EVM Owning Group on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}> to #{@object.miq_group.inspect}"
+        _log.info("Setting EVM Owning Group on #{@object.class.name} id:<#{@object.id}>, name:<#{@object.name}> to #{@object.miq_group.inspect}")
         @object.save
       end
     end

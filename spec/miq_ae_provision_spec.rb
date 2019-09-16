@@ -140,17 +140,17 @@ describe "MiqAeProvision" do
       networks = ws.root['networks']
       expect(networks).not_to be_nil
       expect(networks).to be_a_kind_of(Array)
-      networks.each { |network|
+      networks.each do |network|
         expect(network).to be_a_kind_of(Hash)
         [:scope, :vlan, :vc_id, :dhcp_servers].each { |key| expect(network).to have_key(key) }
         expect(network[:dhcp_servers]).to be_a_kind_of(Array)
-        network[:dhcp_servers].each { |dhcp|
+        network[:dhcp_servers].each do |dhcp|
           expect(dhcp).to be_a_kind_of(Hash)
           [:domain, :ip, :name].each { |key| expect(dhcp).to have_key(key) }
           expect(dhcp[:domain]).to be_a_kind_of(Hash)
           [:base_dn, :bind_dn, :bind_password, :ldap_host, :ldap_port, :user_type, :name].each { |key| expect(dhcp[:domain]).to have_key(key) }
-        }
-      }
+        end
+      end
     end
   end
 end

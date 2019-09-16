@@ -3,8 +3,9 @@ module MiqAeEngine
 
     STATE_METHOD_REGEX = Regexp.new(/^METHOD::(.*$)/i)
     def state_runnable?(f)
-      return false unless (@workspace.root['ae_state'] == f['name'])
-      return false unless (@workspace.root['ae_result'] == 'ok')
+      return false unless @workspace.root['ae_state'] == f['name']
+      return false unless @workspace.root['ae_result'] == 'ok'
+
       true
     end
 
