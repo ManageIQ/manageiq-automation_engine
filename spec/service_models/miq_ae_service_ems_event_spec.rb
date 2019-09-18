@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceEmsEvent do
-  before(:each) do
+  before do
     @ems           = FactoryBot.create(:ems_vmware_with_authentication,
                                         :zone => FactoryBot.create(:zone)
                                        )
@@ -61,7 +61,7 @@ describe MiqAeMethodService::MiqAeServiceEmsEvent do
   end
 
   context "#policy" do
-    before(:each) do
+    before do
       @event = "vm_clone_start"
       @host  = FactoryBot.create(:host)
       @vm.update(:host => @host)

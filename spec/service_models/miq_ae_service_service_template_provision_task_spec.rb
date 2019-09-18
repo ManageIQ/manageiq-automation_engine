@@ -3,7 +3,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask do
     MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask.find(@service_template_provision_task.id)
   end
 
-  before(:each) do
+  before do
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @user          = FactoryBot.create(:user_with_group)

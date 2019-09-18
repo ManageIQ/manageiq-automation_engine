@@ -1,5 +1,5 @@
 describe "MiqAeDiscovery" do
-  before(:each) do
+  before do
     # admin user is needed to process Events
     @admin  = User.super_admin || FactoryBot.create(:user_with_group, :userid => "admin")
     @tenant = Tenant.root_tenant

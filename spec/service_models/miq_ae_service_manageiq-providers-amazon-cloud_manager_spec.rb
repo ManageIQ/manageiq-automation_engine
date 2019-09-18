@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Amazon_CloudManager do
-  before(:each) do
+  before do
     @ems                    = FactoryBot.create(:ems_amazon)
     @flavor                 = FactoryBot.create(:flavor)
     @availability_zone      = FactoryBot.create(:availability_zone)

@@ -7,7 +7,7 @@ describe MiqAeEngine do
   let(:root_tenant_id) { Tenant.root_tenant.id }
   let(:miq_server_id) { MiqServer.first.id }
 
-  before(:each) do
+  before do
     MiqAeDatastore.reset
     EvmSpecHelper.local_guid_miq_server_zone
   end
@@ -71,7 +71,7 @@ describe MiqAeEngine do
     end
 
     context "when Automate instantiation fails" do
-      before(:each) do
+      before do
         allow(MiqAeEngine).to receive(:resolve_automation_object).and_return(nil)
       end
 
@@ -97,7 +97,7 @@ describe MiqAeEngine do
 
     context "when Automate instantiation succeeds" do
       context "with ae_result of 'error'" do
-        before(:each) do
+        before do
           root = {'ae_result' => 'error'}
           @ws = double('ws')
           allow(@ws).to receive_messages(:root => root)
@@ -112,7 +112,7 @@ describe MiqAeEngine do
       end
 
       context "with ae_result of 'ok'" do
-        before(:each) do
+        before do
           root = {'ae_result' => 'ok'}
           @ws = double('ws')
           allow(@ws).to receive_messages(:root => root)
@@ -147,7 +147,7 @@ describe MiqAeEngine do
       end
 
       context "with ae_result of 'retry'" do
-        before(:each) do
+        before do
           root = {'ae_result' => 'retry'}
           @ws = double('ws')
           allow(@ws).to receive_messages(:root => root)
@@ -369,7 +369,7 @@ describe MiqAeEngine do
   end
 
   context ".create_automation_attributes" do
-    before(:each) do
+    before do
       FactoryBot.create(:small_environment)
     end
 
@@ -460,7 +460,7 @@ describe MiqAeEngine do
   end
 
   context ".set_automation_attributes_from_objects" do
-    before(:each) do
+    before do
       FactoryBot.create(:small_environment)
     end
     it "with an array of nil objects" do

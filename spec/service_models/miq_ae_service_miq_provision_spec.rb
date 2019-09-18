@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceMiqProvision do
-  before(:each) do
+  before do
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
@@ -135,7 +135,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   context "iso_images" do
-    before(:each) do
+    before do
       @iso_image = FactoryBot.create(:iso_image, :name => "Test ISO Image")
       iso_image_struct = [MiqHashStruct.new(:id => "IsoImage::#{@iso_image.id}", :name => @iso_image.name, :evm_object_class => @iso_image.class.base_class.name.to_sym)]
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_iso_images).and_return(iso_image_struct)
@@ -161,7 +161,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   context "#source_type" do
-    before(:each) do
+    before do
       method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].source_type"
       @ae_method.update(:data => method)
     end
@@ -180,7 +180,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   context "customization_templates" do
-    before(:each) do
+    before do
       @ct = FactoryBot.create(:customization_template, :name => "Test Templates", :script => "script_text")
       ct_struct = [MiqHashStruct.new(:id => @ct.id, :name => @ct.name, :evm_object_class => @ct.class.base_class.name.to_sym)]
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_customization_templates).and_return(ct_struct)
@@ -207,7 +207,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   context "resource_pools" do
-    before(:each) do
+    before do
       @rsc = FactoryBot.create(:resource_pool)
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_resource_pools).and_return(@rsc.id => @rsc.name)
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_respools).and_return(@rsc.id => @rsc.name)

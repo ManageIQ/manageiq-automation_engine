@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Provision do
-  before(:each) do
+  before do
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
@@ -26,7 +26,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   end
 
   context "check requests" do
-    before(:each) do
+    before do
       @miq_provision_request = FactoryBot.create(:miq_provision_request,
                                                   :provision_type => 'template',
                                                   :state => 'pending', :status => 'Ok',
@@ -141,7 +141,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   end
 
   context "iso_images" do
-    before(:each) do
+    before do
       @iso_image = FactoryBot.create(:iso_image, :name => "Test ISO Image")
       iso_image_struct = [MiqHashStruct.new(
         :id               => "IsoImage::#{@iso_image.id}",
@@ -171,7 +171,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   end
 
   context "#source_type" do
-    before(:each) do
+    before do
       method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].source_type"
       @ae_method.update(:data => method)
     end
@@ -288,7 +288,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   end
 
   context "customization_templates" do
-    before(:each) do
+    before do
       @ct = FactoryBot.create(:customization_template, :name => "Test Templates", :script => "script_text")
       ct_struct = [MiqHashStruct.new(:id => @ct.id, :name => @ct.name,
                                      :evm_object_class => @ct.class.base_class.name.to_sym)]
@@ -316,7 +316,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   end
 
   context "customization_specs" do
-    before(:each) do
+    before do
       @cs = FactoryBot.create(:customization_spec, :name => "Test Specs", :spec => {"script_text" => "blah"})
       cs_struct = [MiqHashStruct.new(:id => @cs.id, :name => @cs.name,
                                      :evm_object_class => @cs.class.base_class.name.to_sym)]
@@ -362,7 +362,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   context "storage_profiles" do
     let(:storage_profile) { FactoryBot.create(:storage_profile, :name => "Test StorageProfile", :ems_id => @ems.id) }
 
-    before(:each) do
+    before do
       @vm_template.storage_profile = storage_profile
     end
 
@@ -388,7 +388,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   end
 
   context "resource_pools" do
-    before(:each) do
+    before do
       @rsc = FactoryBot.create(:resource_pool)
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_resource_pools).and_return(@rsc.id => @rsc.name)
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_respools).and_return(@rsc.id => @rsc.name)

@@ -1,5 +1,5 @@
 describe "XML2YAML Converter" do
-  before(:each) do
+  before do
     MiqAeDatastore.reset
     EvmSpecHelper.local_guid_miq_server_zone
   end
@@ -16,7 +16,7 @@ describe "XML2YAML Converter" do
   end
 
   context "convert xml to yaml" do
-    before(:each) do
+    before do
       setup_export_dir
       MiqAeDatastore.reset
       @root_xml = <<-'XML'

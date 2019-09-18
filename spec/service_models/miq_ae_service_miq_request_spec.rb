@@ -4,7 +4,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     [:id, :name, :userid, :email].each { |method| expect(ae_user.send(method)).to eq(ar_user.send(method)) }
   end
 
-  before(:each) do
+  before do
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'

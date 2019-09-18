@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceFlavor do
-  before(:each) do
+  before do
     @flavor                 = FactoryBot.create(:flavor, :name => "small", :description => "really small", :cpus => 1, :memory => 2.gigabytes)
     @service_flavor         = MiqAeMethodService::MiqAeServiceFlavor.find(@flavor.id)
   end

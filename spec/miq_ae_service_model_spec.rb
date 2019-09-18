@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceVm do
-  before(:each) do
+  before do
     @vm = FactoryBot.create(:vm_vmware)
     @ae_vm = MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.new(@vm.id)
   end

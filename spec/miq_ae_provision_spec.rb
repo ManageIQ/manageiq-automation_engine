@@ -41,7 +41,7 @@ describe "MiqAeProvision" do
   end
 
   context "Using provision yaml model" do
-    before(:each) do
+    before do
       @domain = 'SPEC_DOMAIN'
       @user = FactoryBot.create(:user_with_group)
       @model_data_dir = File.join(File.dirname(__FILE__), "data")

@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeService do
-  before(:each) do
+  before do
     MiqAeDatastore.reset
     @domain = 'Bedrock'
     Tenant.seed
@@ -133,7 +133,7 @@ describe MiqAeMethodService::MiqAeService do
     end
 
     context "multiple instances in datastore" do
-      before(:each) do
+      before do
         ['test12', 'test21', 'teXt12'].each do |iname|
           method = "$evm.root['#{@ae_result_key}'] = $evm.instance_create('#{@domain}/EVM/AUTOMATE/#{iname}')"
           @ae_method.update(:data => method)

@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Google_CloudManager do
-  before(:each) do
+  before do
     @ems                    = FactoryBot.create(:ems_google)
     @flavor                 = FactoryBot.create(:flavor)
     @availability_zone      = FactoryBot.create(:availability_zone)
