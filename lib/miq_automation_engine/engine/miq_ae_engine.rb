@@ -114,7 +114,7 @@ module MiqAeEngine
         else
           if ae_result.casecmp('error').zero?
             miq_task&.update_message(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
-            message = "Error delivering #{options[:attrs].inspect} for object [#{object_name}] with state [#{state}] to Automate: #{ws.root['ae_message']}"
+            message = "Error delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate: #{ws.root['ae_message']}"
             _log.error(message)
           end
           MiqAeEvent.process_result(ae_result, automate_attrs) if options[:instance_name].to_s.casecmp('EVENT').zero?
@@ -123,7 +123,7 @@ module MiqAeEngine
 
       return_result(ws, options[:attrs])
     rescue MiqAeException::Error => err
-      message = "Error delivering #{automate_attrs.inspect} for object [#{object_name}] with state [#{state}] to Automate: #{err.message}"
+      message = "Error delivering #{ManageIQ::Password.sanitize_string(automate_attrs.inspect)} for object [#{object_name}] with state [#{state}] to Automate: #{err.message}"
       miq_task&.error(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
       _log.error(message)
     ensure
