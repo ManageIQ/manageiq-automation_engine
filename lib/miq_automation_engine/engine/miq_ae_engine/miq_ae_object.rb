@@ -152,7 +152,7 @@ module MiqAeEngine
       Benchmark.current_realtime[:fetch_namespace_count] += 1
       Benchmark.realtime_block(:fetch_namespace_time) do
         @workspace.datastore(ns.downcase, :namespace) do
-          MiqAeNamespace.find_by_fqname(ns)
+          MiqAeNamespace.lookup_by_fqname(ns)
         end
       end.first
     end
@@ -515,8 +515,8 @@ module MiqAeEngine
       ns.shift
       updated_ns = @workspace.overlay_method(ns.join('/'), klass, method_name)
       if updated_ns != namespace
-        cls = ::MiqAeClass.find_by_fqname("#{updated_ns}/#{klass}")
-        aem = ::MiqAeMethod.find_by_class_id_and_name(cls.id, method_name) if cls
+        cls = ::MiqAeClass.lookup_by_fqname("#{updated_ns}/#{klass}")
+        aem = ::MiqAeMethod.lookup_by_class_id_and_name(cls.id, method_name) if cls
       end
       aem
     end

@@ -14,53 +14,53 @@ describe MiqAeClassCopy do
 
   context "clone the class to a new domain" do
     before do
-      @ns1 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@src_ns}", false)
+      @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
     end
 
     it "after copy both classes in DB should be congruent" do
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @src_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
       class2 = MiqAeClassCopy.new(@src_fqname).to_domain(@dest_domain)
       class_check_status(class1, class2, MiqAeClassCompareFields::CONGRUENT_SCHEMA)
-      @ns2 = MiqAeNamespace.find_by_fqname("#{@dest_domain}/#{@src_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns2.id, @src_class)
+      @ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{@src_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns2.id, @src_class)
       expect(class2).not_to be_nil
     end
   end
 
   context "clone the class to a new domain with a different namespace" do
     before do
-      @ns1 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@src_ns}", false)
+      @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
     end
 
     it "after copy both classes in DB should be congruent" do
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @src_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
       new_ns   = "NS3/NS4"
       class2 = MiqAeClassCopy.new(@src_fqname).to_domain(@dest_domain, new_ns)
       class_check_status(class1, class2, MiqAeClassCompareFields::CONGRUENT_SCHEMA)
-      @ns2 = MiqAeNamespace.find_by_fqname("#{@dest_domain}/#{new_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns2.id, @src_class)
+      @ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{new_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns2.id, @src_class)
       expect(class2).not_to be_nil
     end
   end
 
   context "copy to a new classname in the same domain" do
     before do
-      @ns1 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@src_ns}", false)
+      @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
     end
 
     it "after copy both classes in DB should be congruent" do
       new_name = "SAME_AS_#{@src_class}"
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @src_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
       class2 = MiqAeClassCopy.new(@src_fqname).as(new_name)
       class_check_status(class1, class2, MiqAeClassCompareFields::CONGRUENT_SCHEMA)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, new_name)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, new_name)
       expect(class2).not_to be_nil
     end
   end
 
   context "copy to a existing class in the same domain" do
     before do
-      @ns1 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@src_ns}", false)
+      @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
     end
 
     it "copy should fail with error" do
@@ -70,17 +70,17 @@ describe MiqAeClassCopy do
 
   context "copy to a new class name in the same domain but different namespace" do
     before do
-      @ns1 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@src_ns}", false)
+      @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
     end
 
     it "after copy both classes in DB should be congruent" do
       new_name = "SAME_AS_#{@src_class}"
       new_ns   = "NS3/NS4"
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @src_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
       class2 = MiqAeClassCopy.new(@src_fqname).as(new_name, new_ns)
       class_check_status(class1, class2, MiqAeClassCompareFields::CONGRUENT_SCHEMA)
-      @ns2 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{new_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns2.id, new_name)
+      @ns2 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{new_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns2.id, new_name)
       expect(class2).not_to be_nil
     end
   end

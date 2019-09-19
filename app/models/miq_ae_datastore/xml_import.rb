@@ -153,7 +153,7 @@ module MiqAeDatastore
     end
 
     def self.create_domain(domain)
-      MiqAeDomain.find_by_fqname(domain) ||
+      MiqAeDomain.lookup_by_fqname(domain) ||
       MiqAeDomain.create!(:enabled => true, :priority => 100, :tenant => Tenant.root_tenant, :name => domain)
     end
 

@@ -7,7 +7,7 @@ class MiqAeInstanceCopy
   def initialize(instance_fqname, validate_schema = true)
     @src_domain, @partial_ns, @ae_class, @instance_name = MiqAeInstanceCopy.split(instance_fqname, true)
     @class_fqname = "#{@src_domain}/#{@partial_ns}/#{@ae_class}"
-    @src_class = MiqAeClass.find_by_fqname("#{@src_domain}/#{@partial_ns}/#{@ae_class}")
+    @src_class = MiqAeClass.lookup_by_fqname("#{@src_domain}/#{@partial_ns}/#{@ae_class}")
     raise "Source class not found #{@class_fqname}" unless @src_class
     @src_instance = MiqAeInstance.find_by(:name => @instance_name, :class_id => @src_class.id)
     raise "Source instance #{@instance_name} not found #{@class_fqname}" unless @src_instance
@@ -51,7 +51,7 @@ class MiqAeInstanceCopy
   private
 
   def find_or_create_class
-    @dest_class = MiqAeClass.find_by_fqname("#{@target_domain}/#{@target_ns}/#{@target_class_name}")
+    @dest_class = MiqAeClass.lookup_by_fqname("#{@target_domain}/#{@target_ns}/#{@target_class_name}")
     return unless @dest_class.nil?
     @dest_class = MiqAeClassCopy.new(@class_fqname).to_domain(@target_domain, @target_ns)
   end

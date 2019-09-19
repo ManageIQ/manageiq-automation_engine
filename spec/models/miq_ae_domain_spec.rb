@@ -19,31 +19,31 @@ describe MiqAeDomain do
 
     it "should change priority based on ordered list of ids" do
       after = {'TEST4' => 1, 'TEST3' => 2, 'TEST2' => 3, 'TEST1' => 4}
-      ids   = after.collect { |dom, _| MiqAeDomain.find_by_fqname(dom).id }
+      ids   = after.collect { |dom, _| MiqAeDomain.lookup_by_fqname(dom).id }
       MiqAeDomain.reset_priority_by_ordered_ids(ids)
-      after.each { |dom, pri| expect(MiqAeDomain.find_by_fqname(dom).priority).to eql(pri) }
+      after.each { |dom, pri| expect(MiqAeDomain.lookup_by_fqname(dom).priority).to eql(pri) }
     end
 
     it "after a domain with lowest priority is deleted" do
-      MiqAeDomain.destroy(MiqAeDomain.find_by_fqname('TEST1').id)
+      MiqAeDomain.destroy(MiqAeDomain.lookup_by_fqname('TEST1').id)
       after = {'TEST2' => 1, 'TEST3' => 2, 'TEST4' => 3}
-      after.each { |dom, pri| expect(MiqAeDomain.find_by_fqname(dom).priority).to eql(pri) }
+      after.each { |dom, pri| expect(MiqAeDomain.lookup_by_fqname(dom).priority).to eql(pri) }
     end
 
     it "after a domain with middle priority is deleted" do
-      MiqAeDomain.destroy(MiqAeDomain.find_by_fqname('TEST3').id)
+      MiqAeDomain.destroy(MiqAeDomain.lookup_by_fqname('TEST3').id)
       after = {'TEST1' => 1, 'TEST2' => 2, 'TEST4' => 3}
-      after.each { |dom, pri| expect(MiqAeDomain.find_by_fqname(dom).priority).to eql(pri) }
+      after.each { |dom, pri| expect(MiqAeDomain.lookup_by_fqname(dom).priority).to eql(pri) }
     end
 
     it "after a domain with highest priority is deleted" do
-      MiqAeDomain.destroy(MiqAeDomain.find_by_fqname('TEST4').id)
+      MiqAeDomain.destroy(MiqAeDomain.lookup_by_fqname('TEST4').id)
       after = {'TEST1' => 1, 'TEST2' => 2, 'TEST3' => 3}
-      after.each { |dom, pri| expect(MiqAeDomain.find_by_fqname(dom).priority).to eql(pri) }
+      after.each { |dom, pri| expect(MiqAeDomain.lookup_by_fqname(dom).priority).to eql(pri) }
     end
 
     it "after all domains are deleted" do
-      %w[TEST1 TEST2 TEST3 TEST4].each { |name| MiqAeDomain.find_by_fqname(name).destroy }
+      %w[TEST1 TEST2 TEST3 TEST4].each { |name| MiqAeDomain.lookup_by_fqname(name).destroy }
       d1 = FactoryBot.create(:miq_ae_domain, :name => 'TEST1')
       expect(d1.priority).to eql(1)
     end

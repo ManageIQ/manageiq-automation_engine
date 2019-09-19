@@ -269,7 +269,7 @@ module MiqAeMethodService
       ns, klass, instance = MiqAeEngine::MiqAePath.split(path)
       $log.info("Instance Create for ns: #{ns} class #{klass} instance: #{instance}")
 
-      aec = MiqAeClass.find_by_namespace_and_name(ns, klass)
+      aec = MiqAeClass.lookup_by_namespace_and_name(ns, klass)
       return false if aec.nil?
 
       aei = aec.ae_instances.detect { |i| instance.casecmp(i.name).zero? }
@@ -312,7 +312,7 @@ module MiqAeMethodService
       result = {}
 
       ns, klass, instance = MiqAeEngine::MiqAePath.split(path)
-      aec = MiqAeClass.find_by_namespace_and_name(ns, klass)
+      aec = MiqAeClass.lookup_by_namespace_and_name(ns, klass)
       unless aec.nil?
         instance.gsub!(".", '\.')
         instance.gsub!("*", ".*")
@@ -355,7 +355,7 @@ module MiqAeMethodService
       dom, ns, klass, instance = MiqAeEngine::MiqAePath.get_domain_ns_klass_inst(path)
       return false unless visible_domain?(dom)
 
-      aec = MiqAeClass.find_by_namespace_and_name("#{dom}/#{ns}", klass)
+      aec = MiqAeClass.lookup_by_namespace_and_name("#{dom}/#{ns}", klass)
       return nil if aec.nil?
 
       aec.ae_instances.detect { |i| instance.casecmp(i.name).zero? }
@@ -370,7 +370,7 @@ module MiqAeMethodService
     def editable_instance?(path)
       dom, = MiqAeEngine::MiqAePath.get_domain_ns_klass_inst(path)
       return false unless owned_domain?(dom)
-      domain = MiqAeDomain.find_by_fqname(dom, false)
+      domain = MiqAeDomain.lookup_by_fqname(dom, false)
       return false unless domain
       $log.warn "path=#{path.inspect} : is not editable" unless domain.editable?(@workspace.ae_user)
       domain.editable?(@workspace.ae_user)

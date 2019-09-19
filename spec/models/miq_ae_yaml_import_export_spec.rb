@@ -281,7 +281,7 @@ describe MiqAeDatastore do
       it "import single user domain" do
         options = {'yaml_file' => @yaml_file}
         assert_single_domain_import(options, options)
-        dom = MiqAeDomain.find_by_fqname(@customer_domain.name, false)
+        dom = MiqAeDomain.lookup_by_fqname(@customer_domain.name, false)
         expect(dom).not_to be_enabled
       end
 
@@ -297,7 +297,7 @@ describe MiqAeDatastore do
         options = {'yaml_file' => @yaml_file}
         @customer_domain.update(:source => MiqAeDomain::SYSTEM_SOURCE)
         assert_single_domain_import(options, options)
-        dom = MiqAeDomain.find_by_fqname(@customer_domain.name, false)
+        dom = MiqAeDomain.lookup_by_fqname(@customer_domain.name, false)
         expect(dom).to be_enabled
       end
 
@@ -341,7 +341,7 @@ describe MiqAeDatastore do
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
       check_counts(@domain_counts)
-      dom = MiqAeDomain.find_by_fqname(@manageiq_domain.name, false)
+      dom = MiqAeDomain.lookup_by_fqname(@manageiq_domain.name, false)
       expect(dom.source).to eq(MiqAeDomain::SYSTEM_SOURCE)
       expect(dom).to be_enabled
     end
@@ -352,7 +352,7 @@ describe MiqAeDatastore do
       reset_and_import(@export_dir, @manageiq_domain.name)
       check_counts(@domain_counts)
 
-      ns = MiqAeNamespace.find_by_fqname(@manageiq_domain.name, false)
+      ns = MiqAeNamespace.lookup_by_fqname(@manageiq_domain.name, false)
       expect(ns.priority).to equal(0)
     end
 
@@ -378,7 +378,7 @@ describe MiqAeDatastore do
       reset_and_import(@export_dir, @manageiq_domain.name, import_options)
       check_counts('dom'  => 2, 'ns'    => 6,  'class' => 8,  'inst'  => 20,
                    'meth' => 8, 'field' => 24, 'value' => 16)
-      expect(MiqAeDomain.find_by_fqname(import_options['import_as'])).not_to be_nil
+      expect(MiqAeDomain.lookup_by_fqname(import_options['import_as'])).not_to be_nil
     end
 
     it "domain, using export_as (new domain name), to directory" do
@@ -402,7 +402,7 @@ describe MiqAeDatastore do
       export_model(@manageiq_domain.name, export_options)
       reset_and_import(@export_dir, @export_as, import_options)
       check_counts(@domain_counts)
-      expect(MiqAeDomain.find_by_fqname(@export_as)).not_to be_nil
+      expect(MiqAeDomain.lookup_by_fqname(@export_as)).not_to be_nil
     end
 
     it "domain, import only namespace, to directory" do
@@ -536,8 +536,8 @@ describe MiqAeDatastore do
       reset_and_import(@export_dir, @manageiq_domain.name)
       check_counts('dom'  => 1, 'ns'    => 1, 'class' => 1, 'inst'  => 2,
                    'meth' => 3, 'field' => 6, 'value' => 4)
-      @manageiq_domain = MiqAeNamespace.find_by_fqname('manageiq', false)
-      @aen1_aec1       = MiqAeClass.find_by_name('manageiq_test_class_1')
+      @manageiq_domain = MiqAeNamespace.lookup_by_fqname('manageiq', false)
+      @aen1_aec1       = MiqAeClass.lookup_by_name('manageiq_test_class_1')
       @aen1_aec1_aei2  = FactoryBot.create(:miq_ae_instance,
                                             :name     => 'test_instance3',
                                             :class_id => @aen1_aec1.id)
@@ -620,8 +620,8 @@ describe MiqAeDatastore do
     end
 
     def assert_method_data(name, location, data)
-      aen1_aec1  = MiqAeClass.find_by_name('manageiq_test_class_1')
-      method = MiqAeMethod.find_by_class_id_and_name(aen1_aec1.id, name)
+      aen1_aec1 = MiqAeClass.lookup_by_name('manageiq_test_class_1')
+      method = MiqAeMethod.lookup_by_class_id_and_name(aen1_aec1.id, name)
       expect(method.location).to eql location
       expect(method.data).to eq(data)
     end
@@ -666,11 +666,11 @@ describe MiqAeDatastore do
       @customer_domain.update(:enabled => true)
       export_model(MiqAeYamlImportExportMixin::ALL_DOMAINS, export_options)
       reset_and_import(@export_dir, MiqAeYamlImportExportMixin::ALL_DOMAINS, import_options)
-      expect(MiqAeDomain.find_by_fqname(@manageiq_domain.name, false).priority).to eql(0)
-      cust_domain = MiqAeDomain.find_by_fqname(@customer_domain.name, false)
+      expect(MiqAeDomain.lookup_by_fqname(@manageiq_domain.name, false).priority).to eql(0)
+      cust_domain = MiqAeDomain.lookup_by_fqname(@customer_domain.name, false)
       expect(cust_domain.priority).to eql(1)
       expect(cust_domain).to be_enabled
-      expect(MiqAeNamespace.find_by_fqname('$', false)).not_to be_nil
+      expect(MiqAeNamespace.lookup_by_fqname('$', false)).not_to be_nil
     end
   end
 
@@ -908,8 +908,8 @@ describe MiqAeDatastore do
     @manageiq_domain = MiqAeDomain.find_by_name("manageiq")
     @aen1            = MiqAeNamespace.find_by_name('manageiq_namespace_1')
     @aen1_1          = MiqAeNamespace.find_by_name('manageiq_namespace_1_1')
-    @aen1_aec1       = MiqAeClass.find_by_name('manageiq_test_class_1')
-    @aen1_aec2       = MiqAeClass.find_by_name('manageiq_test_class_2')
+    @aen1_aec1       = MiqAeClass.lookup_by_name('manageiq_test_class_1')
+    @aen1_aec2       = MiqAeClass.lookup_by_name('manageiq_test_class_2')
     @class_dir       = "#{@aen1_aec1.fqname}.class"
     @class_file      = File.join(@export_dir, @class_dir, '__class__.yaml')
     @instance_file   = File.join(@export_dir, @class_dir, 'manageiq_test_instance1.yaml')
@@ -920,8 +920,8 @@ describe MiqAeDatastore do
     @customer_domain    = MiqAeDomain.find_by_name("customer")
     @customer_aen1      = MiqAeNamespace.find_by_name('customer_namespace_1')
     @customer_aen1_1    = MiqAeNamespace.find_by_name('customer_namespace_1_1')
-    @customer_aen1_aec1 = MiqAeClass.find_by_name('customer_test_class_1')
-    @customer_aen1_aec2 = MiqAeClass.find_by_name('customer_test_class_2')
+    @customer_aen1_aec1 = MiqAeClass.lookup_by_name('customer_test_class_1')
+    @customer_aen1_aec2 = MiqAeClass.lookup_by_name('customer_test_class_2')
     @class_name         = @customer_aen1_aec1.name
   end
 
@@ -954,7 +954,7 @@ describe MiqAeDatastore do
   end
 
   def validate_additional_columns
-    klass = MiqAeClass.find_by_name(@class_name)
+    klass = MiqAeClass.lookup_by_name(@class_name)
     return unless klass
     klass.ae_instances.each do |inst|
       inst.ae_values.select { |v| v.value == @relations_value }.each do |rel|

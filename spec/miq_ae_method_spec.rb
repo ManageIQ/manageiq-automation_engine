@@ -9,7 +9,7 @@ describe MiqAeMethod do
     end
 
     def setup_methods
-      object_class = MiqAeClass.find_by_fqname("#{MiqAeDatastore::DEFAULT_OBJECT_NAMESPACE}/Object")
+      object_class = MiqAeClass.lookup_by_fqname("#{MiqAeDatastore::DEFAULT_OBJECT_NAMESPACE}/Object")
       method_data = '$evm.log("info", "Default Class Method")
         exit MIQ_OK'
       method_options = {:language => 'ruby', :class_id => object_class.id,

@@ -276,7 +276,7 @@ module MiqAeEngine
       method_obj.embedded_methods.each do |name|
         method_name, klass, ns = embedded_method_name(name)
         match_ns = workspace.overlay_method(ns, klass, method_name)
-        cls = ::MiqAeClass.find_by_fqname("#{match_ns}/#{klass}")
+        cls = ::MiqAeClass.lookup_by_fqname("#{match_ns}/#{klass}")
         aem = ::MiqAeMethod.find_by(:class_id => cls.id, :name => method_name) if cls
         raise MiqAeException::MethodNotFound, "Embedded method #{name} not found" unless aem
         fqname = "/#{match_ns}/#{klass}/#{method_name}"

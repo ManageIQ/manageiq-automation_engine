@@ -150,7 +150,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
     it "warns about non-existence of category" do
       ct_not_exist = "ct_not_exist"
-      expect(Classification.find_by_name(ct_not_exist)).to be_nil
+      expect(Classification.lookup_by_name(ct_not_exist)).to be_nil
 
       method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete!, #{ct_not_exist.inspect})"
       @ae_method.update(:data => method)
@@ -163,7 +163,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       @ae_method.update(:data => method)
 
       expect(invoke_ae.root(@ae_result_key)).to be_truthy
-      expect(Classification.find_by_name(ct.name)).to be_nil
+      expect(Classification.lookup_by_name(ct.name)).to be_nil
     end
 
     it "deletes category if there is no assignment" do
@@ -173,7 +173,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       @ae_method.update(:data => method)
 
       expect(invoke_ae.root(@ae_result_key)).to be_truthy
-      expect(Classification.find_by_name(ct.name)).to be_nil
+      expect(Classification.lookup_by_name(ct.name)).to be_nil
     end
 
     it "could not delete category if there is assignment" do
@@ -186,7 +186,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       @ae_method.update(:data => method)
 
       expect { invoke_ae.root(@ae_result_key) }.to raise_error(MiqAeException::UnknownMethodRc)
-      expect(Classification.find_by_name(ct.name)).to_not be_nil
+      expect(Classification.lookup_by_name(ct.name)).to_not be_nil
     end
   end
 
@@ -195,7 +195,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
     it "returns false if category does not exist" do
       ct_not_exist = "ct_not_exist"
-      expect(Classification.find_by_name(ct_not_exist)).to be_nil
+      expect(Classification.lookup_by_name(ct_not_exist)).to be_nil
 
       method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:category_delete, #{ct_not_exist.inspect})"
       @ae_method.update(:data => method)
@@ -208,7 +208,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       @ae_method.update(:data => method)
 
       expect(invoke_ae.root(@ae_result_key)).to be true
-      expect(Classification.find_by_name(ct.name)).to be_nil
+      expect(Classification.lookup_by_name(ct.name)).to be_nil
     end
 
     it "deletes category if there is no assignment" do
@@ -218,7 +218,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       @ae_method.update(:data => method)
 
       expect(invoke_ae.root(@ae_result_key)).to be true
-      expect(Classification.find_by_name(ct.name)).to be_nil
+      expect(Classification.lookup_by_name(ct.name)).to be_nil
     end
 
     it "returns false if there is assignment" do
@@ -231,7 +231,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       @ae_method.update(:data => method)
 
       expect(invoke_ae.root(@ae_result_key)).to be false
-      expect(Classification.find_by_name(ct.name)).to_not be_nil
+      expect(Classification.lookup_by_name(ct.name)).to_not be_nil
     end
   end
 

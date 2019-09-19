@@ -34,7 +34,7 @@ module MiqAeEngine
 
     def search(uri, ns, klass, instance, method)
       unless @partial_ns.include?(ns)
-        fqns = MiqAeNamespace.find_by_fqname(ns, false)
+        fqns = MiqAeNamespace.lookup_by_fqname(ns, false)
         if fqns && !fqns.domain?
           @fqns_id_cache[ns] = fqns.id
           return ns
@@ -79,7 +79,7 @@ module MiqAeEngine
       fqname = fqns_parts.join('/')
       return @fqns_id_cache[fqname] if @fqns_id_cache.key?(fqname)
 
-      ns = MiqAeNamespace.find_by_fqname(fqname, false)
+      ns = MiqAeNamespace.lookup_by_fqname(fqname, false)
       @fqns_id_cache[fqname] = ns.id if ns
     end
 

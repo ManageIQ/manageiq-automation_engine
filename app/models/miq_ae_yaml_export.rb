@@ -256,7 +256,7 @@ class MiqAeYamlExport
 
   def domain_object
     raise MiqAeException::DomainNotAccessible, "Domain [#{@domain}] not accessible" unless domain_accessible?
-    MiqAeDomain.find_by_fqname(@domain).tap do |dom|
+    MiqAeDomain.lookup_by_fqname(@domain).tap do |dom|
       if dom.nil?
         _log.error("Domain: <#{@domain}> not found.")
         raise MiqAeException::DomainNotFound, "Domain [#{@domain}] not found in MiqAeDatastore"
@@ -267,7 +267,7 @@ class MiqAeYamlExport
 
   def get_namespace_object(namespace)
     fqname = File.join(@domain, namespace)
-    MiqAeNamespace.find_by_fqname(fqname) || begin
+    MiqAeNamespace.lookup_by_fqname(fqname) || begin
       _log.error("Namespace: <#{fqname}> not found.")
       raise MiqAeException::NamespaceNotFound, "Namespace: [#{fqname}] not found in MiqAeDatastore"
     end
