@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
-## Ivanchuk-1
+## Unreleased as of Sprint 120 ending 2019-09-16
+
+### Added
+- Add method to delete category [(#363)](https://github.com/ManageIQ/manageiq-automation_engine/pull/363)
+- Add method to delete tag [(#358)](https://github.com/ManageIQ/manageiq-automation_engine/pull/358)
+
+### Fixed
+- Correct style using rubocop (part 3) [(#369)](https://github.com/ManageIQ/manageiq-automation_engine/pull/369)
+- update_attributes has been deprecated [(#367)](https://github.com/ManageIQ/manageiq-automation_engine/pull/367)
+- Correct style using rubocop (part 2) [(#365)](https://github.com/ManageIQ/manageiq-automation_engine/pull/365)
+
+## Ivanchuk-1 - Released 2019-09-18
 
 ### Added
 - Expose move_into_folder on the engine [(#344)](https://github.com/ManageIQ/manageiq-automation_engine/pull/344)
