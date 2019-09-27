@@ -15,8 +15,9 @@ class MiqAeYamlImport
   def import
     if @options.key?('import_dir') && !File.directory?(@options['import_dir'])
       raise MiqAeException::DirectoryNotFound, "Directory [#{@options['import_dir']}] not found"
-    elsif !User.current_user.nil? && @options['zip_file'] && domain_locked?(@options['import_as'])
-      # raises exception only for a local import into the locked domain
+    elsif (!User.current_user.nil? && @options['zip_file'] && domain_locked?(@options['import_as'])) ||
+          (@options['git_repository_id'] && system_domain?(File.dirname(sorted_domain_files.first)))
+      # exception for local import into the locked domain or git import into the base system domain
       raise MiqAeException::DomainNotAccessible, 'locked domain'
     end
     start_import(@options['preview'], @domain_name)
@@ -320,5 +321,9 @@ class MiqAeYamlImport
 
   def domain_locked?(domain_name)
     MiqAeDomain.find_by(:name => domain_name)&.contents_locked? ? true : false
+  end
+
+  def system_domain?(domain_name)
+    MiqAeDomain.find_by(:name => domain_name)&.source == MiqAeDomain::SYSTEM_SOURCE
   end
 end # class
