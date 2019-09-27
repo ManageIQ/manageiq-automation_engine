@@ -99,6 +99,16 @@ describe MiqAeMethodService::MiqAeServiceVm do
       expect(account_provider.taggable?).to be_falsey
     end
   end
+
+  describe 'missing methods' do
+    it `recognize missing methods name which starts with normalize_` do
+      expect(@ae_vm.respond_to?(:normalized_tags)).to be true
+    end
+
+    it `does not recognize arbitraray missing methods name which starts with normalize_` do
+      expect(@ae_vm.respond_to?(:normalized_not_exist_method)).to be false
+    end
+  end
 end
 
 describe MiqAeMethodService::MiqAeServiceMiqAeDomain do

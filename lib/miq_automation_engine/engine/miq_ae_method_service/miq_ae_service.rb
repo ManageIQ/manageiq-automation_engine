@@ -181,11 +181,11 @@ module MiqAeMethodService
     end
 
     def root
-      @root_object ||= object("/")
+      @root ||= object("/")
     end
 
     def parent
-      @parent_object ||= object("..")
+      @parent ||= object("..")
     end
 
     def objects(aobj)

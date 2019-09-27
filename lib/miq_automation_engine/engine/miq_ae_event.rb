@@ -7,13 +7,28 @@ module MiqAeEvent
     }
 
     if event.source == 'VC'
-      aevent.merge!('ExtManagementSystem::ems' => event.ext_management_system.id, :ems_id => event.ext_management_system.id) unless event.ext_management_system.nil?
+      unless event.ext_management_system.nil?
+        aevent['ExtManagementSystem::ems'] = event.ext_management_system.id
+        aevent[:ems_id] = event.ext_management_system.id
+      end
     end
 
-    aevent.merge!('VmOrTemplate::vm'      => event.src_vm_or_template.id,  :vm_id        => event.src_vm_or_template.id)  unless event.src_vm_or_template.nil?
-    aevent.merge!('VmOrTemplate::dest_vm' => event.dest_vm_or_template.id, :dest_vm_id   => event.dest_vm_or_template.id) unless event.dest_vm_or_template.nil?
-    aevent.merge!('Host::host'            => event.src_host.id,            :host_id      => event.src_host.id)            unless event.src_host.nil?
-    aevent.merge!('Host::dest_host'       => event.dest_host.id,           :dest_host_id => event.dest_host.id)           unless event.dest_host.nil?
+    unless event.src_vm_or_template.nil?
+      aevent['VmOrTemplate::vm'] = event.src_vm_or_template.id
+      aevent[:vm_id] = event.src_vm_or_template.id
+    end
+    unless event.dest_vm_or_template.nil?
+      aevent['VmOrTemplate::dest_vm'] = event.dest_vm_or_template.id
+      aevent[:dest_vm_id] = event.dest_vm_or_template.id
+    end
+    unless event.src_host.nil?
+      aevent['Host::host'] = event.src_host.id
+      aevent[:host_id] = event.src_host.id
+    end
+    unless event.dest_host.nil?
+      aevent['Host::dest_host'] = event.dest_host.id
+      aevent[:dest_host_id] = event.dest_host.id
+    end
 
     call_automate(event, aevent, 'Event')
   end

@@ -13,7 +13,7 @@ module MiqAeEngine
     end
 
     def ae_user=(obj)
-      @sorted_domains ||= obj.current_tenant.enabled_domains.collect(&:name)
+      @sorted_domains ||= obj.current_tenant.enabled_domains.collect(&:name) # rubocop:disable Naming/MemoizedInstanceVariableName
     end
 
     def get_alternate_domain(scheme, uri, ns, klass, instance)

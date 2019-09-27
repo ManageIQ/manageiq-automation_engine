@@ -4,6 +4,7 @@ module MiqAeMethodService
   class MiqAeServiceModelBase
     SERVICE_MODEL_PATH = ManageIQ::AutomationEngine::Engine.root.join("lib", "miq_automation_engine", "service_models")
     EXPOSED_ATTR_BLACK_LIST = [/password/, /^auth_key$/].freeze
+    NORMALIZED_PREFIX = 'normalized_'.freeze
     class << self
       include DRbUndumped  # Ensure that Automate Method can get at the class itself over DRb
     end
@@ -251,11 +252,19 @@ module MiqAeMethodService
       # Normalize result of any method call
       #  e.g. normalized_ldap_group, will call ldap_group method and normalize the result
       #
-      prefix = 'normalized_'
-      if m.to_s.starts_with?(prefix)
-        method = m.to_s[prefix.length..-1]
+      if m.to_s.starts_with?(NORMALIZED_PREFIX)
+        method = m.to_s[NORMALIZED_PREFIX.length..-1]
         result = MiqAeServiceModelBase.wrap_results(object_send(method, *args))
         return MiqAeServiceModelBase.normalize(result)
+      end
+
+      super
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      if method_name.to_s.start_with?(NORMALIZED_PREFIX)
+        method_n = method_name.to_s[NORMALIZED_PREFIX.length..-1]
+        return object_send(:respond_to?, method_n, include_private)
       end
 
       super
