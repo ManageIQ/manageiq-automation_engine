@@ -46,7 +46,7 @@ module MiqAeEngine
       @workspace.root['ae_state_started'].present?
     end
 
-    def process_result(task = nil)
+    def process_result(task)
       @aw.reload
       @workspace.update_workspace(@aw.output) if @aw.output
       ansible_stats_from_task(task).each { |k, v| @workspace.persist_state_hash[k] = v }
@@ -54,7 +54,7 @@ module MiqAeEngine
     end
 
     def ansible_stats_from_task(task)
-      stats = task.task_results&.dig('ansible_stats')
+      stats = task&.context_data&.dig(:ansible_runner_stdout, -1, 'event_data', 'artifact_data')
       return {} unless stats
 
       stats.each_with_object({}) do |(attr, val), obj|
