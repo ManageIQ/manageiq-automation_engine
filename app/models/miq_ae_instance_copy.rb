@@ -18,31 +18,31 @@ class MiqAeInstanceCopy
     @validate_schema = validate_schema
   end
 
-  def to_domain(domain, ns = nil, overwrite = false)
-    check_duplicity(domain, ns, @instance_name)
+  def to_domain(domain, namespace = nil, overwrite = false)
+    check_duplicity(domain, namespace, @instance_name)
     @overwrite        = overwrite
-    @target_ns        = ns.nil? ? @partial_ns : ns
+    @target_ns        = namespace.nil? ? @partial_ns : namespace
     @target_name      = @instance_name
     @target_domain    = domain
     copy
   end
 
-  def as(new_name, ns = nil, overwrite = false)
-    check_duplicity(@src_domain, ns, new_name)
+  def as(new_name, namespace = nil, overwrite = false)
+    check_duplicity(@src_domain, namespace, new_name)
     @overwrite        = overwrite
-    @target_ns        = ns.nil? ? @partial_ns : ns
+    @target_ns        = namespace.nil? ? @partial_ns : namespace
     @target_name      = new_name
     @target_domain    = @src_domain
     copy
   end
 
-  def self.copy_multiple(ids, domain, ns = nil, overwrite = false)
+  def self.copy_multiple(ids, domain, namespace = nil, overwrite = false)
     validate_flag = true
     nids = []
     MiqAeInstance.transaction do
       ids.each do |id|
         instance_obj = MiqAeInstance.find(id)
-        new_instance = new(instance_obj.fqname, validate_flag).to_domain(domain, ns, overwrite)
+        new_instance = new(instance_obj.fqname, validate_flag).to_domain(domain, namespace, overwrite)
         nids << new_instance.id if new_instance
         validate_flag = false
       end
@@ -109,9 +109,9 @@ class MiqAeInstanceCopy
     raise "Instance cannot be copied, automation class schema mismatch" if (@flags & @class_schema_status).zero?
   end
 
-  def check_duplicity(domain, ns, instance_name)
+  def check_duplicity(domain, namespace, instance_name)
     if domain.downcase == @src_domain.downcase && instance_name.downcase == @instance_name.downcase
-      raise "Cannot copy instance onto itself" if ns.nil? || ns.downcase == @partial_ns.downcase
+      raise "Cannot copy instance onto itself" if namespace.nil? || namespace.downcase == @partial_ns.downcase
     end
   end
 end

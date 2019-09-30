@@ -42,11 +42,11 @@ module MiqAeEngine
     attr_accessor :node_parent
     attr_reader :node_children
 
-    def initialize(workspace, ns, klass, instance, object_name = nil)
+    def initialize(workspace, namespace, klass, instance, object_name = nil)
       Benchmark.current_realtime[:object_count] += 1
 
       @workspace        = workspace
-      @namespace        = ns
+      @namespace        = namespace
       @klass            = klass
       @instance         = instance
       @attributes       = {}
@@ -148,11 +148,11 @@ module MiqAeEngine
       end
     end
 
-    def fetch_namespace(ns = @namespace)
+    def fetch_namespace(namespace = @namespace)
       Benchmark.current_realtime[:fetch_namespace_count] += 1
       Benchmark.realtime_block(:fetch_namespace_time) do
-        @workspace.datastore(ns.downcase, :namespace) do
-          MiqAeNamespace.lookup_by_fqname(ns)
+        @workspace.datastore(namespace.downcase, :namespace) do
+          MiqAeNamespace.lookup_by_fqname(namespace)
         end
       end.first
     end
@@ -179,10 +179,10 @@ module MiqAeEngine
       end.first
     end
 
-    def fetch_field_value(f)
+    def fetch_field_value(field)
       Benchmark.current_realtime[:fetch_field_value_count] += 1
       Benchmark.realtime_block(:fetch_field_value_time) do
-        @aei&.get_field_value(f, false)
+        @aei&.get_field_value(field, false)
       end.first
     end
 
@@ -350,12 +350,12 @@ module MiqAeEngine
       @rels[name]
     end
 
-    def self.fqname(ns, klass, instance)
-      MiqAePath.new(:ae_namespace => ns, :ae_class => klass, :ae_instance => instance).to_s
+    def self.fqname(namespace, klass, instance)
+      MiqAePath.new(:ae_namespace => namespace, :ae_class => klass, :ae_instance => instance).to_s
     end
 
-    def process_relationship(f, message, args)
-      process_relationship_raw(get_value(f, :aetype_relationship), message, args, f['name'], f['collect'])
+    def process_relationship(field, message, args)
+      process_relationship_raw(get_value(field, :aetype_relationship), message, args, field['name'], field['collect'])
     end
 
     def process_method_raw(method, collect = nil)
@@ -374,8 +374,8 @@ module MiqAeEngine
       end
     end
 
-    def process_method(f, _message, _args)
-      process_method_raw(get_value(f), f['collect'])
+    def process_method(field, _message, _args)
+      process_method_raw(get_value(field), field['collect'])
     end
 
     def process_method_via_uri(uri)
@@ -531,15 +531,15 @@ module MiqAeEngine
       aem
     end
 
-    def get_field_value(f, type = nil, required = false)
-      value = f['value']
-      value = f['default_value'] if value.blank?
-      value = substitute_value(value, type, required) if f['substitute']
+    def get_field_value(field, type = nil, required = false)
+      value = field['value']
+      value = field['default_value'] if value.blank?
+      value = substitute_value(value, type, required) if field['substitute']
       value
     end
 
-    def get_null_coalesced_value(f, type = nil)
-      initial_value = f['value'] || f['default_value']
+    def get_null_coalesced_value(field, type = nil)
+      initial_value = field['value'] || field['default_value']
       return nil unless initial_value
 
       result = nil
@@ -597,10 +597,10 @@ module MiqAeEngine
     end
     private_class_method :decrypt_password
 
-    def process_assertion(f, message, args)
+    def process_assertion(field, message, args)
       Benchmark.current_realtime[:assertion_count] += 1
       Benchmark.realtime_block(:assertion_time) do
-        assertion = get_value(f, :aetype_assertion, true)
+        assertion = get_value(field, :aetype_assertion, true)
         return if assertion.blank?
 
         $miq_ae_logger.info("Evaluating substituted assertion [#{assertion}]")
@@ -620,13 +620,13 @@ module MiqAeEngine
       end
     end
 
-    def process_attribute(f, _message, _args, value = nil)
+    def process_attribute(field, _message, _args, value = nil)
       Benchmark.current_realtime[:attribute_count] += 1
       Benchmark.realtime_block(:attribute_time) do
-        value = get_value(f) if value.nil?
-        value = MiqAeObject.convert_value_based_on_datatype(value, f['datatype'])
-        @attributes[f['name'].downcase] = value unless value.nil?
-        process_collect(f['collect'], nil) unless f['collect'].blank?
+        value = get_value(field) if value.nil?
+        value = MiqAeObject.convert_value_based_on_datatype(value, field['datatype'])
+        @attributes[field['name'].downcase] = value unless value.nil?
+        process_collect(field['collect'], nil) unless field['collect'].blank?
       end
     end
 
@@ -677,11 +677,11 @@ module MiqAeEngine
       end.first
     end
 
-    def process_collect_set_attribute(k, v)
-      k = @current_field['name'] if k.nil? && @current_field.kind_of?(Hash)
-      return v if k.nil?
+    def process_collect_set_attribute(key, value)
+      key = @current_field['name'] if key.nil? && @current_field.kind_of?(Hash)
+      return value if key.nil?
 
-      parts = k.split(PATH_SEPARATOR)
+      parts = key.split(PATH_SEPARATOR)
       left = parts.pop
       if parts.empty?
         obj = self
@@ -689,7 +689,7 @@ module MiqAeEngine
         path = parts.first.blank? ? PATH_SEPARATOR : parts.join(PATH_SEPARATOR)
         obj = @workspace.get_obj_from_path(path)
       end
-      obj.attributes[left.downcase] = v unless obj.nil?
+      obj.attributes[left.downcase] = value unless obj.nil?
     end
 
     def process_collect_array(_expr, rels, result)

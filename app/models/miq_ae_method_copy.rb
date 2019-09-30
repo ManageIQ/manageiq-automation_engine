@@ -15,30 +15,30 @@ class MiqAeMethodCopy
     @target_class_name = @ae_class
   end
 
-  def to_domain(domain, ns = nil, overwrite = false)
-    check_duplicity(domain, ns, @method_name)
+  def to_domain(domain, namespace = nil, overwrite = false)
+    check_duplicity(domain, namespace, @method_name)
     @overwrite        = overwrite
-    @target_ns        = ns.nil? ? @partial_ns : ns
+    @target_ns        = namespace.nil? ? @partial_ns : namespace
     @target_name      = @method_name
     @target_domain    = domain
     copy
   end
 
-  def as(new_name, ns = nil, overwrite = false)
-    check_duplicity(@src_domain, ns, new_name)
+  def as(new_name, namespace = nil, overwrite = false)
+    check_duplicity(@src_domain, namespace, new_name)
     @overwrite        = overwrite
-    @target_ns        = ns.nil? ? @partial_ns : ns
+    @target_ns        = namespace.nil? ? @partial_ns : namespace
     @target_name      = new_name
     @target_domain    = @src_domain
     copy
   end
 
-  def self.copy_multiple(ids, domain, ns = nil, overwrite = false)
+  def self.copy_multiple(ids, domain, namespace = nil, overwrite = false)
     nids = []
     MiqAeMethod.transaction do
       ids.each do |id|
         method_obj = MiqAeMethod.find(id)
-        new_method = new(method_obj.fqname).to_domain(domain, ns, overwrite)
+        new_method = new(method_obj.fqname).to_domain(domain, namespace, overwrite)
         nids << new_method.id if new_method
       end
     end
@@ -91,9 +91,9 @@ class MiqAeMethodCopy
     find_or_create_class
   end
 
-  def check_duplicity(domain, ns, method_name)
+  def check_duplicity(domain, namespace, method_name)
     if domain.downcase == @src_domain.downcase && method_name.downcase == @method_name.downcase
-      raise "Cannot copy method onto itself" if ns.nil? || ns.downcase == @partial_ns.downcase
+      raise "Cannot copy method onto itself" if namespace.nil? || namespace.downcase == @partial_ns.downcase
     end
   end
 end

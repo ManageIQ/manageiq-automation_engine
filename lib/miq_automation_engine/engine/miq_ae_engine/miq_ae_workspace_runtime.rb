@@ -32,8 +32,8 @@ module MiqAeEngine
       @readonly
     end
 
-    def self.current=(ws)
-      Thread.current[:current_workspace] = ws
+    def self.current=(workspace)
+      Thread.current[:current_workspace] = workspace
     end
 
     def self.current
@@ -220,17 +220,16 @@ module MiqAeEngine
       s = g.output(:output => "none")
     end
 
-    def obj_to_dot(g, obj)
+    def obj_to_dot(graph, obj)
       return nil if obj.nil?
-
-      o = g.add_node(obj.object_name)
+      o = graph.add_node(obj.object_name)
       # o["MiqAeClass"]     = obj.klass
       # o["MiqAeNamespace"] = obj.namespace
       # o["MiqAeInstance"]  = obj.instance
       # obj.attributes
       obj.children.each do |child|
-        c = obj_to_dot(g, child)
-        g.add_edge(o, c) unless c.nil?
+        c = obj_to_dot(graph, child)
+        graph.add_edge(o, c) unless c.nil?
       end
       o
     end
@@ -246,10 +245,10 @@ module MiqAeEngine
       result.delete_if { |_k, v| v.nil? }
     end
 
-    def cyclical?(ns, klass, instance, message)
+    def cyclical?(namespace, klass, instance, message)
       # check for cyclical references
       @current.each do |c|
-        hash = {:ns => ns, :klass => klass, :instance => instance, :message => message}
+        hash = {:ns => namespace, :klass => klass, :instance => instance, :message => message}
         return true if hash.all? do |key, value|
                          begin
                            value.casecmp(c[key]).zero?
@@ -366,12 +365,12 @@ module MiqAeEngine
       obj
     end
 
-    def overlay_namespace(scheme, uri, ns, klass, instance)
-      @dom_search.get_alternate_domain(scheme, uri, ns, klass, instance)
+    def overlay_namespace(scheme, uri, namespace, klass, instance)
+      @dom_search.get_alternate_domain(scheme, uri, namespace, klass, instance)
     end
 
-    def overlay_method(ns, klass, method)
-      @dom_search.get_alternate_domain_method('miqaedb', "#{ns}/#{klass}/#{method}", ns, klass, method)
+    def overlay_method(namespace, klass, method)
+      @dom_search.get_alternate_domain_method('miqaedb', "#{namespace}/#{klass}/#{method}", namespace, klass, method)
     end
 
     private

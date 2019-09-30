@@ -31,10 +31,10 @@ module MiqAeEngine
       new(*split(path, options))
     end
 
-    def self.join(ns, klass, instance, attribute_name = nil)
-      return [nil, ns, klass, instance].join("/") if attribute_name.nil?
+    def self.join(namespace, klass, instance, attribute_name = nil)
+      return [nil, namespace, klass, instance].join("/") if attribute_name.nil?
 
-      [nil, ns, klass, instance, attribute_name].join("/")
+      [nil, namespace, klass, instance, attribute_name].join("/")
     end
 
     def self.split(path, options = {})

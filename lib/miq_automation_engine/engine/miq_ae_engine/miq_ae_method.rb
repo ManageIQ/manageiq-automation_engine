@@ -129,13 +129,13 @@ module MiqAeEngine
     end
     private_class_method :open_transactions_threshold
 
-    def self.verbose_rc(rc)
-      case rc
+    def self.verbose_rc(return_code)
+      case return_code
       when MIQ_OK    then 'MIQ_OK'
       when MIQ_WARN  then 'MIQ_WARN'
       when MIQ_STOP  then 'MIQ_STOP'
       when MIQ_ABORT then 'MIQ_ABORT'
-      else                "Unknown RC: [#{rc}]"
+      else                "Unknown RC: [#{return_code}]"
       end
     end
     private_class_method :verbose_rc
@@ -167,8 +167,8 @@ module MiqAeEngine
     end
     private_class_method :with_automation_env
 
-    def self.process_ruby_method_results(rc, msg)
-      case rc
+    def self.process_ruby_method_results(return_code, msg)
+      case return_code
       when MIQ_OK
         $miq_ae_logger.info(msg)
       when MIQ_WARN
@@ -180,7 +180,7 @@ module MiqAeEngine
       else
         raise MiqAeException::UnknownMethodRc, msg
       end
-      rc
+      return_code
     end
     private_class_method :process_ruby_method_results
 

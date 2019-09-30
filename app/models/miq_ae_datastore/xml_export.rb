@@ -17,18 +17,18 @@ module MiqAeDatastore
       end
     end
 
-    def self.class_to_xml(ns, class_name)
+    def self.class_to_xml(namespace, class_name)
       _log.info("Exporting class: #{class_name} to XML")
       xml = Builder::XmlMarkup.new(:indent => 2)
       xml.instruct!
       xml.MiqAeDatastore(:version => '1.0') do
-        c = MiqAeClass.lookup_by_namespace_and_name(ns, class_name)
+        c = MiqAeClass.lookup_by_namespace_and_name(namespace, class_name)
         c.to_export_xml(:builder => xml, :skip_instruct => true, :indent => 2)
       end
     end
 
-    def self.export_sub_namespaces(ns, xml)
-      ns.ae_namespaces.each do |n|
+    def self.export_sub_namespaces(namespace, xml)
+      namespace.ae_namespaces.each do |n|
         sn = MiqAeNamespace.lookup_by_fqname(n.fqname)
         export_all_classes_for_namespace(sn, xml)
         export_sub_namespaces(sn, xml)
@@ -51,8 +51,8 @@ module MiqAeDatastore
       end
     end
 
-    def self.export_all_classes_for_namespace(ns, xml)
-      MiqAeClass.where(:namespace_id => ns.id.to_i).sort_by(&:fqname).each do |c|
+    def self.export_all_classes_for_namespace(namespace, xml)
+      MiqAeClass.where(:namespace_id => namespace.id.to_i).sort_by(&:fqname).each do |c|
         c.to_export_xml(:builder => xml, :skip_instruct => true, :indent => 2)
       end
     end

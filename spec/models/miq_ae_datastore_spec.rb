@@ -40,10 +40,10 @@ describe MiqAeDatastore do
     File.delete(@ver_fname) if File.exist?(@ver_fname)
   end
 
-  def setup_version_xml(v)
-    v = v.nil? ? "" : "version='#{v}'"
+  def setup_version_xml(version)
+    version = version.nil? ? "" : "version='#{version}'"
     xml = <<-XML
-    <MiqAeDatastore #{v}>
+    <MiqAeDatastore #{version}>
       <MiqAeClass name="AUTOMATE" namespace="EVM">
         <MiqAeSchema>
           <MiqAeField name="attr1" aetype="attribute" />

@@ -10,28 +10,28 @@ class MiqAeClassCopy
     raise "Source class not found #{@class_fqname}" unless @src_class
   end
 
-  def to_domain(domain, ns = nil, overwrite = false)
-    check_duplicity(domain, ns, @src_class.name)
+  def to_domain(domain, namespace = nil, overwrite = false)
+    check_duplicity(domain, namespace, @src_class.name)
     @overwrite        = overwrite
-    @target_ns_fqname = target_ns(domain, ns)
+    @target_ns_fqname = target_ns(domain, namespace)
     @target_name      = @src_class.name
     copy
   end
 
-  def as(new_name, ns = nil, overwrite = false)
-    check_duplicity(@src_domain, ns, new_name)
+  def as(new_name, namespace = nil, overwrite = false)
+    check_duplicity(@src_domain, namespace, new_name)
     @overwrite        = overwrite
-    @target_ns_fqname = target_ns(@src_domain, ns)
+    @target_ns_fqname = target_ns(@src_domain, namespace)
     @target_name      = new_name
     copy
   end
 
-  def self.copy_multiple(ids, domain, ns = nil, overwrite = false)
+  def self.copy_multiple(ids, domain, namespace = nil, overwrite = false)
     new_ids = []
     MiqAeClass.transaction do
       ids.each do |id|
         class_obj = MiqAeClass.find(id)
-        new_class = new(class_obj.fqname).to_domain(domain, ns, overwrite)
+        new_class = new(class_obj.fqname).to_domain(domain, namespace, overwrite)
         new_ids << new_class.id if new_class
       end
     end
@@ -40,11 +40,11 @@ class MiqAeClassCopy
 
   private
 
-  def target_ns(domain, ns)
-    return "#{domain}/#{@partial_ns}" if ns.nil?
+  def target_ns(domain, namespace)
+    return "#{domain}/#{@partial_ns}" if namespace.nil?
 
-    ns_obj = MiqAeNamespace.lookup_by_fqname(ns, false)
-    ns_obj && !ns_obj.domain? ? ns : "#{domain}/#{ns}"
+    ns_obj = MiqAeNamespace.lookup_by_fqname(namespace, false)
+    ns_obj && !ns_obj.domain? ? namespace : "#{domain}/#{namespace}"
   end
 
   def copy
@@ -91,10 +91,10 @@ class MiqAeClassCopy
     end
   end
 
-  def check_duplicity(domain, ns, classname)
-    $log.info("Domain: #{domain}, namespace: #{ns}, classname: #{classname}")
+  def check_duplicity(domain, namespace, classname)
+    $log.info("Domain: #{domain}, namespace: #{namespace}, classname: #{classname}")
     if domain.downcase == @src_domain.downcase && classname.downcase == @ae_class.downcase
-      raise "Cannot copy class onto itself" if ns.nil? || ns.downcase == @partial_ns.downcase
+      raise "Cannot copy class onto itself" if namespace.nil? || namespace.downcase == @partial_ns.downcase
     end
   end
 end

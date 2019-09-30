@@ -107,7 +107,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     ae_resource = invoke_ae.root(@ae_result_key)
     ae_class    = "MiqAeMethodService::MiqAeService#{resource.class.name.gsub(/::/, '_')}".constantize
     expect(ae_resource).to be_kind_of(ae_class)
-    [:userid, :src_vm_id].each { |method| expect(ae_resource.send(method)).to eq(resource.send(method)) }
+    [:userid, :src_vm_id].each { |method_name| expect(ae_resource.send(method_name)).to eq(resource.send(method_name)) }
   end
 
   it "#reason" do
@@ -138,7 +138,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     # wilma_approval.update(:state => 'denied', :reason => wilma_reason)
     reasons = invoke_ae.root(@ae_result_key)
     # Order of reasons is indeterminate
-    reasons.split('; ').each { |reason| expect([betty_reason, wilma_reason].include?(reason)).to be_truthy }
+    reasons.split('; ').each { |rsn| expect([betty_reason, wilma_reason].include?(rsn)).to be_truthy }
   end
 
   it "#options" do

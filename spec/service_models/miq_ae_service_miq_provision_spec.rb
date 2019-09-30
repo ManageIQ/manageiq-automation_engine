@@ -39,7 +39,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqProvisionRequest)
-    [:id, :provision_type, :state, :status, :src_vm_id, :userid].each { |method| expect(ae_object.send(method)).to eq(miq_provision_request.send(method)) }
+    [:id, :provision_type, :state, :status, :src_vm_id, :userid].each { |method_name| expect(ae_object.send(method_name)).to eq(miq_provision_request.send(method_name)) }
   end
 
   it "#vm" do
@@ -54,7 +54,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceVm)
-    [:id, :name, :location].each { |method| expect(ae_object.send(method)).to eq(vm.send(method)) }
+    [:id, :name, :location].each { |method_name| expect(ae_object.send(method_name)).to eq(vm.send(method_name)) }
   end
 
   it "#vm_template" do
@@ -62,7 +62,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqTemplate)
-    [:id, :name, :location].each { |method| expect(ae_object.send(method)).to eq(@vm_template.send(method)) }
+    [:id, :name, :location].each { |method_name| expect(ae_object.send(method_name)).to eq(@vm_template.send(method_name)) }
   end
 
   it "#execute" do

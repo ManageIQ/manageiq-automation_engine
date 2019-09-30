@@ -947,9 +947,9 @@ describe MiqAeDatastore do
     validate_additional_columns
   end
 
-  def child_namespace_count(ns)
+  def child_namespace_count(namespace)
     count = 1
-    ns.ae_namespaces.each { |n| count += child_namespace_count(n) }
+    namespace.ae_namespaces.each { |n| count += child_namespace_count(n) }
     count
   end
 

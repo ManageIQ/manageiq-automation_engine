@@ -49,16 +49,16 @@ module MiqAeDatastore
     end
   end
 
-  def self.upload(fd, name = nil, domain_name = ALL_DOMAINS)
-    name ||= fd.original_filename
+  def self.upload(file_data, name = nil, domain_name = ALL_DOMAINS)
+    name ||= file_data.original_filename
     name = Pathname(name).basename.sub_ext('.zip')
     upload_to = TMP_DIR.join(name)
     TMP_DIR.mkpath
 
     _log.info("Uploading Datastore Import to file <#{upload_to}>")
 
-    IO.copy_stream(fd, upload_to)
-    fd.close
+    IO.copy_stream(file_data, upload_to)
+    file_data.close
 
     _log.info("Upload complete (size=#{upload_to.size})")
 
@@ -110,12 +110,12 @@ module MiqAeDatastore
     temp_export.unlink
   end
 
-  def self.export_class(ns, class_name)
-    XmlExport.class_to_xml(ns, class_name)
+  def self.export_class(namespace, class_name)
+    XmlExport.class_to_xml(namespace, class_name)
   end
 
-  def self.export_namespace(ns)
-    XmlExport.namespace_to_xml(ns)
+  def self.export_namespace(namespace)
+    XmlExport.namespace_to_xml(namespace)
   end
 
   def self.reset
@@ -124,15 +124,15 @@ module MiqAeDatastore
   end
 
   def self.reset_default_namespace
-    ns = MiqAeNamespace.lookup_by_fqname(DEFAULT_OBJECT_NAMESPACE)
-    ns&.destroy
+    namespace = MiqAeNamespace.lookup_by_fqname(DEFAULT_OBJECT_NAMESPACE)
+    namespace&.destroy
     seed_default_namespace
   end
 
   private_class_method def self.reset_domain(datastore_dir, domain_name, tenant)
     _log.info("Resetting domain #{domain_name} from #{datastore_dir}")
     ns = MiqAeDomain.lookup_by_fqname(domain_name)
-    ns.destroy if ns
+    ns&.destroy
     import_yaml_dir(datastore_dir, domain_name, tenant)
     if domain_name.downcase == MANAGEIQ_DOMAIN.downcase
       ns = MiqAeDomain.lookup_by_fqname(MANAGEIQ_DOMAIN)
@@ -239,18 +239,18 @@ module MiqAeDatastore
     MiqAeDatastore.get_sorted_matching_objects(user, arclass, ns, klass, name, enabled)
   end
 
-  def self.get_sorted_matching_objects(user, arclass, ns, klass, name, enabled)
+  def self.get_sorted_matching_objects(user, arclass, namespace, klass, name, enabled)
     options = arclass == ::MiqAeClass ? {:has_instance_name => false} : {}
     domains = user.current_tenant.visible_domains
     matches = arclass.where("lower(name) = ?", name.downcase).collect do |obj|
-      get_domain_index_object(domains, obj, klass, ns, enabled, options)
+      get_domain_index_object(domains, obj, klass, namespace, enabled, options)
     end.compact
     matches.sort_by { |a| a[:index] }.collect { |v| v[:obj] }
   end
 
-  def self.get_domain_index_object(domains, obj, klass, ns, enabled, options)
+  def self.get_domain_index_object(domains, obj, klass, namespace, enabled, options)
     domain, nsd, klass_name, = ::MiqAeEngine::MiqAePath.get_domain_ns_klass_inst(obj.fqname, options)
-    return if !klass_name.casecmp(klass).zero? || !nsd.casecmp(ns).zero?
+    return if !klass_name.casecmp(klass).zero? || !nsd.casecmp(namespace).zero?
 
     domain_index = get_domain_index(domains, domain, enabled)
     {:obj => obj, :index => domain_index} if domain_index
