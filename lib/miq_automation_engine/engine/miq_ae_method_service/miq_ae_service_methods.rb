@@ -67,7 +67,7 @@ module MiqAeMethodService
 
     def self.category_exists?(category)
       ar_method do
-        Classification.find_by_name(category).present?
+        Classification.lookup_by_name(category).present?
       end
     end
 
@@ -82,7 +82,7 @@ module MiqAeMethodService
 
     def self.category_delete!(category)
       ar_method do
-        cat = Classification.find_by_name(category)
+        cat = Classification.lookup_by_name(category)
         raise "Category <#{category}> does not exist" if cat.nil?
 
         if cat.entries.any? { |ent| AssignmentMixin.all_assignments(ent.tag.name).present? }
@@ -102,14 +102,14 @@ module MiqAeMethodService
 
     def self.tag_exists?(category, entry)
       ar_method do
-        cat = Classification.find_by_name(category)
+        cat = Classification.lookup_by_name(category)
         cat.present? && cat.find_entry_by_name(entry).present?
       end
     end
 
     def self.tag_create(category, options = {})
       ar_method do
-        cat = Classification.find_by_name(category)
+        cat = Classification.lookup_by_name(category)
         raise "Category <#{category}> does not exist" if cat.nil?
 
         ar_options = {}
@@ -121,7 +121,7 @@ module MiqAeMethodService
 
     def self.tag_delete!(category, entry)
       ar_method do
-        cat = Classification.find_by_name(category)
+        cat = Classification.lookup_by_name(category)
         raise "Category <#{category}> does not exist" if cat.nil?
 
         ent = cat.find_entry_by_name(entry)
@@ -144,12 +144,12 @@ module MiqAeMethodService
       # Need to add the username into the array of params
       # TODO: This code should pass a real username, similar to how the web-service
       #      passes the name of the user that logged into the web-service.
-      args.insert(1, User.find_by_userid("admin")) if args.kind_of?(Array)
+      args.insert(1, User.lookup_by_userid("admin")) if args.kind_of?(Array)
       MiqAeServiceModelBase.wrap_results(MiqProvisionVirtWorkflow.from_ws(*args))
     end
 
     def self.create_automation_request(options, userid = "admin", auto_approve = false)
-      user = User.find_by_userid!(userid)
+      user = User.lookup_by_userid!(userid)
       MiqAeServiceModelBase.wrap_results(AutomationRequest.create_request(options, user, auto_approve))
     end
 

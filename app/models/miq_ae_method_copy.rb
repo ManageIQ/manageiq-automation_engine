@@ -6,7 +6,7 @@ class MiqAeMethodCopy
   def initialize(method_fqname)
     @src_domain, @partial_ns, @ae_class, @method_name = MiqAeMethodCopy.split(method_fqname, true)
     @class_fqname = "#{@src_domain}/#{@partial_ns}/#{@ae_class}"
-    @src_class = MiqAeClass.find_by_fqname("#{@src_domain}/#{@partial_ns}/#{@ae_class}")
+    @src_class = MiqAeClass.lookup_by_fqname("#{@src_domain}/#{@partial_ns}/#{@ae_class}")
     raise "Source class not found #{@class_fqname}" unless @src_class
     @src_method = MiqAeMethod.find_by(:name => @method_name, :class_id => @src_class.id)
     raise "Source method #{@method_name} not found #{@class_fqname}" unless @src_method
@@ -46,7 +46,7 @@ class MiqAeMethodCopy
   private
 
   def find_or_create_class
-    @dest_class = MiqAeClass.find_by_fqname("#{@target_domain}/#{@target_ns}/#{@target_class_name}")
+    @dest_class = MiqAeClass.lookup_by_fqname("#{@target_domain}/#{@target_ns}/#{@target_class_name}")
     return unless @dest_class.nil?
     @dest_class = MiqAeClassCopy.new(@class_fqname).to_domain(@target_domain, @target_ns)
   end
@@ -68,7 +68,7 @@ class MiqAeMethodCopy
   end
 
   def create_method
-    @dest_method = MiqAeMethod.find_by_class_id_and_name(@dest_class.id, @target_name)
+    @dest_method = MiqAeMethod.lookup_by_class_id_and_name(@dest_class.id, @target_name)
     if @dest_method
       @dest_method.destroy if @overwrite
       raise "Instance #{@target_name} exists in #{@target_ns_fqname} class #{@target_class_name}" unless @overwrite

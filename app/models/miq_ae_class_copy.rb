@@ -6,7 +6,7 @@ class MiqAeClassCopy
   def initialize(class_fqname)
     @class_fqname = class_fqname
     @src_domain, @partial_ns, @ae_class = MiqAeClassCopy.split(@class_fqname, false)
-    @src_class = MiqAeClass.find_by_fqname(@class_fqname)
+    @src_class = MiqAeClass.lookup_by_fqname(@class_fqname)
     raise "Source class not found #{@class_fqname}" unless @src_class
   end
 
@@ -42,7 +42,7 @@ class MiqAeClassCopy
 
   def target_ns(domain, ns)
     return "#{domain}/#{@partial_ns}" if ns.nil?
-    ns_obj = MiqAeNamespace.find_by_fqname(ns, false)
+    ns_obj = MiqAeNamespace.lookup_by_fqname(ns, false)
     ns_obj && !ns_obj.domain? ? ns : "#{domain}/#{ns}"
   end
 
@@ -78,7 +78,7 @@ class MiqAeClassCopy
   end
 
   def validate
-    dest_class = MiqAeClass.find_by_fqname("#{@target_ns_fqname}/#{@target_name}")
+    dest_class = MiqAeClass.lookup_by_fqname("#{@target_ns_fqname}/#{@target_name}")
     $log.info("Destination class: #{dest_class}")
     if dest_class
       $log.info("Overwrite flag: #{@overwrite}")

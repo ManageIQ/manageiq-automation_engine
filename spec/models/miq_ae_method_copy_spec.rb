@@ -18,56 +18,56 @@ describe MiqAeMethodCopy do
 
   context 'clone method' do
     before do
-      @ns1 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@src_ns}", false)
-      @class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @src_class)
-      @meth1  = MiqAeMethod.find_by_class_id_and_name(@class1.id, @src_method)
+      @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
+      @class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
+      @meth1  = MiqAeMethod.lookup_by_class_id_and_name(@class1.id, @src_method)
     end
 
     it 'after copy both inline methods in DB should be congruent' do
       MiqAeMethodCopy.new(@src_fqname).to_domain(@dest_domain)
-      ns2 = MiqAeNamespace.find_by_fqname("#{@dest_domain}/#{@src_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(ns2.id, @src_class)
-      meth2  = MiqAeMethod.find_by_class_id_and_name(class2.id, @src_method)
+      ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{@src_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
+      meth2  = MiqAeMethod.lookup_by_class_id_and_name(class2.id, @src_method)
       validate_method(@meth1, meth2, MiqAeMethodCompare::CONGRUENT_METHOD)
     end
 
     it 'after copy both builtin methods in DB should be congruent' do
       builtin_fqname = "#{@src_domain}/#{@src_ns}/#{@src_class}/#{@builtin_method}"
-      meth1  = MiqAeMethod.find_by_class_id_and_name(@class1.id, @builtin_method)
+      meth1 = MiqAeMethod.lookup_by_class_id_and_name(@class1.id, @builtin_method)
       MiqAeMethodCopy.new(builtin_fqname).to_domain(@dest_domain)
-      ns2 = MiqAeNamespace.find_by_fqname("#{@dest_domain}/#{@src_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(ns2.id, @src_class)
-      meth2  = MiqAeMethod.find_by_class_id_and_name(class2.id, @builtin_method)
+      ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{@src_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
+      meth2 = MiqAeMethod.lookup_by_class_id_and_name(class2.id, @builtin_method)
       validate_method(meth1, meth2, MiqAeMethodCompare::CONGRUENT_METHOD)
     end
 
     it 'overwrite an existing method' do
-      meth2  = MiqAeMethod.find_by_class_id_and_name(@class1.id, @dest_method)
+      meth2 = MiqAeMethod.lookup_by_class_id_and_name(@class1.id, @dest_method)
       validate_method(@meth1, meth2, MiqAeMethodCompare::INCOMPATIBLE_METHOD)
       MiqAeMethodCopy.new(@src_fqname).as(@dest_method, nil, true)
-      meth2  = MiqAeMethod.find_by_class_id_and_name(@class1.id, @dest_method)
+      meth2 = MiqAeMethod.lookup_by_class_id_and_name(@class1.id, @dest_method)
       validate_method(@meth1, meth2, MiqAeMethodCompare::CONGRUENT_METHOD)
     end
 
     it 'overwrite an existing method should raise error' do
-      meth2  = MiqAeMethod.find_by_class_id_and_name(@class1.id, @dest_method)
+      meth2 = MiqAeMethod.lookup_by_class_id_and_name(@class1.id, @dest_method)
       validate_method(@meth1, meth2, MiqAeMethodCompare::INCOMPATIBLE_METHOD)
       expect { MiqAeMethodCopy.new(@src_fqname).as(@dest_method) }.to raise_error(RuntimeError)
     end
 
     it 'copy method to a different namespace in the same domain' do
       MiqAeMethodCopy.new(@src_fqname).as(@src_method, @dest_ns, true)
-      ns2 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@dest_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(ns2.id, @src_class)
-      meth2  = MiqAeMethod.find_by_class_id_and_name(class2.id, @src_method)
+      ns2 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@dest_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
+      meth2 = MiqAeMethod.lookup_by_class_id_and_name(class2.id, @src_method)
       validate_method(@meth1, meth2, MiqAeMethodCompare::CONGRUENT_METHOD)
     end
 
     it 'copy method to a different namespace in a different domain' do
       MiqAeMethodCopy.new(@src_fqname).to_domain(@dest_domain, @dest_ns, true)
-      ns2 = MiqAeNamespace.find_by_fqname("#{@dest_domain}/#{@dest_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(ns2.id, @src_class)
-      meth2  = MiqAeMethod.find_by_class_id_and_name(class2.id, @src_method)
+      ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{@dest_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
+      meth2 = MiqAeMethod.lookup_by_class_id_and_name(class2.id, @src_method)
       validate_method(@meth1, meth2, MiqAeMethodCompare::CONGRUENT_METHOD)
     end
 

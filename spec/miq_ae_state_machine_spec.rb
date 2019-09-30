@@ -42,7 +42,7 @@ describe "MiqAeStateMachine" do
 
   it "sets error properly during a provision request" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
-    c1 = MiqAeClass.find_by_namespace_and_name("#{@domain}/Factory", "VM")
+    c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "VM")
     i1 = c1.ae_instances.detect { |i| i.name == "ProvisionCheck" }
     f1 = c1.ae_fields.detect    { |f| f.name == "execute"   }
     i1.set_field_attribute(f1, "provision_check(result => 'error')", :value)
@@ -58,7 +58,7 @@ describe "MiqAeStateMachine" do
   it "raises exception properly during a provision request" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
 
-    c1 = MiqAeClass.find_by_namespace_and_name("#{@domain}/Factory", "VM")
+    c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "VM")
     i1 = c1.ae_instances.detect { |i| i.name == "ProvisionCheck" }
     f1 = c1.ae_fields.detect    { |f| f.name == "execute"   }
     i1.set_field_attribute(f1, "provision_check(result => 'exception')", :value)
@@ -75,7 +75,7 @@ describe "MiqAeStateMachine" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
     t0 = Time.now
 
-    c1 = MiqAeClass.find_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
+    c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
     i1 = c1.ae_instances.detect { |i| i.name == "Provisioning" }
     f1 = c1.ae_fields.detect    { |f| f.name == "EmailOwner"   }
     i1.set_field_attribute(f1, "log_object", :on_exit)
@@ -91,7 +91,7 @@ describe "MiqAeStateMachine" do
   it "executes on_entry instance methods properly" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
 
-    c1 = MiqAeClass.find_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
+    c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
     i1 = c1.ae_instances.detect { |i| i.name == "Provisioning" }
     f1 = c1.ae_fields.detect    { |f| f.name == "AcquireIPAddress"   }
     method_string = "update_provision_status(status => 'Testing on entry method',status_state => 'on_entry')"
@@ -111,7 +111,7 @@ describe "MiqAeStateMachine" do
   it "executes on_entry fully qualified class methods properly" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
 
-    c1 = MiqAeClass.find_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
+    c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
     i1 = c1.ae_instances.detect { |i| i.name == "Provisioning" }
     f1 = c1.ae_fields.detect    { |f| f.name == "AcquireIPAddress"   }
     method_string = "SPEC_DOMAIN/factory/method.test_class_method(status => 'Testing class on entry method',status_state => 'on_entry')"
@@ -123,7 +123,7 @@ describe "MiqAeStateMachine" do
   it "executes on_entry partially qualified class methods properly" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
 
-    c1 = MiqAeClass.find_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
+    c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
     i1 = c1.ae_instances.detect { |i| i.name == "Provisioning" }
     f1 = c1.ae_fields.detect    { |f| f.name == "AcquireIPAddress" }
     method_string = "/factory/method.test_class_method(status => 'Test',status_state => 'on_entry')"
@@ -135,7 +135,7 @@ describe "MiqAeStateMachine" do
   it "executes method:: method properly" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
 
-    c1 = MiqAeClass.find_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
+    c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
     i1 = c1.ae_instances.detect { |i| i.name == "Provisioning" }
     f1 = c1.ae_fields.detect    { |f| f.name == "AcquireIPAddress" }
     method_string = "METHOD::update_provision_status(status => 'Test',status_state => 'value')"
@@ -147,7 +147,7 @@ describe "MiqAeStateMachine" do
   it "executes class method notation method:: properly" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
 
-    c1 = MiqAeClass.find_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
+    c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
     i1 = c1.ae_instances.detect { |i| i.name == "Provisioning" }
     f1 = c1.ae_fields.detect    { |f| f.name == "AcquireIPAddress" }
     method_string = "METHOD::/factory/method.test_class_method(status => 'Test',status_state => 'on_entry')"

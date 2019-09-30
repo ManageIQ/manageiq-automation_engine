@@ -17,15 +17,15 @@ describe MiqAeInstanceCopy do
 
   context 'clone instance' do
     before do
-      @ns1 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@src_ns}", false)
-      @class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @src_class)
+      @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
+      @class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
       @inst1  = MiqAeInstance.find_by_class_id_and_name(@class1.id, @src_instance)
     end
 
     it 'after copy both instances in DB should be congruent' do
       MiqAeInstanceCopy.new(@src_fqname).to_domain(@dest_domain)
-      ns2 = MiqAeNamespace.find_by_fqname("#{@dest_domain}/#{@src_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(ns2.id, @src_class)
+      ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{@src_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
       inst2  = MiqAeInstance.find_by_class_id_and_name(class2.id, @src_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::CONGRUENT_INSTANCE)
     end
@@ -46,16 +46,16 @@ describe MiqAeInstanceCopy do
 
     it 'copy instance to a different namespace in the same domain' do
       MiqAeInstanceCopy.new(@src_fqname).as(@src_instance, @dest_ns, true)
-      ns2 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@dest_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(ns2.id, @src_class)
+      ns2 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@dest_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
       inst2  = MiqAeInstance.find_by_class_id_and_name(class2.id, @src_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::CONGRUENT_INSTANCE)
     end
 
     it 'copy instance to a different namespace in a different domain' do
       MiqAeInstanceCopy.new(@src_fqname).to_domain(@dest_domain, @dest_ns, true)
-      ns2 = MiqAeNamespace.find_by_fqname("#{@dest_domain}/#{@dest_ns}", false)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(ns2.id, @src_class)
+      ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{@dest_ns}", false)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
       inst2  = MiqAeInstance.find_by_class_id_and_name(class2.id, @src_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::CONGRUENT_INSTANCE)
     end
@@ -63,8 +63,8 @@ describe MiqAeInstanceCopy do
 
   context 'incompatible schema' do
     before do
-      @ns1 = MiqAeNamespace.find_by_fqname("#{@src_domain}/#{@src_ns}", false)
-      @class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @src_class)
+      @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
+      @class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
       @inst1  = MiqAeInstance.find_by_class_id_and_name(@class1.id, @src_instance)
     end
 
@@ -76,8 +76,8 @@ describe MiqAeInstanceCopy do
       cp = MiqAeInstanceCopy.new(@src_fqname)
       cp.flags = MiqAeClassCompareFields::INCOMPATIBLE_SCHEMA
       cp.as('incompatible_one', 'NS2', true)
-      ns2 = MiqAeNamespace.find_by_fqname("#{@src_domain}/ns2", false)
-      ic_class = MiqAeClass.find_by_namespace_id_and_name(ns2.id, @src_class)
+      ns2 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/ns2", false)
+      ic_class = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
       expect(MiqAeInstance.find_by_class_id_and_name(ic_class.id, 'incompatible_one')).not_to be_nil
     end
   end

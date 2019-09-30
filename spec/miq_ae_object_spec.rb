@@ -171,7 +171,7 @@ describe MiqAeEngine::MiqAeObject do
   it "disabled inheritance" do
     @user = FactoryBot.create(:user_with_group)
     create_state_ae_model(:name => 'LUIGI', :ae_class => 'CLASS1', :ae_namespace => 'A/C', :instance_name => 'FRED')
-    klass = MiqAeClass.find_by_name('CLASS1')
+    klass = MiqAeClass.lookup_by_name('CLASS1')
     klass.update!(:inherits => '/LUIGI/A/C/missing')
     workspace = MiqAeEngine.instantiate("/A/C/CLASS1/FRED", @user)
     expect(workspace.root).not_to be_nil

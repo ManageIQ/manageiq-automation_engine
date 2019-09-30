@@ -62,8 +62,8 @@ describe MiqAeInstanceCompareValues do
     @second_instance = inst2 if inst2
     @instance1_file = File.join(@export_dir, @domain, @namespace, "#{@classname}.class", "#{inst1}.yaml") if inst1
     @instance2_file = File.join(@export_dir, @domain, @namespace, "#{@classname}.class", "#{inst2}.yaml") if inst2
-    @ns1 = MiqAeNamespace.find_by_fqname("#{@domain}/#{@namespace}")
-    @class = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @classname)
+    @ns1 = MiqAeNamespace.lookup_by_fqname("#{@domain}/#{@namespace}")
+    @class = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @classname)
   end
 
   def export_model(domain, export_options = {})

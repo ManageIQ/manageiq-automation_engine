@@ -30,7 +30,7 @@ describe MiqAeDomain do
     end
 
     def set_enabled(domain, state)
-      dom = MiqAeDomain.find_by_fqname(domain)
+      dom = MiqAeDomain.lookup_by_fqname(domain)
       dom.update!(:enabled => state)
     end
   end

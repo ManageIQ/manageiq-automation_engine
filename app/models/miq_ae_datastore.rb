@@ -124,18 +124,18 @@ module MiqAeDatastore
   end
 
   def self.reset_default_namespace
-    ns = MiqAeNamespace.find_by_fqname(DEFAULT_OBJECT_NAMESPACE)
+    ns = MiqAeNamespace.lookup_by_fqname(DEFAULT_OBJECT_NAMESPACE)
     ns.destroy if ns
     seed_default_namespace
   end
 
   private_class_method def self.reset_domain(datastore_dir, domain_name, tenant)
     _log.info("Resetting domain #{domain_name} from #{datastore_dir}")
-    ns = MiqAeDomain.find_by_fqname(domain_name)
+    ns = MiqAeDomain.lookup_by_fqname(domain_name)
     ns.destroy if ns
     import_yaml_dir(datastore_dir, domain_name, tenant)
     if domain_name.downcase == MANAGEIQ_DOMAIN.downcase
-      ns = MiqAeDomain.find_by_fqname(MANAGEIQ_DOMAIN)
+      ns = MiqAeDomain.lookup_by_fqname(MANAGEIQ_DOMAIN)
       ns.update!(:source   => MiqAeDomain::SYSTEM_SOURCE, :enabled => true,
                             :priority => MANAGEIQ_PRIORITY) if ns
     end
@@ -211,7 +211,7 @@ module MiqAeDatastore
   end
 
   def self.seed
-    ns = MiqAeDomain.find_by_fqname(MANAGEIQ_DOMAIN)
+    ns = MiqAeDomain.lookup_by_fqname(MANAGEIQ_DOMAIN)
     unless ns
       _log.info("Seeding ManageIQ domain...")
       begin
@@ -264,11 +264,11 @@ module MiqAeDatastore
   end
 
   def self.restore_attrs_for_domains(hash)
-    hash.each { |dom, attrs| MiqAeDomain.find_by_fqname(dom, false).update(attrs) }
+    hash.each { |dom, attrs| MiqAeDomain.lookup_by_fqname(dom, false).update(attrs) }
   end
 
   def self.path_includes_domain?(path, options = {})
     nsd, = ::MiqAeEngine::MiqAePath.split(path, options)
-    MiqAeNamespace.find_by_fqname(nsd, false) != nil
+    MiqAeNamespace.lookup_by_fqname(nsd, false) != nil
   end
 end

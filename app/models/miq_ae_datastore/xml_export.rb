@@ -22,14 +22,14 @@ module MiqAeDatastore
       xml = Builder::XmlMarkup.new(:indent => 2)
       xml.instruct!
       xml.MiqAeDatastore(:version => '1.0') do
-        c = MiqAeClass.find_by_namespace_and_name(ns, class_name)
+        c = MiqAeClass.lookup_by_namespace_and_name(ns, class_name)
         c.to_export_xml(:builder => xml, :skip_instruct => true, :indent => 2)
       end
     end
 
     def self.export_sub_namespaces(ns, xml)
       ns.ae_namespaces.each do |n|
-        sn = MiqAeNamespace.find_by_fqname(n.fqname)
+        sn = MiqAeNamespace.lookup_by_fqname(n.fqname)
         export_all_classes_for_namespace(sn, xml)
         export_sub_namespaces(sn, xml)
       end
@@ -39,7 +39,7 @@ module MiqAeDatastore
       _log.info("Exporting namespace: #{namespace} to XML")
       xml = Builder::XmlMarkup.new(:indent => 2)
       xml.instruct!
-      rec = MiqAeNamespace.find_by_fqname(namespace)
+      rec = MiqAeNamespace.lookup_by_fqname(namespace)
       if rec.nil?
         _log.info("Namespace:  <#{namespace}> not found.")
         return nil

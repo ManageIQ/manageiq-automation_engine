@@ -118,7 +118,7 @@ describe "MiqAeStateMachineSteps" do
   end
 
   def tweak_instance(class_fqname, instance, field_name, attribute, value)
-    klass = MiqAeClass.find_by_fqname(class_fqname)
+    klass = MiqAeClass.lookup_by_fqname(class_fqname)
     field = klass.ae_fields.detect { |f| f.name == field_name }
     ins   = klass.ae_instances.detect { |inst| inst.name == instance }
     update_value(ins, field, attribute, value)

@@ -26,7 +26,8 @@ module MiqAeMethodService
 
     def self.allowed_find_method?(m)
       return false if m.starts_with?('find_or_create') || m.starts_with?('find_or_initialize')
-      m.starts_with?('find')
+
+      m.starts_with?('find', 'lookup_by')
     end
 
     # Expose the ActiveRecord find, all, count, and first

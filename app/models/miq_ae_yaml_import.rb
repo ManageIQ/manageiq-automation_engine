@@ -80,7 +80,7 @@ class MiqAeYamlImport
   def import_domain(domain_folder, domain_name)
     domain_yaml = domain_properties(domain_folder, domain_name)
     domain_name = domain_yaml.fetch_path('object', 'attributes', 'name')
-    domain_obj = MiqAeDomain.find_by_fqname(domain_name, false)
+    domain_obj = MiqAeDomain.lookup_by_fqname(domain_name, false)
     track_stats('domain', domain_obj)
     MiqAeDomain.transaction do
       if domain_obj && !@preview && @options['overwrite']
@@ -158,7 +158,7 @@ class MiqAeYamlImport
                "#{domain_name}#{namespace_folder.sub(domain_folder(@domain_name), '')}"
              end
     _log.info("Importing namespace: <#{fqname}>")
-    namespace_obj = MiqAeNamespace.find_by_fqname(fqname, false)
+    namespace_obj = MiqAeNamespace.lookup_by_fqname(fqname, false)
     track_stats('namespace', namespace_obj)
     namespace_obj ||= add_namespace(fqname) unless @preview
     attrs = namespace_yaml.fetch_path('object', 'attributes').slice('display_name', 'description')
@@ -205,7 +205,7 @@ class MiqAeYamlImport
 
   def existing_class_object(ns_obj, class_yaml)
     class_attrs = class_yaml.fetch_path('object', 'attributes')
-    class_obj = MiqAeClass.find_by_namespace_id_and_name(ns_obj.id, class_attrs['name']) unless ns_obj.nil?
+    class_obj = MiqAeClass.lookup_by_namespace_id_and_name(ns_obj.id, class_attrs['name']) unless ns_obj.nil?
     track_stats('class', class_obj)
     class_obj
   end
@@ -303,7 +303,7 @@ class MiqAeYamlImport
   def new_domain_name_valid?
     return true if @options['overwrite']
 
-    domain_obj = MiqAeDomain.find_by_fqname(@options['import_as'], false)
+    domain_obj = MiqAeDomain.lookup_by_fqname(@options['import_as'], false)
     if domain_obj
       _log.info("Cannot import - A domain exists with new domain name: #{@options['import_as']}.")
       return false

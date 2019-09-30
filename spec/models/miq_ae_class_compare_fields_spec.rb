@@ -19,13 +19,13 @@ describe MiqAeClassCompareFields do
     end
 
     it "both class in DB should be equivalent" do
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
       class_check_status(class1, class1, MiqAeClassCompareFields::CONGRUENT_SCHEMA)
     end
 
     it "one class in DB and other in YAML should be equivalent" do
       export_model(@domain)
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
       class2 = MiqAeClassYaml.new(@class1_file)
       class_check_status(class1, class2, MiqAeClassCompareFields::CONGRUENT_SCHEMA)
     end
@@ -39,14 +39,14 @@ describe MiqAeClassCompareFields do
     end
 
     it "both class in DB should be equivalent" do
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @second_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @second_class)
       class_check_status(class1, class2, MiqAeClassCompareFields::CONGRUENT_SCHEMA)
     end
 
     it "one class in DB and other in YAML should be equivalent" do
       export_model(@domain)
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
       class2 = MiqAeClassYaml.new(@class2_file)
       class_check_status(class1, class2, MiqAeClassCompareFields::CONGRUENT_SCHEMA)
     end
@@ -60,14 +60,14 @@ describe MiqAeClassCompareFields do
     end
 
     it "both classes in DB should be incompatible" do
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @second_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @second_class)
       class_check_status(class1, class2, MiqAeClassCompareFields::INCOMPATIBLE_SCHEMA)
     end
 
     it "one class in DB and other in YAML should be incompatible" do
       export_model(@domain)
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
       class2 = MiqAeClassYaml.new(@class2_file)
       class_check_status(class1, class2, MiqAeClassCompareFields::INCOMPATIBLE_SCHEMA)
     end
@@ -81,15 +81,15 @@ describe MiqAeClassCompareFields do
     end
 
     it "both classes in DB should be incompatible" do
-      ns1 = MiqAeNamespace.find_by_fqname("#{@domain}/#{@namespace}")
-      class1 = MiqAeClass.find_by_namespace_id_and_name(ns1.id, @first_class)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(ns1.id, @second_class)
+      ns1 = MiqAeNamespace.lookup_by_fqname("#{@domain}/#{@namespace}")
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(ns1.id, @first_class)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns1.id, @second_class)
       class_check_status(class1, class2, MiqAeClassCompareFields::INCOMPATIBLE_SCHEMA)
     end
 
     it "one class in DB and other in YAML should be incompatible" do
       export_model(@domain)
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
       class2 = MiqAeClassYaml.new(@class2_file)
       class_check_status(class1, class2, MiqAeClassCompareFields::INCOMPATIBLE_SCHEMA)
     end
@@ -103,14 +103,14 @@ describe MiqAeClassCompareFields do
     end
 
     it "both classes in DB should be compatible" do
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @second_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @second_class)
       class_check_status(class1, class2, MiqAeClassCompareFields::COMPATIBLE_SCHEMA)
     end
 
     it "one class in DB and other in YAML should be compatible" do
       export_model(@domain)
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
       class2 = MiqAeClassYaml.new(@class2_file)
       class_check_status(class1, class2, MiqAeClassCompareFields::COMPATIBLE_SCHEMA)
     end
@@ -124,14 +124,14 @@ describe MiqAeClassCompareFields do
     end
 
     it "both classes in DB should be compatible" do
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @second_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @second_class)
       class_check_status(class1, class2, MiqAeClassCompareFields::COMPATIBLE_SCHEMA)
     end
 
     it "one class in DB and other in YAML should be compatible" do
       export_model(@domain)
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
       class2 = MiqAeClassYaml.new(@class2_file)
       class_check_status(class1, class2, MiqAeClassCompareFields::COMPATIBLE_SCHEMA)
     end
@@ -145,14 +145,14 @@ describe MiqAeClassCompareFields do
     end
 
     it "both classes in DB should be incompatible" do
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @second_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @second_class)
       class_check_status(class1, class2, MiqAeClassCompareFields::INCOMPATIBLE_SCHEMA)
     end
 
     it "one class in DB and other in YAML should be incompatible" do
       export_model(@domain)
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
       class2 = MiqAeClassYaml.new(@class2_file)
       class_check_status(class1, class2, MiqAeClassCompareFields::INCOMPATIBLE_SCHEMA)
     end
@@ -166,14 +166,14 @@ describe MiqAeClassCompareFields do
     end
 
     it "both classes in DB should be incompatible" do
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
-      class2 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @second_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
+      class2 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @second_class)
       class_check_status(class1, class2, MiqAeClassCompareFields::INCOMPATIBLE_SCHEMA)
     end
 
     it "one class in DB and other in YAML should be incompatible" do
       export_model(@domain)
-      class1 = MiqAeClass.find_by_namespace_id_and_name(@ns1.id, @first_class)
+      class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @first_class)
       class2 = MiqAeClassYaml.new(@class2_file)
       class_check_status(class1, class2, MiqAeClassCompareFields::INCOMPATIBLE_SCHEMA)
     end
@@ -190,7 +190,7 @@ describe MiqAeClassCompareFields do
     @second_class = class2 if class2
     @class1_file = File.join(@export_dir, @domain, @namespace, "#{@first_class}.class", "__class__.yaml") if class1
     @class2_file = File.join(@export_dir, @domain, @namespace, "#{@second_class}.class", "__class__.yaml") if class2
-    @ns1 = MiqAeNamespace.find_by_fqname("#{@domain}/#{@namespace}")
+    @ns1 = MiqAeNamespace.lookup_by_fqname("#{@domain}/#{@namespace}")
   end
 
   def export_model(domain, export_options = {})

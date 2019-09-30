@@ -130,7 +130,7 @@ describe "MiqAeProvision" do
 
     it "should have Network class" do
       fqname = "#{@domain}/EVMApplications/Provisioning/Network"
-      klass = MiqAeClass.find_by_fqname(fqname)
+      klass = MiqAeClass.lookup_by_fqname(fqname)
       expect(klass).not_to be_nil
       expect(klass.ae_instances.length).not_to eq(0)
 

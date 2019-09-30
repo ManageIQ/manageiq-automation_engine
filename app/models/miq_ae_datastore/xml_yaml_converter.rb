@@ -8,7 +8,7 @@ module MiqAeDatastore
       export_options['export_as'] = domain_name
       MiqAeExport.new(temp_domain, export_options).export
     ensure
-      ns = MiqAeDomain.find_by_fqname(temp_domain)
+      ns = MiqAeDomain.lookup_by_fqname(temp_domain)
       ns.destroy if ns
     end
   end

@@ -330,7 +330,7 @@ describe MiqAeEngine::MiqAeMethod do
       end
 
       it 'can properly call functions in embedded methods' do
-        allow(::MiqAeClass).to receive(:find_by_fqname).with('Shared/Methods').and_return(klass)
+        allow(::MiqAeClass).to receive(:lookup_by_fqname).with('Shared/Methods').and_return(klass)
         allow(::MiqAeMethod).to receive(:find_by).with(:class_id => klass.id, :name => 'TopMethod').and_return(embed_method)
         allow($miq_ae_logger).to receive(:info).and_call_original
         allow(workspace).to receive(:overlay_method).with('Shared', 'Methods', 'TopMethod').and_return('Shared')
@@ -341,7 +341,7 @@ describe MiqAeEngine::MiqAeMethod do
       end
 
       it 'raises error when a embeded method is not found' do
-        allow(::MiqAeClass).to receive(:find_by_fqname).with('Shared/Methods').and_return(nil)
+        allow(::MiqAeClass).to receive(:lookup_by_fqname).with('Shared/Methods').and_return(nil)
         allow($miq_ae_logger).to receive(:info).and_call_original
         allow(workspace).to receive(:overlay_method).with('Shared', 'Methods', 'TopMethod').and_return('Shared')
 
@@ -351,7 +351,7 @@ describe MiqAeEngine::MiqAeMethod do
       context "exception" do
         let(:embeds) { ['/Shared/Methods/RaiseException'] }
         it 'can log stack trace in embedded methods' do
-          allow(::MiqAeClass).to receive(:find_by_fqname).with('Shared/Methods').and_return(klass)
+          allow(::MiqAeClass).to receive(:lookup_by_fqname).with('Shared/Methods').and_return(klass)
           allow(::MiqAeMethod).to receive(:find_by).with(:class_id => klass.id, :name => 'RaiseException').and_return(exception_method)
           allow($miq_ae_logger).to receive(:info).and_call_original
           allow($miq_ae_logger).to receive(:error).and_call_original
@@ -363,7 +363,7 @@ describe MiqAeEngine::MiqAeMethod do
 
       shared_examples "nested embeds" do
         it 'can load methods within  methods' do
-          allow(::MiqAeClass).to receive(:find_by_fqname).with('Shared/Methods').and_return(klass)
+          allow(::MiqAeClass).to receive(:lookup_by_fqname).with('Shared/Methods').and_return(klass)
           allow(::MiqAeMethod).to receive(:find_by).with(:class_id => klass.id, :name => 'Level1').and_return(level1_method)
           allow(::MiqAeMethod).to receive(:find_by).with(:class_id => klass.id, :name => 'Level2').and_return(level2_method)
           allow(::MiqAeMethod).to receive(:find_by).with(:class_id => klass.id, :name => 'Level3').and_return(level3_method)

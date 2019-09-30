@@ -50,7 +50,7 @@ describe MiqAeDomain do
     end
 
     def update_domain_attributes(domain_name, attrs)
-      dom = MiqAeDomain.find_by_fqname(domain_name)
+      dom = MiqAeDomain.lookup_by_fqname(domain_name)
       dom.update!(attrs)
     end
 
@@ -69,19 +69,19 @@ describe MiqAeDomain do
 
     context "Domain Overlays" do
       it "partial namespace should use the higher priority user instance" do
-        ns = MiqAeNamespace.find_by_fqname('evm')
+        ns = MiqAeNamespace.lookup_by_fqname('evm')
         expect(ns).to be_nil
         assert_method_executed('evm/AUTOMATE/test1', 'user', @user)
       end
 
       it "fully qualified namespace should execute the root method" do
-        ns = MiqAeNamespace.find_by_fqname('root/evm')
+        ns = MiqAeNamespace.lookup_by_fqname('root/evm')
         expect(ns).not_to be_nil
         assert_method_executed('root/evm/AUTOMATE/test2', 'root', @user)
       end
 
       it "partial namespace with wild card in relationship" do
-        ns = MiqAeNamespace.find_by_fqname('evm')
+        ns = MiqAeNamespace.lookup_by_fqname('evm')
         expect(ns).to be_nil
         assert_method_executed('evm/AUTOMATE/test_wildcard', 'user', @user)
       end
@@ -99,14 +99,14 @@ describe MiqAeDomain do
       end
 
       it "an enabled namespace should get picked up if the instance exists" do
-        n3 = MiqAeNamespace.find_by_fqname('inert')
+        n3 = MiqAeNamespace.lookup_by_fqname('inert')
         expect(n3.enabled?).to be_falsey
         n3.update!(:enabled => true)
         assert_method_executed('evm/AUTOMATE/should_get_used', 'inert', @user)
       end
 
       it "partial namespace should use the higher priority users case insensitive instance" do
-        ns = MiqAeNamespace.find_by_fqname('evm')
+        ns = MiqAeNamespace.lookup_by_fqname('evm')
         expect(ns).to be_nil
         assert_method_executed('evm/AUTOMATE/TeSt1', 'user', @user)
       end
