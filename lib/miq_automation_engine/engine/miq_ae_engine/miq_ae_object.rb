@@ -379,7 +379,7 @@ module MiqAeEngine
     end
 
     def process_method_via_uri(uri)
-      scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri)
+      _scheme, _userinfo, _host, _port, _registry, path, _opaque, query, _fragment = MiqAeUri.split(uri)
       parts = path.split(PATH_SEPARATOR)
       parts.shift # Remove the leading blank piece
       method_name = parts.pop
@@ -410,7 +410,7 @@ module MiqAeEngine
     end
 
     def uri2value(uri, required = false)
-      scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri)
+      scheme, _userinfo, _host, _port, _registry, path, _opaque, _query, fragment = MiqAeUri.split(uri)
 
       if scheme == 'miqaedb'
         ns, klass, instance, attribute_name = MiqAePath.split(path, :has_attribute_name => true)
@@ -527,7 +527,6 @@ module MiqAeEngine
       aem = @instance_methods[method_name.downcase] if klass.nil?
       # If not found in instance methods, look in class methods
 
-      namespace_provided = namespace
       namespace ||= @namespace
       klass ||= @klass
       fq = MiqAeClass.fqname(namespace, klass)
@@ -627,7 +626,7 @@ module MiqAeEngine
         value = get_value(field) if value.nil?
         value = MiqAeObject.convert_value_based_on_datatype(value, field['datatype'])
         @attributes[field['name'].downcase] = value unless value.nil?
-        process_collect(field['collect'], nil) unless field['collect'].blank?
+        process_collect(field['collect'], nil) if field['collect'].present?
       end
     end
 
@@ -666,11 +665,11 @@ module MiqAeEngine
     def process_collect(expr, rels)
       Benchmark.current_realtime[:collect_count] += 1
       Benchmark.realtime_block(:collect_time) do
-        if    result = RE_COLLECT_ARRAY.match(expr)
+        if    (result = RE_COLLECT_ARRAY.match(expr))
           process_collect_array(expr, rels, result)
-        elsif result = RE_COLLECT_HASH.match(expr)
+        elsif (result = RE_COLLECT_HASH.match(expr))
           process_collect_hash(expr, rels, result)
-        elsif result = RE_COLLECT_STRING.match(expr)
+        elsif (result = RE_COLLECT_STRING.match(expr))
           process_collect_string(expr, rels, result)
         else
           raise MiqAeException::InvalidCollection, "invalid collect item: <#{expr}>"
@@ -739,7 +738,6 @@ module MiqAeEngine
     def process_collect_hash(expr, rels, result)
       lh       = result[1].strip unless result[1].nil?
       contents = result[2].strip
-      method   = result[3].strip.downcase unless result[3].nil?
 
       hash = {}
       hashes = contents.split(ENUM_SEPARATOR)
@@ -785,8 +783,7 @@ module MiqAeEngine
     def process_collect_string(_expr, rels, result)
       cattr   = result[1].strip unless result[1].nil?
       name    = result[2].strip
-      method  = result[3].strip.downcase unless result[3].nil?
-      cattr ||= name                     unless rels.nil? # Set cattr to name ONLY if coming from relationship
+      cattr ||= name unless rels.nil? # Set cattr to name ONLY if coming from relationship
 
       value = if rels.kind_of?(Array)
                 rels.collect { |r| r[name] }
@@ -839,7 +836,7 @@ module MiqAeEngine
     def method_parms_to_hash(str)
       h = {}
 
-      while result = RE_HASH.match(str)
+      while (result = RE_HASH.match(str))
         key    = result[1]
         value  = result[2]
         h[key] = classify_value(value)

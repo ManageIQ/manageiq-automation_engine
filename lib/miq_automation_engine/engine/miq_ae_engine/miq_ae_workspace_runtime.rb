@@ -53,7 +53,8 @@ module MiqAeEngine
       self.current = workspace
       workspace.instantiate(uri, user, nil)
       workspace
-    rescue MiqAeException
+    rescue MiqAeException => err
+      $miq_ae_logger.error(err.message)
     ensure
       clear_stored_workspace
     end
@@ -89,7 +90,7 @@ module MiqAeEngine
     end
 
     def varset(uri, value)
-      scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri)
+      scheme, _userinfo, _host, _port, _registry, path, _opaque, _query, fragment = MiqAeUri.split(uri)
       if scheme == "miqaews"
         o = get_obj_from_path(path)
         raise MiqAeException::ObjectNotFound, "Object Not Found for path=[#{path}]" if o.nil?
@@ -104,7 +105,7 @@ module MiqAeEngine
       $miq_ae_logger.info("Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]") if root.nil?
       @ae_user = user
       @dom_search.ae_user = user
-      scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri, "miqaedb")
+      scheme, _userinfo, _host, _port, _registry, path, _opaque, query, fragment = MiqAeUri.split(uri, "miqaedb")
 
       raise MiqAeException::InvalidPathFormat, "Unsupported Scheme [#{scheme}]" unless MiqAeUri.scheme_supported?(scheme)
       raise MiqAeException::InvalidPathFormat, "Invalid URI <#{uri}>" if path.nil?
@@ -217,7 +218,7 @@ module MiqAeEngine
 
       g = GraphViz.new("MiqAeWorkspace", :type => "digraph", :output => "dot")
       objs.each { |obj| obj_to_dot(g, obj) }
-      s = g.output(:output => "none")
+      g.output(:output => "none")
     end
 
     def obj_to_dot(graph, obj)

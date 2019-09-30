@@ -31,7 +31,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
 
     key1   = 'key1'
     value1 = 'value1'
-    c1 = FactoryBot.create(:ems_custom_attribute, :resource => @vm, :name => key1, :value => value1)
+    FactoryBot.create(:ems_custom_attribute, :resource => @vm, :name => key1, :value => value1)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(Array)
     expect(ae_object.length).to eq(1)
@@ -39,7 +39,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
 
     key2   = 'key2'
     value2 = 'value2'
-    c1 = FactoryBot.create(:ems_custom_attribute, :resource => @vm, :name => key2, :value => value2)
+    FactoryBot.create(:ems_custom_attribute, :resource => @vm, :name => key2, :value => value2)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(Array)
     expect(ae_object.length).to eq(2)
@@ -54,7 +54,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_nil
 
-    c1 = FactoryBot.create(:ems_custom_attribute, :resource => @vm, :name => key, :value => value)
+    FactoryBot.create(:ems_custom_attribute, :resource => @vm, :name => key, :value => value)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to eq(value)
   end
@@ -63,7 +63,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
     expect(VmOrTemplate.count).to eq(1)
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].remove_from_vmdb"
     @ae_method.update(:data => method)
-    ae_object = invoke_ae.root(@ae_result_key)
+    invoke_ae.root(@ae_result_key)
     expect(VmOrTemplate.count).to eq(0)
   end
 

@@ -106,7 +106,7 @@ module MiqAeEvent
   end
 
   def self.process_result(ae_result, aevent)
-    scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeEngine::MiqAeUri.split(ae_result)
+    scheme, _userinfo, _host, _port, _registry, _path, _opaque, query, _fragment = MiqAeEngine::MiqAeUri.split(ae_result)
     args = MiqAeEngine::MiqAeUri.query2hash(query)
 
     if scheme.casecmp('miqpeca').zero?
@@ -129,6 +129,7 @@ module MiqAeEvent
       MiqPolicy.enforce_policy(target, event_name, inputs) unless target.nil?
     end
   rescue URI::InvalidURIError => err
+    $miq_ae_logger.error(err.message)
   end
 
   def self.call_automate(obj, attrs, instance_name, options = {})

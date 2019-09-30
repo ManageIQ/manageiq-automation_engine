@@ -101,7 +101,7 @@ describe MiqAeEngine::MiqAePath do
     end
 
     it "with embedded blanks in instance name" do
-      @parts[:ae_instance] == "test3%20with%20blank"
+      @parts[:ae_instance] = "test3%20with%20blank"
       assert_split(@parts)
     end
 

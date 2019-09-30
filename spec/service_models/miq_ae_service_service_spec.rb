@@ -25,7 +25,7 @@ describe MiqAeMethodService::MiqAeServiceService do
     expect(Service.count).to eq(1)
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].remove_from_vmdb"
     @ae_method.update(:data => method)
-    ae_object = invoke_ae.root(@ae_result_key)
+    invoke_ae.root(@ae_result_key)
     expect(Service.count).to eq(0)
   end
 
@@ -33,7 +33,7 @@ describe MiqAeMethodService::MiqAeServiceService do
     expect(@service.name).to eq('test_service')
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].name = 'new_test_service' "
     @ae_method.update(:data => method)
-    ae_object = invoke_ae.root(@ae_result_key)
+    invoke_ae.root(@ae_result_key)
     @service.reload
     expect(@service.name).to eq('new_test_service')
   end
@@ -46,7 +46,7 @@ describe MiqAeMethodService::MiqAeServiceService do
     expect(@service.description).to eq('test_description')
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].description = 'new_test_description' "
     @ae_method.update(:data => method)
-    ae_object = invoke_ae.root(@ae_result_key)
+    invoke_ae.root(@ae_result_key)
     @service.reload
     expect(@service.description).to eq('new_test_description')
   end

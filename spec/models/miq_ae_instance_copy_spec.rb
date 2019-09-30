@@ -99,12 +99,12 @@ describe MiqAeInstanceCopy do
       ids    = [1, 2, 3]
       ins_copy = double(MiqAeInstanceCopy)
       ins = double(MiqAeInstance, :id => 1)
-      expect(ins_copy).to receive(:to_domain).with(domain, nil, false).exactly(ids.length).times { ins }
+      expect(ins_copy).to receive(:to_domain).with(domain, nil, false).exactly(ids.length).times.and_return(ins)
       new_ids = [ins.id] * ids.length
-      expect(ins).to receive(:fqname).with(no_args).exactly(ids.length).times { fqname }
-      expect(MiqAeInstance).to receive(:find).with(an_instance_of(Integer)).exactly(ids.length).times { ins }
-      expect(MiqAeInstanceCopy).to receive(:new).with(fqname, true).exactly(1).times { ins_copy }
-      expect(MiqAeInstanceCopy).to receive(:new).with(fqname, false).exactly(ids.length - 1).times { ins_copy }
+      expect(ins).to receive(:fqname).with(no_args).exactly(ids.length).times.and_return(fqname)
+      expect(MiqAeInstance).to receive(:find).with(an_instance_of(Integer)).exactly(ids.length).times.and_return(ins)
+      expect(MiqAeInstanceCopy).to receive(:new).with(fqname, true).exactly(1).times.and_return(ins_copy)
+      expect(MiqAeInstanceCopy).to receive(:new).with(fqname, false).exactly(ids.length - 1).times.and_return(ins_copy)
       expect(MiqAeInstanceCopy.copy_multiple(ids, domain)).to match_array(new_ids)
     end
   end

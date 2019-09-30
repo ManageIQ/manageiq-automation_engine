@@ -75,7 +75,7 @@ module MiqAeMethodService
       ar_method do
         ar_options = {}
         options.each { |k, v| ar_options[k.to_sym] = v if Classification.column_names.include?(k.to_s) || k.to_s == 'name' }
-        cat = Classification.create_category!(ar_options)
+        Classification.create_category!(ar_options)
         true
       end
     end
@@ -114,7 +114,7 @@ module MiqAeMethodService
 
         ar_options = {}
         options.each { |k, v| ar_options[k.to_sym] = v if Classification.column_names.include?(k.to_s) || k.to_s == 'name' }
-        entry = cat.add_entry(ar_options)
+        cat.add_entry(ar_options)
         true
       end
     end
