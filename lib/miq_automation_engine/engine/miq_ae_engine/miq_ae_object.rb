@@ -473,6 +473,38 @@ module MiqAeEngine
       field['datatype'] == MiqAeField::NULL_COALESCING_DATATYPE ? get_null_coalesced_value(field) : get_field_value(field, type, required)
     end
 
+    def self.convert_boolean_value(value)
+      return true  if value.to_s.downcase == 'true' || value == '1'
+
+      return false if value.to_s.downcase == 'false' || value == '0'
+
+      value
+    end
+
+    def self.convert_value_based_on_datatype(value, datatype)
+      return value if value.blank? || datatype.nil?
+
+      # Basic Types
+      return convert_boolean_value(value)                    if datatype == 'boolean'
+      return true                                            if datatype == 'TrueClass'
+      return false                                           if datatype == 'FalseClass'
+      return Time.parse(value).getlocal                      if 'time'.casecmp?(datatype)
+      return value.to_sym                                    if 'symbol'.casecmp?(datatype)
+      return value.to_i                                      if 'integer'.casecmp?(datatype) || datatype == 'Fixnum'
+      return value.to_f                                      if 'float'.casecmp?(datatype)
+      return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/) if datatype == 'array' && value.class == String
+      return decrypt_password(value) if datatype == 'password'
+
+      if (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
+        return service_model.find(value)
+      end
+
+      raise MiqAeException::InvalidClass unless MiqAeField.available_datatypes.include?(datatype)
+
+      # default datatype => 'string'
+      value
+    end
+
     private
 
     def call_method(obj, method)
@@ -556,37 +588,6 @@ module MiqAeEngine
     rescue StandardError => err
       $miq_ae_logger.warn("#{err.message}, while evaluating :#{current_value} null coalecing attribute")
       nil
-    end
-
-    def self.convert_boolean_value(value)
-      return true   if value.to_s.downcase == 'true' || value == '1'
-      return false  if value.to_s.downcase == 'false' || value == '0'
-
-      value
-    end
-
-    def self.convert_value_based_on_datatype(value, datatype)
-      return value if value.blank? || datatype.nil?
-
-      # Basic Types
-      return convert_boolean_value(value)                    if datatype == 'boolean'
-      return true                                            if datatype == 'TrueClass'
-      return false                                           if datatype == 'FalseClass'
-      return Time.parse(value).getlocal                      if 'time'.casecmp?(datatype)
-      return value.to_sym                                    if 'symbol'.casecmp?(datatype)
-      return value.to_i                                      if 'integer'.casecmp?(datatype) || datatype == 'Fixnum'
-      return value.to_f                                      if 'float'.casecmp?(datatype)
-      return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/) if datatype == 'array' && value.class == String
-      return decrypt_password(value) if datatype == 'password'
-
-      if (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
-        return service_model.find(value)
-      end
-
-      raise MiqAeException::InvalidClass unless MiqAeField.available_datatypes.include?(datatype)
-
-      # default datatype => 'string'
-      value
     end
 
     def self.decrypt_password(value)
