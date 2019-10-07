@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 121 ending 2019-09-30
+
+### Fixed
+- Switch find_by\_* to lookup_by\_* [(#373)](https://github.com/ManageIQ/manageiq-automation_engine/pull/373)
+- Mask the password value in logs. [(#371)](https://github.com/ManageIQ/manageiq-automation_engine/pull/371)
+
 ## Unreleased as of Sprint 120 ending 2019-09-16
 
 ### Added
