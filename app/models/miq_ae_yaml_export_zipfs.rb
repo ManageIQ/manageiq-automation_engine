@@ -26,7 +26,7 @@ class MiqAeYamlExportZipfs < MiqAeYamlExport
     Zip::File.open(@temp_file_name, Zip::File::CREATE) do |zf|
       @zip_file = zf
       write_model
-      @zip_file.close unless @zip_file.nil?
+      @zip_file&.close
       FileUtils.mv(@temp_file_name, @options['zip_file'])
     end
   ensure

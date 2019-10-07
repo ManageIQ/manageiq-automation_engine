@@ -9,7 +9,7 @@ module MiqAeDatastore
       MiqAeExport.new(temp_domain, export_options).export
     ensure
       ns = MiqAeDomain.lookup_by_fqname(temp_domain)
-      ns.destroy if ns
+      ns&.destroy
     end
   end
 end

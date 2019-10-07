@@ -131,7 +131,7 @@ module MiqAeMethodService
       obj = @workspace.instantiate(uri, @workspace.ae_user, @workspace.current_object)
       return nil if obj.nil?
       MiqAeServiceObject.new(obj, self)
-    rescue => e
+    rescue StandardError => e
       $miq_ae_logger.error("instantiate failed : #{e.message}")
       nil
     end
@@ -235,7 +235,7 @@ module MiqAeMethodService
 
     def create_notification(values_hash = {})
       create_notification!(values_hash)
-    rescue
+    rescue StandardError
       nil
     end
 

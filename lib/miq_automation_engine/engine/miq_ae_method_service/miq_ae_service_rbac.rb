@@ -40,7 +40,7 @@ module MiqAeMethodService
       end
 
       def rbac_enabled?
-        workspace && workspace.rbac_enabled?
+        workspace&.rbac_enabled?
       end
     end
   end

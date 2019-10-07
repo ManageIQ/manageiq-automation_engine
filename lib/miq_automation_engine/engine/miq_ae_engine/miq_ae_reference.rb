@@ -5,9 +5,9 @@ module MiqAeEngine
         value.map { |v| encode(v) }
       elsif value.kind_of?(Hash)
         value.each_with_object({}) { |(k, v), hash| hash[k] = encode(v) }
-      elsif /MiqAeMethodService::/ =~ value.class.to_s
+      elsif /MiqAeMethodService::/.match?(value.class.to_s)
         "href_slug::#{value.href_slug}"
-      elsif /MiqAePassword/ =~ value.class.to_s
+      elsif /MiqAePassword/.match?(value.class.to_s)
         "password::#{value.encStr}"
       else
         value

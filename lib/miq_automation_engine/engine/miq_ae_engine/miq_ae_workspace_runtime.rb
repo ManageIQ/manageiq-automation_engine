@@ -179,9 +179,9 @@ module MiqAeEngine
     def pop_state_machine_info
       last_state_machine = @state_machine_objects.pop
       case root['ae_result']
-      when 'ok' then
+      when 'ok'
         @current_state_info.delete(last_state_machine)
-      when 'retry' then
+      when 'retry'
         save_current_state_info(last_state_machine)
       end
       reset_state_info(@state_machine_objects.last) unless @state_machine_objects.empty?
@@ -246,7 +246,13 @@ module MiqAeEngine
       # check for cyclical references
       @current.each do |c|
         hash = {:ns => ns, :klass => klass, :instance => instance, :message => message}
-        return true if hash.all? { |key, value| value.casecmp(c[key]).zero? rescue false }
+        return true if hash.all? do |key, value|
+                         begin
+                           value.casecmp(c[key]).zero?
+                         rescue StandardError
+                           false
+                         end
+                       end
       end
       false
     end

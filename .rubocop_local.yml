@@ -3,3 +3,13 @@ GlobalVars:
   - $evm
   - $log
   - $miq_ae_logger
+
+Naming/FileName:
+  Exclude:
+  - 'spec/service_models/*.rb'
+  - 'lib/miq_automation_engine/service_models/*.rb'
+  - 'lib/manageiq-automation_engine.rb'
+
+Naming/ClassAndModuleCamelCase:
+  Exclude:
+  - 'lib/miq_automation_engine/service_models/*.rb'

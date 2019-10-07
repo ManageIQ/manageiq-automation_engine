@@ -53,7 +53,7 @@ module MiqAeEngine
     rescue MiqAeException::StopInstantiation => e
       $miq_ae_logger.error("State=<#{f['name']}> running #{step} raised exception: <#{e.message}>")
       raise
-    rescue => e
+    rescue StandardError => e
       error_message = "State=<#{f['name']}> running #{step} raised exception: <#{e.message}>"
       $miq_ae_logger.error(error_message)
       @workspace.root['ae_reason'] = error_message
@@ -137,16 +137,18 @@ module MiqAeEngine
     end
 
     def process_state_method(f, method_name)
-      f[method_name].split(";").each do |method|
-        method = substitute_value(method.strip)
-        unless method.blank? || method.lstrip[0, 1] == '#'
+      if f[method_name].present?
+        f[method_name].split(";").each do |method|
+          method = substitute_value(method.strip)
+          next if method.blank? || method.lstrip[0, 1] == '#'
+
           $miq_ae_logger.info("In State=[#{f['name']}], invoking [#{method_name}] method=[#{method}]")
           @workspace.root['ae_status_state'] = method_name
           @workspace.root['ae_state']        = f['name']
           @workspace.root['ae_state_step'] = method_name
           process_method_raw(method)
         end
-      end unless f[method_name].blank?
+      end
     rescue MiqAeException::MethodNotFound => err
       raise MiqAeException::MethodNotFound, "In State=[#{f['name']}], #{method_name} #{err.message}"
     end

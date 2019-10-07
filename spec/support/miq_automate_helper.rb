@@ -12,10 +12,12 @@ module Spec
         @aec1.ae_fields << build_fields(field_array)
         @aei1 = FactoryBot.create(:miq_ae_instance, :name     => identifiers[:instance],
                                                      :class_id => @aec1.id)
-        @aem1 = FactoryBot.create(:miq_ae_method, :class_id => @aec1.id,
-                                   :name => identifiers[:method], :scope => "instance",
-                                   :language => "ruby", :data => "puts 1",
-                                   :location => "inline") if identifiers[:method].present?
+        if identifiers[:method].present?
+          @aem1 = FactoryBot.create(:miq_ae_method, :class_id => @aec1.id,
+                                    :name => identifiers[:method], :scope => "instance",
+                                    :language => "ruby", :data => "puts 1",
+                                    :location => "inline")
+        end
         @aei1.ae_values << build_values(field_array, @aec1.ae_fields)
       end
 

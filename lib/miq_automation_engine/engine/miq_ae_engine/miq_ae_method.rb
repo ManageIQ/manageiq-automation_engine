@@ -55,7 +55,7 @@ module MiqAeEngine
 
       begin
         return MiqAeBuiltinMethod.send(mname, obj, inputs)
-      rescue => err
+      rescue StandardError => err
         raise MiqAeException::AbortInstantiation, err.message
       ensure
         # Destroy service to avoid storing object references
@@ -110,7 +110,7 @@ module MiqAeEngine
       rc, msg = run_method(*cmd)
       if ws
         ws.reload
-        ws.setters.each { |uri, value| workspace.varset(uri, value) } unless ws.setters.nil?
+        ws.setters&.each { |uri, value| workspace.varset(uri, value) }
         ws.delete
       end
       process_ruby_method_results(rc, msg)
@@ -228,8 +228,8 @@ module MiqAeEngine
         msg = "Method exited with rc=#{verbose_rc(rc)}"
         method_pid = nil
         threads = []
-      rescue => err
-        STDERR.puts "** AUTOMATE ** Method exec failed because #{err.class}:#{err.message}" if ENV.key?("CI")
+      rescue StandardError => err
+        STDERR.puts "** AUTOMATE ** Method exec failed because #{err.class}:#{err.message}" if ENV.key?("CI") # rubocop:disable Style/StderrPuts
         $miq_ae_logger.error("Method exec failed because (#{err.class}:#{err.message})")
         rc = MIQ_ABORT
         msg = "Method execution failed"

@@ -15,12 +15,10 @@ module MiqAeEngine
 
     def self.query2hash(query)
       hash = {}
-      unless query.nil?
-        query.split('&').each do|a|
+      query&.split('&')&.each do |a|
           k, v = a.split('=')
           hash[URI.unescape(k)] = URI.unescape(v.to_s)
         end
-      end
       hash
     end
 

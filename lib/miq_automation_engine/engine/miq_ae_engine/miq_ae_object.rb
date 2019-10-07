@@ -182,7 +182,7 @@ module MiqAeEngine
     def fetch_field_value(f)
       Benchmark.current_realtime[:fetch_field_value_count] += 1
       Benchmark.realtime_block(:fetch_field_value_time) do
-        @aei.get_field_value(f, false) unless @aei.nil?
+        @aei&.get_field_value(f, false)
       end.first
     end
 
@@ -198,16 +198,18 @@ module MiqAeEngine
       when 'Symbol'                   then xml.Symbol(value.to_s)
       when 'TrueClass', 'FalseClass'  then xml.Boolean(value.to_s)
       when /MiqAeMethodService::(.*)/ then xml.tag!($1.gsub(/::/, '-'), :object_id => value.object_id, :id => value.id)
-      when 'Array'                    then xml.Array  do
-        value.each_index do |i|
-          xml.Element(:index => i + 1) { attribute_value_to_xml(value[i], xml) }
+      when 'Array'
+        xml.Array do
+          value.each_index do |i|
+            xml.Element(:index => i + 1) { attribute_value_to_xml(value[i], xml) }
+          end
         end
-      end
-      when 'Hash'                     then xml.Hash do
-        value.each do |k, v|
-          xml.Key(:name => k.to_s) { attribute_value_to_xml(v, xml) }
+      when 'Hash'
+        xml.Hash do
+          value.each do |k, v|
+            xml.Key(:name => k.to_s) { attribute_value_to_xml(v, xml) }
+          end
         end
-      end
       when 'DRb::DRbUnknown'
         $miq_ae_logger.error("Found DRbUnknown for value: #{value.inspect} in XML: #{xml.inspect}")
         xml.String(value)
@@ -380,7 +382,7 @@ module MiqAeEngine
       method_name = parts.pop
       klass       = parts.pop
       ns          = parts.join(PATH_SEPARATOR)
-      [ns, klass, method_name].each { |k| k.downcase! unless k.nil? }
+      [ns, klass, method_name].each { |k| k&.downcase! }
 
       invoke_method(ns, klass, method_name, MiqAeUri.query2hash(query))
     end
@@ -434,7 +436,7 @@ module MiqAeEngine
 
         begin
           methods.each { |meth| value = call_method(value, meth) }
-        rescue => err
+        rescue StandardError => err
           $miq_ae_logger.warn "Error during substitution: #{err.message}"
           return nil
         end
@@ -447,16 +449,18 @@ module MiqAeEngine
     def substitute_value(value, _type = nil, required = false)
       Benchmark.current_realtime[:substitution_count] += 1
       Benchmark.realtime_block(:substitution_time) do
-        value = value.gsub(RE_SUBST) do |_s|
-          subst   = uri2value($1, required)
-          subst &&= subst.to_s
-          # This encoding of relationship is not needed, until we can get a valid use case
-          # Based on RFC 3986 Section 2.4 "When to Encode or Decode"
-          # We are properly encoding when we send URL requests to external systems
-          # or building an automate request
-          # subst &&= URI.escape(subst, RE_URI_ESCAPE)  if type == :aetype_relationship
-          subst
-        end unless value.nil?
+        unless value.nil?
+          value = value.gsub(RE_SUBST) do |_s|
+            subst   = uri2value($1, required)
+            subst &&= subst.to_s
+            # This encoding of relationship is not needed, until we can get a valid use case
+            # Based on RFC 3986 Section 2.4 "When to Encode or Decode"
+            # We are properly encoding when we send URL requests to external systems
+            # or building an automate request
+            # subst &&= URI.escape(subst, RE_URI_ESCAPE)  if type == :aetype_relationship
+            subst
+          end
+        end
         return value
       end
     end
@@ -543,7 +547,7 @@ module MiqAeEngine
     def resolve_value(value, type)
       current_value = value.strip
       substitute_value(current_value, type)
-    rescue => err
+    rescue StandardError => err
       $miq_ae_logger.warn("#{err.message}, while evaluating :#{current_value} null coalecing attribute")
       nil
     end
@@ -555,25 +559,24 @@ module MiqAeEngine
     end
 
     def self.convert_value_based_on_datatype(value, datatype)
-      return value if value.blank?
+      return value if value.blank? || datatype.nil?
 
       # Basic Types
       return convert_boolean_value(value)                    if datatype == 'boolean'
       return true                                            if datatype == 'TrueClass'
       return false                                           if datatype == 'FalseClass'
-      return Time.parse(value)                               if datatype == 'time' || datatype == 'Time'
-      return value.to_sym                                    if datatype == 'symbol' || datatype == 'Symbol'
-      return value.to_i                                      if %w[integer Integer Fixnum].include?(datatype)
-      return value.to_f                                      if datatype == 'float' || datatype == 'Float'
-      return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/)  if datatype == 'array' && value.class == String
+      return Time.parse(value).getlocal                      if 'time'.casecmp?(datatype)
+      return value.to_sym                                    if 'symbol'.casecmp?(datatype)
+      return value.to_i                                      if 'integer'.casecmp?(datatype) || datatype == 'Fixnum'
+      return value.to_f                                      if 'float'.casecmp?(datatype)
+      return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/) if datatype == 'array' && value.class == String
       return decrypt_password(value) if datatype == 'password'
 
-      if datatype &&
-         (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
+      if (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
         return service_model.find(value)
       end
 
-      (raise MiqAeException::InvalidClass unless MiqAeField.available_datatypes.include?(datatype)) if datatype
+      raise MiqAeException::InvalidClass unless MiqAeField.available_datatypes.include?(datatype)
 
       # default datatype => 'string'
       value
@@ -601,7 +604,7 @@ module MiqAeEngine
         rescue SyntaxError => err
           $miq_ae_logger.error("Assertion had the following Syntax Error: '#{err.message}'")
           raise MiqAeException::AssertionFailure, "Syntax Error in Assertion: <#{assertion}>"
-        rescue Exception => err
+        rescue Exception => err # rubocop:disable Lint/RescueException
           $miq_ae_logger.error("'#{err.message}', evaluating assertion")
           raise MiqAeException::AssertionFailure, "Assertion Evaluation Failed: <#{assertion}>"
         end
@@ -730,10 +733,11 @@ module MiqAeEngine
 
       hash  = {}
       hashes = contents.split(ENUM_SEPARATOR)
-      hashes.each do |hashContents|
-        hashDetails = hashContents.split('=>')
-        raise MiqAeException::InvalidCollection, "invalid hash in collect item <#{expr}>" if hashDetails.length != 2
-        left  = hashDetails[0].strip
+      hashes.each do |hash_contents|
+        hash_details = hash_contents.split('=>')
+        raise MiqAeException::InvalidCollection, "invalid hash in collect item <#{expr}>" if hash_details.length != 2
+
+        left = hash_details[0].strip
 
         if left[0, 1] == ':'
           ltype = :symbol
@@ -745,7 +749,7 @@ module MiqAeEngine
           ltype = :value
         end
 
-        right = hashDetails[1].strip
+        right = hash_details[1].strip
 
         if rels.kind_of?(Array)
           if ltype == :value
@@ -816,7 +820,7 @@ module MiqAeEngine
         ns    = parts.join(PATH_SEPARATOR) unless parts.length.zero?
       end
 
-      [ns, klass, method_name].each { |k| k.downcase! unless k.nil? }
+      [ns, klass, method_name].each { |k| k&.downcase! }
 
       return ns, klass, method_name
     end
@@ -841,9 +845,9 @@ module MiqAeEngine
       elsif value.starts_with?("\"")
         raise "Unmatched Double Quoted String <#{e}> in Collect" unless value.ends_with?("\"")
         value[1..-2]
-      elsif /^[+-]?[0-9]+\s*$/.match(value)
+      elsif /^[+-]?[0-9]+\s*$/.match?(value)
         value.to_i
-      elsif /^[-+]?[0-9]+\.[0-9]+\s*$/.match(value)
+      elsif /^[-+]?[0-9]+\.[0-9]+\s*$/.match?(value)
         value.to_f
       else
         self[value]
