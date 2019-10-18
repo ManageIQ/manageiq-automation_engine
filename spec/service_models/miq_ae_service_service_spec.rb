@@ -160,19 +160,6 @@ describe MiqAeMethodService::MiqAeServiceService do
     service_service.retire_now
   end
 
-  it "#retire_service_resources" do
-    ems = FactoryBot.create(:ems_vmware, :zone => @zone)
-    vm  = FactoryBot.create(:vm_vmware, :ems_id => ems.id)
-    service << vm
-    # method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].retire_service_resources"
-
-    # @ae_method.update(:data => method)
-    expect(service.service_resources.size).to eq(1)
-    expect(service.service_resources.first.resource.respond_to?(:retire_now)).to be_truthy
-    service_service.retire_service_resources
-    # ae_object = invoke_ae.root(@ae_result_key)
-  end
-
   it "#finish_retirement" do
     expect(service_service).not_to be_retired
     expect(service_service.retirement_state).to be_nil
