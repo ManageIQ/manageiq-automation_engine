@@ -30,6 +30,7 @@ module MiqAeException
   class ClassNotFound < MiqAeDatastoreError; end
   class InstanceNotFound < MiqAeDatastoreError; end
   class FieldNotFound < MiqAeDatastoreError; end
+  class InvalidAttribute < MiqAeDatastoreError; end
   class InvalidClass < MiqAeDatastoreError; end
   class InvalidDomain < MiqAeDatastoreError; end
   class DirectoryNotFound < MiqAeDatastoreError; end

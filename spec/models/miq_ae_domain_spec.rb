@@ -269,6 +269,38 @@ describe MiqAeDomain do
     end
   end
 
+  context "udpate attributes via api" do
+    let(:value1)  { {'priority' => 30, 'enabled' => true} }
+    let(:value2)  { {'name' => 'new_domain', 'description' => 'new system domain', 'priority' => 30, 'enabled' => true} }
+    it "does not update system domain" do
+      dom = FactoryBot.create(:miq_ae_system_domain, :tenant => @user.current_tenant)
+      expect { dom.update_attributes_api(value1) }.to raise_error(/Non editable attributes/)
+    end
+
+    it 'updates user domain' do
+      dom = FactoryBot.create(:miq_ae_domain, :tenant => @user.current_tenant)
+      dom.update_attributes_api(value2)
+      expect(dom.name).to eq(value2['name'])
+      expect(dom.description).to eq(value2['description'])
+      expect(dom.priority).to eq(30)
+      expect(dom.enabled).to be_truthy
+    end
+
+    context "git domain" do
+      it 'raises error with invalid attributes' do
+        dom = FactoryBot.create(:miq_ae_git_domain, :tenant => @user.current_tenant)
+        expect { dom.update_attributes_api(value2) }.to raise_error(/Non editable attributes/)
+      end
+
+      it 'updates valid attributes' do
+        dom = FactoryBot.create(:miq_ae_git_domain, :tenant => @user.current_tenant)
+        dom.update_attributes_api(value1)
+        expect(dom.priority).to eq(30)
+        expect(dom.enabled).to be_truthy
+      end
+    end
+  end
+
   context "reset priority" do
     it "#reset_priorites" do
       FactoryBot.create(:miq_ae_system_domain, :name => 'ManageIQ', :tenant => @user.current_tenant, :priority => 0)

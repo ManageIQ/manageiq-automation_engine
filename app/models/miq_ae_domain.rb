@@ -100,6 +100,17 @@ class MiqAeDomain < MiqAeNamespace
 
   alias editable_contents? editable?
 
+  def update_attributes_api(hash)
+    non_editable = hash.keys.reject { |p| editable_property?(p) }
+    if non_editable.present?
+      msg = "Non editable attributes [#{non_editable.join(",")}] in [#{hash}] for domain update"
+      $miq_ae_logger.error(msg)
+      raise MiqAeException::InvalidAttribute, msg
+    end
+
+    update!(hash)
+  end
+
   def version
     version_field = about_class.try(:ae_fields).try(:detect) { |fld| fld.name == 'version' }
     version_field.try(:default_value)
