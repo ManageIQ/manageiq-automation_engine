@@ -9,7 +9,6 @@ module MiqAeMethodService
     require_relative "mixins/miq_ae_external_url_mixin"
     include MiqAeExternalUrlMixin
 
-    expose :retire_service_resources
     expose :automate_retirement_entrypoint
     expose :start
     expose :stop
@@ -30,6 +29,10 @@ module MiqAeMethodService
         attributes[:service_template] = ServiceTemplate.find(attributes[:service_template].id)
       end
       ar_method { MiqAeServiceModelBase.wrap_results(Service.create!(attributes)) }
+    end
+
+    def retire_service_resources
+      # Caller removed from in https://github.com/ManageIQ/manageiq-content/pull/590 but keeping this method for backward compatibility
     end
 
     def dialog_options
