@@ -5,12 +5,13 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:root_hash) { { 'name' => 'Flintstone' } }
     let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
     let(:persist_hash) { {} }
-    let(:options) { {"test" => 13, :hosts => hosts} }
+    let(:options) { {"test" => 13, :hosts => hosts, :log_output => 'error'} }
     let(:method_name) { "Freddy Kreuger" }
     let(:method_key) { "FreddyKreuger_ansible_method_task_id" }
     let(:miq_task) { FactoryBot.create(:miq_task) }
     let(:manager)  { FactoryBot.create(:embedded_automation_manager_ansible) }
-    let(:playbook) { FactoryBot.create(:embedded_playbook, :manager => manager) }
+    let(:playbook) { FactoryBot.create(:embedded_playbook, :manager => manager, :name => 'playbook_test.yml') }
+    let(:stack_job) { FactoryBot.create(:embedded_ansible_job, :miq_task => miq_task) }
     let(:resolved_hosts) { "1.1.1.94" }
     let(:hosts) { "/#my_vm_ip" }
 
@@ -53,7 +54,6 @@ describe MiqAeEngine::MiqAePlaybookMethod do
 
     context "check miq extra vars passed into playbook" do
       before do
-        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
         allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
@@ -63,14 +63,12 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "success" do
-        expect(playbook).to receive(:run) do |args|
-          expect(args['test']).to eq(13)
-          expect(args[:extra_vars][:manageiq]['automate_workspace']).to eq(aw.href_slug)
+        expect(described_class::STACK_CLASS).to receive(:create_job) do |_playbook, args|
           expect(args[:extra_vars]['var1']).to eq('a')
           expect(args[:extra_vars]['var2']).to eq(1)
           expect(%w[api_url api_token] - args[:extra_vars][:manageiq].keys).to be_empty
           expect(%w[url token] - args[:extra_vars][:manageiq_connection].keys).to be_empty
-          miq_task.id
+          stack_job
         end
 
         persist_hash['ansible_stats_var1'] = 'a'
@@ -83,9 +81,9 @@ describe MiqAeEngine::MiqAePlaybookMethod do
 
       shared_examples_for "task_slug" do
         it "matches" do
-          expect(playbook).to receive(:run) do |args|
+          expect(described_class::STACK_CLASS).to receive(:create_job) do |_, args|
             expect(args[:extra_vars][:manageiq]['request_task']).to eq(task_href_slug)
-            miq_task.id
+            stack_job
           end
 
           ap = described_class.new(aem, obj, inputs)
@@ -115,7 +113,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     context "regular method" do
       before do
         allow(described_class::PLAYBOOK_CLASS).to receive(:find).and_return(playbook)
-        allow(playbook).to receive(:run).and_return(miq_task.id)
+        allow(described_class::STACK_CLASS).to receive(:create_job).and_return(stack_job)
         allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
         allow(AutomateWorkspace).to receive(:create).and_return(aw)
         allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
@@ -141,7 +139,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "playbook launch fails" do
-        expect(playbook).to receive(:run).and_raise("Bamm Bamm Rubble")
+        expect(described_class::STACK_CLASS).to receive(:create_job).and_raise("Bamm Bamm Rubble")
 
         ap = described_class.new(aem, obj, inputs)
         expect { ap.run }.to raise_exception(MiqAeException::Error)
@@ -176,7 +174,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         root_hash['ae_state_started'] = Time.zone.now.utc.to_s
         miq_task.update_status(MiqTask::STATE_ACTIVE, MiqTask::STATUS_OK, "Actively working")
         allow(described_class::PLAYBOOK_CLASS).to receive(:find).and_return(playbook)
-        allow(playbook).to receive(:run).and_return(miq_task.id)
+        allow(described_class::STACK_CLASS).to receive(:create_job).and_return(stack_job)
         allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
         allow(AutomateWorkspace).to receive(:find_by).and_return(aw)
         allow(obj).to receive(:substitute_value).and_return(resolved_hosts)
@@ -205,7 +203,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "state finishes succesfully" do
-        miq_task.task_results = {'ansible_stats' => {'var1' => 'testing', 'var2' => true}}
+        miq_task.context_data = {:ansible_runner_stdout => [{'event_data' => {'artifact_data' => {'var1' => 'testing', 'var2' => true}}}]}
         miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
 
         persist_hash[method_key] = miq_task.id
