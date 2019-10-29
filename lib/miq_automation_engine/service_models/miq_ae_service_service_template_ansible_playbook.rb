@@ -1,5 +1,5 @@
 module MiqAeMethodService
   class MiqAeServiceServiceTemplateAnsiblePlaybook < MiqAeServiceServiceTemplateGeneric
-    expose :job_template
+    expose :playbook
   end
 end
