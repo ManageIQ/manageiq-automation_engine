@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 
+## Unreleased as of Sprint 123 ending 2019-10-28
+
+### Fixed
+* Cleanup after Ansible runner. [(#378)](https://github.com/ManageIQ/manageiq-automation_engine/pull/378)
+* Remove #retire_service_resources [(#379)](https://github.com/ManageIQ/manageiq-automation_engine/pull/379)
+* Test ruby 2.5.7/2.6.5 see: ManageIQ/manageiq#19414 [(#382)](https://github.com/ManageIQ/manageiq-automation_engine/pull/382)
+
+## Unreleased as of Sprint 122 ending 2019-10-14
+
+### Fixed
+
+- Set validate_entry_sizes flag to true for rubyzip 1.3.0 [(#377)](https://github.com/ManageIQ/manageiq-automation_engine/pull/377)
+- Correct style using rubocop (part 4) [(#370)](https://github.com/ManageIQ/manageiq-automation_engine/pull/370)
+
+
 ## Unreleased as of Sprint 121 ending 2019-09-30
 
 ### Fixed
