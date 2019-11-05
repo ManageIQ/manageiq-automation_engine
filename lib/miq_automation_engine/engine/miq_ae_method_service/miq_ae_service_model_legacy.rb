@@ -59,7 +59,7 @@ module MiqAeMethodService
       'vm_openstack'                                 => 'ManageIQ_Providers_Openstack_CloudManager_Vm',
       'ems_openstack'                                => 'ManageIQ_Providers_Openstack_CloudManager',
       # Openstack Infra
-      'ems_cluster_openstack_infra'                  => 'ManageIQ_Providers_Openstack_InfraManager_EmsCluster',
+      'ems_cluster_openstack_infra'                  => 'ManageIQ_Providers_Openstack_InfraManager_Cluster',
       'host_openstack_infra'                         => 'ManageIQ_Providers_Openstack_InfraManager_Host',
       'orchestration_stack_openstack_infra'          => 'ManageIQ_Providers_Openstack_InfraManager_OrchestrationStack',
       'ems_openstack_infra'                          => 'ManageIQ_Providers_Openstack_InfraManager',
