@@ -360,6 +360,8 @@ module MiqAeMethodService
     end
 
     def ar_method(&block)
+      return if @object.nil?
+
       self.class.ar_method(&block)
     end
 
@@ -373,6 +375,8 @@ module MiqAeMethodService
 
     def init_with(coder)
       @object = self.class.service_model_name_to_model(self.class.name)&.find_by(:id => coder['id'])
+      $miq_ae_logger.warn("There is no related active record object with id=#{coder['id']} for imported #{self.class}") if @object.nil?
+
       self
     end
 
