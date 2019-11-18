@@ -361,6 +361,12 @@ module MiqAeMethodService
       aec.ae_instances.detect { |i| instance.casecmp(i.name).zero? }
     end
 
+    def field_timeout
+      interval = root['ae_retry_interval'].present? ? root['ae_retry_interval'].to_i_with_method : 1
+      retries = root['ae_state_max_retries'].to_i
+      interval * retries
+    end
+
     private
 
     def service_object
