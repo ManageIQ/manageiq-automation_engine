@@ -905,7 +905,7 @@ describe MiqAeEngine do
                     :ae_fields => ae_fields, :ae_instances => ae_instances)
   end
 
-  context "null colaescing" do
+  context "null coalescing" do
     it "uses default when variable missing" do
       workspace = MiqAeEngine.instantiate("/A/C/BARNEY/FRED", user)
 
