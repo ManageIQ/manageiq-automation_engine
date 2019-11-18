@@ -362,9 +362,10 @@ module MiqAeMethodService
     end
 
     def field_timeout
+      raise _("ae_state_max_retries is not set in automate field") if root['ae_state_max_retries'].blank?
+
       interval = root['ae_retry_interval'].present? ? root['ae_retry_interval'].to_i_with_method : 1
-      retries = root['ae_state_max_retries'].to_i
-      interval * retries
+      interval * root['ae_state_max_retries'].to_i
     end
 
     private
