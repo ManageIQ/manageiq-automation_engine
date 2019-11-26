@@ -66,6 +66,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         expect(described_class::STACK_CLASS).to receive(:create_job) do |_playbook, args|
           expect(args[:extra_vars]['var1']).to eq('a')
           expect(args[:extra_vars]['var2']).to eq(1)
+          expect(args[:extra_vars]['miq_provision__status']).to eq('Ok')
           expect(%w(api_url api_token) - args[:extra_vars][:manageiq].keys).to be_empty
           expect(%w(url token) - args[:extra_vars][:manageiq_connection].keys).to be_empty
           stack_job
@@ -73,6 +74,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
 
         persist_hash['ansible_stats_var1'] = 'a'
         persist_hash['ansible_stats_var2'] = 1
+        persist_hash['ansible_stats_miq_provision__status'] = 'Ok'
         ap = described_class.new(aem, obj, inputs)
         ap.run
 
@@ -170,6 +172,11 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     end
 
     context "state machine" do
+      let(:root_hash) do
+        { 'vmdb_object_type' => 'miq_provision',
+          'miq_provision'    => svc_mpt }
+      end
+
       before do
         root_hash['ae_state_started'] = Time.zone.now.utc.to_s
         miq_task.update_status(MiqTask::STATE_ACTIVE, MiqTask::STATUS_OK, "Actively working")
@@ -203,12 +210,19 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       end
 
       it "state finishes succesfully" do
-        miq_task.context_data = {:ansible_runner_stdout => [{'event_data' => {'artifact_data' => {'var1' => 'testing', 'var2' => true}}}]}
+        stats = {
+          'var1'                                => 'testing',
+          'var2'                                => true,
+          'miq_provision__status'               => 'Warn',
+          'miq_provision__options__config_info' => {'var3' => true}
+        }
+        miq_task.context_data = {:ansible_runner_stdout => [{'event_data' => {'artifact_data' => stats}}]}
         miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
 
         persist_hash[method_key] = miq_task.id
         persist_hash['automate_workspace_guid'] = aw.guid
 
+        allow(workspace).to receive(:current).and_return({})
         ap = described_class.new(aem, obj, inputs)
 
         ap.run
@@ -218,6 +232,10 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         expect(persist_hash['automate_workspace_guid']).to be_nil
         expect(persist_hash['ansible_stats_var1']).to eq('testing')
         expect(persist_hash['ansible_stats_var2']).to be true
+        expect(persist_hash['ansible_stats_miq_provision__status']).to eq('Warn')
+        expect(persist_hash['ansible_stats_miq_provision__options__config_info']).to eq('var3' => true)
+        expect(mpt.reload.status).to eq('Warn')
+        expect(mpt.options).to include('config_info' => {'var3' => true})
         expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
       end
 
