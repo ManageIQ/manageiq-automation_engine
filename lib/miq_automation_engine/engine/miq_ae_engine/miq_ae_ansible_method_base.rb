@@ -49,17 +49,35 @@ module MiqAeEngine
     def process_result(task)
       @aw.reload
       @workspace.update_workspace(@aw.output) if @aw.output
-      ansible_stats_from_task(task).each { |k, v| @workspace.persist_state_hash[k] = v }
+      ansible_stats_from_task(task).each do |k, v|
+        @workspace.persist_state_hash["#{ANSIBLE_STATS_PREFIX}#{k}"] = v
+        begin
+          update_object_with_stats(k, v)
+        rescue StandardError => err
+          $miq_ae_logger.error("Failed to update object with Ansible set_stats data [#{k} = #{v}]: #{err.message}")
+        end
+      end
       reset
     end
 
     def ansible_stats_from_task(task)
-      stats = task&.context_data&.dig(:ansible_runner_stdout, -1, 'event_data', 'artifact_data')
-      return {} unless stats
+      task&.context_data&.dig(:ansible_runner_stdout, -1, 'event_data', 'artifact_data') || {}
+    end
 
-      stats.each_with_object({}) do |(attr, val), obj|
-        obj["#{ANSIBLE_STATS_PREFIX}#{attr}"] = val
-      end
+    # key in the format of:
+    #   miq_provision__options__var1
+    #   miq_provision__status
+    def update_object_with_stats(key, value)
+      attrs = key.to_s.split("__")
+      return if attrs.size < 2
+
+      obj_name, attr, *args = *attrs
+      object = @workspace.current[obj_name] || @workspace.root[obj_name]
+      raise _("Object not found: [%{obj_name}]") % {:obj_name => obj_name} if object.blank?
+      raise _("Invalid attribute [%{attr}] for %{object}") % {:attr => attr, :object => object} unless object.respond_to?(attr)
+
+      args.present? ? object.object_send(attr).store_path(*args, value) : object.object_send("#{attr}=", value)
+      object.object_send(:save!)
     end
 
     def reset
