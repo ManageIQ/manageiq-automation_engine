@@ -1,5 +1,7 @@
 describe MiqAeMethodService::MiqAeServiceEmsEvent do
   before do
+    Settings.ems_refresh.vmwarews.streaming_refresh = false
+
     @ems           = FactoryBot.create(:ems_vmware_with_authentication,
                                         :zone => FactoryBot.create(:zone)
                                        )
