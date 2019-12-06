@@ -1,9 +1,7 @@
 describe MiqAeMethodService::MiqAeServiceEmsEvent do
   before do
-    @ems           = FactoryBot.create(:ems_vmware_with_authentication,
-                                        :zone => FactoryBot.create(:zone)
-                                       )
-    @vm            = FactoryBot.create(:vm_vmware)
+    @ems           = FactoryBot.create(:ems_redhat_with_authentication, :zone => FactoryBot.create(:zone))
+    @vm            = FactoryBot.create(:vm_redhat)
     @ems_event     = FactoryBot.create(:ems_event,
                                         :vm_or_template        => @vm,
                                         :ext_management_system => @ems
