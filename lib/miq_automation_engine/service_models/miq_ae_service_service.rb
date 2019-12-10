@@ -128,5 +128,9 @@ module MiqAeMethodService
     def show_url
       URI.join(MiqRegion.my_region.remote_ui_url, "service/show/#{@object.id}").to_s
     end
+
+    def set_automate_timeout(timeout, action = nil)
+      object_send(:set_automate_timeout, timeout, action)
+    end
   end
 end

@@ -357,6 +357,13 @@ module MiqAeMethodService
       aec.ae_instances.detect { |i| instance.casecmp(i.name) == 0 }
     end
 
+    def field_timeout
+      raise _("ae_state_max_retries is not set in automate field") if root['ae_state_max_retries'].blank?
+
+      interval = root['ae_retry_interval'].present? ? root['ae_retry_interval'].to_i_with_method : 1
+      interval * root['ae_state_max_retries'].to_i
+    end
+
     private
 
     def service_object

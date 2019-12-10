@@ -38,29 +38,28 @@ end
 
 describe MiqAeMethodService::MiqAeService do
   context "#service_model" do
-    let(:workspace) { double('ws', :persist_state_hash => {}) }
+    let(:root_object) { {'ae_state_max_retries' => '100', 'ae_retry_interval' => 2.seconds } }
+    let(:workspace) { double('ws', :persist_state_hash => {}, :get_obj_from_path => root_object) }
     let(:miq_ae_service) { described_class.new(workspace) }
     let(:prefix) { "MiqAeMethodService::MiqAeService" }
 
+    before { allow(workspace).to receive(:disable_rbac) }
+
     it "loads base model" do
-      allow(workspace).to receive(:disable_rbac)
       expect(miq_ae_service.service_model(:VmOrTemplate)).to   be(MiqAeMethodService::MiqAeServiceVmOrTemplate)
       expect(miq_ae_service.service_model(:vm_or_template)).to be(MiqAeMethodService::MiqAeServiceVmOrTemplate)
     end
 
     it "loads sub-classed model" do
-      allow(workspace).to receive(:disable_rbac)
       expect(miq_ae_service.service_model(:Vm)).to be(MiqAeMethodService::MiqAeServiceVm)
       expect(miq_ae_service.service_model(:vm)).to be(MiqAeMethodService::MiqAeServiceVm)
     end
 
     it "loads model with mapped name" do
-      allow(workspace).to receive(:disable_rbac)
       expect(miq_ae_service.service_model(:ems)).to be(MiqAeMethodService::MiqAeServiceExtManagementSystem)
     end
 
     it "loads name-spaced model by mapped name" do
-      allow(workspace).to receive(:disable_rbac)
       MiqAeMethodService::Deprecation.silence do
         expect(miq_ae_service.service_model(:ems_openstack)).to be(
           MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager)
@@ -70,7 +69,6 @@ describe MiqAeMethodService::MiqAeService do
     end
 
     it "loads name-spaced model by fully-qualified name" do
-      allow(workspace).to receive(:disable_rbac)
       expect(miq_ae_service.service_model(:ManageIQ_Providers_Openstack_CloudManager)).to    be(
         MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager)
       expect(miq_ae_service.service_model(:ManageIQ_Providers_Openstack_CloudManager_Vm)).to be(
@@ -78,19 +76,16 @@ describe MiqAeMethodService::MiqAeService do
     end
 
     it "raises error on invalid service_model name" do
-      allow(workspace).to receive(:disable_rbac)
       expect { miq_ae_service.service_model(:invalid_model) }.to raise_error(NameError)
     end
 
     it "loads all mapped models" do
-      allow(workspace).to receive(:disable_rbac)
       MiqAeMethodService::MiqAeService::LEGACY_MODEL_NAMES.values.each do |model_name|
         expect { "MiqAeMethodService::MiqAeService#{model_name}".constantize }.to_not raise_error
       end
     end
 
     it "loads cloud networks" do
-      allow(workspace).to receive(:disable_rbac)
       items = %w(
         ManageIQ_Providers_Openstack_NetworkManager_CloudNetwork
         ManageIQ_Providers_Openstack_NetworkManager_CloudNetwork_Private
@@ -102,9 +97,6 @@ describe MiqAeMethodService::MiqAeService do
     end
 
     context 'state_var methods' do
-      before do
-        allow(workspace).to(receive(:disable_rbac))
-      end
       it '#set_state_var' do
         miq_ae_service.set_state_var('name', 'value')
         validation_hash = { 'name' => 'value' }
@@ -128,10 +120,25 @@ describe MiqAeMethodService::MiqAeService do
     end
 
     it 'ansible_stats_vars' do
-      allow(workspace).to(receive(:disable_rbac))
       expect(miq_ae_service.ansible_stats_vars).to eq({})
       miq_ae_service.instance_eval { @persist_state_hash = { 'ansible_stats_var1' => 'value1', 'ansible_stats_var2' => 'value2', 'var3' => 'value3' } }
       expect(miq_ae_service.ansible_stats_vars).to eq('var1' => 'value1', 'var2' => 'value2')
+    end
+
+    context 'field_timeout' do
+      it 'raises an error if no ae_state_max_retries' do
+        root_object.delete('ae_state_max_retries')
+        expect { miq_ae_service.field_timeout }.to raise_error(RuntimeError, /ae_state_max_retries is not set in automate field/)
+      end
+
+      it 'returns automate field timeout value' do
+        expect(miq_ae_service.field_timeout).to eq(root_object['ae_state_max_retries'].to_i * root_object['ae_retry_interval'].to_i)
+      end
+
+      it 'defaults ae_retry_interval to 1.second' do
+        root_object.delete('ae_retry_interval')
+        expect(miq_ae_service.field_timeout).to eq(root_object['ae_state_max_retries'].to_i * 1)
+      end
     end
   end
 
