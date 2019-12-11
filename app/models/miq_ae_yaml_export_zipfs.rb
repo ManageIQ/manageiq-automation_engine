@@ -18,11 +18,6 @@ class MiqAeYamlExportZipfs < MiqAeYamlExport
   end
 
   def export
-    require 'zip/filesystem'
-    # we need to set this flag to true until we can upgrade to rubyzip 2.0.0
-    # see https://github.com/rubyzip/rubyzip/pull/403#issue-317103816
-    Zip.validate_entry_sizes = true
-
     Zip::File.open(@temp_file_name, Zip::File::CREATE) do |zf|
       @zip_file = zf
       write_model

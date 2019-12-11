@@ -975,11 +975,6 @@ describe MiqAeDatastore do
   end
 
   def create_bogus_zip_file
-    require 'zip/filesystem'
-    # we need to set this flag to true until we can upgrade to rubyzip 2.0.0
-    # see https://github.com/rubyzip/rubyzip/pull/403#issue-317103816
-    Zip.validate_entry_sizes = true
-
     Zip::File.open(@zip_file, Zip::File::CREATE) do |zh|
       zh.file.open("first.txt", "w") { |f| f.puts "Hello world" }
       zh.dir.mkdir("mydir")
