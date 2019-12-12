@@ -380,6 +380,10 @@ module MiqAeMethodService
       self
     end
 
+    def record_exists?
+      @object.present?
+    end
+
     private
 
     def verify_taggable_model
