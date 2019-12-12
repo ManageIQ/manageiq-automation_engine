@@ -367,6 +367,15 @@ module MiqAeMethodService
       self.class == other.class && id == other.id
     end
 
+    def encode_with(coder)
+      coder['id'] = id
+    end
+
+    def init_with(coder)
+      @object = self.class.service_model_name_to_model(self.class.name)&.find_by(:id => coder['id'])
+      self
+    end
+
     private
 
     def verify_taggable_model
