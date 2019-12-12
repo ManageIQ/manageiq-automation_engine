@@ -6,11 +6,6 @@ class MiqAeYamlImportZipfs < MiqAeYamlImport
   end
 
   def load_zip
-    require 'zip/filesystem'
-    # we need to set this flag to true until we can upgrade to rubyzip 2.0.0
-    # see https://github.com/rubyzip/rubyzip/pull/403#issue-317103816
-    Zip.validate_entry_sizes = true
-
     raise MiqAeException::FileNotFound, "import file: #{@options['zip_file']} not found" \
       unless File.exist?(@options['zip_file'])
     @zip = Zip::File.open(@options['zip_file'])
