@@ -11,6 +11,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 * Save Automate timeout in options hash [(#393)](https://github.com/ManageIQ/manageiq-automation_engine/pull/393)
 * Update objects based on set_stats [(#381)](https://github.com/ManageIQ/manageiq-automation_engine/pull/381)
 
+## Unreleased as of Sprint 125 ending 2019-11-25
+
+### Fixed
+- Fixed test description [(391)](https://github.com/ManageIQ/manageiq-automation_engine/pull/391)
+
+## Unreleased as of Sprint 124 ending 2019-11-11
+
+### Added
+- Optionally symlink spec/manageiq during bin/setup [(#389)](https://github.com/ManageIQ/manageiq-automation_engine/pull/389)
+
+### Fixed
+- Model InfraManagerEmsCluster was renamed to InfraManagerCluster [(#386)](https://github.com/ManageIQ/manageiq-automation_engine/pull/386)
+
 ## Unreleased as of Sprint 123 ending 2019-10-28
 
 ### Fixed
