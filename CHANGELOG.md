@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## Unreleased as of Sprint 126 ending 2019-12-09
+
+
+### Added
+* Save Automate timeout in options hash [(#393)](https://github.com/ManageIQ/manageiq-automation_engine/pull/393)
+* Update objects based on set_stats [(#381)](https://github.com/ManageIQ/manageiq-automation_engine/pull/381)
 
 ## Unreleased as of Sprint 123 ending 2019-10-28
 
