@@ -1,0 +1,9 @@
+# Lines starting with '#' are comments.
+# Each line is a file pattern followed by one or more owners.
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence.
+*       @mkanoor @tinaafitz @gmcculloug
+
+/lib/   @mkanoor @gmcculloug @lfu
+/lib/miq_automation_engine/service_models/ @gmcculloug @lfu
