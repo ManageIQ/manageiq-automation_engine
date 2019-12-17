@@ -6,6 +6,7 @@ module MiqAeEngine
     ANSIBLE_STATS_PREFIX_LEN = ANSIBLE_STATS_PREFIX.size
     METHOD_KEY_SUFFIX = "_ansible_method_task_id".freeze
     MIN_RETRY_INTERVAL = 1.minute
+    VALID_ANSIBLE_VARIABLE_NAME_REGEX = /\A[_a-zA-Z][_a-zA-Z0-9]*\z/
 
     def self.cleanup(workspace)
       aw_guid = workspace.persist_state_hash.delete('automate_workspace_guid')
@@ -67,17 +68,36 @@ module MiqAeEngine
     # key in the format of:
     #   miq_provision__options__var1
     #   miq_provision__status
+    #   service_var__var1
     def update_object_with_stats(key, value)
+      unless valid_ansible_variable_name?(key)
+        raise _("Ansible variables must start with a letter or underscore character, and contain only letters, numbers and underscores: [%{var}]") % {:var => key}
+      end
+
       attrs = key.to_s.split("__")
       return if attrs.size < 2
 
       obj_name, attr, *args = *attrs
+      return service_var_with_stats(attr, value) if obj_name == 'service_var'
+
       object = @workspace.current[obj_name] || @workspace.root[obj_name]
+      $miq_ae_logger.info("  object: #{object.inspect}")
       raise _("Object not found: [%{obj_name}]") % {:obj_name => obj_name} if object.blank?
       raise _("Invalid attribute [%{attr}] for %{object}") % {:attr => attr, :object => object} unless object.respond_to?(attr)
 
       args.present? ? object.object_send(attr).store_path(*args, value) : object.object_send("#{attr}=", value)
       object.object_send(:save!)
+    end
+
+    def service_var_with_stats(key, value)
+      object = @workspace.current['service'] || @workspace.root['service']
+      raise _("Object update failed - service object not found for: [service_var__%{key} = %{value}]") % {:key => key, :value => value} if object.blank?
+
+      object.root_service.set_service_vars_option("#{ANSIBLE_STATS_PREFIX}#{key}", value)
+    end
+
+    def valid_ansible_variable_name?(var)
+      VALID_ANSIBLE_VARIABLE_NAME_REGEX.match?(var)
     end
 
     def reset

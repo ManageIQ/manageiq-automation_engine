@@ -52,6 +52,10 @@ describe MiqAeEngine::MiqAePlaybookMethod do
 
     let(:svc_stpt) { MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask.find(stpt.id) }
 
+    let(:root_service) { FactoryBot.create(:service) }
+    let(:service) { FactoryBot.create(:service, :service => root_service) }
+    let(:svc_service) { MiqAeMethodService::MiqAeServiceService.find(service.id) }
+
     context "check miq extra vars passed into playbook" do
       before do
         allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
@@ -174,6 +178,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     context "state machine" do
       let(:root_hash) do
         { 'vmdb_object_type' => 'miq_provision',
+          'service'          => svc_service,
           'miq_provision'    => svc_mpt }
       end
 
@@ -214,7 +219,8 @@ describe MiqAeEngine::MiqAePlaybookMethod do
           'var1'                                => 'testing',
           'var2'                                => true,
           'miq_provision__status'               => 'Warn',
-          'miq_provision__options__config_info' => {'var3' => true}
+          'miq_provision__options__config_info' => {'var3' => true},
+          'service_var__var4'                   => 'set from playbook'
         }
         miq_task.context_data = {:ansible_runner_stdout => [{'event_data' => {'artifact_data' => stats}}]}
         miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
@@ -234,8 +240,10 @@ describe MiqAeEngine::MiqAePlaybookMethod do
         expect(persist_hash['ansible_stats_var2']).to be true
         expect(persist_hash['ansible_stats_miq_provision__status']).to eq('Warn')
         expect(persist_hash['ansible_stats_miq_provision__options__config_info']).to eq('var3' => true)
+        expect(persist_hash['ansible_stats_service_var__var4']).to eq('set from playbook')
         expect(mpt.reload.status).to eq('Warn')
         expect(mpt.options).to include('config_info' => {'var3' => true})
+        expect(root_service.reload.options).to include(:service_vars => {'ansible_stats_var4' => 'set from playbook'})
         expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
       end
 
