@@ -22,7 +22,10 @@ class MiqAeGitImport
 
   def single_domain_import
     import_service = MiqAeYamlImportGitfs.new(@options['domain'] || '*', @options)
-    raise MiqAeException::InvalidDomain, _("multiple domains") if import_service.domain_files('*').size > 1
+    if import_service.domain_files('*').size > 1
+      raise MiqAeException::InvalidDomain, _("Multiple Domain import is not supported.")
+    end
+
     import_service.import
   end
 

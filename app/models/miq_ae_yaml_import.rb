@@ -15,10 +15,6 @@ class MiqAeYamlImport
   def import
     if @options.key?('import_dir') && !File.directory?(@options['import_dir'])
       raise MiqAeException::DirectoryNotFound, "Directory [#{@options['import_dir']}] not found"
-    elsif (!User.current_user.nil? && @options['zip_file'] && domain_locked?(@options['import_as'])) ||
-          (@options['git_repository_id'] && system_domain?(File.dirname(sorted_domain_files.first)))
-      # exception for local import into the locked domain or git import into the base system domain
-      raise MiqAeException::DomainNotAccessible, 'locked domain'
     end
     start_import(@options['preview'], @domain_name)
   end
@@ -77,10 +73,31 @@ class MiqAeYamlImport
     domains.keys.sort_by { |k| domains[k] }
   end
 
+  def preimport_check(domain_name, source_dom_source, dest_dom_source)
+    dest_domain_name = @options['import_as'] == '*' || @options['import_as'].nil? ? @domain_name : @options['import_as']
+    if source_dom_source == MiqAeDomain::SYSTEM_SOURCE
+      if @options['git_repository_id']
+        raise MiqAeException::InvalidDomain, _('Git based system domain import is not supported.')
+      elsif !base_domain?(domain_name)
+        raise MiqAeException::InvalidDomain, _('System domain import is not supported.')
+      elsif domain_name != dest_domain_name
+        raise MiqAeException::InvalidDomain, _('Domain name change for a system domain import is not supported.')
+      end
+    elsif domain_locked?(dest_domain_name)
+      if @options['git_repository_id'] && dest_dom_source == MiqAeDomain::SYSTEM_SOURCE
+        raise MiqAeException::DomainNotAccessible, _('Git based system domain import is not supported.')
+      elsif @options['zip_file'] || (@options['git_repository_id'] && system_domain?(dest_domain_name))
+        raise MiqAeException::DomainNotAccessible, _('Cannot import into a locked domain.')
+      end
+    end
+  end
+
   def import_domain(domain_folder, domain_name)
     domain_yaml = domain_properties(domain_folder, domain_name)
     domain_name = domain_yaml.fetch_path('object', 'attributes', 'name')
+    domain_source = domain_yaml.fetch_path('object', 'attributes', 'source')
     domain_obj = MiqAeDomain.find_by_fqname(domain_name, false)
+    preimport_check(domain_folder, domain_source, domain_obj&.source) unless User.current_user.nil?
     track_stats('domain', domain_obj)
     MiqAeDomain.transaction do
       if domain_obj && !@preview && @options['overwrite']
@@ -325,5 +342,9 @@ class MiqAeYamlImport
 
   def system_domain?(domain_name)
     MiqAeDomain.find_by(:name => domain_name)&.source == MiqAeDomain::SYSTEM_SOURCE
+  end
+
+  def base_domain?(domain_name)
+    MiqAeDatastore.default_domain_names.include?(domain_name)
   end
 end # class
