@@ -106,7 +106,7 @@ describe MiqAeGitImport do
             .and_return(miq_ae_yaml_import_gitfs)
           allow(miq_ae_yaml_import_gitfs).to receive(:domain_files) { ['BB8/__domain__.yaml', 'BB8/__domain__.yaml'] }
           expect { miq_ae_git_import.import }.to raise_exception(
-            MiqAeException::InvalidDomain, 'multiple domains'
+            MiqAeException::InvalidDomain, 'Multiple Domain import is not supported.'
           )
         end
       end
