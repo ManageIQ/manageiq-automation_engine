@@ -1,6 +1,13 @@
 module MiqAeEngine
   class StateVarHash < HashWithIndifferentAccess
+    STATE_VAR_NAME_CLASSES = [NilClass, Numeric, String, Symbol, Date, Time].freeze
     SERIALIZE_KEY = 'binary_blob_id'.freeze
+
+    def []=(name, value)
+      validate_state_var_name!(name)
+
+      super
+    end
 
     def encode_with(coder)
       coder[SERIALIZE_KEY] =
@@ -22,6 +29,14 @@ module MiqAeEngine
       end
 
       self
+    end
+
+    private
+
+    def validate_state_var_name!(name)
+      if STATE_VAR_NAME_CLASSES.none? { |klass| name.kind_of?(klass) }
+        raise "State Var key (#{name.class.name})[#{name.inspect}] must be of type: #{STATE_VAR_NAME_CLASSES.join(', ')}"
+      end
     end
   end
 end
