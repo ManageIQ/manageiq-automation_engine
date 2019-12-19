@@ -157,7 +157,9 @@ module MiqAeDatastore
     email_method.inputs.build([{:name => 'to',      :priority => 1, :datatype => 'string'},
                                {:name => 'from',    :priority => 2, :datatype => 'string'},
                                {:name => 'subject', :priority => 3, :datatype => 'string'},
-                               {:name => 'body',    :priority => 4, :datatype => 'string'}])
+                               {:name => 'body',    :priority => 4, :datatype => 'string'},
+                               {:name => 'cc',      :priority => 5, :datatype => 'array'},
+                               {:name => 'bcc',     :priority => 6, :datatype => 'array'}])
     email_method.save!
   end
 
