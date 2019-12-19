@@ -4,7 +4,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:aw) { FactoryBot.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
     let(:root_hash) { { 'name' => 'Flintstone' } }
     let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
-    let(:persist_hash) { {} }
+    let(:persist_hash) { MiqAeEngine::StateVarHash.new }
     let(:options) { {"test" => 13, :hosts => hosts, :log_output => 'error'} }
     let(:method_name) { "Freddy Kreuger" }
     let(:method_key) { "FreddyKreuger_ansible_method_task_id" }

@@ -5,7 +5,7 @@ describe "MiqAeDeserializeWorkspace" do
       attr_reader :persist_state_hash
       def initialize(workspace)
         @workspace = workspace
-        @persist_state_hash = {}
+        @persist_state_hash = MiqAeEngine::StateVarHash.new
       end
 
       def root

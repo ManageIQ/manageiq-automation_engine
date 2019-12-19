@@ -39,7 +39,7 @@ end
 describe MiqAeMethodService::MiqAeService do
   context "#service_model" do
     let(:root_object) { {'ae_state_max_retries' => '100', 'ae_retry_interval' => 2.seconds } }
-    let(:workspace) { double('ws', :persist_state_hash => {}, :get_obj_from_path => root_object) }
+    let(:workspace) { double('ws', :persist_state_hash => MiqAeEngine::StateVarHash.new, :get_obj_from_path => root_object) }
     let(:miq_ae_service) { described_class.new(workspace) }
     let(:prefix) { "MiqAeMethodService::MiqAeService" }
 
@@ -99,35 +99,38 @@ describe MiqAeMethodService::MiqAeService do
     context 'state_var methods' do
       it '#set_state_var' do
         miq_ae_service.set_state_var('name', 'value')
-        validation_hash = { 'name' => 'value' }
+        validation_hash = MiqAeEngine::StateVarHash.new('name' => 'value')
         expect(miq_ae_service.instance_eval { @persist_state_hash }).to(eq(validation_hash))
       end
+
       it '#get_state_var' do
         expect(miq_ae_service.get_state_var('name')).to(eq(nil))
-        miq_ae_service.instance_eval { @persist_state_hash = { 'name' => 'value' } }
+        miq_ae_service.instance_eval { @persist_state_hash = MiqAeEngine::StateVarHash.new('name' => 'value') }
         expect(miq_ae_service.get_state_var('name')).to(eq('value'))
       end
+
       it '#delete_state_var' do
-        miq_ae_service.instance_eval { @persist_state_hash = { 'name' => 'value' } }
+        miq_ae_service.instance_eval { @persist_state_hash = MiqAeEngine::StateVarHash.new('name' => 'value') }
         miq_ae_service.delete_state_var('name')
         expect(miq_ae_service.instance_eval { @persist_state_hash }).to(eq({}))
       end
+
       it '#state_var_exist?' do
         expect(miq_ae_service.state_var_exist?('name')).to(be_falsey)
-        miq_ae_service.instance_eval { @persist_state_hash = { 'name' => 'value' } }
+        miq_ae_service.instance_eval { @persist_state_hash = MiqAeEngine::StateVarHash.new('name' => 'value') }
         expect(miq_ae_service.state_var_exist?('name')).to(be_truthy)
       end
     end
 
     it 'get_state_vars' do
       expect(miq_ae_service.get_state_vars).to eq({})
-      miq_ae_service.instance_eval { @persist_state_hash = { 'var1' => 'value1', 'var2' => 'value2' } }
+      miq_ae_service.instance_eval { @persist_state_hash = MiqAeEngine::StateVarHash.new('var1' => 'value1', 'var2' => 'value2') }
       expect(miq_ae_service.get_state_vars).to eq('var1' => 'value1', 'var2' => 'value2')
     end
 
     it 'ansible_stats_vars' do
       expect(miq_ae_service.ansible_stats_vars).to eq({})
-      miq_ae_service.instance_eval { @persist_state_hash = { 'ansible_stats_var1' => 'value1', 'ansible_stats_var2' => 'value2', 'var3' => 'value3' } }
+      miq_ae_service.instance_eval { @persist_state_hash = MiqAeEngine::StateVarHash.new('ansible_stats_var1' => 'value1', 'ansible_stats_var2' => 'value2', 'var3' => 'value3') }
       expect(miq_ae_service.ansible_stats_vars).to eq('var1' => 'value1', 'var2' => 'value2')
     end
 
@@ -215,7 +218,7 @@ describe MiqAeMethodService::MiqAeService do
 
     it "set namespace" do
       allow(workspace).to receive(:disable_rbac)
-      allow(workspace).to receive(:persist_state_hash).and_return({})
+      allow(workspace).to receive(:persist_state_hash).and_return(MiqAeEngine::StateVarHash.new)
       expect(workspace).to receive(:prepend_namespace=).with(ns)
 
       miq_ae_service.prepend_namespace = ns
@@ -232,7 +235,7 @@ describe MiqAeMethodService::MiqAeService do
     let(:workspace) do
       double("MiqAeEngine::MiqAeWorkspaceRuntime", :root               => options,
                                                    :ae_user            => user,
-                                                   :persist_state_hash => {})
+                                                   :persist_state_hash => MiqAeEngine::StateVarHash.new)
     end
     let(:miq_ae_service) { described_class.new(workspace) }
     let(:user) { FactoryBot.create(:user_with_group) }
