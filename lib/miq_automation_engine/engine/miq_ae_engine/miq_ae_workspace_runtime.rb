@@ -18,7 +18,7 @@ module MiqAeEngine
       @datastore_cache   = {}
       @class_methods     = {}
       @dom_search        = MiqAeDomainSearch.new
-      @persist_state_hash = HashWithIndifferentAccess.new
+      @persist_state_hash = StateVarHash.new
       @current_state_info = {}
       @state_machine_objects = []
       @ae_user = nil
