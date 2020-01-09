@@ -104,13 +104,13 @@ describe MiqAeMethodService::MiqAeServiceModelBase do
     end
 
     it 'loads object from yaml' do
-      expect(YAML.safe_load(svc_service.to_yaml)).to eq(svc_service)
+      expect(YAML.safe_load(svc_service.to_yaml, [MiqAeMethodService::MiqAeServiceService])).to eq(svc_service)
     end
 
     it 'loads invalid svc_model for objects without related ar_model' do
       yaml = svc_service.to_yaml
       service.delete
-      model_from_yaml = YAML.safe_load(yaml)
+      model_from_yaml = YAML.safe_load(yaml, [MiqAeMethodService::MiqAeServiceService])
       expect { model_from_yaml.reload }.to raise_error(
         NoMethodError,
         "undefined method `reload' for nil:NilClass"
@@ -122,11 +122,11 @@ describe MiqAeMethodService::MiqAeServiceModelBase do
     let(:service_model) { MiqAeMethodService::MiqAeServiceManageIQ_Providers_InfraManager_Vm }
 
     describe '.ar_subclass_associations' do
-      it `does not return the tags association` do
+      it 'does not return the tags association' do
         expect(service_model.ar_model_associations).to_not include(:tags)
       end
 
-      it `does not include associations from superclass` do
+      it 'does not include associations from superclass' do
         expect(service_model.ar_model_associations).to_not include(service_model.superclass.ar_model_associations)
       end
     end
