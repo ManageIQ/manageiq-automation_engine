@@ -104,13 +104,13 @@ describe MiqAeMethodService::MiqAeServiceModelBase do
     end
 
     it 'loads object from yaml' do
-      expect(YAML.safe_load(svc_service.to_yaml)).to eq(svc_service)
+      expect(YAML.safe_load(svc_service.to_yaml, [MiqAeMethodService::MiqAeServiceService])).to eq(svc_service)
     end
 
     it 'loads invalid svc_model for objects without related ar_model' do
       yaml = svc_service.to_yaml
       service.delete
-      model_from_yaml = YAML.safe_load(yaml)
+      model_from_yaml = YAML.safe_load(yaml, [MiqAeMethodService::MiqAeServiceService])
       expect { model_from_yaml.reload }.to raise_error(
         NoMethodError,
         "undefined method `reload' for nil:NilClass"
