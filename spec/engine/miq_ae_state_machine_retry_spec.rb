@@ -184,7 +184,7 @@ describe "MiqAeStateMachineRetry" do
 
   it "check persistent hash" do
     setup_model(method_script_state_var)
-    expected = {'three' => 3, 'one'  => 1, 'two'  => 2, 'gravy' => 'train'}
+    expected = MiqAeEngine::StateVarHash.new('three' => 3, 'one' => 1, 'two' => 2, 'gravy' => 'train')
     send_ae_request_via_queue(@automate_args)
     status, _message, ws = deliver_ae_request_from_queue
     expect(status).not_to eq(MiqQueue::STATUS_ERROR)
@@ -280,6 +280,6 @@ describe "MiqAeStateMachineRetry" do
     expect(MiqQueue.count).to eq(2)
     q = MiqQueue.where(:state => 'ready').first
     expect(q[:server_guid]).to be_nil
-    expect(YAML.load(q.args.first[:ae_state_data])).to eq(ae_state_data)
+    expect(YAML.safe_load(q.args.first[:ae_state_data], [MiqAeEngine::StateVarHash])).to eq(ae_state_data)
   end
 end

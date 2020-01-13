@@ -151,7 +151,7 @@ describe MiqAeEngine do
           root = {'ae_result' => 'retry'}
           @ws = double('ws')
           allow(@ws).to receive_messages(:root => root)
-          allow(@ws).to receive_messages(:persist_state_hash => {})
+          allow(@ws).to receive_messages(:persist_state_hash => MiqAeEngine::StateVarHash.new)
           allow(@ws).to receive_messages(:current_state_info => {})
           allow(MiqAeEngine).to receive(:resolve_automation_object).and_return(@ws)
         end

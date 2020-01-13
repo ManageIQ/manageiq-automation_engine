@@ -26,7 +26,7 @@ describe MiqAeMethodService::MiqAeServiceGenericObject do
 
   let(:user) { FactoryBot.create(:user_with_group) }
   let(:workspace) do
-    double('ws', :persist_state_hash => {},
+    double('ws', :persist_state_hash => MiqAeEngine::StateVarHash.new,
                  :ae_user            => user,
                  :rbac_enabled?      => false,
                  :root               => {})

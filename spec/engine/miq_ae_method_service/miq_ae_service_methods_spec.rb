@@ -339,7 +339,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     let(:workspace) do
       double("MiqAeEngine::MiqAeWorkspaceRuntime",
              :root               => options,
-             :persist_state_hash => {},
+             :persist_state_hash => MiqAeEngine::StateVarHash.new,
              :ae_user            => user)
     end
     let(:miq_ae_service) { MiqAeMethodService::MiqAeService.new(workspace) }
@@ -360,7 +360,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     let(:workspace) do
       double("MiqAeEngine::MiqAeWorkspaceRuntime",
              :root               => options,
-             :persist_state_hash => {},
+             :persist_state_hash => MiqAeEngine::StateVarHash.new,
              :ae_user            => user)
     end
     let(:miq_ae_service) { MiqAeMethodService::MiqAeService.new(workspace) }

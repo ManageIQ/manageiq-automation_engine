@@ -14,7 +14,7 @@ module Spec
       attr_writer :current_object
       attr_accessor :inputs, :object
 
-      def initialize(root, persist_state_hash = {})
+      def initialize(root, persist_state_hash = MiqAeEngine::StateVarHash.new)
         @root = root
         @persist_state_hash = persist_state_hash
         @inputs = {}
