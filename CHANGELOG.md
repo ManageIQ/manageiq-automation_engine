@@ -4,8 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## Unreleased as of Sprint 126 ending 2019-12-09
+## Unreleased as of Sprint 127 ending 2020-01-06
 
+### Added
+* Update service_vars with playbook set_stats data. [(#399)](https://github.com/ManageIQ/manageiq-automation_engine/pull/399)
+* Update rubyzip to 2.0.0 [(#397)](https://github.com/ManageIQ/manageiq-automation_engine/pull/397)
+* Reduce the amount of data being stored in yaml file for svc_models [(#387)](https://github.com/ManageIQ/manageiq-automation_engine/pull/387)
+* Add cc and bcc into builtin method send_email's inputs fields. [(#404)](https://github.com/ManageIQ/manageiq-automation_engine/pull/404)
+* Change the automate datastore import validation - prevent system domains from being imported. [(#397)](https://github.com/ManageIQ/manageiq-automation_engine/pull/397)
+
+
+## Unreleased as of Sprint 126 ending 2019-12-09
 
 ### Added
 * Save Automate timeout in options hash [(#393)](https://github.com/ManageIQ/manageiq-automation_engine/pull/393)
