@@ -263,7 +263,7 @@ module MiqAeMethodService
         raise ArgumentError, "#{ar_klass.name} Object expected, but received #{obj.class.name}"
       end
 
-      @object = obj.kind_of?(ar_klass) ? obj : ar_method { ar_klass.find_by(:id => obj) }
+      @object = obj.kind_of?(ar_klass) ? obj : self.class.ar_method { ar_klass.find_by(:id => obj) }
       raise MiqAeException::ServiceNotFound, "#{ar_klass.name} Object [#{obj}] not found" if @object.nil?
     end
 
