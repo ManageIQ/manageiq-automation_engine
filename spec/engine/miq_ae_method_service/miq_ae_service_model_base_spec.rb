@@ -111,10 +111,8 @@ describe MiqAeMethodService::MiqAeServiceModelBase do
       yaml = svc_service.to_yaml
       service.delete
       model_from_yaml = YAML.safe_load(yaml, [MiqAeMethodService::MiqAeServiceService])
-      expect { model_from_yaml.reload }.to raise_error(
-        NoMethodError,
-        "undefined method `reload' for nil:NilClass"
-      )
+      expect(model_from_yaml.class).to eq(svc_service.class)
+      expect(model_from_yaml.record_exists?).to eq(false)
     end
   end
 
