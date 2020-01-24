@@ -83,7 +83,7 @@ class MiqAeInstanceCopy
   end
 
   def create_instance
-    @dest_instance = MiqAeInstance.find_by_class_id_and_name(@dest_class.id, @target_name)
+    @dest_instance = MiqAeInstance.find_by(:class_id => @dest_class.id, :name => @target_name)
     if @dest_instance
       @dest_instance.destroy if @overwrite
       raise "Instance #{@target_name} exists in #{@target_ns_fqname} class #{@target_class_name}" unless @overwrite

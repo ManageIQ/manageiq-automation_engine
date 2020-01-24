@@ -19,27 +19,27 @@ describe MiqAeInstanceCopy do
     before do
       @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
       @class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
-      @inst1  = MiqAeInstance.find_by_class_id_and_name(@class1.id, @src_instance)
+      @inst1  = MiqAeInstance.find_by(:class_id => @class1.id, :name => @src_instance)
     end
 
     it 'after copy both instances in DB should be congruent' do
       MiqAeInstanceCopy.new(@src_fqname).to_domain(@dest_domain)
       ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{@src_ns}", false)
       class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
-      inst2  = MiqAeInstance.find_by_class_id_and_name(class2.id, @src_instance)
+      inst2  = MiqAeInstance.find_by(:class_id => class2.id, :name => @src_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::CONGRUENT_INSTANCE)
     end
 
     it 'with overwrite an existing instance should get updated' do
-      inst2  = MiqAeInstance.find_by_class_id_and_name(@class1.id, @dest_instance)
+      inst2  = MiqAeInstance.find_by(:class_id => @class1.id, :name => @dest_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::COMPATIBLE_INSTANCE)
       MiqAeInstanceCopy.new(@src_fqname).as(@dest_instance, nil, true)
-      inst2  = MiqAeInstance.find_by_class_id_and_name(@class1.id, @dest_instance)
+      inst2  = MiqAeInstance.find_by(:class_id => @class1.id, :name => @dest_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::CONGRUENT_INSTANCE)
     end
 
     it 'without overwrite an existing instance should raise error' do
-      inst2  = MiqAeInstance.find_by_class_id_and_name(@class1.id, @dest_instance)
+      inst2  = MiqAeInstance.find_by(:class_id => @class1.id, :name => @dest_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::COMPATIBLE_INSTANCE)
       expect { MiqAeInstanceCopy.new(@src_fqname).as(@dest_instance) }.to raise_error(RuntimeError)
     end
@@ -48,7 +48,7 @@ describe MiqAeInstanceCopy do
       MiqAeInstanceCopy.new(@src_fqname).as(@src_instance, @dest_ns, true)
       ns2 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@dest_ns}", false)
       class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
-      inst2  = MiqAeInstance.find_by_class_id_and_name(class2.id, @src_instance)
+      inst2  = MiqAeInstance.find_by(:class_id => class2.id, :name => @src_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::CONGRUENT_INSTANCE)
     end
 
@@ -56,7 +56,7 @@ describe MiqAeInstanceCopy do
       MiqAeInstanceCopy.new(@src_fqname).to_domain(@dest_domain, @dest_ns, true)
       ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{@dest_ns}", false)
       class2 = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
-      inst2  = MiqAeInstance.find_by_class_id_and_name(class2.id, @src_instance)
+      inst2  = MiqAeInstance.find_by(:class_id => class2.id, :name => @src_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::CONGRUENT_INSTANCE)
     end
   end
@@ -65,7 +65,7 @@ describe MiqAeInstanceCopy do
     before do
       @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
       @class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
-      @inst1  = MiqAeInstance.find_by_class_id_and_name(@class1.id, @src_instance)
+      @inst1  = MiqAeInstance.find_by(:class_id => @class1.id, :name =>@src_instance)
     end
 
     it 'by default copy should fail' do
@@ -78,7 +78,7 @@ describe MiqAeInstanceCopy do
       cp.as('incompatible_one', 'NS2', true)
       ns2 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/ns2", false)
       ic_class = MiqAeClass.lookup_by_namespace_id_and_name(ns2.id, @src_class)
-      expect(MiqAeInstance.find_by_class_id_and_name(ic_class.id, 'incompatible_one')).not_to be_nil
+      expect(MiqAeInstance.find_by(:class_id => ic_class.id, :name => 'incompatible_one')).not_to be_nil
     end
   end
 

@@ -229,7 +229,7 @@ class MiqAeYamlImport
 
   def process_instance(class_obj, instance_yaml)
     inst_attrs   = instance_yaml.fetch_path('object', 'attributes')
-    instance_obj = MiqAeInstance.find_by_class_id_and_name(class_obj.id, inst_attrs['name']) unless class_obj.nil?
+    instance_obj = MiqAeInstance.find_by(:class_id => class_obj.id, :name => inst_attrs['name']) unless class_obj.nil?
     track_stats('instance', instance_obj)
     instance_obj ||= add_instance(class_obj, instance_yaml) unless @preview
     instance_obj
