@@ -31,15 +31,15 @@ describe MiqAeInstanceCopy do
     end
 
     it 'with overwrite an existing instance should get updated' do
-      inst2  = MiqAeInstance.find_by(:class_id => @class1.id, :name => @dest_instance)
+      inst2 = MiqAeInstance.find_by(:class_id => @class1.id, :name => @dest_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::COMPATIBLE_INSTANCE)
       MiqAeInstanceCopy.new(@src_fqname).as(@dest_instance, nil, true)
-      inst2  = MiqAeInstance.find_by(:class_id => @class1.id, :name => @dest_instance)
+      inst2 = MiqAeInstance.find_by(:class_id => @class1.id, :name => @dest_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::CONGRUENT_INSTANCE)
     end
 
     it 'without overwrite an existing instance should raise error' do
-      inst2  = MiqAeInstance.find_by(:class_id => @class1.id, :name => @dest_instance)
+      inst2 = MiqAeInstance.find_by(:class_id => @class1.id, :name => @dest_instance)
       validate_instance(@inst1, inst2, MiqAeInstanceCompareValues::COMPATIBLE_INSTANCE)
       expect { MiqAeInstanceCopy.new(@src_fqname).as(@dest_instance) }.to raise_error(RuntimeError)
     end
@@ -65,7 +65,7 @@ describe MiqAeInstanceCopy do
     before do
       @ns1 = MiqAeNamespace.lookup_by_fqname("#{@src_domain}/#{@src_ns}", false)
       @class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
-      @inst1  = MiqAeInstance.find_by(:class_id => @class1.id, :name =>@src_instance)
+      @inst1  = MiqAeInstance.find_by(:class_id => @class1.id, :name => @src_instance)
     end
 
     it 'by default copy should fail' do

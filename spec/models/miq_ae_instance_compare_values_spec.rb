@@ -1,9 +1,9 @@
 describe MiqAeInstanceCompareValues do
   before do
     @domain = 'SPEC_DOMAIN'
-    @namespace   = 'NS1'
-    @classname   = 'CLASS1'
-    @yaml_file   = File.join(File.dirname(__FILE__), 'miq_ae_copy_data', 'miq_ae_method_copy.yaml')
+    @namespace = 'NS1'
+    @classname = 'CLASS1'
+    @yaml_file = File.join(File.dirname(__FILE__), 'miq_ae_copy_data', 'miq_ae_method_copy.yaml')
     MiqAeDatastore.reset
     EvmSpecHelper.import_yaml_model_from_file(@yaml_file, @domain)
     @export_dir = Dir.mktmpdir
@@ -20,7 +20,7 @@ describe MiqAeInstanceCompareValues do
     end
 
     it "both instances in DB should be equivalent" do
-      inst1  = MiqAeInstance.find_by(:class_id => @class.id, :name => @first_instance)
+      inst1 = MiqAeInstance.find_by(:class_id => @class.id, :name => @first_instance)
       instance_check_status(inst1, inst1, MiqAeInstanceCompareValues::CONGRUENT_INSTANCE)
     end
 
@@ -38,8 +38,8 @@ describe MiqAeInstanceCompareValues do
     end
 
     it 'both instances in DB should be compatible' do
-      inst1  = MiqAeInstance.find_by(:class_id => @class.id, :name => @first_instance)
-      inst2  = MiqAeInstance.find_by(:class_id => @class.id, :name => @second_instance)
+      inst1 = MiqAeInstance.find_by(:class_id => @class.id, :name => @first_instance)
+      inst2 = MiqAeInstance.find_by(:class_id => @class.id, :name => @second_instance)
       instance_check_status(inst1, inst2, MiqAeInstanceCompareValues::COMPATIBLE_INSTANCE)
     end
 
