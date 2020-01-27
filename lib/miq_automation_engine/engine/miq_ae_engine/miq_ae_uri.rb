@@ -17,7 +17,7 @@ module MiqAeEngine
       hash = {}
       query&.split('&')&.each do |a|
           k, v = a.split('=')
-          hash[URI.unescape(k)] = URI.unescape(v.to_s)
+          hash[CGI.unescape(k)] = CGI.unescape(v.to_s)
         end
       hash
     end
