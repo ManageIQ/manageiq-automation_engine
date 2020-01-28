@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## Unreleased as of Sprint 128 ending 2020-01-20
+
+### Added
+* State var yaml to binary blob [(#405)](https://github.com/ManageIQ/manageiq-automation_engine/pull/405)
+
 ## Unreleased as of Sprint 127 ending 2020-01-06
 
 ### Added
