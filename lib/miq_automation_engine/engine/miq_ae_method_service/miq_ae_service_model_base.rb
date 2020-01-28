@@ -320,6 +320,8 @@ module MiqAeMethodService
     end
 
     def reload
+      raise ActiveRecord::RecordNotFound, "Couldn't find related ActiveRecord object" unless record_exists?
+
       object_send(:reload)
       self # Return self to prevent the internal object from being returned
     end
