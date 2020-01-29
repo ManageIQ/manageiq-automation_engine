@@ -56,4 +56,18 @@ describe MiqAeEngine::StateVarHash do
       expect(restored_state_var).to eq({})
     end
   end
+
+  describe 'key names' do
+    let(:state_var_hash) { MiqAeEngine::StateVarHash.new }
+
+    [nil, 1, 3.14, 'test', :test, Date.new, Time.zone.now].each do |key|
+      it "allows hash key types for [#{key.class}]" do
+        state_var_hash[key] = 1
+      end
+    end
+
+    it 'raises an error for invalid hash key types' do
+      expect { state_var_hash[{}] = nil }.to raise_error(RuntimeError, /State Var key \(.*\] must be of type: .*/)
+    end
+  end
 end
