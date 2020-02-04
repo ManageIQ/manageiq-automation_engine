@@ -110,13 +110,12 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
   end
 
   it "#set_vm_notes" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].set_vm_notes"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision'].set_vm_notes('homer')"
     @ae_method.update(:data => method)
-
-    # %w{ template clone_to_vm clone_to_template }.each do |provision_type|
-    #  @miq_provision.update(:provision_type => provision_type)
-    #  invoke_ae.root(@ae_result_key).should == @miq_provision.provision_type
-    # end
+    expect(invoke_ae.root(@ae_result_key)).to be_truthy
+    expect(@miq_provision[:options][:vm_notes]).to be_nil
+    @miq_provision.reload
+    expect(@miq_provision[:options][:vm_notes]).to eq('homer')
   end
 
   it "#target_type" do
