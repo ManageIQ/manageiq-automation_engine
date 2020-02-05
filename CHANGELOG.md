@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## Unreleased as of Sprint 129 ending 2020-02-03
+
+### Added
+* Guard against hitting const_missing from within const_missing [(#415)](https://github.com/ManageIQ/manageiq-automation_engine/pull/415)
+* State var limit key type [(#406)](https://github.com/ManageIQ/manageiq-automation_engine/pull/406)
+
+### Changed
+* Replace dynamic find and uri escape [(#412)](https://github.com/ManageIQ/manageiq-automation_engine/pull/412)
+
 ## Unreleased as of Sprint 128 ending 2020-01-20
 
 ### Added
