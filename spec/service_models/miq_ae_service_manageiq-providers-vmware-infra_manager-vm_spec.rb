@@ -1,18 +1,16 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm do
-  let(:vm)             { FactoryBot.create(:vm_vmware) }
+  let(:vm)             { FactoryBot.create(:vm_vmware, :ext_management_system => FactoryBot.create(:ems_vmware)) }
   let(:folder)         { FactoryBot.create(:ems_folder) }
   let(:service_vm)     { MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.find(vm.id) }
   let(:service_folder) { MiqAeMethodService::MiqAeServiceEmsFolder.find(folder.id) }
 
   before do
-    zone = FactoryBot.create(:zone)
-    allow_any_instance_of(Vm).to receive(:my_zone).and_return(zone.name)
-    allow(MiqServer).to receive(:my_zone).and_return(zone.name)
     @base_queue_options = {
       :class_name  => vm.class.name,
       :instance_id => vm.id,
-      :zone        => zone.name,
+      :zone        => vm.my_zone,
       :role        => 'ems_operations',
+      :queue_name  => vm.queue_name_for_ems_operations,
       :task_id     => nil
     }
   end

@@ -10,7 +10,7 @@ describe MiqAeMethodService::MiqAeServiceUser do
     @base_queue_options = {
       :class_name  => cloud_volume.class.name,
       :instance_id => cloud_volume.id,
-      :zone        => cloud_volume.ext_management_system.my_zone,
+      :zone        => cloud_volume.my_zone,
       :role        => 'ems_operations',
       :queue_name  => cloud_volume.queue_name_for_ems_operations,
       :task_id     => nil
