@@ -11,6 +11,7 @@ module MiqAeServiceEmsOperationsMixin
         :args        => args,
         :zone        => @object.my_zone,
         :role        => "ems_operations",
+        :queue_name  => @object.queue_name_for_ems_operations,
         :task_id     => nil               # Clear task_id to allow running asynchronously under current worker process
       }
 
