@@ -154,7 +154,7 @@ module MiqAeEngine
 
     def self.with_automation_env
       gem_paths = (Gem.path + [Bundler.bundle_path.to_s]).uniq
-      Bundler.with_clean_env do
+      Bundler.with_unbundled_env do
         begin
           backup = ENV.to_hash
           ENV.replace(backup.merge("GEM_PATH" => gem_paths.join(File::PATH_SEPARATOR)))
