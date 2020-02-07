@@ -1,5 +1,5 @@
 describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm do
-  let(:vm)             { FactoryBot.create(:vm_vmware) }
+  let(:vm)             { FactoryBot.create(:vm_vmware, :ext_management_system => FactoryBot.create(:ems_vmware)) }
   let(:folder)         { FactoryBot.create(:ems_folder) }
   let(:service_vm)     { MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.find(vm.id) }
   let(:service_folder) { MiqAeMethodService::MiqAeServiceEmsFolder.find(folder.id) }
@@ -64,6 +64,17 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
       @base_queue_options.merge(
         :method_name => 'vm_destroy',
         :args        => [])
+    )
+  end
+
+  it "#resize_disk" do
+    service_vm.resize_disk("disk_1", 1024)
+
+    expect(MiqQueue.first).to have_attributes(
+      @base_queue_options.merge(
+        :method_name => "resize_disk",
+        :args        => ["disk_1", 1024, {}]
+      )
     )
   end
 end

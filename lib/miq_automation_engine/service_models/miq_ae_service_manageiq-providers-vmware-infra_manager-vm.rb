@@ -16,6 +16,10 @@ module MiqAeMethodService
       sync_or_async_ems_operation(options[:sync], "remove_disk", [disk_name, options])
     end
 
+    def resize_disk(disk_name, disk_size_mb, options = {})
+      sync_or_async_ems_operation(options[:sync], "resize_disk", [disk_name, disk_size_mb, options])
+    end
+
     def move_into_folder(folder, options = {})
       raise ArgumentError, "must be kind of MiqAeServiceEmsFolder" unless folder.kind_of?(MiqAeMethodService::MiqAeServiceEmsFolder)
 
