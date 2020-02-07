@@ -179,8 +179,7 @@ describe MiqAeEvent do
 
     context "with Storage event" do
       it "has tenant" do
-        storage = FactoryBot.create(:storage, :name => "test_storage_vmfs", :store_type => "VMFS")
-        FactoryBot.create(:host, :name => "test_host", :hostname => "test_host", :state => 'on', :ems_id => ems.id, :storages => [storage])
+        storage = FactoryBot.create(:storage, :name => "test_storage_vmfs", :store_type => "VMFS", :ext_management_system => ems)
         args = {:user_id      => admin.id,
                 :miq_group_id => ems.tenant.default_miq_group.id,
                 :tenant_id    => ems.tenant.id
