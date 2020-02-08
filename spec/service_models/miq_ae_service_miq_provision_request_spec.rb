@@ -101,9 +101,9 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].register_automate_callback(:first_time_out, 'do_something_great')"
     @ae_method.update(:data => method)
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
-    expect(@miq_provision_request[:options][:callbacks]).to be_nil
+    expect(@miq_provision_request.options[:callbacks]).to be_nil
     @miq_provision_request.reload
-    callback_hash = @miq_provision_request[:options][:callbacks]
+    callback_hash = @miq_provision_request.options[:callbacks]
     expect(callback_hash.count).to eq(1)
     expect(callback_hash[:first_time_out]).to eq('do_something_great')
   end
@@ -111,13 +111,13 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   it "#register_automate_callback - with previous callbacks" do
     method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].register_automate_callback(:first_time_out, 'do_something_great')"
     @ae_method.update(:data => method)
-    expect(@miq_provision_request[:options][:callbacks]).to be_nil
+    expect(@miq_provision_request.options[:callbacks]).to be_nil
     opts = @miq_provision_request.options.dup
     opts[:callbacks] = {:next_time_around => 'do_something_better_yet'}
     @miq_provision_request.update(:options => opts)
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
     @miq_provision_request.reload
-    callback_hash = @miq_provision_request[:options][:callbacks]
+    callback_hash = @miq_provision_request.options[:callbacks]
     expect(callback_hash.count).to eq(2)
     expect(callback_hash[:first_time_out]).to eq('do_something_great')
     expect(callback_hash[:next_time_around]).to eq('do_something_better_yet')
