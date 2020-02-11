@@ -8,14 +8,14 @@ describe MiqAeMethodService::MiqAeServiceObject do
   context "#attributes" do
     before do
       allow(@object).to receive(:attributes).and_return('true'     => true,
-                                           'false'    => false,
-                                           'time'     => Time.parse('Aug 30, 2013'),
-                                           'symbol'   => :symbol,
-                                           'int'      => 1,
-                                           'float'    => 1.1,
-                                           'string'   => 'hello',
-                                           'array'    => [1, 2, 3, 4],
-                                           'password' => MiqAePassword.new('test'))
+                                                        'false'    => false,
+                                                        'time'     => Time.zone.parse('Aug 30, 2013'),
+                                                        'symbol'   => :symbol,
+                                                        'int'      => 1,
+                                                        'float'    => 1.1,
+                                                        'string'   => 'hello',
+                                                        'array'    => [1, 2, 3, 4],
+                                                        'password' => MiqAePassword.new('test'))
     end
 
     it "obscures passwords" do
@@ -62,17 +62,21 @@ describe MiqAeMethodService::MiqAeService do
     it "loads name-spaced model by mapped name" do
       MiqAeMethodService::Deprecation.silence do
         expect(miq_ae_service.service_model(:ems_openstack)).to be(
-          MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager)
-        expect(miq_ae_service.service_model(:vm_openstack)).to  be(
-          MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager_Vm)
+          MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager
+        )
+        expect(miq_ae_service.service_model(:vm_openstack)).to be(
+          MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager_Vm
+        )
       end
     end
 
     it "loads name-spaced model by fully-qualified name" do
-      expect(miq_ae_service.service_model(:ManageIQ_Providers_Openstack_CloudManager)).to    be(
-        MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager)
+      expect(miq_ae_service.service_model(:ManageIQ_Providers_Openstack_CloudManager)).to be(
+        MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager
+      )
       expect(miq_ae_service.service_model(:ManageIQ_Providers_Openstack_CloudManager_Vm)).to be(
-        MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager_Vm)
+        MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager_Vm
+      )
     end
 
     it "raises error on invalid service_model name" do

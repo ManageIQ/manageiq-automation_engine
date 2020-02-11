@@ -9,12 +9,14 @@ module MiqAeMethodService
     def add_to_service(service)
       error_msg = "service must be a MiqAeServiceService"
       raise ArgumentError, error_msg unless service.kind_of?(MiqAeMethodService::MiqAeServiceService)
+
       ar_method { wrap_results(@object.add_to_service(Service.find_by(:id => service.id))) }
     end
 
     def remove_from_service(service)
       error_msg = "service must be a MiqAeServiceService"
       raise ArgumentError, error_msg unless service.kind_of?(MiqAeMethodService::MiqAeServiceService)
+
       ar_method { wrap_results(@object.remove_from_service(Service.find_by(:id => service.id))) }
     end
 
@@ -23,6 +25,7 @@ module MiqAeMethodService
     def ae_user_identity
       workspace = MiqAeEngine::MiqAeWorkspaceRuntime.current || MiqAeEngine::DrbRemoteInvoker.workspace
       raise 'Workspace not found when running generic object' unless workspace
+
       @ae_user = workspace.ae_user
       ar_method { @object.ae_user_identity(@ae_user, @ae_user.current_group, @ae_user.current_tenant) }
     end

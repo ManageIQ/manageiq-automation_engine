@@ -45,7 +45,7 @@ describe "MiqAeCollect" do
 
   it "collect on instance level overrides collect on class level" do
     c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/TEST", "COLLECT")
-    i1 = c1.ae_instances.detect { |i| i.name == "INFO"   }
+    i1 = c1.ae_instances.detect { |i| i.name == "INFO" }
     f1 = c1.ae_fields.detect    { |f| f.name == "weekdays" }
     i1.set_field_collect(f1, "weekdays = [description]")
 

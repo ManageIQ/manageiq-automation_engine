@@ -20,6 +20,7 @@ module MiqAeEngine
       return ns if ns.nil? || klass.nil?
       return ns if scheme != "miqaedb"
       return ns if @fqns_id_cache.key?(ns)
+
       search(uri, ns, klass, instance, nil)
     end
 
@@ -27,6 +28,7 @@ module MiqAeEngine
       return ns if ns.nil? || klass.nil?
       return ns if scheme != "miqaedb"
       return ns if @fqns_id_cache.key?(ns)
+
       search(uri, ns, klass, nil, method)
     end
 
@@ -85,16 +87,18 @@ module MiqAeEngine
 
     def find_class_id(class_name, ns_id)
       return nil if class_name.nil? || ns_id.nil?
+
       key_name = "#{class_name}#{ns_id}"
       return @fqns_id_class_cache[key_name] if @fqns_id_class_cache.key?(key_name)
 
       class_filter = MiqAeClass.arel_table[:name].lower.matches(class_name.downcase)
-      ae_class  = MiqAeClass.where(class_filter).where(:namespace_id => ns_id)
+      ae_class = MiqAeClass.where(class_filter).where(:namespace_id => ns_id)
       @fqns_id_class_cache[key_name] = ae_class.first.id if ae_class.any?
     end
 
     def find_instance_id(instance_name, class_id)
       return nil if instance_name.nil? || class_id.nil?
+
       instance_name = ::ActiveRecordQueryParts.glob_to_sql_like(instance_name.dup).downcase
       ae_instance_filter = MiqAeInstance.arel_table[:name].lower.matches(instance_name)
       ae_instances = MiqAeInstance.where(ae_instance_filter).where(:class_id => class_id)
@@ -103,6 +107,7 @@ module MiqAeEngine
 
     def find_method_id(method_name, class_id)
       return nil if method_name.nil? || class_id.nil?
+
       ae_method_filter = ::MiqAeMethod.arel_table[:name].lower.matches(method_name)
       ae_methods = ::MiqAeMethod.where(ae_method_filter).where(:class_id => class_id)
       ae_methods.first.try(:id)

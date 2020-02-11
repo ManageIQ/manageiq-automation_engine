@@ -3,6 +3,7 @@ require 'manageiq-password'
 class MiqAePassword < ManageIQ::Password
   def self.encrypt(str)
     return str if str.blank? || encrypted?(str)
+
     super
   end
 

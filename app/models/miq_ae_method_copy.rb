@@ -8,8 +8,10 @@ class MiqAeMethodCopy
     @class_fqname = "#{@src_domain}/#{@partial_ns}/#{@ae_class}"
     @src_class = MiqAeClass.lookup_by_fqname("#{@src_domain}/#{@partial_ns}/#{@ae_class}")
     raise "Source class not found #{@class_fqname}" unless @src_class
+
     @src_method = MiqAeMethod.find_by(:name => @method_name, :class_id => @src_class.id)
     raise "Source method #{@method_name} not found #{@class_fqname}" unless @src_method
+
     @target_class_name = @ae_class
   end
 
@@ -48,6 +50,7 @@ class MiqAeMethodCopy
   def find_or_create_class
     @dest_class = MiqAeClass.lookup_by_fqname("#{@target_domain}/#{@target_ns}/#{@target_class_name}")
     return unless @dest_class.nil?
+
     @dest_class = MiqAeClassCopy.new(@class_fqname).to_domain(@target_domain, @target_ns)
   end
 

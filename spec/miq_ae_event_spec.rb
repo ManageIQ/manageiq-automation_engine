@@ -12,18 +12,16 @@ describe MiqAeEvent do
       let(:vm_owner) { nil }
       let(:vm) do
         FactoryBot.create(:vm_vmware,
-                           :ext_management_system => ems,
-                           :miq_group             => vm_group,
-                           :evm_owner             => vm_owner
-                          )
+                          :ext_management_system => ems,
+                          :miq_group             => vm_group,
+                          :evm_owner             => vm_owner)
       end
       let(:event) do
         FactoryBot.create(:ems_event,
-                           :event_type        => "CreateVM_Task_Complete",
-                           :source            => "VC",
-                           :ems_id            => ems.id,
-                           :vm_or_template_id => vm.id
-                          )
+                          :event_type        => "CreateVM_Task_Complete",
+                          :source            => "VC",
+                          :ems_id            => ems.id,
+                          :vm_or_template_id => vm.id)
       end
 
       context "with user owned VM" do
@@ -56,10 +54,9 @@ describe MiqAeEvent do
       let(:vm_owner) { nil }
       let(:vm) do
         FactoryBot.create(:vm_vmware,
-                           :ext_management_system => ems,
-                           :miq_group             => vm_group,
-                           :evm_owner             => vm_owner
-                          )
+                          :ext_management_system => ems,
+                          :miq_group             => vm_group,
+                          :evm_owner             => vm_owner)
       end
 
       shared_context "variables" do
@@ -169,8 +166,7 @@ describe MiqAeEvent do
         worker = FactoryBot.create(:miq_worker, :miq_server_id => miq_server.id)
         args   = {:user_id      => admin.id,
                   :miq_group_id => admin.current_group.id,
-                  :tenant_id    => admin.current_group.current_tenant.id
-        }
+                  :tenant_id    => admin.current_group.current_tenant.id}
         expect(MiqAeEngine).to receive(:deliver_queue).with(hash_including(args), anything)
 
         MiqAeEvent.raise_evm_event("evm_worker_start", worker.miq_server)
@@ -182,8 +178,7 @@ describe MiqAeEvent do
         storage = FactoryBot.create(:storage, :name => "test_storage_vmfs", :store_type => "VMFS", :ext_management_system => ems)
         args = {:user_id      => admin.id,
                 :miq_group_id => ems.tenant.default_miq_group.id,
-                :tenant_id    => ems.tenant.id
-        }
+                :tenant_id    => ems.tenant.id}
         expect(MiqAeEngine).to receive(:deliver_queue).with(hash_including(args), anything)
 
         MiqAeEvent.raise_evm_event("request_storage_scan", storage)
@@ -195,8 +190,7 @@ describe MiqAeEvent do
         request = FactoryBot.create(:vm_reconfigure_request, :requester => user)
         args    = {:user_id      => user.id,
                    :miq_group_id => user.current_group.id,
-                   :tenant_id    => user.current_tenant.id
-        }
+                   :tenant_id    => user.current_tenant.id}
         expect(MiqAeEngine).to receive(:deliver_queue).with(hash_including(args), anything)
 
         MiqAeEvent.raise_evm_event("request_approved", request)

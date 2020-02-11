@@ -8,7 +8,7 @@ describe MiqAeMethodService::MiqAeServiceService do
     @ae_method     = ::MiqAeMethod.first
     @ae_result_key = 'foo'
 
-    @service   = FactoryBot.create(:service, :name => "test_service", :description => "test_description")
+    @service = FactoryBot.create(:service, :name => "test_service", :description => "test_description")
   end
 
   def invoke_ae
@@ -112,12 +112,12 @@ describe MiqAeMethodService::MiqAeServiceService do
       service_template = FactoryBot.create(:service_template, :name => 'Dummy')
       service_name = 'service name'
       description = 'description'
-      method = <<-SCP
+      method = <<~CREATE_SERVICE_SCRIPT
         service_template = $evm.vmdb('service_template').find(#{service_template.id})
         $evm.vmdb('service').create(:name             => '#{service_name}',
-                            :description      => '#{description}',
-                            :service_template => service_template)
-      SCP
+                                    :description      => '#{description}',
+                                    :service_template => service_template)
+      CREATE_SERVICE_SCRIPT
       @ae_method.update(:data => method)
       invoke_ae
 

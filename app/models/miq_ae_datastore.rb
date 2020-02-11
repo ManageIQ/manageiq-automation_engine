@@ -51,7 +51,7 @@ module MiqAeDatastore
 
   def self.upload(fd, name = nil, domain_name = ALL_DOMAINS)
     name ||= fd.original_filename
-    name      = Pathname(name).basename.sub_ext('.zip')
+    name = Pathname(name).basename.sub_ext('.zip')
     upload_to = TMP_DIR.join(name)
     TMP_DIR.mkpath
 
@@ -232,6 +232,7 @@ module MiqAeDatastore
 
   def self.get_homonymic_across_domains(user, arclass, fqname, enabled = nil)
     return [] if fqname.blank?
+
     options = arclass == ::MiqAeClass ? {:has_instance_name => false} : {}
     _, ns, klass, name = ::MiqAeEngine::MiqAePath.get_domain_ns_klass_inst(fqname, options)
     name = klass if arclass == ::MiqAeClass
@@ -250,6 +251,7 @@ module MiqAeDatastore
   def self.get_domain_index_object(domains, obj, klass, ns, enabled, options)
     domain, nsd, klass_name, = ::MiqAeEngine::MiqAePath.get_domain_ns_klass_inst(obj.fqname, options)
     return if !klass_name.casecmp(klass).zero? || !nsd.casecmp(ns).zero?
+
     domain_index = get_domain_index(domains, domain, enabled)
     {:obj => obj, :index => domain_index} if domain_index
   end
@@ -263,6 +265,7 @@ module MiqAeDatastore
   def self.preserved_attrs_for_domains
     MiqAeDomain.all.each_with_object({}) do |dom, h|
       next if dom.name.downcase == MANAGEIQ_DOMAIN.downcase
+
       h[dom.name] = PRESERVED_ATTRS.each_with_object({}) { |attr, ih| ih[attr] = dom[attr] }
     end
   end

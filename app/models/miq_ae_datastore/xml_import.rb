@@ -7,7 +7,7 @@ module MiqAeDatastore
       methods   = input.delete("MiqAeMethod")
 
       # Create the AEClass
-      aec       = MiqAeClass.new(input)
+      aec = MiqAeClass.new(input)
 
       Benchmark.realtime_block(:process_class_schema_time) do
         # Find or Create the AEFields
@@ -35,10 +35,10 @@ module MiqAeDatastore
       fields             = input.delete("MiqAeField")
       input["data"]      = input.delete("content")
       input["data"]&.strip!
-      aem                = MiqAeMethod.new(input)
+      aem = MiqAeMethod.new(input)
 
       # Find or Create the Method Input Definitions
-      aem.inputs = process_method_inputs(fields)        unless fields.nil?
+      aem.inputs = process_method_inputs(fields) unless fields.nil?
       aem
     end
 
@@ -70,7 +70,7 @@ module MiqAeDatastore
           f["default_value"] = default_value.strip unless f.key?("default_value") || default_value.nil?
 
           unless f["collect"].blank?
-            f["collect"] = f["collect"].first["content"]            if f["collect"].kind_of?(Array)
+            f["collect"] = f["collect"].first["content"] if f["collect"].kind_of?(Array)
             f["collect"] = REXML::Text.unnormalize(f["collect"].strip)
           end
 
@@ -98,12 +98,14 @@ module MiqAeDatastore
       fname = field["name"]
       ae_field = aei.ae_class.ae_fields.detect { |f| fname.casecmp(f.name).zero? }
       raise MiqAeException::FieldNotFound, "Field [#{fname}] not found in MiqAeDatastore" if ae_field.nil?
+
       options[:ae_field] = ae_field
       value = field["value"] || field["content"]
       value.strip! unless value.blank?
-      options[:value]    = value
+      options[:value] = value
       %w[collect on_entry on_exit on_error max_retries max_time].each do |key|
         next if field[key].blank?
+
         options[key.to_sym] = REXML::Text.unnormalize(field[key].strip)
       end
       aei.ae_values << MiqAeValue.new(options)
@@ -127,6 +129,7 @@ module MiqAeDatastore
           version = doc.children[0].attributes[:version]
           _log.info("  with version '#{version}'")
           raise "Unsupported version '#{version}'.  Must be at least '#{MiqAeDatastore::XML_VERSION_MIN_SUPPORTED}'." unless check_version(version)
+
           classes = doc.to_h(:symbols => false)["MiqAeClass"]
           buttons = doc.to_h(:symbols => false)["MiqAeButton"]
         end
@@ -155,7 +158,7 @@ module MiqAeDatastore
 
     def self.create_domain(domain)
       MiqAeDomain.lookup_by_fqname(domain) ||
-      MiqAeDomain.create!(:enabled => true, :priority => 100, :tenant => Tenant.root_tenant, :name => domain)
+        MiqAeDomain.create!(:enabled => true, :priority => 100, :tenant => Tenant.root_tenant, :name => domain)
     end
 
     def self.load_xml_file(filename, domain)
@@ -166,7 +169,7 @@ module MiqAeDatastore
       _log.info("Importing file '#{f}'")
       ext = File.extname(f).downcase
       case ext
-      when ".xml"          then load_xml_file(f, domain)
+      when ".xml" then load_xml_file(f, domain)
       else raise "Unhandled File Extension [#{ext}] when trying to load #{f}"
       end
       _log.info("Import complete")

@@ -24,7 +24,7 @@ describe "MiqAeSerializeWorkspace" do
   let(:test_class_instance) { test_class.new(workspace) }
   let(:user) do
     FactoryBot.create(:user_with_group, :userid   => "admin",
-                                         :settings => {:display => { :timezone => "UTC"}})
+                                        :settings => {:display => {:timezone => "UTC"}})
   end
 
   let(:host) { FactoryBot.create(:host) }
@@ -33,8 +33,8 @@ describe "MiqAeSerializeWorkspace" do
 
   describe "#hash_workspace" do
     context "simple attributes" do
-      let(:root_hash) { { 'a' => 1, 'b' => '2'} }
-      let(:hashed_workspace) { { "root" => root_hash} }
+      let(:root_hash) { {'a' => 1, 'b' => '2'} }
+      let(:hashed_workspace) { {"root" => root_hash} }
       let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
 
       it "return a simple hash" do
@@ -43,9 +43,9 @@ describe "MiqAeSerializeWorkspace" do
     end
 
     context "vmdb_object" do
-      let(:root_hash) { { 'a' => 1, 'b' => '2', 'my_vm' => svc_vm} }
-      let(:ref_hash) { { 'a' => 1, 'b' => '2', 'my_vm' => "href_slug::#{vm.href_slug}"} }
-      let(:hashed_workspace) { { "root" => ref_hash} }
+      let(:root_hash) { {'a' => 1, 'b' => '2', 'my_vm' => svc_vm} }
+      let(:ref_hash) { {'a' => 1, 'b' => '2', 'my_vm' => "href_slug::#{vm.href_slug}"} }
+      let(:hashed_workspace) { {"root" => ref_hash} }
       let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
 
       it "return a simple hash with the vm reference" do
@@ -54,8 +54,8 @@ describe "MiqAeSerializeWorkspace" do
     end
 
     context "object graph" do
-      let(:root_hash) { { 'a' => 1, 'b' => '2' } }
-      let(:child_hash) { { 'age' => 55 } }
+      let(:root_hash) { {'a' => 1, 'b' => '2'} }
+      let(:child_hash) { {'age' => 55} }
       let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
       let(:child_object) { Spec::Support::MiqAeMockObject.new(child_hash) }
 
@@ -65,8 +65,8 @@ describe "MiqAeSerializeWorkspace" do
         child_object.instance  = "fred"
 
         child_object.link_parent_child(root_object, child_object)
-        result = { "root"                         => {"a" => 1, "b" => "2"},
-                   "/manageiq/bedrock/mogul/fred" => {"age" => 55, "::miq::parent" => "root"}}
+        result = {"root"                         => {"a" => 1, "b" => "2"},
+                  "/manageiq/bedrock/mogul/fred" => {"age" => 55, "::miq::parent" => "root"}}
         expect(test_class_instance.hash_workspace).to eq(result)
       end
     end

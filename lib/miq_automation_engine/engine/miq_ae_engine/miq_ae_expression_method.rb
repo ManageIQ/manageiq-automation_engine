@@ -22,6 +22,7 @@ module MiqAeEngine
 
     def load_expression(data)
       raise MiqAeException::MethodExpressionEmpty, "Empty expression" if data.blank?
+
       begin
         hash = YAML.load(data)
         if hash[:expression] && hash[:db]
@@ -66,6 +67,7 @@ module MiqAeEngine
 
     def result_simple(obj, attr)
       raise MiqAeException::MethodNotDefined, "Undefined method #{attr} in class #{obj.class}" unless obj.respond_to?(attr.to_sym)
+
       obj.send(attr.to_sym)
     end
 
@@ -104,6 +106,7 @@ module MiqAeEngine
 
     def set_default_value
       return unless @inputs.key?('default')
+
       target_object.attributes[attribute_name] = @inputs['default']
     end
 
@@ -138,6 +141,7 @@ module MiqAeEngine
       (1..num_token).each do |i|
         key = "arg#{i}"
         raise MiqAeException::MethodParameterNotFound, key unless @inputs.key?(key)
+
         params[i - 1] = @inputs[key]
       end
       params

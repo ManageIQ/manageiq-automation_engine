@@ -31,15 +31,18 @@ class MiqAeMethodYaml
 
   def field_names
     raise "ae_method_obj has not been set" unless @ae_method_obj
+
     define_instance_variables
     @ae_method_obj['object']['inputs'].collect { |item| item['field']['name'] }.flatten
   end
 
   def field_value_hash(name)
     raise "ae_method_obj has not been set" unless @ae_method_obj
+
     define_instance_variables
     value = @ae_method_obj['object']['inputs'].detect { |item| item['field']['name'].casecmp(name).zero? }
     raise "field name #{name} not found in instance #{@filename}" if value.nil?
+
     value['field']
   end
 end

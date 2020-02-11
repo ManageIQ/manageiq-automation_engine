@@ -26,6 +26,7 @@ module MiqAeMethodService
       if attributes[:service_template]
         raise ArgumentError, "service_template must be a MiqAeServiceServiceTemplate" unless
           attributes[:service_template].kind_of?(MiqAeMethodService::MiqAeServiceServiceTemplate)
+
         attributes[:service_template] = ServiceTemplate.find(attributes[:service_template].id)
       end
       ar_method { MiqAeServiceModelBase.wrap_results(Service.create!(attributes)) }
@@ -97,7 +98,9 @@ module MiqAeMethodService
       ar_method do
         if service
           raise ArgumentError, "service must be a MiqAeServiceService" unless service.kind_of?(
-            MiqAeMethodService::MiqAeServiceService)
+            MiqAeMethodService::MiqAeServiceService
+          )
+
           @object.add_to_service(Service.find(service.id))
         elsif @object.parent.present?
           @object.remove_from_service(@object.parent)

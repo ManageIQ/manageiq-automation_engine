@@ -22,7 +22,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   it "#miq_request" do
     @miq_provision_request.save!
 
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].miq_request"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].miq_request"
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqRequest)
@@ -30,12 +30,12 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   end
 
   it "#miq_provisions" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].miq_provisions"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].miq_provisions"
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to eq([])
 
-    options       = {}
+    options = {}
     options[:src_vm_id] = [@vm_template.id, @vm_template.name]
     options[:pass]      = 1
     miq_provision1 = FactoryBot.create(:miq_provision, :provision_type => 'template', :state => 'pending', :status => 'Ok', :options => options)
@@ -65,7 +65,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   end
 
   it "#vm_template" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].vm_template"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].vm_template"
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqTemplate)
@@ -73,7 +73,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   end
 
   it "#request_type" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].request_type"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].request_type"
     @ae_method.update(:data => method)
 
     %w[template clone_to_vm clone_to_template].each do |provision_type|
@@ -83,7 +83,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   end
 
   it "#target_type" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].target_type"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].target_type"
     @ae_method.update(:data => method)
 
     %w[clone_to_template].each do |provision_type|
@@ -98,7 +98,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   end
 
   it "#register_automate_callback - no previous callbacks" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].register_automate_callback(:first_time_out, 'do_something_great')"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].register_automate_callback(:first_time_out, 'do_something_great')"
     @ae_method.update(:data => method)
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
     expect(@miq_provision_request.options[:callbacks]).to be_nil
@@ -109,7 +109,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   end
 
   it "#register_automate_callback - with previous callbacks" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].register_automate_callback(:first_time_out, 'do_something_great')"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].register_automate_callback(:first_time_out, 'do_something_great')"
     @ae_method.update(:data => method)
     expect(@miq_provision_request.options[:callbacks]).to be_nil
     opts = @miq_provision_request.options.dup
@@ -124,7 +124,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   end
 
   it "#source_type" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].source_type"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].source_type"
     @ae_method.update(:data => method)
 
     vm = VmOrTemplate.find(@vm_template.id)
@@ -139,7 +139,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
   end
 
   it "#ci_type" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].ci_type"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_provision_request'].ci_type"
     @ae_method.update(:data => method)
     expect(invoke_ae.root(@ae_result_key)).to eq('vm')
   end

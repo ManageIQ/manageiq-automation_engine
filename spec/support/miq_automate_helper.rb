@@ -6,12 +6,12 @@ module Spec
                                   :priority => 10, :enabled => true,
                                   :tenant   => identifiers[:tenant])
         @aen1 = FactoryBot.create(:miq_ae_namespace, :name      => identifiers[:namespace],
-                                                      :parent_id => @aed.id)
+                                                     :parent_id => @aed.id)
         @aec1 = FactoryBot.create(:miq_ae_class, :name         => identifiers[:class],
-                                                  :namespace_id => @aen1.id)
+                                                 :namespace_id => @aen1.id)
         @aec1.ae_fields << build_fields(field_array)
         @aei1 = FactoryBot.create(:miq_ae_instance, :name     => identifiers[:instance],
-                                                     :class_id => @aec1.id)
+                                                    :class_id => @aec1.id)
         if identifiers[:method].present?
           @aem1 = FactoryBot.create(:miq_ae_method, :class_id => @aec1.id,
                                     :name => identifiers[:method], :scope => "instance",
@@ -25,6 +25,7 @@ module Spec
         field_array.collect do |field|
           field_obj = field_objects.detect { |f| f.name == field[:name] }
           next unless field_obj
+
           FactoryBot.build(:miq_ae_value, :field_id => field_obj.id, :value => field[:value])
         end.compact
       end
@@ -32,39 +33,39 @@ module Spec
       def self.build_fields(field_array, aem_params = false)
         field_array.collect do |field|
           FactoryBot.build(:miq_ae_field,
-                            :name          => field[:name],
-                            :aetype        => field[:type],
-                            :priority      => field[:priority],
-                            :default_value => aem_params ? field[:value] : field[:default_value],
-                            :substitute    => true)
+                           :name          => field[:name],
+                           :aetype        => field[:type],
+                           :priority      => field[:priority],
+                           :default_value => aem_params ? field[:value] : field[:default_value],
+                           :substitute    => true)
         end
       end
 
       def self.create_field(class_obj, instance_obj, method_obj, options)
         if method_obj.nil?
           field = FactoryBot.create(:miq_ae_field,
-                                     :class_id   => class_obj.id,
-                                     :name       => options[:name],
-                                     :aetype     => options[:type],
-                                     :priority   => options[:priority],
-                                     :substitute => true)
+                                    :class_id   => class_obj.id,
+                                    :name       => options[:name],
+                                    :aetype     => options[:type],
+                                    :priority   => options[:priority],
+                                    :substitute => true)
           create_field_value(instance_obj, field, options[:value]) unless options[:value].nil?
         else
           FactoryBot.create(:miq_ae_field,
-                             :method_id     => method_obj.id,
-                             :name          => options[:name],
-                             :aetype        => options[:type],
-                             :priority      => options[:priority],
-                             :substitute    => true,
-                             :default_value => options[:value])
+                            :method_id     => method_obj.id,
+                            :name          => options[:name],
+                            :aetype        => options[:type],
+                            :priority      => options[:priority],
+                            :substitute    => true,
+                            :default_value => options[:value])
         end
       end
 
       def self.create_field_value(instance_obj, field_obj, value)
         FactoryBot.create(:miq_ae_value,
-                           :instance_id => instance_obj.id,
-                           :field_id    => field_obj.id,
-                           :value       => value)
+                          :instance_id => instance_obj.id,
+                          :field_id    => field_obj.id,
+                          :value       => value)
       end
 
       def self.create_service_model_method(domain, namespace, klass, instance, method)

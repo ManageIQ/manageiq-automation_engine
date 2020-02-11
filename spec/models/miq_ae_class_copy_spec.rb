@@ -34,7 +34,7 @@ describe MiqAeClassCopy do
 
     it "after copy both classes in DB should be congruent" do
       class1 = MiqAeClass.lookup_by_namespace_id_and_name(@ns1.id, @src_class)
-      new_ns   = "NS3/NS4"
+      new_ns = "NS3/NS4"
       class2 = MiqAeClassCopy.new(@src_fqname).to_domain(@dest_domain, new_ns)
       class_check_status(class1, class2, MiqAeClassCompareFields::CONGRUENT_SCHEMA)
       @ns2 = MiqAeNamespace.lookup_by_fqname("#{@dest_domain}/#{new_ns}", false)

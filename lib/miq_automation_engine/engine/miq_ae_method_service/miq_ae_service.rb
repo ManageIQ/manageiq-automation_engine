@@ -43,7 +43,7 @@ module MiqAeMethodService
       ws.disable_rbac
     end
 
-    delegate :enable_rbac, :disable_rbac, :rbac_enabled?, :to =>  :@workspace
+    delegate :enable_rbac, :disable_rbac, :rbac_enabled?, :to => :@workspace
 
     def stdout
       @stdout ||= Vmdb::Loggers::IoLogger.new(logger, :info, "Method STDOUT:")
@@ -130,6 +130,7 @@ module MiqAeMethodService
     def instantiate(uri)
       obj = @workspace.instantiate(uri, @workspace.ae_user, @workspace.current_object)
       return nil if obj.nil?
+
       MiqAeServiceObject.new(obj, self)
     rescue StandardError => e
       $miq_ae_logger.error("instantiate failed : #{e.message}")
@@ -139,6 +140,7 @@ module MiqAeMethodService
     def object(path = nil)
       obj = @workspace.get_obj_from_path(path)
       return nil if obj.nil?
+
       MiqAeServiceObject.new(obj, self)
     end
 
@@ -240,7 +242,7 @@ module MiqAeMethodService
     end
 
     def create_notification!(values_hash = {})
-       User.with_user(@workspace.ae_user) { create_notification_with_user!(values_hash) }
+      User.with_user(@workspace.ae_user) { create_notification_with_user!(values_hash) }
     end
 
     def create_notification_with_user!(values_hash)
@@ -377,8 +379,10 @@ module MiqAeMethodService
     def editable_instance?(path)
       dom, = MiqAeEngine::MiqAePath.get_domain_ns_klass_inst(path)
       return false unless owned_domain?(dom)
+
       domain = MiqAeDomain.lookup_by_fqname(dom, false)
       return false unless domain
+
       $log.warn "path=#{path.inspect} : is not editable" unless domain.editable?(@workspace.ae_user)
       domain.editable?(@workspace.ae_user)
     end
@@ -386,6 +390,7 @@ module MiqAeMethodService
     def owned_domain?(dom)
       domains = @workspace.ae_user.current_tenant.ae_domains.collect(&:name).map(&:upcase)
       return true if domains.include?(dom.upcase)
+
       $log.warn "domain=#{dom} : is not editable"
       false
     end
@@ -393,6 +398,7 @@ module MiqAeMethodService
     def visible_domain?(dom)
       domains = @workspace.ae_user.current_tenant.visible_domains.collect(&:name).map(&:upcase)
       return true if domains.include?(dom.upcase)
+
       $log.warn "domain=#{dom} : is not viewable"
       false
     end

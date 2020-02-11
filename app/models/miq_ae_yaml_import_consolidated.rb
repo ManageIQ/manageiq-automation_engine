@@ -2,7 +2,7 @@ class MiqAeYamlImportConsolidated < MiqAeYamlImport
   include MiqAeYamlImportExportMixin
   def initialize(domain, options)
     super
-    @fn_flags  = File::FNM_CASEFOLD | File::FNM_PATHNAME
+    @fn_flags = File::FNM_CASEFOLD | File::FNM_PATHNAME
     load_yaml
   end
 
@@ -10,6 +10,7 @@ class MiqAeYamlImportConsolidated < MiqAeYamlImport
     unless File.exist?(@options['yaml_file'])
       raise MiqAeException::FileNotFound, "import file: #{@options['yaml_file']} not found"
     end
+
     @yaml_model = YAML.load_file(@options['yaml_file'])
   end
 
@@ -38,6 +39,7 @@ class MiqAeYamlImportConsolidated < MiqAeYamlImport
   def domain_files(domain)
     keys = @yaml_model.keys
     return [] if keys.empty?
+
     keys.select! do |key|
       File.fnmatch(domain, key, @fn_flags) && @yaml_model.has_key_path?(*[key, DOMAIN_YAML_FILENAME])
     end

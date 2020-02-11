@@ -27,6 +27,7 @@ class MiqAeYamlImportFs < MiqAeYamlImport
   def load_class_schema(class_folder)
     raise MiqAeException::DirectoryNotFound, "Folder [#{class_folder}] not found" \
       unless File.directory?(class_folder)
+
     load_file(File.join(class_folder, CLASS_YAML_FILENAME))
   end
 

@@ -1,7 +1,7 @@
 class MiqAeYamlImportZipfs < MiqAeYamlImport
   def initialize(domain, options)
     super
-    @fn_flags  = File::FNM_CASEFOLD | File::FNM_PATHNAME
+    @fn_flags = File::FNM_CASEFOLD | File::FNM_PATHNAME
     load_zip
   end
 
@@ -9,6 +9,7 @@ class MiqAeYamlImportZipfs < MiqAeYamlImport
     require 'zip/filesystem'
     raise MiqAeException::FileNotFound, "import file: #{@options['zip_file']} not found" \
       unless File.exist?(@options['zip_file'])
+
     @zip = Zip::File.open(@options['zip_file'])
     @sorted_entries = @zip.entries.sort
   end

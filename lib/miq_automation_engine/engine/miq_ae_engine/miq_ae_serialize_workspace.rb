@@ -18,6 +18,7 @@ module MiqAeEngine
     def process_attributes(obj)
       obj.attributes.each_with_object({}) do |(k, v), hash|
         next if v.nil?
+
         hash[k.to_s] = MiqAeReference.encode(v)
       end
     end

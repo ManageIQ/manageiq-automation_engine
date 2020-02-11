@@ -1,6 +1,6 @@
 module MiqAeMethodService
   class MiqAeServiceClassification < MiqAeServiceModelBase
-    expose :namespace, :method      => :ns
+    expose :namespace, :method => :ns
     expose :category
     expose :name
     expose :to_tag

@@ -210,6 +210,7 @@ describe MiqAeEngine::MiqAeMethod do
           def verify_next_message(message)
             expected = expected_messages.shift
             return if message == expected
+
             puts "Expected: #{expected.inspect}, Got: #{message.inspect}"
             raise
           end

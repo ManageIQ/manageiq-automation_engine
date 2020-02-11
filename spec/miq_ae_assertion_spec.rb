@@ -11,13 +11,13 @@ describe MiqAeEngine::MiqAeObject do
     let(:number_of_vms) { 999 }
     let(:vm_template) do
       FactoryBot.create(:template_vmware, :name                  => "template1",
-                                           :ext_management_system => ems)
+                                          :ext_management_system => ems)
     end
     let(:miq_provision_request) do
       FactoryBot.create(:miq_provision_request,
-                         :requester => user,
-                         :src_vm_id => vm_template.id,
-                         :options   => {:number_of_vms => number_of_vms})
+                        :requester => user,
+                        :src_vm_id => vm_template.id,
+                        :options   => {:number_of_vms => number_of_vms})
     end
 
     let(:ae_instances) do

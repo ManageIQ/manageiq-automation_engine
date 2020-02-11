@@ -5,10 +5,10 @@ describe MiqAeMethodService::MiqAeServiceVm do
   before do
     @user = FactoryBot.create(:user_with_group)
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
-    @ae_method     = ::MiqAeMethod.first
+    @ae_method = ::MiqAeMethod.first
     @ae_result_key = 'foo'
 
-    @vm   = FactoryBot.create(:vm_vmware, :name => "template1", :location => "abc/abc.vmx")
+    @vm = FactoryBot.create(:vm_vmware, :name => "template1", :location => "abc/abc.vmx")
     zone = FactoryBot.create(:zone)
     allow(MiqServer).to receive(:my_zone).and_return(zone.name)
   end
@@ -23,7 +23,7 @@ describe MiqAeMethodService::MiqAeServiceVm do
   end
 
   it "#ems_custom_keys" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].ems_custom_keys"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['vm'].ems_custom_keys"
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(Array)

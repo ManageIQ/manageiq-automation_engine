@@ -2,7 +2,7 @@ describe MiqAeMethodService::MiqAeServiceServiceReconfigureRequest do
   include Spec::Support::AutomationHelper
 
   before do
-    method_script   = "$evm.root['ci_type'] = $evm.root['request'].ci_type"
+    method_script = "$evm.root['ci_type'] = $evm.root['request'].ci_type"
     create_ae_model_with_method(:method_script => method_script, :ae_class => 'AUTOMATE',
                                 :ae_namespace  => 'EVM', :instance_name => 'test1',
                                 :method_name   => 'test', :name => 'TEST_DOMAIN')

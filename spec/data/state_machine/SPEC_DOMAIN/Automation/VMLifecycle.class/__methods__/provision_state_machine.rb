@@ -35,25 +35,25 @@ def log_error(msg, state, final_state)
   $evm.log("warn", msg) unless state == final_state
 end
 
-current     = $evm.current
+current = $evm.current
 $evm.log("info", "Listing CURRENT Object Attributes:")
 current.attributes.sort.each { |k, v| $evm.log("info", "\t#{k}: #{v}") }
 $evm.log("info", "===========================================")
-step        = current['step']
-step        = 'initial' if step.nil? || step.empty?
-step_index  = STEPS.index(step)
+step = current['step']
+step = 'initial' if step.blank?
+step_index = STEPS.index(step)
 $evm.log("info", "STEP=<#{step}> INDEX=<#{step_index}>")
 
-root        = $evm.root
+root = $evm.root
 $evm.log("info", "Listing ROOT Object Attributes:")
 root.attributes.sort.each { |k, v| $evm.log("info", "\t#{k}: #{v}") }
 $evm.log("info", "===========================================")
-state       = root["ae_state"]
-state       = 'initial' if state.nil? || state.empty?
+state = root["ae_state"]
+state = 'initial' if state.blank?
 state_index = STEPS.index(state)
 $evm.log("info", "STATE=<#{state}> INDEX=<#{state_index}>")
 
-result      = root["ae_result"]
+result = root["ae_result"]
 $evm.log("info", "AE_RESULT=<#{result}>")
 
 if step_index == (state_index - 1)
@@ -65,7 +65,7 @@ elsif step_index == state_index
     if result == 'error'
       message = 'error'
       final_state = STEPS.last
-      new_state_index = STEPS.index(final_state)   # Go To FINAL state on Error
+      new_state_index = STEPS.index(final_state) # Go To FINAL state on Error
       log_error("Error in State=<#{STEPS[state_index]}>", state, final_state)
     else
       message = 'create'

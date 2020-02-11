@@ -7,6 +7,7 @@ module MiqAeEngine
       hash.keys.sort_by(&:to_s).each do |k|
         v = hash[k]
         next if v.nil?
+
         value = v.kind_of?(ActiveRecord::Base) ? v.id : v
         query.push([ERB::Util.url_encode(k), ERB::Util.url_encode(value.to_s)].join('='))
       end

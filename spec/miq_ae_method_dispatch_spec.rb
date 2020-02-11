@@ -67,8 +67,7 @@ describe "MiqAeMethodDispatch" do
   def create_method_class(attrs = {})
     params = {'pidfile' => {'aetype'        => 'attribute',
                             'datatype'      => 'string',
-                            'default_value' => @pidfile}
-             }
+                            'default_value' => @pidfile}}
     method_script = attrs.delete(:method_script)
     ae_fields = {'execute' => {:aetype => 'method', :datatype => 'string'}}
     ae_instances = {@method_instance => {'execute' => {:value => @method_name}}}
@@ -77,9 +76,9 @@ describe "MiqAeMethodDispatch" do
                                    :language => 'ruby', 'params' => params}}
 
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_instances' => ae_instances,
-                                   'ae_methods'   => ae_methods))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_instances' => ae_instances,
+                                  'ae_methods'   => ae_methods))
   end
 
   def create_root_class(attrs = {})
@@ -87,9 +86,9 @@ describe "MiqAeMethodDispatch" do
     fqname = "/#{@domain}/#{@namespace}/#{@method_class}/#{@method_instance}"
     ae_instances = {@root_instance => {'rel1' => {:value => fqname}}}
     FactoryBot.create(:miq_ae_class, :with_instances_and_methods,
-                       attrs.merge('ae_fields'    => ae_fields,
-                                   'ae_methods'   => {},
-                                   'ae_instances' => ae_instances))
+                      attrs.merge('ae_fields'    => ae_fields,
+                                  'ae_methods'   => {},
+                                  'ae_instances' => ae_instances))
   end
 
   it "long running method", :skip => "Fails sporadically because 2 seconds is not long enough" do

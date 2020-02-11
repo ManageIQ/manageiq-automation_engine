@@ -11,10 +11,10 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     @options[:pass]      = 1
     @user = FactoryBot.create(:user_with_group, :name => 'Fred Flintstone', :userid => 'fred')
     @miq_provision = FactoryBot.create(:miq_provision_vmware,
-                                        :provision_type => 'template',
-                                        :state => 'pending', :status => 'Ok',
-                                        :options => @options,
-                                        :userid => @user.userid)
+                                       :provision_type => 'template',
+                                       :state => 'pending', :status => 'Ok',
+                                       :options => @options,
+                                       :userid => @user.userid)
   end
 
   let(:ae_svc_prov) { MiqAeMethodService::MiqAeServiceMiqProvision.find(@miq_provision.id) }
@@ -28,10 +28,10 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
   context "check requests" do
     before do
       @miq_provision_request = FactoryBot.create(:miq_provision_request,
-                                                  :provision_type => 'template',
-                                                  :state => 'pending', :status => 'Ok',
-                                                  :src_vm_id => @vm_template.id,
-                                                  :requester => @user)
+                                                 :provision_type => 'template',
+                                                 :state => 'pending', :status => 'Ok',
+                                                 :src_vm_id => @vm_template.id,
+                                                 :requester => @user)
       @miq_provision.miq_provision_request = @miq_provision_request
       @miq_provision.save!
       @miq_provision_request.save!
@@ -146,8 +146,8 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
       iso_image_struct = [MiqHashStruct.new(
         :id               => "IsoImage::#{@iso_image.id}",
         :name             => @iso_image.name,
-        :evm_object_class => @iso_image.class.base_class.name.to_sym)
-                         ]
+        :evm_object_class => @iso_image.class.base_class.name.to_sym
+      )]
       allow_any_instance_of(MiqProvisionWorkflow).to receive(:allowed_iso_images).and_return(iso_image_struct)
     end
 

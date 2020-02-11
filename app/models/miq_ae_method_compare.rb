@@ -32,6 +32,7 @@ class MiqAeMethodCompare
   def status
     return CONGRUENT_METHOD  if congruent?
     return COMPATIBLE_METHOD if compatible?
+
     INCOMPATIBLE_METHOD
   end
 
@@ -63,6 +64,7 @@ class MiqAeMethodCompare
     old_value = @old_method.send(method) if @old_method.respond_to?(method)
     new_value = @new_method.send(method) if @new_method.respond_to?(method)
     return if old_value == new_value
+
     @incompatibilities << {'attribute' => method, 'old_data' => old_value, 'new_data' => new_value}
   end
 
@@ -89,6 +91,7 @@ class MiqAeMethodCompare
     old_value.each do |property, data|
       next if IGNORE_PROPERTY_NAMES.include?(property)
       next if data == new_value[property]
+
       hash = {'property'   => property,
               'old_data'   => data,
               'new_data'   => new_value[property],

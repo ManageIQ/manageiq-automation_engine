@@ -17,7 +17,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask do
   end
 
   it "#execute" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_task'].execute"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_task'].execute"
     @ae_method.update(:data => method)
     expect_any_instance_of(ServiceTemplateProvisionTask).to receive(:execute_queue).once
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
@@ -43,7 +43,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask do
   context "#status" do
     it "when state is provisioned" do
       @service_template_provision_task.update(:state => "provisioned")
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_task'].status"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_task'].status"
       @ae_method.update!(:data => method)
 
       expect(invoke_ae.root(@ae_result_key)).to eq('ok')
@@ -51,7 +51,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask do
 
     it "when state is finished" do
       @service_template_provision_task.update(:state => "finished")
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_task'].status"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_task'].status"
       @ae_method.update!(:data => method)
 
       expect(invoke_ae.root(@ae_result_key)).to eq('ok')
@@ -59,7 +59,7 @@ describe MiqAeMethodService::MiqAeServiceServiceTemplateProvisionTask do
 
     it "when state is pending" do
       @service_template_provision_task.update(:state => "pending")
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_task'].status"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.root['service_template_provision_task'].status"
       @ae_method.update!(:data => method)
 
       expect(invoke_ae.root(@ae_result_key)).to eq('retry')

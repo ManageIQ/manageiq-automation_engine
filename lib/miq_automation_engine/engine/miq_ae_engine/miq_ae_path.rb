@@ -10,6 +10,7 @@ module MiqAeEngine
 
     def to_s
       return "" if parts.all?(&:blank?)
+
       parts.join("/")
     end
 
@@ -18,7 +19,7 @@ module MiqAeEngine
       parts_array << @ae_namespace
       parts_array << @ae_class
       parts_array << @ae_instance
-      parts_array << @ae_attribute    unless @ae_attribute.blank?
+      parts_array << @ae_attribute if @ae_attribute.present?
       parts_array
     end
 
@@ -32,13 +33,14 @@ module MiqAeEngine
 
     def self.join(ns, klass, instance, attribute_name = nil)
       return [nil, ns, klass, instance].join("/") if attribute_name.nil?
+
       [nil, ns, klass, instance, attribute_name].join("/")
     end
 
     def self.split(path, options = {})
       options[:has_instance_name] = true unless options.key?(:has_instance_name)
       parts = path.split('/')
-      parts << nil if path[-1, 1] == '/' && options[:has_instance_name]  # Nil instance if trailing /
+      parts << nil if path[-1, 1] == '/' && options[:has_instance_name] # Nil instance if trailing /
       parts.shift  if path[0, 1] == '/'                                 # Remove the leading blank piece
       attribute_name = options[:has_attribute_name] ? parts.pop : nil
       instance       = options[:has_instance_name] ? parts.pop : nil
@@ -50,6 +52,7 @@ module MiqAeEngine
 
     def self.wildcard?(path)
       return false if path.nil?
+
       path.last == "*"
     end
 

@@ -6,6 +6,7 @@ module MiqAeMethodService
 
     def initialize(obj, svc)
       raise "object cannot be nil" if obj.nil?
+
       @object  = obj
       @service = svc
     end
@@ -13,6 +14,7 @@ module MiqAeMethodService
     def children(name = nil)
       objs = @object.children(name)
       return nil if objs.nil?
+
       objs = @service.objects([objs].flatten)
       objs.length == 1 ? objs.first : objs
     end

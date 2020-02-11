@@ -9,8 +9,10 @@ class MiqAeInstanceCopy
     @class_fqname = "#{@src_domain}/#{@partial_ns}/#{@ae_class}"
     @src_class = MiqAeClass.lookup_by_fqname("#{@src_domain}/#{@partial_ns}/#{@ae_class}")
     raise "Source class not found #{@class_fqname}" unless @src_class
+
     @src_instance = MiqAeInstance.find_by(:name => @instance_name, :class_id => @src_class.id)
     raise "Source instance #{@instance_name} not found #{@class_fqname}" unless @src_instance
+
     @target_class_name = @ae_class
     @flags = MiqAeClassCompareFields::CONGRUENT_SCHEMA | MiqAeClassCompareFields::COMPATIBLE_SCHEMA
     @validate_schema = validate_schema
@@ -53,6 +55,7 @@ class MiqAeInstanceCopy
   def find_or_create_class
     @dest_class = MiqAeClass.lookup_by_fqname("#{@target_domain}/#{@target_ns}/#{@target_class_name}")
     return unless @dest_class.nil?
+
     @dest_class = MiqAeClassCopy.new(@class_fqname).to_domain(@target_domain, @target_ns)
   end
 
@@ -69,6 +72,7 @@ class MiqAeInstanceCopy
       attrs = v.attributes.delete_if { |k, _| DELETE_PROPERTIES.include?(k) }
       field_id = get_new_field_id(v.field_id)
       next if field_id.nil?
+
       MiqAeValue.new({:field_id => field_id}.merge(attrs))
     end.compact
   end
@@ -76,9 +80,11 @@ class MiqAeInstanceCopy
   def get_new_field_id(field_id)
     src_field = @src_class.ae_fields.detect { |f| f.id == field_id }
     raise "Field id #{field_id} not found in source class #{@src_class.name}" if src_field.nil?
+
     dest_field = @dest_class.ae_fields.detect { |f| f.name == src_field.name }
     return nil if dest_field.nil? && (@class_schema_status & @flags).positive?
     raise "Field name #{src_field.name} not found in target class #{@dest_class.name}" if dest_field.nil?
+
     dest_field.id
   end
 
@@ -98,6 +104,7 @@ class MiqAeInstanceCopy
   def validate
     find_or_create_class
     return unless @validate_schema
+
     @class_schema_status = MiqAeClassCompareFields.new(@src_class, @dest_class).compare
     raise "Instance cannot be copied, automation class schema mismatch" if (@flags & @class_schema_status).zero?
   end

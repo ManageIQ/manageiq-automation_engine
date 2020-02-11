@@ -19,7 +19,8 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManag
     expect(MiqQueue.last).to have_attributes(
       @base_queue_options.merge(
         :method_name => 'attach_volume',
-        :args        => ['volume1', '/device/path'])
+        :args        => ['volume1', '/device/path']
+      )
     )
   end
 
@@ -29,7 +30,8 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManag
     expect(MiqQueue.last).to have_attributes(
       @base_queue_options.merge(
         :method_name => 'detach_volume',
-        :args        => ['volume1'])
+        :args        => ['volume1']
+      )
     )
   end
 end

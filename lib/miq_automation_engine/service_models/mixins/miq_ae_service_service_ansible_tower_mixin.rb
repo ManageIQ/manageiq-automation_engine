@@ -11,7 +11,7 @@ module MiqAeServiceServiceAnsibleTowerMixin
     end
 
     ar_method do
-      @object.job_template = template ? ConfigurationScript.find_by(:id => template.id): nil
+      @object.job_template = template ? ConfigurationScript.find_by(:id => template.id) : nil
       @object.save
     end
   end

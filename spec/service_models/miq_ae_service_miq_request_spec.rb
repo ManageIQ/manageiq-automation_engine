@@ -31,7 +31,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     @ae_method.update(:data => method)
     expect(MiqRequest).to receive(:find).with(@miq_request.id.to_s).and_return(@miq_request)
     expect(@miq_request).to receive(:approve).with(approver, reason).once
-    expect(invoke_ae.root(@ae_result_key)).to  be_truthy
+    expect(invoke_ae.root(@ae_result_key)).to be_truthy
   end
 
   it "#deny" do
@@ -45,14 +45,14 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
   end
 
   it "#pending" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].pending"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].pending"
     @ae_method.update(:data => method)
     expect_any_instance_of(MiqRequest).to receive(:pending).once
     expect(invoke_ae.root(@ae_result_key)).to  be_truthy
   end
 
   it "#approvers" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].approvers"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].approvers"
     @ae_method.update(:data => method)
     expect(invoke_ae.root(@ae_result_key)).to eq([])
 
@@ -80,14 +80,14 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
   end
 
   it "#requester" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].requester"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].requester"
     @ae_method.update(:data => method)
     fred = invoke_ae.root(@ae_result_key)
     assert_ae_user_matches_ar_user(fred, @fred)
   end
 
   it "#authorized?" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].authorized?"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].authorized?"
     @ae_method.update(:data => method)
     [true, false].each do |expected_authorized|
       allow_any_instance_of(MiqRequest).to receive(:authorized?).and_return(expected_authorized)
@@ -97,7 +97,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
   end
 
   it "#resource" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].resource"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].resource"
     @ae_method.update(:data => method)
 
     vm_template = FactoryBot.create(:template_vmware, :name => "template1")
@@ -111,7 +111,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
   end
 
   it "#reason" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].reason"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].reason"
     @ae_method.update(:data => method)
     reason = invoke_ae.root(@ae_result_key)
     expect(reason).to be_nil
@@ -180,7 +180,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
   end
 
   it "#get_tags" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].get_tags"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].get_tags"
     @ae_method.update(:data => method)
     tags = ['tag1', 'tag2']
     expect_any_instance_of(MiqRequest).to receive(:get_tags).once.and_return(tags)
@@ -189,7 +189,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
 
   context "#clear_tag" do
     it "should work with no parms" do
-      method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].clear_tag"
+      method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].clear_tag"
       @ae_method.update(:data => method)
       expect_any_instance_of(MiqRequest).to receive(:clear_tag).with(nil, nil).once
       invoke_ae
@@ -223,7 +223,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
   end
 
   it "#get_classifications" do
-    method   = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].get_classifications"
+    method = "$evm.root['#{@ae_result_key}'] = $evm.root['miq_request'].get_classifications"
     @ae_method.update(:data => method)
     classifications = ['classification1', 'classification2']
     expect_any_instance_of(MiqRequest).to receive(:get_classifications).once.and_return(classifications)
@@ -240,7 +240,7 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
 
   it "#description=" do
     description = 'test description'
-    method  = "$evm.root['miq_request'].description=('#{description}')"
+    method = "$evm.root['miq_request'].description=('#{description}')"
     @ae_method.update(:data => method)
     invoke_ae
     expect(@miq_request.reload.description).to eq(description)

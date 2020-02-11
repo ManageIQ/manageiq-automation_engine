@@ -45,6 +45,7 @@ module MiqAeEvent
     aevent.merge!(inputs)
     ws = call_automate(target, aevent, 'Alert', options)
     return nil if ws.nil? || ws.root.nil?
+
     ws.root['ae_result']
   end
 
@@ -76,11 +77,12 @@ module MiqAeEvent
         raise "Unexpected class #{inputs[hash[:key]].class.name} for #{hash[:key]} -- expected class=#{hash[:class].name}"
       end
 
-      aevent.merge!("#{hash[:class].name}::#{hash[:name]}" => vmdb_object.id, "#{hash[:key]}_id".to_sym  => vmdb_object.id)
+      aevent.merge!("#{hash[:class].name}::#{hash[:name]}" => vmdb_object.id, "#{hash[:key]}_id".to_sym => vmdb_object.id)
     end
 
     inputs.delete_if do |_k, value|
       next unless value.kind_of?(ApplicationRecord)
+
       klass = value.class.base_class.name
       aevent.merge!("#{klass}::#{klass.underscore}" => value.id, "#{klass.underscore}_id".to_sym => value.id)
     end

@@ -256,6 +256,7 @@ class MiqAeYamlExport
 
   def domain_object
     raise MiqAeException::DomainNotAccessible, "Domain [#{@domain}] not accessible" unless domain_accessible?
+
     MiqAeDomain.lookup_by_fqname(@domain).tap do |dom|
       if dom.nil?
         _log.error("Domain: <#{@domain}> not found.")
@@ -282,11 +283,13 @@ class MiqAeYamlExport
 
   def swap_domain_path(fqname)
     return fqname if @options['export_as'].blank?
+
     fqname.gsub(/^\/#{@domain}/, @options['export_as'])
   end
 
   def domain_accessible?
     return true unless @tenant
+
     @tenant.ae_domains.any? { |dom| dom.name.casecmp(@domain).zero? }
   end
 end

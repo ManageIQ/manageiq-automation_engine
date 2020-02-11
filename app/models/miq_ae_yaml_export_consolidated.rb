@@ -10,12 +10,13 @@ class MiqAeYamlExportConsolidated < MiqAeYamlExport
     if File.exist?(@yaml_file_name) && !options['overwrite']
       raise MiqAeException::FileExists, "File [#{@yaml_file_name}] exists, to overwrite it use OVERWRITE=true"
     end
+
     @yaml_model = {}
   end
 
   def write_data(base_path, export_hash)
     path = File.join(base_path, export_hash['output_filename']).split('/')
-    path.shift  if base_path[0, 1] == '/'
+    path.shift if base_path[0, 1] == '/'
     data = export_hash['export_data']
     data = YAML.load(data) if export_hash['output_filename'].ends_with?('.yaml')
     path << data

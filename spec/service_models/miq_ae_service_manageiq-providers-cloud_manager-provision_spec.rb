@@ -6,13 +6,13 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
         @cloud_image   = FactoryBot.create("template_#{t}".to_sym, :ext_management_system => @provider)
         @options       = {:src_vm_id => [@cloud_image.id, @cloud_image.name],
                           :pass      => 1}
-        @user          = FactoryBot.create(:user, :name => 'Fred Flintstone',  :userid => 'fred')
+        @user          = FactoryBot.create(:user, :name => 'Fred Flintstone', :userid => 'fred')
         @miq_provision = FactoryBot.create("miq_provision_#{t}".to_sym,
-                                            :provision_type => 'template',
-                                            :state          => 'pending',
-                                            :status         => 'Ok',
-                                            :options        => @options,
-                                            :userid         => @user.userid)
+                                           :provision_type => 'template',
+                                           :state          => 'pending',
+                                           :status         => 'Ok',
+                                           :options        => @options,
+                                           :userid         => @user.userid)
       end
 
       let(:workflow_klass) { MiqProvisionWorkflow.class_for_platform(t) }

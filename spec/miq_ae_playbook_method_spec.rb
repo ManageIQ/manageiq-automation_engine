@@ -2,7 +2,7 @@ describe MiqAeEngine::MiqAePlaybookMethod do
   describe "run" do
     let(:user) { FactoryBot.create(:user_with_group) }
     let(:aw) { FactoryBot.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
-    let(:root_hash) { { 'name' => 'Flintstone' } }
+    let(:root_hash) { {'name' => 'Flintstone'} }
     let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }
     let(:persist_hash) { MiqAeEngine::StateVarHash.new }
     let(:options) { {"test" => 13, :hosts => hosts, :log_output => 'error'} }
@@ -29,12 +29,12 @@ describe MiqAeEngine::MiqAePlaybookMethod do
 
     let(:user) do
       FactoryBot.create(:user_with_group, :userid   => "admin",
-                                           :settings => {:display => { :timezone => "UTC"}})
+                                          :settings => {:display => {:timezone => "UTC"}})
     end
 
     let(:aem)    { double("AEM", :options => options, :name => method_name) }
     let(:obj)    { double("OBJ", :workspace => workspace) }
-    let(:inputs) { { 'name' => 'Fred' } }
+    let(:inputs) { {'name' => 'Fred'} }
 
     let(:mpr) { FactoryBot.create(:miq_provision_request, :requester => user) }
 
@@ -100,8 +100,8 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       context "service_template_provision_task" do
         let(:task_href_slug) { "#{svc_stpr.href_slug}/#{svc_stpt.href_slug}" }
         let(:root_hash) do
-          { 'vmdb_object_type'                => 'service_template_provision_task',
-            'service_template_provision_task' => svc_stpt }
+          {'vmdb_object_type'                => 'service_template_provision_task',
+           'service_template_provision_task' => svc_stpt}
         end
         it_behaves_like "task_slug"
       end
@@ -109,8 +109,8 @@ describe MiqAeEngine::MiqAePlaybookMethod do
       context "provision_task" do
         let(:task_href_slug) { "#{svc_mpr.href_slug}/#{svc_mpt.href_slug}" }
         let(:root_hash) do
-          { 'vmdb_object_type' => 'miq_provision',
-            'miq_provision'    => svc_mpt }
+          {'vmdb_object_type' => 'miq_provision',
+           'miq_provision'    => svc_mpt}
         end
         it_behaves_like "task_slug"
       end
@@ -177,9 +177,9 @@ describe MiqAeEngine::MiqAePlaybookMethod do
 
     context "state machine" do
       let(:root_hash) do
-        { 'vmdb_object_type' => 'miq_provision',
-          'service'          => svc_service,
-          'miq_provision'    => svc_mpt }
+        {'vmdb_object_type' => 'miq_provision',
+         'service'          => svc_service,
+         'miq_provision'    => svc_mpt}
       end
 
       before do

@@ -8,6 +8,7 @@ module MiqAeCopyMixin
       domain = parts.shift
       partial_ns = parts.join('/')
       return domain, partial_ns, ae_class, ae_instance if has_instance_name
+
       return domain, partial_ns, ae_class
     end
 

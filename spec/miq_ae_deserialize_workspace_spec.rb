@@ -20,8 +20,8 @@ describe "MiqAeDeserializeWorkspace" do
 
   let(:user) do
     FactoryBot.create(:user_with_group,
-                       :userid   => "admin",
-                       :settings => {:display => { :timezone => "UTC"}})
+                      :userid   => "admin",
+                      :settings => {:display => {:timezone => "UTC"}})
   end
 
   let(:workspace) do
@@ -35,10 +35,10 @@ describe "MiqAeDeserializeWorkspace" do
 
   describe "#update_workspace" do
     context "caller adds a vm object as attribute" do
-      let(:root_hash) { { 'a' => 1, 'b' => '2'} }
+      let(:root_hash) { {'a' => 1, 'b' => '2'} }
       let(:updated_hash) do
         {
-          'state_vars' => { 'x' => 1 },
+          'state_vars' => {'x' => 1},
           'objects'    => {
             'root'                => {
               'a'     => 9,
@@ -53,7 +53,7 @@ describe "MiqAeDeserializeWorkspace" do
       end
 
       let(:invalid_obj_name_hash) do
-        {'objects' => { 'frooti' => {} }}
+        {'objects' => {'frooti' => {}}}
       end
 
       let(:root_object) { Spec::Support::MiqAeMockObject.new(root_hash) }

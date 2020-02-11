@@ -7,8 +7,8 @@ describe MiqAeEngine::MiqAeObject do
     @user = FactoryBot.create(:user_with_group)
     @model_data_dir = File.join(File.dirname(__FILE__), "data")
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "miq_ae_object_spec1"), @domain)
-    @vm      = FactoryBot.create(:vm_vmware)
-    @ws      = MiqAeEngine.instantiate("/SYSTEM/EVM/AUTOMATE/test1", @user)
+    @vm = FactoryBot.create(:vm_vmware)
+    @ws = MiqAeEngine.instantiate("/SYSTEM/EVM/AUTOMATE/test1", @user)
     @miq_obj = described_class.new(@ws, "#{@domain}/SYSTEM/EVM", "AUTOMATE", "test1")
   end
 
@@ -36,6 +36,7 @@ describe MiqAeEngine::MiqAeObject do
   def find_match(attrs, key, value)
     item = attrs.detect { |i| i['name'] == key }
     return false unless item
+
     item.delete('name')
     xml_class = item.keys.first
     type_match(value.class, xml_class) &&
@@ -53,6 +54,7 @@ describe MiqAeEngine::MiqAeObject do
   def value_match(value, xml_value)
     service_model = value.class.name.start_with?("MiqAeMethodService::")
     return value.id.inspect == xml_value['id'] if service_model
+
     value == xml_value || value.inspect == xml_value
   end
 
@@ -199,7 +201,6 @@ describe MiqAeEngine::MiqAeObject do
   include Spec::Support::AutomationHelper
 
   context "substitute_value" do
-
     let(:email_value) { '${/#miq_request.get_option(:email).upcase}' }
     let(:req_email_value) { '${/#user.email}' }
     let(:instance_name) { 'FRED' }
@@ -229,10 +230,10 @@ describe MiqAeEngine::MiqAeObject do
 
     let(:request) do
       FactoryBot.create(:miq_provision_request,
-                         :provision_type => 'template',
-                         :state => 'pending', :status => 'Ok',
-                         :src_vm_id => vm_template.id,
-                         :requester => user, :options => options)
+                        :provision_type => 'template',
+                        :state => 'pending', :status => 'Ok',
+                        :src_vm_id => vm_template.id,
+                        :requester => user, :options => options)
     end
 
     it "email address" do
