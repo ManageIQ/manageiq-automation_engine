@@ -270,7 +270,7 @@ module MiqAeMethodService
         raise ArgumentError, "#{ar_klass.name} Object expected, but received #{obj.class.name}"
       end
 
-      @object = obj.kind_of?(ar_klass) ? obj : ar_method { ar_klass.find_by(:id => obj) }
+      @object = obj.kind_of?(ar_klass) ? obj : self.class.ar_method { ar_klass.find_by(:id => obj) }
       raise MiqAeException::ServiceNotFound, "#{ar_klass.name} Object [#{obj}] not found" if @object.nil?
     end
 
@@ -327,6 +327,8 @@ module MiqAeMethodService
     end
 
     def reload
+      raise ActiveRecord::RecordNotFound, "Couldn't find related ActiveRecord object" unless record_exists?
+
       object_send(:reload)
       self # Return self to prevent the internal object from being returned
     end
@@ -367,6 +369,8 @@ module MiqAeMethodService
     end
 
     def ar_method(&block)
+      return if @object.nil?
+
       self.class.ar_method(&block)
     end
 
@@ -380,7 +384,13 @@ module MiqAeMethodService
 
     def init_with(coder)
       @object = self.class.service_model_name_to_model(self.class.name)&.find_by(:id => coder['id'])
+      $miq_ae_logger.warn("There is no related active record object with id=#{coder['id']} for imported #{self.class}") if @object.nil?
+
       self
+    end
+
+    def record_exists?
+      @object.present?
     end
 
     private
