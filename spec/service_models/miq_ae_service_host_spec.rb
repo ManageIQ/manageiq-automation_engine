@@ -4,7 +4,7 @@ describe MiqAeMethodService::MiqAeServiceHost do
     Spec::Support::MiqAutomateHelper.create_service_model_method('SPEC_DOMAIN', 'EVM', 'AUTOMATE', 'test1', 'test')
     @ae_method = ::MiqAeMethod.first
     @ae_result_key = 'foo'
-    @host = FactoryBot.create(:host)
+    @host = FactoryBot.create(:host, :ext_management_system => FactoryBot.create(:ext_management_system))
   end
 
   def invoke_ae
@@ -116,5 +116,25 @@ describe MiqAeMethodService::MiqAeServiceHost do
     expect_any_instance_of(Host).to receive(:get_performance_metric).with(:realtime, metric, range, function).once
     ae_result = invoke_ae.root(@ae_result_key)
     expect(ae_result).to be_nil
+  end
+
+  it "#ems_custom_set async" do
+    @base_queue_options = {
+      :class_name  => @host.class.name,
+      :instance_id => @host.id,
+      :zone        => @host.my_zone,
+      :role        => 'ems_operations',
+      :queue_name  => @host.queue_name_for_ems_operations,
+      :task_id     => nil
+    }
+    svc_host = MiqAeMethodService::MiqAeServiceHost.find(@host.id)
+    svc_host.ems_custom_set("thing", "thing1")
+
+    expect(MiqQueue.last).to have_attributes(
+      @base_queue_options.merge(
+        :method_name => 'set_custom_field',
+        :args        => ["thing", "thing1"]
+      )
+    )
   end
 end
