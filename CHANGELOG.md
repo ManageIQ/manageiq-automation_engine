@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## Unreleased as of Sprint 130 ending 2020-02-17
+
+### Added
+* Add queue_name for ems_operations methods [(#419)](https://github.com/ManageIQ/manageiq-automation_engine/pull/419)
+* Add a method to resize a VMware VM Disk [(#420)](https://github.com/ManageIQ/manageiq-automation_engine/pull/420)
+
+### Changed
+* Rubocop run with `--fix-layout` option. [(#362)](https://github.com/ManageIQ/manageiq-automation_engine/pull/362)
+* Change options accessing syntax in spec [(#423)](https://github.com/ManageIQ/manageiq-automation_engine/pull/423)
+* Fix other places we're using @miq_provision[:options] rather than .options [(#424)](https://github.com/ManageIQ/manageiq-automation_engine/pull/424)
+* Fix set_vm_notes spec [(#416)](https://github.com/ManageIQ/manageiq-automation_engine/pull/416)
+* A storage now has a direct belongs_to on ems_id [(#422)](https://github.com/ManageIQ/manageiq-automation_engine/pull/422)
+
 ## Unreleased as of Sprint 129 ending 2020-02-03
 
 ### Added
