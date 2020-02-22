@@ -1,5 +1,8 @@
 module MiqAeMethodService
   class MiqAeServiceManageIQ_Providers_CloudManager < MiqAeServiceManageIQ_Providers_BaseManager
+    require_relative "mixins/miq_ae_service_ems_operations_mixin"
+    include MiqAeServiceEmsOperationsMixin
+
     expose :cloud_networks,         :association => true
     expose :public_networks,        :association => true
     expose :private_networks,       :association => true
