@@ -30,7 +30,7 @@ module MiqAeMethodService
       ar_method { @object.ae_user_identity(@ae_user, @ae_user.current_group, @ae_user.current_tenant) }
     end
 
-    def method_missing(method_name, *args)
+    def method_missing(method_name, *args) # rubocop:disable Style/MethodMissingSuper
       ae_user_identity unless @ae_user
       args = convert_params_to_ar_model(args)
       results = object_send(method_name, *args)

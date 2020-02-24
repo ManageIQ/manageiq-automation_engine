@@ -34,38 +34,38 @@ describe MiqAeYamlImportGitfs do
     @ae_db.send(:commit, "files_added").tap { |cid| @ae_db.send(:merge, cid) }
   end
 
-  def add_file(f)
-    @ae_db.add(f, YAML.dump(@default_hash.merge(:fname => f)))
+  def add_file(file_name)
+    @ae_db.add(file_name, YAML.dump(@default_hash.merge(:fname => file_name)))
   end
 
-  def add_namespace(ns)
-    add_file(namespace_file(ns))
-    @classes.each { |klass| add_class(ns, klass) }
+  def add_namespace(namespace)
+    add_file(namespace_file(namespace))
+    @classes.each { |klass| add_class(namespace, klass) }
   end
 
-  def namespace_file(ns)
+  def namespace_file(namespace)
     if @domain_dir
-      "#{@domain_dir}/#{ns}/#{MiqAeYamlImportExportMixin::NAMESPACE_YAML_FILENAME}"
+      "#{@domain_dir}/#{namespace}/#{MiqAeYamlImportExportMixin::NAMESPACE_YAML_FILENAME}"
     else
-      "#{ns}/#{MiqAeYamlImportExportMixin::NAMESPACE_YAML_FILENAME}"
+      "#{namespace}/#{MiqAeYamlImportExportMixin::NAMESPACE_YAML_FILENAME}"
     end
   end
 
-  def class_dir(ns, klass)
+  def class_dir(namespace, klass)
     if @domain_dir
-      "#{@domain_dir}/#{ns}/#{klass}#{MiqAeYamlImportExportMixin::CLASS_DIR_SUFFIX}"
+      "#{@domain_dir}/#{namespace}/#{klass}#{MiqAeYamlImportExportMixin::CLASS_DIR_SUFFIX}"
     else
-      "#{ns}/#{klass}#{MiqAeYamlImportExportMixin::CLASS_DIR_SUFFIX}"
+      "#{namespace}/#{klass}#{MiqAeYamlImportExportMixin::CLASS_DIR_SUFFIX}"
     end
   end
 
-  def class_file(ns, klass)
-    klass_dir = class_dir(ns, klass)
+  def class_file(namespace, klass)
+    klass_dir = class_dir(namespace, klass)
     "#{klass_dir}/#{MiqAeYamlImportExportMixin::CLASS_YAML_FILENAME}"
   end
 
-  def add_class(ns, klass)
-    klass_dir = class_dir(ns, klass)
+  def add_class(namespace, klass)
+    klass_dir = class_dir(namespace, klass)
     add_file("#{klass_dir}/#{MiqAeYamlImportExportMixin::CLASS_YAML_FILENAME}")
     @instances.each { |instance| add_instance(klass_dir, instance) }
     @methods.each { |method| add_method(klass_dir, method) }

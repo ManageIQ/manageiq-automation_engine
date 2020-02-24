@@ -69,7 +69,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvisionRequest do
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqTemplate)
-    [:id, :name, :location].each { |method| expect(ae_object.send(method)).to eq(@vm_template.send(method)) }
+    [:id, :name, :location].each { |method_name| expect(ae_object.send(method_name)).to eq(@vm_template.send(method_name)) }
   end
 
   it "#request_type" do

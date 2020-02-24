@@ -861,7 +861,7 @@ describe MiqAeDatastore do
     domain   = FactoryBot.create(:miq_ae_domain_enabled, :name => domain_name, :source => source, :priority => priority)
     n1       = FactoryBot.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_1",    :parent_id => domain.id, :description => "test", :display_name => "test")
     n1_c1    = FactoryBot.create(:miq_ae_class,     :name => "#{domain_name}_test_class_1",   :namespace_id => n1.id)
-    n1_1     = FactoryBot.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_1_1",  :parent_id => n1.id)
+    n1_1     = FactoryBot.create(:miq_ae_namespace, :name => "#{domain_name}_namespace_1_1",  :parent_id => n1.id) # rubocop:disable Naming/VariableNumber
     n1_1_c1  = FactoryBot.create(:miq_ae_class,     :name => "#{domain_name}_test_class_4",   :namespace_id => n1_1.id)
     n1_c1_i1 = FactoryBot.create(:miq_ae_instance,  :name => "#{domain_name}_test_instance1", :class_id => n1_c1.id)
     n1_c1_m1 = FactoryBot.create(:miq_ae_method,
@@ -905,9 +905,9 @@ describe MiqAeDatastore do
   end
 
   def set_manageiq_values
-    @manageiq_domain = MiqAeDomain.find_by_name("manageiq")
-    @aen1            = MiqAeNamespace.find_by_name('manageiq_namespace_1')
-    @aen1_1          = MiqAeNamespace.find_by_name('manageiq_namespace_1_1')
+    @manageiq_domain = MiqAeDomain.find_by(:name => "manageiq")
+    @aen1            = MiqAeNamespace.find_by(:name => 'manageiq_namespace_1')
+    @aen1_1          = MiqAeNamespace.find_by(:name => 'manageiq_namespace_1_1') # rubocop:disable Naming/VariableNumber
     @aen1_aec1       = MiqAeClass.lookup_by_name('manageiq_test_class_1')
     @aen1_aec2       = MiqAeClass.lookup_by_name('manageiq_test_class_2')
     @class_dir       = "#{@aen1_aec1.fqname}.class"
@@ -917,9 +917,9 @@ describe MiqAeDatastore do
   end
 
   def set_customer_values
-    @customer_domain    = MiqAeDomain.find_by_name("customer")
-    @customer_aen1      = MiqAeNamespace.find_by_name('customer_namespace_1')
-    @customer_aen1_1    = MiqAeNamespace.find_by_name('customer_namespace_1_1')
+    @customer_domain    = MiqAeDomain.find_by(:name => "customer")
+    @customer_aen1      = MiqAeNamespace.find_by(:name => 'customer_namespace_1')
+    @customer_aen1_1    = MiqAeNamespace.find_by(:name => 'customer_namespace_1_1') # rubocop:disable Naming/VariableNumber
     @customer_aen1_aec1 = MiqAeClass.lookup_by_name('customer_test_class_1')
     @customer_aen1_aec2 = MiqAeClass.lookup_by_name('customer_test_class_2')
     @class_name         = @customer_aen1_aec1.name
@@ -947,9 +947,9 @@ describe MiqAeDatastore do
     validate_additional_columns
   end
 
-  def child_namespace_count(ns)
+  def child_namespace_count(namespace)
     count = 1
-    ns.ae_namespaces.each { |n| count += child_namespace_count(n) }
+    namespace.ae_namespaces.each { |n| count += child_namespace_count(n) }
     count
   end
 
@@ -985,7 +985,7 @@ describe MiqAeDatastore do
   end
 
   def create_bogus_yaml_file
-    open(@yaml_file, 'w') do |fd|
+    File.open(@yaml_file, 'w') do |fd|
       a = {'A' => 1, 'B' => '2', 'C' => 3}
       fd.write(a.to_yaml)
     end

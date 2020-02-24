@@ -41,7 +41,7 @@ class MiqAeYamlImportConsolidated < MiqAeYamlImport
     return [] if keys.empty?
 
     keys.select! do |key|
-      File.fnmatch(domain, key, @fn_flags) && @yaml_model.has_key_path?(*[key, DOMAIN_YAML_FILENAME])
+      File.fnmatch(domain, key, @fn_flags) && @yaml_model.has_key_path?(key, DOMAIN_YAML_FILENAME)
     end
     keys.collect { |key| "#{key}/#{DOMAIN_YAML_FILENAME}" }
   end
@@ -83,7 +83,7 @@ class MiqAeYamlImportConsolidated < MiqAeYamlImport
 
   def get_filenames(parent_path, file_name)
     paths = get_filenames_with_proc(parent_path) do |key, hash|
-      hash.has_key_path?(*[key, file_name])
+      hash.has_key_path?(key, file_name)
     end
     paths.collect { |path| "#{path}/#{file_name}" }
   end

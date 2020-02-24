@@ -114,7 +114,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
 
     expect(invoke_ae.root(@ae_result_key)).to be_empty
 
-    v1 = FactoryBot.create(:vm_vmware, :ems_id => 42, :vendor => 'vmware')
+    FactoryBot.create(:vm_vmware, :ems_id => 42, :vendor => 'vmware')
     t1 = FactoryBot.create(:template_vmware, :ems_id => 42)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(Array)

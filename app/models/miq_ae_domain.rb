@@ -192,13 +192,6 @@ class MiqAeDomain < MiqAeNamespace
     n_('Automate Domain', 'Automate Domains', number)
   end
 
-  private
-
-  def squeeze_priorities
-    ids = MiqAeDomain.where('priority > 0', :tenant => tenant).order('priority ASC').collect(&:id)
-    MiqAeDomain.reset_priority_by_ordered_ids(ids)
-  end
-
   def self.any_enabled?
     MiqAeDomain.enabled.count.positive?
   end
@@ -209,6 +202,13 @@ class MiqAeDomain < MiqAeNamespace
 
   def self.all_unlocked
     MiqAeDomain.where(:source => USER_SOURCE).order('priority DESC')
+  end
+
+  private
+
+  def squeeze_priorities
+    ids = MiqAeDomain.where('priority > 0', :tenant => tenant).order('priority ASC').collect(&:id)
+    MiqAeDomain.reset_priority_by_ordered_ids(ids)
   end
 
   def about_class

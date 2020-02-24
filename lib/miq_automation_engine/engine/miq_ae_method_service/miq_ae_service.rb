@@ -32,15 +32,15 @@ module MiqAeMethodService
       @@current.delete(obj)
     end
 
-    def initialize(ws, inputs = {}, logger = $miq_ae_logger)
+    def initialize(workspace, inputs = {}, logger = $miq_ae_logger)
       @tracking_label        = Thread.current["tracking_label"]
       @drb_server_references = []
       @inputs                = inputs
-      @workspace             = ws
-      @persist_state_hash    = ws.persist_state_hash
+      @workspace             = workspace
+      @persist_state_hash    = workspace.persist_state_hash
       @logger                = logger
       self.class.add(self)
-      ws.disable_rbac
+      workspace.disable_rbac
     end
 
     delegate :enable_rbac, :disable_rbac, :rbac_enabled?, :to => :@workspace
@@ -123,8 +123,8 @@ module MiqAeMethodService
       service_object.root_service.delete_service_vars_option(name)
     end
 
-    def prepend_namespace=(ns)
-      @workspace.prepend_namespace = ns
+    def prepend_namespace=(namespace)
+      @workspace.prepend_namespace = namespace
     end
 
     def instantiate(uri)
@@ -181,11 +181,11 @@ module MiqAeMethodService
     end
 
     def root
-      @root_object ||= object("/")
+      @root ||= object("/")
     end
 
     def parent
-      @parent_object ||= object("..")
+      @parent ||= object("..")
     end
 
     def objects(aobj)
@@ -201,14 +201,14 @@ module MiqAeMethodService
     def ldap
     end
 
-    def execute(m, *args)
-      User.with_user(@workspace.ae_user) { execute_with_user(m, *args) }
+    def execute(method_name, *args)
+      User.with_user(@workspace.ae_user) { execute_with_user(method_name, *args) }
     end
 
-    def execute_with_user(m, *args)
+    def execute_with_user(method_name, *args)
       # Since each request from DRb client could run in a separate thread
       # We have to set the current_user in every thread.
-      MiqAeServiceMethods.send(m, *args)
+      MiqAeServiceMethods.send(method_name, *args)
     rescue NoMethodError => err
       raise MiqAeException::MethodNotFound, err.message
     end

@@ -116,16 +116,16 @@ module MiqAeDatastore
       CustomButton.create_or_update_from_hash(input)
     end
 
-    def self.check_version(v)
-      v.to_s >= MiqAeDatastore::XML_VERSION_MIN_SUPPORTED
+    def self.check_version(version)
+      version.to_s >= MiqAeDatastore::XML_VERSION_MIN_SUPPORTED
     end
 
-    def self.load_xml(f, domain_name = nil)
+    def self.load_xml(filename, domain_name = nil)
       _, t = Benchmark.realtime_block(:total_load_xml_time) do
         classes = buttons = nil
         Benchmark.realtime_block(:xml_load_time) do
           require 'xml/xml_hash'
-          doc = XmlHash.load(f)
+          doc = XmlHash.load(filename)
           version = doc.children[0].attributes[:version]
           _log.info("  with version '#{version}'")
           raise "Unsupported version '#{version}'.  Must be at least '#{MiqAeDatastore::XML_VERSION_MIN_SUPPORTED}'." unless check_version(version)
@@ -165,12 +165,12 @@ module MiqAeDatastore
       File.open(filename, 'r') { |handle| load_xml(handle, domain) }
     end
 
-    def self.load_file(f, domain)
-      _log.info("Importing file '#{f}'")
-      ext = File.extname(f).downcase
+    def self.load_file(filename, domain)
+      _log.info("Importing file '#{filename}'")
+      ext = File.extname(filename).downcase
       case ext
-      when ".xml" then load_xml_file(f, domain)
-      else raise "Unhandled File Extension [#{ext}] when trying to load #{f}"
+      when ".xml" then load_xml_file(filename, domain)
+      else raise "Unhandled File Extension [#{ext}] when trying to load #{filename}"
       end
       _log.info("Import complete")
     end

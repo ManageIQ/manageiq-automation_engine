@@ -129,11 +129,11 @@ describe MiqAeMethodCopy do
       ids    = [1, 2, 3]
       miq_ae_method_copy = double(MiqAeMethodCopy)
       miq_ae_method = double(MiqAeMethod, :id => 1)
-      expect(miq_ae_method_copy).to receive(:to_domain).with(domain, nil, false).exactly(ids.length).times { miq_ae_method }
+      expect(miq_ae_method_copy).to receive(:to_domain).with(domain, nil, false).exactly(ids.length).times.and_return(miq_ae_method)
       new_ids = [miq_ae_method.id] * ids.length
-      expect(miq_ae_method).to receive(:fqname).with(no_args).exactly(ids.length).times { fqname }
-      expect(MiqAeMethod).to receive(:find).with(an_instance_of(Integer)).exactly(ids.length).times { miq_ae_method }
-      expect(MiqAeMethodCopy).to receive(:new).with(fqname).exactly(ids.length).times { miq_ae_method_copy }
+      expect(miq_ae_method).to receive(:fqname).with(no_args).exactly(ids.length).times.and_return(fqname)
+      expect(MiqAeMethod).to receive(:find).with(an_instance_of(Integer)).exactly(ids.length).times.and_return(miq_ae_method)
+      expect(MiqAeMethodCopy).to receive(:new).with(fqname).exactly(ids.length).times.and_return(miq_ae_method_copy)
       expect(MiqAeMethodCopy.copy_multiple(ids, domain)).to match_array(new_ids)
     end
   end

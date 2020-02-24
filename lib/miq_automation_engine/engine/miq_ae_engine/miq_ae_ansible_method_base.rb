@@ -161,7 +161,7 @@ module MiqAeEngine
     end
 
     def method_key
-      @method_key_value ||= "#{@aem.name}#{METHOD_KEY_SUFFIX}".gsub(/\s+/, "")
+      @method_key ||= "#{@aem.name}#{METHOD_KEY_SUFFIX}".gsub(/\s+/, "")
     end
 
     def serialize_workspace

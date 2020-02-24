@@ -7,51 +7,53 @@ module MiqAeEngine
       @prepend_namespace   = nil
     end
 
-    def prepend_namespace=(ns)
-      @prepend_namespace = ns.chomp('/').sub(%r{^/}, '')
+    def prepend_namespace=(namespace)
+      @prepend_namespace = namespace.chomp('/').sub(%r{^/}, '')
       $miq_ae_logger.info("Prepend namespace [#{@prepend_namespace}] during domain search")
     end
 
     def ae_user=(obj)
-      @sorted_domains ||= obj.current_tenant.enabled_domains.collect(&:name)
+      @sorted_domains ||= obj.current_tenant.enabled_domains.collect(&:name) # rubocop:disable Naming/MemoizedInstanceVariableName
     end
 
-    def get_alternate_domain(scheme, uri, ns, klass, instance)
-      return ns if ns.nil? || klass.nil?
-      return ns if scheme != "miqaedb"
-      return ns if @fqns_id_cache.key?(ns)
+    def get_alternate_domain(scheme, uri, namespace, klass, instance)
+      return namespace if namespace.nil? || klass.nil?
+      return namespace if scheme != "miqaedb"
+      return namespace if @fqns_id_cache.key?(namespace)
 
-      search(uri, ns, klass, instance, nil)
+      search(uri, namespace, klass, instance, nil)
     end
 
-    def get_alternate_domain_method(scheme, uri, ns, klass, method)
-      return ns if ns.nil? || klass.nil?
-      return ns if scheme != "miqaedb"
-      return ns if @fqns_id_cache.key?(ns)
+    def get_alternate_domain_method(scheme, uri, namespace, klass, method)
+      return namespace if namespace.nil? || klass.nil?
 
-      search(uri, ns, klass, nil, method)
+      return namespace if scheme != "miqaedb"
+
+      return namespace if @fqns_id_cache.key?(namespace)
+
+      search(uri, namespace, klass, nil, method)
     end
 
     private
 
-    def search(uri, ns, klass, instance, method)
-      unless @partial_ns.include?(ns)
-        fqns = MiqAeNamespace.lookup_by_fqname(ns, false)
+    def search(uri, namespace, klass, instance, method)
+      unless @partial_ns.include?(namespace)
+        fqns = MiqAeNamespace.lookup_by_fqname(namespace, false)
         if fqns && !fqns.domain?
-          @fqns_id_cache[ns] = fqns.id
-          return ns
+          @fqns_id_cache[namespace] = fqns.id
+          return namespace
         end
       end
-      @partial_ns << ns unless @partial_ns.include?(ns)
-      updated_ns = find_first_fq_domain(uri, "#{@prepend_namespace}/#{ns}", klass, instance, method) if @prepend_namespace
-      updated_ns ||= find_first_fq_domain(uri, ns, klass, instance, method)
-      updated_ns || ns
+      @partial_ns << namespace unless @partial_ns.include?(namespace)
+      updated_ns = find_first_fq_domain(uri, "#{@prepend_namespace}/#{namespace}", klass, instance, method) if @prepend_namespace
+      updated_ns ||= find_first_fq_domain(uri, namespace, klass, instance, method)
+      updated_ns || namespace
     end
 
-    def find_first_fq_domain(uri, ns, klass, instance, method)
+    def find_first_fq_domain(uri, namespace, klass, instance, method)
       # Check if the namespace, klass and instance exist if it does
       # swap out the namespace
-      parts = ns.split('/')
+      parts = namespace.split('/')
       parts.unshift("")
       matching_domain = get_matching_domain(parts, klass, instance, method)
       matching_domain ||= get_matching_domain(parts, klass, MiqAeObject::MISSING_INSTANCE, method)

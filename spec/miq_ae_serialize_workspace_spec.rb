@@ -6,7 +6,7 @@ describe "MiqAeSerializeWorkspace" do
         @workspace = workspace
       end
 
-      def get_value(_f, type)
+      def get_value(_f, type) # rubocop:disable Naming/UncommunicativeMethodParamName
         @workspace.root[type]
       end
 

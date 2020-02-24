@@ -4,6 +4,7 @@ module MiqAeMethodService
   class MiqAeServiceModelBase
     SERVICE_MODEL_PATH = ManageIQ::AutomationEngine::Engine.root.join("lib", "miq_automation_engine", "service_models")
     EXPOSED_ATTR_BLACK_LIST = [/password/, /^auth_key$/].freeze
+    NORMALIZED_PREFIX = 'normalized_'.freeze
     class << self
       include DRbUndumped  # Ensure that Automate Method can get at the class itself over DRb
     end
@@ -13,8 +14,8 @@ module MiqAeMethodService
     include Vmdb::Logging
     include MiqAeMethodService::MiqAeServiceRbac
 
-    def self.method_missing(m, *args)
-      return wrap_results(filter_objects(model.send(m, *args))) if class_method_exposed?(m)
+    def self.method_missing(method_name, *args)
+      return wrap_results(filter_objects(model.send(method_name, *args))) if class_method_exposed?(method_name)
 
       super
     rescue ActiveRecord::RecordNotFound
@@ -25,15 +26,15 @@ module MiqAeMethodService
       class_method_exposed?(method_name.to_sym) || super
     end
 
-    def self.allowed_find_method?(m)
-      return false if m.starts_with?('find_or_create') || m.starts_with?('find_or_initialize')
+    def self.allowed_find_method?(method_name)
+      return false if method_name.starts_with?('find_or_create') || method_name.starts_with?('find_or_initialize')
 
-      m.starts_with?('find', 'lookup_by')
+      method_name.starts_with?('find', 'lookup_by')
     end
 
     # Expose the ActiveRecord find, all, count, and first
-    def self.class_method_exposed?(m)
-      allowed_find_method?(m.to_s) || [:where, :find].include?(m)
+    def self.class_method_exposed?(method_name)
+      allowed_find_method?(method_name.to_s) || [:where, :find].include?(method_name)
     end
 
     private_class_method :class_method_exposed?
@@ -246,16 +247,24 @@ module MiqAeMethodService
       arr.join
     end
 
-    def method_missing(m, *args)
+    def method_missing(method_name, *args)
       #
       # Normalize result of any method call
       #  e.g. normalized_ldap_group, will call ldap_group method and normalize the result
       #
-      prefix = 'normalized_'
-      if m.to_s.starts_with?(prefix)
-        method = m.to_s[prefix.length..-1]
+      if method_name.to_s.starts_with?(NORMALIZED_PREFIX)
+        method = method_name.to_s[NORMALIZED_PREFIX.length..-1]
         result = MiqAeServiceModelBase.wrap_results(object_send(method, *args))
         return MiqAeServiceModelBase.normalize(result)
+      end
+
+      super
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      if method_name.to_s.start_with?(NORMALIZED_PREFIX)
+        method_n = method_name.to_s[NORMALIZED_PREFIX.length..-1]
+        return object_send(:respond_to?, method_n, include_private)
       end
 
       super

@@ -42,11 +42,11 @@ module MiqAeEngine
     attr_accessor :node_parent
     attr_reader :node_children
 
-    def initialize(workspace, ns, klass, instance, object_name = nil)
+    def initialize(workspace, namespace, klass, instance, object_name = nil)
       Benchmark.current_realtime[:object_count] += 1
 
       @workspace        = workspace
-      @namespace        = ns
+      @namespace        = namespace
       @klass            = klass
       @instance         = instance
       @attributes       = {}
@@ -148,11 +148,11 @@ module MiqAeEngine
       end
     end
 
-    def fetch_namespace(ns = @namespace)
+    def fetch_namespace(namespace = @namespace)
       Benchmark.current_realtime[:fetch_namespace_count] += 1
       Benchmark.realtime_block(:fetch_namespace_time) do
-        @workspace.datastore(ns.downcase, :namespace) do
-          MiqAeNamespace.lookup_by_fqname(ns)
+        @workspace.datastore(namespace.downcase, :namespace) do
+          MiqAeNamespace.lookup_by_fqname(namespace)
         end
       end.first
     end
@@ -179,10 +179,10 @@ module MiqAeEngine
       end.first
     end
 
-    def fetch_field_value(f)
+    def fetch_field_value(field)
       Benchmark.current_realtime[:fetch_field_value_count] += 1
       Benchmark.realtime_block(:fetch_field_value_time) do
-        @aei&.get_field_value(f, false)
+        @aei&.get_field_value(field, false)
       end.first
     end
 
@@ -350,12 +350,12 @@ module MiqAeEngine
       @rels[name]
     end
 
-    def self.fqname(ns, klass, instance)
-      MiqAePath.new(:ae_namespace => ns, :ae_class => klass, :ae_instance => instance).to_s
+    def self.fqname(namespace, klass, instance)
+      MiqAePath.new(:ae_namespace => namespace, :ae_class => klass, :ae_instance => instance).to_s
     end
 
-    def process_relationship(f, message, args)
-      process_relationship_raw(get_value(f, :aetype_relationship), message, args, f['name'], f['collect'])
+    def process_relationship(field, message, args)
+      process_relationship_raw(get_value(field, :aetype_relationship), message, args, field['name'], field['collect'])
     end
 
     def process_method_raw(method, collect = nil)
@@ -374,12 +374,12 @@ module MiqAeEngine
       end
     end
 
-    def process_method(f, _message, _args)
-      process_method_raw(get_value(f), f['collect'])
+    def process_method(field, _message, _args)
+      process_method_raw(get_value(field), field['collect'])
     end
 
     def process_method_via_uri(uri)
-      scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri)
+      _scheme, _userinfo, _host, _port, _registry, path, _opaque, query, _fragment = MiqAeUri.split(uri)
       parts = path.split(PATH_SEPARATOR)
       parts.shift # Remove the leading blank piece
       method_name = parts.pop
@@ -410,7 +410,7 @@ module MiqAeEngine
     end
 
     def uri2value(uri, required = false)
-      scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(uri)
+      scheme, _userinfo, _host, _port, _registry, path, _opaque, _query, fragment = MiqAeUri.split(uri)
 
       if scheme == 'miqaedb'
         ns, klass, instance, attribute_name = MiqAePath.split(path, :has_attribute_name => true)
@@ -473,6 +473,38 @@ module MiqAeEngine
       field['datatype'] == MiqAeField::NULL_COALESCING_DATATYPE ? get_null_coalesced_value(field) : get_field_value(field, type, required)
     end
 
+    def self.convert_boolean_value(value)
+      return true  if value.to_s.downcase == 'true' || value == '1'
+
+      return false if value.to_s.downcase == 'false' || value == '0'
+
+      value
+    end
+
+    def self.convert_value_based_on_datatype(value, datatype)
+      return value if value.blank? || datatype.nil?
+
+      # Basic Types
+      return convert_boolean_value(value)                    if datatype == 'boolean'
+      return true                                            if datatype == 'TrueClass'
+      return false                                           if datatype == 'FalseClass'
+      return Time.parse(value).getlocal                      if 'time'.casecmp?(datatype)
+      return value.to_sym                                    if 'symbol'.casecmp?(datatype)
+      return value.to_i                                      if 'integer'.casecmp?(datatype) || datatype == 'Fixnum'
+      return value.to_f                                      if 'float'.casecmp?(datatype)
+      return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/) if datatype == 'array' && value.class == String
+      return decrypt_password(value) if datatype == 'password'
+
+      if (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
+        return service_model.find(value)
+      end
+
+      raise MiqAeException::InvalidClass unless MiqAeField.available_datatypes.include?(datatype)
+
+      # default datatype => 'string'
+      value
+    end
+
     private
 
     def call_method(obj, method)
@@ -495,7 +527,6 @@ module MiqAeEngine
       aem = @instance_methods[method_name.downcase] if klass.nil?
       # If not found in instance methods, look in class methods
 
-      namespace_provided = namespace
       namespace ||= @namespace
       klass ||= @klass
       fq = MiqAeClass.fqname(namespace, klass)
@@ -531,15 +562,15 @@ module MiqAeEngine
       aem
     end
 
-    def get_field_value(f, type = nil, required = false)
-      value = f['value']
-      value = f['default_value'] if value.blank?
-      value = substitute_value(value, type, required) if f['substitute']
+    def get_field_value(field, type = nil, required = false)
+      value = field['value']
+      value = field['default_value'] if value.blank?
+      value = substitute_value(value, type, required) if field['substitute']
       value
     end
 
-    def get_null_coalesced_value(f, type = nil)
-      initial_value = f['value'] || f['default_value']
+    def get_null_coalesced_value(field, type = nil)
+      initial_value = field['value'] || field['default_value']
       return nil unless initial_value
 
       result = nil
@@ -558,37 +589,6 @@ module MiqAeEngine
       nil
     end
 
-    def self.convert_boolean_value(value)
-      return true   if value.to_s.downcase == 'true' || value == '1'
-      return false  if value.to_s.downcase == 'false' || value == '0'
-
-      value
-    end
-
-    def self.convert_value_based_on_datatype(value, datatype)
-      return value if value.blank? || datatype.nil?
-
-      # Basic Types
-      return convert_boolean_value(value)                    if datatype == 'boolean'
-      return true                                            if datatype == 'TrueClass'
-      return false                                           if datatype == 'FalseClass'
-      return Time.parse(value).getlocal                      if 'time'.casecmp?(datatype)
-      return value.to_sym                                    if 'symbol'.casecmp?(datatype)
-      return value.to_i                                      if 'integer'.casecmp?(datatype) || datatype == 'Fixnum'
-      return value.to_f                                      if 'float'.casecmp?(datatype)
-      return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/) if datatype == 'array' && value.class == String
-      return decrypt_password(value) if datatype == 'password'
-
-      if (service_model = "MiqAeMethodService::MiqAeService#{SM_LOOKUP[datatype]}".safe_constantize)
-        return service_model.find(value)
-      end
-
-      raise MiqAeException::InvalidClass unless MiqAeField.available_datatypes.include?(datatype)
-
-      # default datatype => 'string'
-      value
-    end
-
     def self.decrypt_password(value)
       MiqAePassword.new(MiqAePassword.decrypt(value))
     rescue ManageIQ::Password::PasswordError => err
@@ -597,10 +597,10 @@ module MiqAeEngine
     end
     private_class_method :decrypt_password
 
-    def process_assertion(f, message, args)
+    def process_assertion(field, message, args)
       Benchmark.current_realtime[:assertion_count] += 1
       Benchmark.realtime_block(:assertion_time) do
-        assertion = get_value(f, :aetype_assertion, true)
+        assertion = get_value(field, :aetype_assertion, true)
         return if assertion.blank?
 
         $miq_ae_logger.info("Evaluating substituted assertion [#{assertion}]")
@@ -620,13 +620,13 @@ module MiqAeEngine
       end
     end
 
-    def process_attribute(f, _message, _args, value = nil)
+    def process_attribute(field, _message, _args, value = nil)
       Benchmark.current_realtime[:attribute_count] += 1
       Benchmark.realtime_block(:attribute_time) do
-        value = get_value(f) if value.nil?
-        value = MiqAeObject.convert_value_based_on_datatype(value, f['datatype'])
-        @attributes[f['name'].downcase] = value unless value.nil?
-        process_collect(f['collect'], nil) unless f['collect'].blank?
+        value = get_value(field) if value.nil?
+        value = MiqAeObject.convert_value_based_on_datatype(value, field['datatype'])
+        @attributes[field['name'].downcase] = value unless value.nil?
+        process_collect(field['collect'], nil) if field['collect'].present?
       end
     end
 
@@ -665,11 +665,11 @@ module MiqAeEngine
     def process_collect(expr, rels)
       Benchmark.current_realtime[:collect_count] += 1
       Benchmark.realtime_block(:collect_time) do
-        if    result = RE_COLLECT_ARRAY.match(expr)
+        if    (result = RE_COLLECT_ARRAY.match(expr))
           process_collect_array(expr, rels, result)
-        elsif result = RE_COLLECT_HASH.match(expr)
+        elsif (result = RE_COLLECT_HASH.match(expr))
           process_collect_hash(expr, rels, result)
-        elsif result = RE_COLLECT_STRING.match(expr)
+        elsif (result = RE_COLLECT_STRING.match(expr))
           process_collect_string(expr, rels, result)
         else
           raise MiqAeException::InvalidCollection, "invalid collect item: <#{expr}>"
@@ -677,11 +677,11 @@ module MiqAeEngine
       end.first
     end
 
-    def process_collect_set_attribute(k, v)
-      k = @current_field['name'] if k.nil? && @current_field.kind_of?(Hash)
-      return v if k.nil?
+    def process_collect_set_attribute(key, value)
+      key = @current_field['name'] if key.nil? && @current_field.kind_of?(Hash)
+      return value if key.nil?
 
-      parts = k.split(PATH_SEPARATOR)
+      parts = key.split(PATH_SEPARATOR)
       left = parts.pop
       if parts.empty?
         obj = self
@@ -689,7 +689,7 @@ module MiqAeEngine
         path = parts.first.blank? ? PATH_SEPARATOR : parts.join(PATH_SEPARATOR)
         obj = @workspace.get_obj_from_path(path)
       end
-      obj.attributes[left.downcase] = v unless obj.nil?
+      obj.attributes[left.downcase] = value unless obj.nil?
     end
 
     def process_collect_array(_expr, rels, result)
@@ -738,7 +738,6 @@ module MiqAeEngine
     def process_collect_hash(expr, rels, result)
       lh       = result[1].strip unless result[1].nil?
       contents = result[2].strip
-      method   = result[3].strip.downcase unless result[3].nil?
 
       hash = {}
       hashes = contents.split(ENUM_SEPARATOR)
@@ -784,8 +783,7 @@ module MiqAeEngine
     def process_collect_string(_expr, rels, result)
       cattr   = result[1].strip unless result[1].nil?
       name    = result[2].strip
-      method  = result[3].strip.downcase unless result[3].nil?
-      cattr ||= name                     unless rels.nil? # Set cattr to name ONLY if coming from relationship
+      cattr ||= name unless rels.nil? # Set cattr to name ONLY if coming from relationship
 
       value = if rels.kind_of?(Array)
                 rels.collect { |r| r[name] }
@@ -838,7 +836,7 @@ module MiqAeEngine
     def method_parms_to_hash(str)
       h = {}
 
-      while result = RE_HASH.match(str)
+      while (result = RE_HASH.match(str))
         key    = result[1]
         value  = result[2]
         h[key] = classify_value(value)

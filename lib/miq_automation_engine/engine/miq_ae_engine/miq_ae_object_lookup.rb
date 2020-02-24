@@ -31,12 +31,12 @@ module MiqAeEngine
       match[:object] if match
     end
 
-    def ns_match?(ns, entry)
-      ns == entry[:namespace]
+    def ns_match?(namespace, entry)
+      namespace == entry[:namespace]
     end
 
-    def fq_match?(domain, ns, entry)
-      domain == entry[:domain] && ns == entry[:namespace]
+    def fq_match?(domain, namespace, entry)
+      domain == entry[:domain] && namespace == entry[:namespace]
     end
 
     def instance_match?(instance, entry)

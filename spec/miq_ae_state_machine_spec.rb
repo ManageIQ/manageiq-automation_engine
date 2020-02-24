@@ -13,9 +13,9 @@ describe "MiqAeStateMachine" do
   it "resolves a provision request (old-style)" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
 
-    t0 = Time.now
+    # t0 = Time.now
     ws = MiqAeEngine.instantiate("/SYSTEM/EVENT/VM_PROVISION_REQUESTED", @user)
-    t1 = Time.now
+    # t1 = Time.now
 
     expect(ws).not_to be_nil
     expect(ws.root['ae_result']).to eq('ok')
@@ -29,9 +29,9 @@ describe "MiqAeStateMachine" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
     MiqAeDatastore.reset_default_namespace
 
-    t0 = Time.now
+    # t0 = Time.now
     ws = MiqAeEngine.instantiate("/SYSTEM/EVENT/VM_PROVISION_REQUESTED_NEW", @user)
-    t1 = Time.now
+    # t1 = Time.now
 
     expect(ws).not_to be_nil
     expect(ws.root['ae_result']).to eq('ok')
@@ -73,7 +73,7 @@ describe "MiqAeStateMachine" do
 
   it "properly overrides class values with instance values, when they are present" do
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "state_machine"), @domain)
-    t0 = Time.now
+    # t0 = Time.now
 
     c1 = MiqAeClass.lookup_by_namespace_and_name("#{@domain}/Factory", "StateMachine")
     i1 = c1.ae_instances.detect { |i| i.name == "Provisioning" }
@@ -81,7 +81,7 @@ describe "MiqAeStateMachine" do
     i1.set_field_attribute(f1, "log_object", :on_exit)
 
     ws = MiqAeEngine.instantiate("/SYSTEM/EVENT/VM_PROVISION_REQUESTED_NEW", @user)
-    t1 = Time.now
+    # t1 = Time.now
 
     expect(ws).not_to be_nil
     # puts ws.to_xml

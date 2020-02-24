@@ -46,7 +46,6 @@ describe MiqAeMethodService::MiqAeServiceGenericObject do
         }
         svc_obj = MiqAeMethodService::MiqAeServiceGenericObject.find(go.id)
         expect(MiqAeEngine).to receive('deliver').with(options).and_return(workspace)
-
         svc_obj.send(method_name)
       end
     end

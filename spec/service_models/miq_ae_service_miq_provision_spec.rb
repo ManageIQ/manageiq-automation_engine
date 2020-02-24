@@ -39,7 +39,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqProvisionRequest)
-    [:id, :provision_type, :state, :status, :src_vm_id, :userid].each { |method| expect(ae_object.send(method)).to eq(miq_provision_request.send(method)) }
+    [:id, :provision_type, :state, :status, :src_vm_id, :userid].each { |method_name| expect(ae_object.send(method_name)).to eq(miq_provision_request.send(method_name)) }
   end
 
   it "#vm" do
@@ -54,7 +54,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
 
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceVm)
-    [:id, :name, :location].each { |method| expect(ae_object.send(method)).to eq(vm.send(method)) }
+    [:id, :name, :location].each { |method_name| expect(ae_object.send(method_name)).to eq(vm.send(method_name)) }
   end
 
   it "#vm_template" do
@@ -62,7 +62,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
     @ae_method.update(:data => method)
     ae_object = invoke_ae.root(@ae_result_key)
     expect(ae_object).to be_kind_of(MiqAeMethodService::MiqAeServiceMiqTemplate)
-    [:id, :name, :location].each { |method| expect(ae_object.send(method)).to eq(@vm_template.send(method)) }
+    [:id, :name, :location].each { |method_name| expect(ae_object.send(method_name)).to eq(@vm_template.send(method_name)) }
   end
 
   it "#execute" do
@@ -154,7 +154,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
         prov.eligible_iso_images.each {|iso| prov.set_iso_image(iso)}
       AUTOMATE_SCRIPT
       @ae_method.update(:data => method)
-      result = invoke_ae.root(@ae_result_key)
+      invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:iso_image_id]).to eq([@iso_image.id, @iso_image.name])
     end
   end
@@ -199,7 +199,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
         prov.eligible_customization_templates.each {|ct| prov.set_customization_template(ct)}
       AUTOMATE_SCRIPT
       @ae_method.update(:data => method)
-      result = invoke_ae.root(@ae_result_key)
+      invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:customization_template_id]).to eq([@ct.id, @ct.name])
       expect(@miq_provision.reload.options[:customization_template_script]).to eq(@ct.script)
     end
@@ -226,7 +226,7 @@ describe MiqAeMethodService::MiqAeServiceMiqProvision do
         prov.eligible_resource_pools.each {|rsc| prov.set_resource_pool(rsc)}
       AUTOMATE_SCRIPT
       @ae_method.update(:data => method)
-      result = invoke_ae.root(@ae_result_key)
+      invoke_ae.root(@ae_result_key)
       expect(@miq_provision.reload.options[:placement_rp_name]).to eq([@rsc.id, @rsc.name])
     end
   end

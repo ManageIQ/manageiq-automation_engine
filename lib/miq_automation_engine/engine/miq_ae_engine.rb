@@ -56,15 +56,15 @@ module MiqAeEngine
     automation_object_options
   end
 
-  private_class_method def self.change_options_by_ws(options, ws)
+  private_class_method def self.change_options_by_ws(options, workspace)
     options.delete(:ae_state_data)
     options.delete(:ae_state_previous)
-    options[:state]             = ws.root['ae_state'] || options[:state]
-    options[:ae_fsm_started]    = ws.root['ae_fsm_started']
-    options[:ae_state_started]  = ws.root['ae_state_started']
-    options[:ae_state_retries]  = ws.root['ae_state_retries']
-    options[:ae_state_data]     = YAML.dump(ws.persist_state_hash) unless ws.persist_state_hash.empty?
-    options[:ae_state_previous] = YAML.dump(ws.current_state_info) unless ws.current_state_info.empty?
+    options[:state]             = workspace.root['ae_state'] || options[:state]
+    options[:ae_fsm_started]    = workspace.root['ae_fsm_started']
+    options[:ae_state_started]  = workspace.root['ae_state_started']
+    options[:ae_state_retries]  = workspace.root['ae_state_retries']
+    options[:ae_state_data]     = YAML.dump(workspace.persist_state_hash) unless workspace.persist_state_hash.empty?
+    options[:ae_state_previous] = YAML.dump(workspace.current_state_info) unless workspace.current_state_info.empty?
   end
 
   def self.deliver(*args)
@@ -142,27 +142,27 @@ module MiqAeEngine
     end
   end
 
-  def self.format_benchmark_counts(bm)
+  def self.format_benchmark_counts(benchmark)
     formatted = ''
-    bm.keys.select { |k| k.to_s.downcase =~ /_count$/ }.sort_by(&:to_s).each do |k|
+    benchmark.keys.select { |k| k.to_s.downcase =~ /_count$/ }.sort_by(&:to_s).each do |k|
       formatted << ', ' unless formatted.blank?
-      formatted << "#{k}=>#{bm[k]}"
+      formatted << "#{k}=>#{benchmark[k]}"
     end
     "{#{formatted}}"
   end
 
   BENCHMARK_TIME_THRESHOLD_PERCENT = 5.0 / 100
 
-  def self.format_benchmark_times(bm)
+  def self.format_benchmark_times(benchmark)
     formatted  = ''
-    total_time = bm[:total_time]
+    total_time = benchmark[:total_time]
     threshold  = 0                                                                               # show everything
     threshold  = (total_time * BENCHMARK_TIME_THRESHOLD_PERCENT) if total_time.kind_of?(Numeric) # only show times > threshold of the total
-    bm.keys.select { |k| k.to_s.downcase =~ /_time$/ }.sort_by(&:to_s).each do |k|
-      next unless bm[k] >= threshold
+    benchmark.keys.select { |k| k.to_s.downcase =~ /_time$/ }.sort_by(&:to_s).each do |k|
+      next unless benchmark[k] >= threshold
 
       formatted << ', ' unless formatted.blank?
-      formatted << "#{k}=>#{bm[k]}"
+      formatted << "#{k}=>#{benchmark[k]}"
     end
     "{#{formatted}}"
   end
