@@ -295,9 +295,7 @@ module MiqAeEngine
     raise "User object not passed in" unless user_obj.kind_of?(User)
     uri = create_automation_object(uri, attr, options) if attr
     options[:uri] = uri
-    MiqAeWorkspaceRuntime.instantiate(uri, user_obj, :readonly => readonly).tap do |ws|
-      $miq_ae_logger.debug { ws.to_expanded_xml }
-    end
+    MiqAeWorkspaceRuntime.instantiate(uri, user_obj, :readonly => readonly)
   end
 
   def self.ae_user_object(options = {})
