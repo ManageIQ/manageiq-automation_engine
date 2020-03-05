@@ -191,25 +191,6 @@ module MiqAeEngine
       reset_state_info(@state_machine_objects.last) unless @state_machine_objects.empty?
     end
 
-    def to_expanded_xml(path = nil)
-      objs = path.nil? ? roots : get_obj_from_path(path)
-      objs = [objs] unless objs.kind_of?(Array)
-
-      require 'builder'
-      xml = Builder::XmlMarkup.new(:indent => 2)
-      xml.MiqAeWorkspace do
-        objs.each { |obj| obj.to_xml(:builder => xml) }
-      end
-    end
-
-    def to_xml(path = nil)
-      objs = path.nil? ? roots : get_obj_from_path(path)
-      result = objs.collect { |obj| to_hash(obj) }.compact
-      s = ""
-      XmlHash.from_hash({"MiqAeObject" => result}, {:rootname => "MiqAeWorkspace"}).to_xml.write(s, 2)
-      s
-    end
-
     def to_dot(path = nil)
       require "rubygems"
       require "graphviz"

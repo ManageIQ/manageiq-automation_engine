@@ -28,13 +28,6 @@ module MiqAeEngine
       $miq_ae_logger.info("===========================================")
     end
 
-    def self.miq_log_workspace(obj, _inputs)
-      $miq_ae_logger.info("===========================================")
-      $miq_ae_logger.info("Dumping Workspace")
-      $miq_ae_logger.info(obj.workspace.to_expanded_xml)
-      $miq_ae_logger.info("===========================================")
-    end
-
     def self.miq_send_email(_obj, inputs)
       MiqAeMethodService::MiqAeServiceMethods.send_email(inputs["to"], inputs["from"], inputs["subject"], inputs["body"], :cc => inputs["cc"], :bcc => inputs["bcc"], :content_type => inputs["content_type"])
     end

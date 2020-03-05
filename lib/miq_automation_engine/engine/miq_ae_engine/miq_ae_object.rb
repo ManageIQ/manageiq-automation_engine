@@ -186,47 +186,6 @@ module MiqAeEngine
       @aec.state_machine?
     end
 
-    def attribute_value_to_xml(value, xml)
-      case value.class.to_s
-      when 'MiqAePassword'            then xml.Password(OPAQUE_PASSWORD)
-      when 'String'                   then xml.String(value)
-      when 'Fixnum'                   then xml.Fixnum(value)
-      when 'Symbol'                   then xml.Symbol(value.to_s)
-      when 'TrueClass', 'FalseClass'  then xml.Boolean(value.to_s)
-      when /MiqAeMethodService::(.*)/ then xml.tag!($1.gsub(/::/, '-'), :object_id => value.object_id, :id => value.id)
-      when 'Array'
-        xml.Array do
-          value.each_index do |i|
-            xml.Element(:index => i + 1) { attribute_value_to_xml(value[i], xml) }
-          end
-        end
-      when 'Hash'
-        xml.Hash do
-          value.each do |k, v|
-            xml.Key(:name => k.to_s) { attribute_value_to_xml(v, xml) }
-          end
-        end
-      when 'DRb::DRbUnknown'
-        $miq_ae_logger.error("Found DRbUnknown for value: #{value.inspect} in XML: #{xml.inspect}")
-        xml.String(value)
-      else
-        xml.tag!(value.class.to_s.gsub(/::/, '-')) { xml.cdata!(value.inspect) }
-      end
-    end
-
-    def to_xml(options = {})
-      require 'builder'
-      xml = options[:builder] ||= Builder::XmlMarkup.new(:indent => options[:indent])
-      xml_attrs = {:namespace => @namespace, :class => @klass, :instance => @instance}
-      xml.MiqAeObject(xml_attrs) do
-        @attributes.keys.sort.each do |k|
-          xml.MiqAeAttribute(:name => k) { attribute_value_to_xml(@attributes[k], xml) }
-        end
-
-        children.each { |c| c.to_xml(:builder => xml) }
-      end
-    end
-
     def fields(message = nil)
       @fields_ordered.collect do |fname|
         @fields[fname] if message.nil? || self.class.message_matches?(message_parse(@fields[fname]['message']), message)

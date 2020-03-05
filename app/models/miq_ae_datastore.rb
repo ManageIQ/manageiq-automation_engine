@@ -110,14 +110,6 @@ module MiqAeDatastore
     temp_export.unlink
   end
 
-  def self.export_class(namespace, class_name)
-    XmlExport.class_to_xml(namespace, class_name)
-  end
-
-  def self.export_namespace(namespace)
-    XmlExport.namespace_to_xml(namespace)
-  end
-
   def self.reset
     _log.info("Clearing datastore")
     [MiqAeClass, MiqAeField, MiqAeInstance, MiqAeNamespace, MiqAeMethod, MiqAeValue].each(&:delete_all)

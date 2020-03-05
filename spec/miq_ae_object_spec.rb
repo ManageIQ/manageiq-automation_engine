@@ -17,23 +17,6 @@ describe MiqAeEngine::MiqAeObject do
     MiqAeDatastore.reset
   end
 
-  it "#to_xml" do
-    args = {'nil_arg' => nil, 'float_arg' => 5.98,
-            'int_arg' => 10,  'string_arg' => 'Stringy',
-            'svc_vm'  => MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm.find(@vm.id)}
-
-    @miq_obj.process_args_as_attributes(args)
-    validate_xml(@miq_obj.to_xml, args)
-  end
-
-  def validate_xml(xml, args)
-    hash = Hash.from_xml(xml)
-    attrs = hash['MiqAeObject']['MiqAeAttribute']
-    args.each do |key, value|
-      expect(find_match(attrs, key, value)).to be_truthy
-    end
-  end
-
   def find_match(attrs, key, value)
     item = attrs.detect { |i| i['name'] == key }
     return false unless item
