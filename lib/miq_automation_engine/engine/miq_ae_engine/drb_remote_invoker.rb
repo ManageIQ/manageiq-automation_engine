@@ -42,7 +42,7 @@ module MiqAeEngine
       require 'tmpdir'
       Dir::Tmpname.create("automation_engine", nil) do |path|
         self.drb_server = DRb.start_service("drbunix://#{path}", drb_front, :idconv => global_id_conv)
-        FileUtils.chmod(0o750, path)
+        FileUtils.chmod(0o700, path)
       end
     end
 
@@ -120,7 +120,16 @@ begin
   # undefine Object#display which would be called over service#display
   DRbObject.send(:undef_method, :display)
 
-  DRb.start_service
+  # DRb.start_service with no URI can attempt to resolve your local hostname[1], which:
+  #   * is slower than just telling it to use a local address/socket
+  #   * could be wrong and in some cases, it can be a remote IP to a DNS assistance program
+  # [1] https://github.com/ruby/ruby/blob/v2_6_5/lib/drb/drb.rb#L879-L884
+  require 'tmpdir'
+  Dir::Tmpname.create("automation_client", nil) do |path|
+    DRb.start_service("drbunix://\#{path}")
+    FileUtils.chmod(0o700, path)
+  end
+
   $evmdrb = DRbObject.new_with_uri(MIQ_URI)
   raise AutomateMethodException,"Cannot create DRbObject for uri=\#{MIQ_URI}" if $evmdrb.nil?
   $evm = $evmdrb.find(MIQ_ID)
