@@ -42,7 +42,7 @@ module MiqAeEngine
       require 'tmpdir'
       Dir::Tmpname.create("automation_engine", nil) do |path|
         self.drb_server = DRb.start_service("drbunix://#{path}", drb_front, :idconv => global_id_conv)
-        FileUtils.chmod(0o750, path)
+        FileUtils.chmod(0o700, path)
       end
     end
 
@@ -127,7 +127,7 @@ begin
   require 'tmpdir'
   Dir::Tmpname.create("automation_client", nil) do |path|
     DRb.start_service("drbunix://\#{path}")
-    FileUtils.chmod(0o750, path)
+    FileUtils.chmod(0o700, path)
   end
 
   $evmdrb = DRbObject.new_with_uri(MIQ_URI)
