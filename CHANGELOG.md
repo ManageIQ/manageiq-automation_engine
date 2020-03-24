@@ -4,93 +4,44 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## Unreleased as of Sprint 130 ending 2020-02-17
+## Jansa-1 Alpha-1
 
 ### Added
 * Add queue_name for ems_operations methods [(#419)](https://github.com/ManageIQ/manageiq-automation_engine/pull/419)
 * Add a method to resize a VMware VM Disk [(#420)](https://github.com/ManageIQ/manageiq-automation_engine/pull/420)
-
-### Changed
-* Rubocop run with `--fix-layout` option. [(#362)](https://github.com/ManageIQ/manageiq-automation_engine/pull/362)
-* Change options accessing syntax in spec [(#423)](https://github.com/ManageIQ/manageiq-automation_engine/pull/423)
-* Fix other places we're using @miq_provision[:options] rather than .options [(#424)](https://github.com/ManageIQ/manageiq-automation_engine/pull/424)
-* Fix set_vm_notes spec [(#416)](https://github.com/ManageIQ/manageiq-automation_engine/pull/416)
-* A storage now has a direct belongs_to on ems_id [(#422)](https://github.com/ManageIQ/manageiq-automation_engine/pull/422)
-
-## Unreleased as of Sprint 129 ending 2020-02-03
-
-### Added
 * Guard against hitting const_missing from within const_missing [(#415)](https://github.com/ManageIQ/manageiq-automation_engine/pull/415)
 * State var limit key type [(#406)](https://github.com/ManageIQ/manageiq-automation_engine/pull/406)
-
-### Changed
-* Replace dynamic find and uri escape [(#412)](https://github.com/ManageIQ/manageiq-automation_engine/pull/412)
-
-## Unreleased as of Sprint 128 ending 2020-01-20
-
-### Added
 * State var yaml to binary blob [(#405)](https://github.com/ManageIQ/manageiq-automation_engine/pull/405)
-
-## Unreleased as of Sprint 127 ending 2020-01-06
-
-### Added
 * Update service_vars with playbook set_stats data. [(#399)](https://github.com/ManageIQ/manageiq-automation_engine/pull/399)
 * Update rubyzip to 2.0.0 [(#397)](https://github.com/ManageIQ/manageiq-automation_engine/pull/397)
 * Reduce the amount of data being stored in yaml file for svc_models [(#387)](https://github.com/ManageIQ/manageiq-automation_engine/pull/387)
 * Add cc and bcc into builtin method send_email's inputs fields. [(#404)](https://github.com/ManageIQ/manageiq-automation_engine/pull/404)
 * Change the automate datastore import validation - prevent system domains from being imported. [(#397)](https://github.com/ManageIQ/manageiq-automation_engine/pull/397)
-
-
-## Unreleased as of Sprint 126 ending 2019-12-09
-
-### Added
+* Add method to delete category [(#363)](https://github.com/ManageIQ/manageiq-automation_engine/pull/363)
+* Add method to delete tag [(#358)](https://github.com/ManageIQ/manageiq-automation_engine/pull/358)
 * Save Automate timeout in options hash [(#393)](https://github.com/ManageIQ/manageiq-automation_engine/pull/393)
 * Update objects based on set_stats [(#381)](https://github.com/ManageIQ/manageiq-automation_engine/pull/381)
-
-## Unreleased as of Sprint 125 ending 2019-11-25
-
-### Fixed
-- Fixed test description [(391)](https://github.com/ManageIQ/manageiq-automation_engine/pull/391)
-
-## Unreleased as of Sprint 124 ending 2019-11-11
-
-### Added
-- Optionally symlink spec/manageiq during bin/setup [(#389)](https://github.com/ManageIQ/manageiq-automation_engine/pull/389)
+* Optionally symlink spec/manageiq during bin/setup [(#389)](https://github.com/ManageIQ/manageiq-automation_engine/pull/389)
 
 ### Fixed
-- Model InfraManagerEmsCluster was renamed to InfraManagerCluster [(#386)](https://github.com/ManageIQ/manageiq-automation_engine/pull/386)
-
-## Unreleased as of Sprint 123 ending 2019-10-28
-
-### Fixed
+* Rubocop run with `--fix-layout` option. [(#362)](https://github.com/ManageIQ/manageiq-automation_engine/pull/362)
+* Change options accessing syntax in spec [(#423)](https://github.com/ManageIQ/manageiq-automation_engine/pull/423)
+* Fix other places we're using @miq_provision[:options] rather than .options [(#424)](https://github.com/ManageIQ/manageiq-automation_engine/pull/424)
+* Fix set_vm_notes spec [(#416)](https://github.com/ManageIQ/manageiq-automation_engine/pull/416)
+* A storage now has a direct belongs_to on ems_id [(#422)](https://github.com/ManageIQ/manageiq-automation_engine/pull/422)
+* Replace dynamic find and uri escape [(#412)](https://github.com/ManageIQ/manageiq-automation_engine/pull/412)
+* Fixed test description [(391)](https://github.com/ManageIQ/manageiq-automation_engine/pull/391)
+* Model InfraManagerEmsCluster was renamed to InfraManagerCluster [(#386)](https://github.com/ManageIQ/manageiq-automation_engine/pull/386)
 * Cleanup after Ansible runner. [(#378)](https://github.com/ManageIQ/manageiq-automation_engine/pull/378)
 * Remove #retire_service_resources [(#379)](https://github.com/ManageIQ/manageiq-automation_engine/pull/379)
 * Test ruby 2.5.7/2.6.5 see: ManageIQ/manageiq#19414 [(#382)](https://github.com/ManageIQ/manageiq-automation_engine/pull/382)
-
-## Unreleased as of Sprint 122 ending 2019-10-14
-
-### Fixed
-
-- Set validate_entry_sizes flag to true for rubyzip 1.3.0 [(#377)](https://github.com/ManageIQ/manageiq-automation_engine/pull/377)
-- Correct style using rubocop (part 4) [(#370)](https://github.com/ManageIQ/manageiq-automation_engine/pull/370)
-
-
-## Unreleased as of Sprint 121 ending 2019-09-30
-
-### Fixed
-- Switch find_by\_* to lookup_by\_* [(#373)](https://github.com/ManageIQ/manageiq-automation_engine/pull/373)
-- Mask the password value in logs. [(#371)](https://github.com/ManageIQ/manageiq-automation_engine/pull/371)
-
-## Unreleased as of Sprint 120 ending 2019-09-16
-
-### Added
-- Add method to delete category [(#363)](https://github.com/ManageIQ/manageiq-automation_engine/pull/363)
-- Add method to delete tag [(#358)](https://github.com/ManageIQ/manageiq-automation_engine/pull/358)
-
-### Fixed
-- Correct style using rubocop (part 3) [(#369)](https://github.com/ManageIQ/manageiq-automation_engine/pull/369)
-- update_attributes has been deprecated [(#367)](https://github.com/ManageIQ/manageiq-automation_engine/pull/367)
-- Correct style using rubocop (part 2) [(#365)](https://github.com/ManageIQ/manageiq-automation_engine/pull/365)
+* Set validate_entry_sizes flag to true for rubyzip 1.3.0 [(#377)](https://github.com/ManageIQ/manageiq-automation_engine/pull/377)
+* Correct style using rubocop (part 4) [(#370)](https://github.com/ManageIQ/manageiq-automation_engine/pull/370)
+* Switch find_by\_* to lookup_by\_* [(#373)](https://github.com/ManageIQ/manageiq-automation_engine/pull/373)
+* Mask the password value in logs. [(#371)](https://github.com/ManageIQ/manageiq-automation_engine/pull/371)
+* Correct style using rubocop (part 3) [(#369)](https://github.com/ManageIQ/manageiq-automation_engine/pull/369)
+* update_attributes has been deprecated [(#367)](https://github.com/ManageIQ/manageiq-automation_engine/pull/367)
+* Correct style using rubocop (part 2) [(#365)](https://github.com/ManageIQ/manageiq-automation_engine/pull/365)
 
 ## Ivanchuk-1 - Released 2019-09-18
 
