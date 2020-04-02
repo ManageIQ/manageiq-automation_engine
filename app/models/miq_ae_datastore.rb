@@ -148,7 +148,7 @@ module MiqAeDatastore
   end
 
   def self.seed_default_namespace
-    default_ns   = MiqAeNamespace.create!(:name => DEFAULT_OBJECT_NAMESPACE)
+    default_ns   = MiqAeDomain.create!(:name => DEFAULT_OBJECT_NAMESPACE, :tenant => Tenant.root_tenant)
     object_class = default_ns.ae_classes.create!(:name => 'Object')
 
     default_method_options = {:language => 'ruby', :scope => 'instance', :location => 'builtin'}

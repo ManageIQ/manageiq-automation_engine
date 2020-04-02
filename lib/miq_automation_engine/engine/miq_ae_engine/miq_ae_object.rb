@@ -161,11 +161,7 @@ module MiqAeEngine
       Benchmark.current_realtime[:fetch_class_count] += 1
       Benchmark.realtime_block(:fetch_class_time) do
         @workspace.datastore(fqname.downcase.to_sym, :class) do
-          ns, name = MiqAeClass.parse_fqname(fqname)
-          ns = fetch_namespace(ns)
-          return nil if ns.nil?
-
-          ns.ae_classes.detect { |c| name.casecmp(c.name).zero? }
+          MiqAeClass.lookup_by_fqname(fqname)
         end
       end.first
     end
@@ -174,7 +170,7 @@ module MiqAeEngine
       Benchmark.current_realtime[:fetch_instance_count] += 1
       Benchmark.realtime_block(:fetch_instance_time) do
         @workspace.datastore(@class_fqname.downcase.to_sym, iname.downcase) do
-          @aec.ae_instances.detect { |i| iname.casecmp(i.name).zero? }
+          MiqAeInstance.where(:class_id => @aec.id).find_by(MiqAeInstance.arel_table[:name].lower.eq(iname.downcase))
         end
       end.first
     end
@@ -801,15 +797,8 @@ module MiqAeEngine
       scheme, userinfo, host, port, registry, path, opaque, query, fragment = MiqAeUri.split(rel)
       return [rel] unless MiqAePath.wildcard?(path)
 
-      ns, klass, instance = MiqAePath.split(path)
-
-      ns = @workspace.overlay_namespace(scheme, rel, ns, klass, instance)
-
-      aec = fetch_class(MiqAeClass.fqname(ns, klass))
-      return [] unless aec
-
-      aec.ae_instances.search(instance).collect do |i|
-        path = MiqAePath.new(:ae_namespace => ns, :ae_class => klass, :ae_instance => i).to_s
+      MiqAeInstance.search(path[1..-1]).collect do |i|
+        path = i.fqname
         MiqAeUri.join(scheme, userinfo, host, port, registry, path, opaque, query, fragment)
       end.sort
     end

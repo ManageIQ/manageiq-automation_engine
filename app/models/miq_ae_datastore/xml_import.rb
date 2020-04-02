@@ -7,7 +7,7 @@ module MiqAeDatastore
       methods   = input.delete("MiqAeMethod")
 
       # Create the AEClass
-      aec = MiqAeClass.new(input)
+      aec = MiqAeClass.create(input)
 
       Benchmark.realtime_block(:process_class_schema_time) do
         # Find or Create the AEFields
