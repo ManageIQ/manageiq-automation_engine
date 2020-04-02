@@ -8,8 +8,8 @@ class MiqAeDomain < MiqAeNamespace
   EDITABLE_PROPERTIES_FOR_REMOTES = [:priority, :enabled].freeze
   AUTH_KEYS = %w[userid password].freeze
 
-  default_scope { where(:parent_id => nil).where(arel_table[:name].not_eq("$")) }
-  validates_inclusion_of :parent_id, :in => [nil], :message => 'should be nil for Domain'
+  default_scope { roots.where(arel_table[:name].not_eq("$")) }
+  validates :ancestry, :inclusion => {:in => [nil], :message => 'should be nil for Domain'}
 
   validates_presence_of :tenant, :message => "object is needed to own the domain"
   after_destroy :squeeze_priorities
@@ -212,7 +212,7 @@ class MiqAeDomain < MiqAeNamespace
   end
 
   def about_class
-    ns = MiqAeNamespace.where(:parent_id => id).find_by("lower(name) = ?", "system")
+    ns = children.find_by("lower(name) = ?", "system")
     MiqAeClass.where(:namespace_id => ns.id).find_by("lower(name) = ?", "about") if ns
   end
 
