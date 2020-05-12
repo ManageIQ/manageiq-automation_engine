@@ -143,8 +143,7 @@ class MiqAeBrowser
       if klass_name == "MiqAeInstance"
         true
       else
-        prefix = klass_name == "MiqAeDomain" ? "MiqAeNamespace" : klass_name
-        @waypoint_ids.include?("#{prefix}::#{obj.id}")
+        @waypoint_ids.include?("#{klass_name}::#{obj.id}")
       end
     end
   end

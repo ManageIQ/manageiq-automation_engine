@@ -2,6 +2,7 @@ describe "MultipleStateMachineSteps" do
   include Spec::Support::AutomationHelper
 
   before do
+    Tenant.seed
     MiqAeDatastore.reset_default_namespace
     @instance1           = 'instance1'
     @instance2           = 'instance2'

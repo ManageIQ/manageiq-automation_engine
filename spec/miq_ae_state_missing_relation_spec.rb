@@ -1,5 +1,6 @@
 describe "MiqAeStateMachine" do
   before do
+    Tenant.seed
     MiqAeDatastore.reset_default_namespace
     @user             = FactoryBot.create(:user_with_group)
     @domain           = 'FLINTSTONE'
