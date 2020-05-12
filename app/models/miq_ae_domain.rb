@@ -166,7 +166,11 @@ class MiqAeDomain < MiqAeNamespace
   def display_name
     return self[:display_name] unless git_enabled?
 
-    "#{domain_name} (#{ref})"
+    "#{name} (#{ref})"
+  end
+
+  def fqname
+    "/#{name}"
   end
 
   def destroy_queue(user = User.current_user)
@@ -212,8 +216,7 @@ class MiqAeDomain < MiqAeNamespace
   end
 
   def about_class
-    ns = children.find_by("lower(name) = ?", "system")
-    MiqAeClass.where(:namespace_id => ns.id).find_by("lower(name) = ?", "about") if ns
+    MiqAeClass.where(:domain => self).find_by(MiqAeClass.arel_table[:relative_path].lower.eq("system/about"))
   end
 
   def self.reset_priority_of_system_domains

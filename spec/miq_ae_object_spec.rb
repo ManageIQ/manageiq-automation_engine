@@ -4,6 +4,7 @@ describe MiqAeEngine::MiqAeObject do
   before do
     MiqAeDatastore.reset
     @domain = 'SPEC_DOMAIN'
+    FactoryBot.create(:miq_ae_domain, :name => @domain)
     @user = FactoryBot.create(:user_with_group)
     @model_data_dir = File.join(File.dirname(__FILE__), "data")
     EvmSpecHelper.import_yaml_model(File.join(@model_data_dir, "miq_ae_object_spec1"), @domain)
