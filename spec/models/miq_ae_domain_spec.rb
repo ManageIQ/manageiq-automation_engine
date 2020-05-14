@@ -474,4 +474,21 @@ describe MiqAeDomain do
       end
     end
   end
+
+  context "#clear_cache" do
+    it "changes name after saves" do
+      d = FactoryBot.create(:miq_ae_domain)
+      expect(MiqAeDomain.id_to_name(d.id)).to eq(d.name)
+      d.update(:name => "#{d.name}2")
+      expect(MiqAeDomain.id_to_name(d.id)).to eq(d.name)
+    end
+
+    it "changes name after saves" do
+      d = FactoryBot.create(:miq_ae_domain)
+      d_id = d.id
+      expect(MiqAeDomain.id_to_name(d.id)).to eq(d.name)
+      d.destroy
+      expect(MiqAeDomain.id_to_name(d_id)).to be_nil
+    end
+  end
 end

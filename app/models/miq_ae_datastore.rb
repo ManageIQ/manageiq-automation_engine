@@ -121,6 +121,7 @@ module MiqAeDatastore
   def self.reset
     _log.info("Clearing datastore")
     [MiqAeClass, MiqAeField, MiqAeInstance, MiqAeNamespace, MiqAeMethod, MiqAeValue].each(&:delete_all)
+    MiqAeDomain.clear_domain_cache
   end
 
   def self.reset_default_namespace

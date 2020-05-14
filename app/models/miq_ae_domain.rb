@@ -15,6 +15,8 @@ class MiqAeDomain < MiqAeNamespace
 
   validates_presence_of :tenant, :message => "object is needed to own the domain"
   after_destroy :squeeze_priorities
+  after_destroy :clear_domain_cache
+  after_save :clear_domain_cache
   default_value_for :source,  USER_SOURCE
   default_value_for :enabled, false
   before_save :default_priority
@@ -30,6 +32,31 @@ class MiqAeDomain < MiqAeNamespace
                          /^last_import_on/].freeze
 
   include TenancyMixin
+
+  def self.name_to_id(name)
+    return if name.nil?
+
+    load_domain_cache
+    name = name.downcase
+    @domain_names[name] ||= MiqAeDomain.unscoped.roots.where(:lower_name => name).pluck(:id).first
+  end
+
+  def self.id_to_name(domain_id)
+    return if domain_id.nil?
+
+    load_domain_cache
+    @domain_ids[domain_id] ||= MiqAeDomain.unscoped.roots.where(:id => domain_id).pluck(:name).first
+  end
+
+  delegate :clear_domain_cache, :to => self
+  def self.clear_domain_cache
+    @domain_ids = @domain_names = nil
+  end
+
+  def self.load_domain_cache
+    @domain_ids ||= Hash[*MiqAeDomain.unscoped.roots.pluck(:id, :name).flatten]
+    @domain_names ||= @domain_ids.invert.transform_keys { |key| key.to_s.downcase }
+  end
 
   def self.with_tenant(tenant_id)
     tenant = Tenant.find(tenant_id)
