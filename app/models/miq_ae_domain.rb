@@ -1,4 +1,6 @@
 class MiqAeDomain < MiqAeNamespace
+  include RelativePathMixin
+
   SYSTEM_SOURCE = "system".freeze
   REMOTE_SOURCE = "remote".freeze
   USER_SOURCE   = "user".freeze
@@ -19,6 +21,8 @@ class MiqAeDomain < MiqAeNamespace
   belongs_to :tenant
   belongs_to :git_repository, :dependent => :destroy
   validates_inclusion_of :source, :in => VALID_SOURCES
+
+  alias_attribute :domain_name, :name
 
   EXPORT_EXCLUDE_KEYS = [/^id$/, /^(?!tenant).*_id$/, /^created_on/, /^updated_on/,
                          /^updated_by/, /^reserved$/, /^commit_message/,
