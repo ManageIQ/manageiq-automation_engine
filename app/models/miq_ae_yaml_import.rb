@@ -224,7 +224,7 @@ class MiqAeYamlImport
 
   def existing_class_object(ns_obj, class_yaml)
     class_attrs = class_yaml.fetch_path('object', 'attributes')
-    class_obj = MiqAeClass.lookup_by_namespace_id_and_name(ns_obj.id, class_attrs['name']) unless ns_obj.nil?
+    class_obj = MiqAeClass.lookup_by_namespace_and_name(ns_obj.fqname, class_attrs['name']) unless ns_obj.nil?
     track_stats('class', class_obj)
     class_obj
   end
