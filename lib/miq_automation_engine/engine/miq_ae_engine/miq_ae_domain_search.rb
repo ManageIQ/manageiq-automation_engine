@@ -9,8 +9,13 @@ module MiqAeEngine
       $miq_ae_logger.info("Prepend namespace [#{@prepend_namespace}] during domain search")
     end
 
-    def ae_user=(obj)
-      @ae_user = obj
+    def ae_user=(user)
+      @ae_user = user
+      @sorted_domain_ids = nil
+    end
+
+    def sorted_domain_ids
+      @sorted_domain_ids ||= @ae_user.current_tenant.enabled_domains.pluck(:id)
     end
 
     def get_alternate_domain(scheme, uri, namespace, klass, instance)
@@ -45,7 +50,7 @@ module MiqAeEngine
     def get_matching_domain(namespace, klass, instance, method)
       relative_path = instance ? "#{namespace}/#{klass}/#{instance}" : "#{namespace}/#{klass}/#{method}"
       klass = instance ? ::MiqAeInstance : ::MiqAeMethod
-      match = klass.find_best_match_by(@ae_user, relative_path)
+      match = klass.find_best_match_by(sorted_domain_ids, relative_path)
       match.namespace[1..-1] if match
     end
   end
