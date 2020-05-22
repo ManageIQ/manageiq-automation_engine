@@ -170,7 +170,7 @@ module MiqAeEngine
       Benchmark.current_realtime[:fetch_instance_count] += 1
       Benchmark.realtime_block(:fetch_instance_time) do
         @workspace.datastore(@class_fqname.downcase.to_sym, iname.downcase) do
-          MiqAeInstance.where(:class_id => @aec.id).find_by(MiqAeInstance.arel_table[:name].lower.eq(iname.downcase))
+          MiqAeInstance.where(:class_id => @aec.id).find_by(:lower_name => iname.downcase)
         end
       end.first
     end
