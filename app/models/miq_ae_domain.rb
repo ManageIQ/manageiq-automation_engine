@@ -11,6 +11,7 @@ class MiqAeDomain < MiqAeNamespace
   AUTH_KEYS = %w[userid password].freeze
 
   default_scope { roots.where.not(:name => "$") }
+  scope :all_domains, -> { unscoped.roots }
   validates :ancestry, :inclusion => {:in => [nil], :message => 'should be nil for Domain'}
 
   validates_presence_of :tenant, :message => "object is needed to own the domain"
@@ -38,14 +39,14 @@ class MiqAeDomain < MiqAeNamespace
 
     load_domain_cache
     name = name.downcase
-    @domain_names[name] ||= MiqAeDomain.unscoped.roots.where(:lower_name => name).pluck(:id).first
+    @domain_names[name] ||= all_domains.where(:lower_name => name).pluck(:id).first
   end
 
   def self.id_to_name(domain_id)
     return if domain_id.nil?
 
     load_domain_cache
-    @domain_ids[domain_id] ||= MiqAeDomain.unscoped.roots.where(:id => domain_id).pluck(:name).first
+    @domain_ids[domain_id] ||= all_domains.where(:id => domain_id).pluck(:name).first
   end
 
   delegate :clear_domain_cache, :to => self
@@ -54,7 +55,7 @@ class MiqAeDomain < MiqAeNamespace
   end
 
   def self.load_domain_cache
-    @domain_ids ||= Hash[*MiqAeDomain.unscoped.roots.pluck(:id, :name).flatten]
+    @domain_ids ||= Hash[*all_domains.pluck(:id, :name).flatten]
     @domain_names ||= @domain_ids.invert.transform_keys { |key| key.to_s.downcase }
   end
 

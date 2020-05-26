@@ -491,4 +491,22 @@ describe MiqAeDomain do
       expect(MiqAeDomain.id_to_name(d_id)).to be_nil
     end
   end
+
+  context ".default_scope" do
+    it "skips dollar domains" do
+      a = FactoryBot.create(:miq_ae_domain)
+      FactoryBot.create(:miq_ae_domain, :name => "$")
+
+      expect(MiqAeDomain.all).to eq([a])
+    end
+  end
+
+  context ".default_scope" do
+    it "returns dollar domains" do
+      a = FactoryBot.create(:miq_ae_domain)
+      b = FactoryBot.create(:miq_ae_domain, :name => "$")
+
+      expect(MiqAeDomain.all_domains).to match_array([a, b])
+    end
+  end
 end
