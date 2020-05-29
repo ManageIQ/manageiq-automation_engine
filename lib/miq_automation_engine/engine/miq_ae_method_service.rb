@@ -1,6 +1,6 @@
 module MiqAeMethodService
   def self.const_missing(name)
-    super unless defined?(MiqAeServiceModelBase)
+    return super unless defined?(MiqAeServiceModelBase)
 
     MiqAeServiceModelBase.create_service_model_from_name(name) || super
   end
