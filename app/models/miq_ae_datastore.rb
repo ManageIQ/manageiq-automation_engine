@@ -230,36 +230,42 @@ module MiqAeDatastore
     MiqAeDomain.reset_priorities
   end
 
-  def self.get_homonymic_across_domains(user, arclass, fqname, enabled = nil)
+  # @param prefix (default true) the domain name is a prefix
+  def self.get_homonymic_across_domains(user, arclass, fqname, enabled = nil, prefix: true)
     return [] if fqname.blank?
 
-    options = arclass == ::MiqAeClass ? {:has_instance_name => false} : {}
-    _, ns, klass, name = ::MiqAeEngine::MiqAePath.get_domain_ns_klass_inst(fqname, options)
-    name = klass if arclass == ::MiqAeClass
-    MiqAeDatastore.get_sorted_matching_objects(user, arclass, ns, klass, name, enabled)
-  end
-
-  def self.get_sorted_matching_objects(user, arclass, namespace, klass, name, enabled)
-    options = arclass == ::MiqAeClass ? {:has_instance_name => false} : {}
-    domains = user.current_tenant.visible_domains
-    matches = arclass.where("lower(name) = ?", name.downcase).collect do |obj|
-      get_domain_index_object(domains, obj, klass, namespace, enabled, options)
-    end.compact
-    matches.sort_by { |a| a[:index] }.collect { |v| v[:obj] }
-  end
-
-  def self.get_domain_index_object(domains, obj, klass, namespace, enabled, options)
-    domain, nsd, klass_name, = ::MiqAeEngine::MiqAePath.get_domain_ns_klass_inst(obj.fqname, options)
-    return if !klass_name.casecmp(klass).zero? || !nsd.casecmp(namespace).zero?
-
-    domain_index = get_domain_index(domains, domain, enabled)
-    {:obj => obj, :index => domain_index} if domain_index
-  end
-
-  def self.get_domain_index(domains, name, enabled)
-    domains.to_a.index do |dom|
-      dom.name.casecmp(name).zero? && (enabled ? dom.enabled == enabled : true)
+    if prefix
+      fqname = MiqAeUri.path(fqname, "miqaedb")
+      fqname.split('/')[1..-1].to_a.join('/')
     end
+
+    # visible_to_user
+    domain_ids = if enabled
+                   user.current_tenant.enabled_domains
+                 else
+                   user.current_tenant.visible_domains
+                 end
+
+    search = arclass.joins(:domain).where(:miq_ae_namespaces => {:id => domain_ids})
+
+    # prioritized
+    search = search.order(Arel.sql("miq_ae_namespaces.priority DESC"))
+
+    # matches path
+    # probably want to stick with regular equals.
+    # namespace/instance also use regular expressions
+    if fqname =~ /%/
+      search.where(arel_table[:relative_path].lower.matches(relative_path.downcase, nil, true))
+    else
+      search.where(:lower_relative_path => fqname.downcase)
+    end
+  end
+
+  # deprecated (only used by miq ae instance because prefix: was not available)
+  # use get_homonymic(user, arclass, fqname, enabled = nil, prefix: false) instead
+  def self.get_sorted_matching_objects(user, arclass, namespace, klass, name, enabled)
+    fqname = [namespace,klass,name].compact.join("/")
+    get_homonymic_across_domains(user, arclass, fqname, enabled = nil, prefix: false)
   end
 
   def self.preserved_attrs_for_domains
