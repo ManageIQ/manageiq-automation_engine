@@ -556,8 +556,6 @@ describe MiqAeEngine do
     expect(ws.roots.length).to eq(4)
     expect(ws.roots[3].attributes["attr1"]).to eq("frank")
 
-    # puts ws.to_expanded_xml()
-
     ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test_password", user)
     expect(ws).not_to be_nil
     roots = ws.roots
@@ -565,7 +563,6 @@ describe MiqAeEngine do
     expect(roots).to be_a_kind_of(Array)
     expect(roots.length).to eq(1)
     expect(MiqAePassword.decrypt_if_password(roots.first.attributes["password"])).to eq("secret")
-    # puts ws.to_expanded_xml()
   end
 
   it "follows relationships properly" do

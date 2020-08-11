@@ -21,7 +21,6 @@ describe "MiqAeStateMachine" do
     expect(ws.root['ae_result']).to eq('ok')
     expect(ws.root['ae_state']).to eq('final')
 
-    # puts ws.to_xml
     #     puts "Old Provision Technique took #{t1 - t0} seconds"
   end
 
@@ -36,7 +35,6 @@ describe "MiqAeStateMachine" do
     expect(ws).not_to be_nil
     expect(ws.root['ae_result']).to eq('ok')
     expect(ws.root['ae_state']).to eq('')
-    # puts ws.to_xml
     #     puts "New Provision Technique took #{t1 - t0} seconds"
   end
 
@@ -52,7 +50,6 @@ describe "MiqAeStateMachine" do
     expect(ws).not_to be_nil
     expect(ws.root['ae_result']).to eq('error')
     expect(ws.root['ae_state']).to eq('ProvisionCheck')
-    # puts ws.to_xml
   end
 
   it "raises exception properly during a provision request" do
@@ -68,7 +65,6 @@ describe "MiqAeStateMachine" do
     expect(ws).not_to be_nil
     expect(ws.root['ae_result']).to eq('error')
     expect(ws.root['ae_state']).to eq('ProvisionCheck')
-    # puts ws.to_xml
   end
 
   it "properly overrides class values with instance values, when they are present" do
@@ -84,7 +80,6 @@ describe "MiqAeStateMachine" do
     # t1 = Time.now
 
     expect(ws).not_to be_nil
-    # puts ws.to_xml
     # puts "New Provision (with instance override) Technique took #{t1 - t0} seconds"
   end
 

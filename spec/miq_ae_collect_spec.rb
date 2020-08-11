@@ -16,7 +16,6 @@ describe "MiqAeCollect" do
     ws = MiqAeEngine.instantiate("/TEST/COLLECT/INFO#get_months", @user)
     expect(ws).not_to be_nil
 
-    # puts ws.to_xml
     months = ws.root("months")
     expect(months).not_to be_nil
     expect(months.class.to_s).to eq("Hash")
@@ -34,7 +33,6 @@ describe "MiqAeCollect" do
   it "collects weekdays" do
     ws = MiqAeEngine.instantiate("/TEST/COLLECT/INFO#get_weekdays", @user)
     expect(ws).not_to be_nil
-    # puts ws.to_xml
     weekdays = ws.root("weekdays")
     expect(weekdays).not_to be_nil
     expect(weekdays.class.to_s).to eq("Hash")
@@ -51,7 +49,6 @@ describe "MiqAeCollect" do
 
     ws = MiqAeEngine.instantiate("/TEST/COLLECT/INFO#get_weekdays", @user)
     expect(ws).not_to be_nil
-    # puts ws.to_xml
     weekdays = ws.root("weekdays")
     expect(weekdays).not_to be_nil
     expect(weekdays.class.to_s).to eq("Array")

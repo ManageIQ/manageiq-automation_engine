@@ -54,7 +54,6 @@ describe MiqAeMethod do
       expect(ws).not_to be_nil
       ws = MiqAeEngine.instantiate("/EVM/SYSTEM/TEST/FOO/test_inline", @user)
       expect(ws).not_to be_nil
-      # puts ws.to_expanded_xml()
     end
 
     it "properly processes instance methods via relationship via no inheritance" do
