@@ -51,17 +51,17 @@ describe MiqAeMethodService::MiqAeServiceService do
     expect(@service.description).to eq('new_test_description')
   end
 
-  context "#display=" do
+  context "#visible=" do
     it "updates the display visibility" do
-      @service.display = true
+      @service.visible = true
       @service.save
 
-      method = "$evm.root['service'].display = false"
+      method = "$evm.root['service'].visible = false"
       @ae_method.update(:data => method)
       invoke_ae
 
       @service.reload
-      expect(@service.display).to be_falsey
+      expect(@service.visible).to be_falsey
     end
   end
 

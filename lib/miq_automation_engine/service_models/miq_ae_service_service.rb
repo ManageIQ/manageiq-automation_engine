@@ -87,9 +87,9 @@ module MiqAeMethodService
       ar_method { @object.update_attribute(:description, new_description) }
     end
 
-    def display=(display)
+    def visible=(visible)
       ar_method do
-        @object.display = display
+        @object.visible = visible
         @object.save
       end
     end
