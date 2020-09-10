@@ -1,14 +1,13 @@
-# ManageIQ Automation Engine
+# ManageIQ::AutomationEngine
 
-[![Gem Version](https://badge.fury.io/rb/manageiq-automation_engine.svg)](http://badge.fury.io/rb/manageiq-automation_engine)
 [![Build Status](https://travis-ci.com/ManageIQ/manageiq-automation_engine.svg?branch=master)](https://travis-ci.com/ManageIQ/manageiq-automation_engine)
-[![Code Climate](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine.svg)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine)
-[![Test Coverage](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/badges/coverage.svg)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/3833d6be49c4abc3e926/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/3833d6be49c4abc3e926/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/test_coverage)
 [![Security](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/master.svg)](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/master)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/manageiq/automate?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Automation Engine for the ManageIQ project.
+Automation Engine plugin for ManageIQ.
 
 ## Engine Description
 
@@ -136,15 +135,18 @@ Database Layout:
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+See the section on plugins in the [ManageIQ Developer Setup](http://manageiq.org/docs/guides/developer_setup/plugins)
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/ManageIQ/manageiq-automation_engine.
+For quick local setup run `bin/setup`, which will clone the core ManageIQ repository under the *spec* directory and setup necessary config files. If you have already cloned it, you can run `bin/update` to bring the core ManageIQ code up to date.
 
 ## License
 
-See [LICENSE.txt](LICENSE.txt).
+The gem is available as open source under the terms of the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
+## Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
