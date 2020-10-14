@@ -20,5 +20,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rubyzip", "~>2.0.0"
 
+  spec.add_development_dependency "manageiq-style"
   spec.add_development_dependency "simplecov"
 end
