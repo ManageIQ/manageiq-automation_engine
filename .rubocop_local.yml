@@ -1,4 +1,4 @@
-GlobalVars:
+Style/GlobalVars:
   AllowedVariables:
   - $evm
   - $log
