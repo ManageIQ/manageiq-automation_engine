@@ -1,6 +1,6 @@
 describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
   describe "run" do
-    before { allow(MiqServer).to receive(:my_zone).and_return(FactoryGirl.create(:zone).name) }
+    before { allow(MiqServer).to receive(:my_zone).and_return(FactoryBot.create(:zone).name) }
     let(:user) { FactoryBot.create(:user_with_group) }
     let(:aw) { FactoryBot.create(:automate_workspace, :user => user, :tenant => user.current_tenant) }
     let(:root_hash) { {'name' => 'Flintstone'} }
