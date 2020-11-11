@@ -1,9 +1,9 @@
 describe MiqAeMethodService::MiqAeServiceUser do
   let(:cloud_volume)         do
-    FactoryBot.create(:cloud_volume_openstack, :ext_management_system => FactoryBot.create(:ems_openstack))
+    FactoryBot.create(:cloud_volume_openstack, :ext_management_system => FactoryBot.create(:ems_openstack_cinder))
   end
   let(:service_cloud_volume) do
-    MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManager_CloudVolume.find(cloud_volume.id)
+    MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_StorageManager_CinderManager_CloudVolume.find(cloud_volume.id)
   end
 
   before do
