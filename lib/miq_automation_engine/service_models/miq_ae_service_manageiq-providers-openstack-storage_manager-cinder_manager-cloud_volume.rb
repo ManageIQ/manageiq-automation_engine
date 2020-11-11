@@ -1,5 +1,5 @@
 module MiqAeMethodService
-  class MiqAeServiceManageIQ_Providers_Openstack_CloudManager_CloudVolume < MiqAeServiceCloudVolume
+  class MiqAeServiceManageIQ_Providers_Openstack_StorageManager_CinderManager_CloudVolume < MiqAeServiceCloudVolume
     def backup_create(backup_name = "", incremental = false, options = {})
       backup_options = {
         :name        => backup_name,
