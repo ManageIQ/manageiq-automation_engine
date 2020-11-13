@@ -676,7 +676,8 @@ describe MiqAeDatastore do
 
   context "import and export with playbook method type" do
     let(:miq_ae_class) { MiqAeClass.first }
-    let(:manager)      { FactoryBot.create(:embedded_automation_manager_ansible) }
+    let(:provider)     { FactoryBot.create(:provider_embedded_ansible) }
+    let(:manager)      { provider.automation_manager }
     let(:repo)         { FactoryBot.create(:embedded_ansible_configuration_script_source) }
     let(:playbook)     { FactoryBot.create(:embedded_playbook, :manager => manager) }
     let(:cred)         { FactoryBot.create(:embedded_ansible_credential, :manager => manager, :name => 'cred') }

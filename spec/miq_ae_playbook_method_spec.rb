@@ -9,7 +9,8 @@ describe MiqAeEngine::MiqAePlaybookMethod do
     let(:method_name) { "Freddy Kreuger" }
     let(:method_key) { "FreddyKreuger_ansible_method_task_id" }
     let(:miq_task) { FactoryBot.create(:miq_task) }
-    let(:manager)  { FactoryBot.create(:embedded_automation_manager_ansible) }
+    let(:provider) { FactoryBot.create(:provider_embedded_ansible) }
+    let(:manager)  { provider.automation_manager }
     let(:playbook) { FactoryBot.create(:embedded_playbook, :manager => manager, :name => 'playbook_test.yml') }
     let(:stack_job) { FactoryBot.create(:embedded_ansible_job, :miq_task => miq_task) }
     let(:resolved_hosts) { "1.1.1.94" }
