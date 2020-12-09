@@ -7,7 +7,7 @@ module MiqAeMethodService
 
     SYNCHRONOUS = Rails.env.test?
 
-    def self.send_email(to, from, subject, body, content_type: nil, cc: nil, bcc: nil) # rubocop:disable Naming/UncommunicativeMethodParamName
+    def self.send_email(to, from, subject, body, content_type: nil, cc: nil, bcc: nil) # rubocop:disable Naming/MethodParameterName
       ar_method do
         meth = SYNCHRONOUS ? :deliver : :deliver_queue
         options = {

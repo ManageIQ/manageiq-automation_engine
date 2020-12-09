@@ -8,7 +8,7 @@ describe "MiqAeStateMachine" do
         @workspace = workspace
       end
 
-      def get_value(_f, type) # rubocop:disable Naming/UncommunicativeMethodParamName
+      def get_value(_f, type) # rubocop:disable Naming/MethodParameterName
         @workspace.root[type]
       end
     end
