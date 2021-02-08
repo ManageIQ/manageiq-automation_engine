@@ -137,8 +137,8 @@ begin
   MIQ_ARGS = $evm.inputs
 
   # Setup stdout and stderr to go through the logger on the MiqAeService instance ($evm)
-  silence_warnings { STDOUT = $stdout = $evm.stdout ; nil}
-  silence_warnings { STDERR = $stderr = $evm.stderr ; nil}
+  silence_warnings { STDOUT.close; STDOUT = $stdout = $evm.stdout ; nil}
+  silence_warnings { STDERR.close; STDERR = $stderr = $evm.stderr ; nil}
 
 rescue Exception => err
   STDERR.puts('The following error occurred during inline method preamble evaluation:')
