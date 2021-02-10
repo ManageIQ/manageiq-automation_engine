@@ -74,7 +74,7 @@ describe MiqAeEngine::MiqAeMethod do
       it "logs the error with file and line numbers changed in the stacktrace, and raises an exception" do
         allow($miq_ae_logger).to receive(:error).and_call_original
         expect($miq_ae_logger).to receive(:error).with("Method STDERR: /my/automate/method:2:in `my_method': unhandled exception").at_least(:once)
-        expect($miq_ae_logger).to receive(:error).with("Method STDERR: \tfrom /my/automate/method:6:in `<main>'").at_least(:once)
+        expect($miq_ae_logger).to receive(:error).with("Method STDERR: from /my/automate/method:6:in `<main>'").at_least(:once)
 
         expect { subject }.to raise_error(MiqAeException::UnknownMethodRc)
       end
