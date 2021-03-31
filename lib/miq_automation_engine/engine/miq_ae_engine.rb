@@ -126,6 +126,7 @@ module MiqAeEngine
       message = "Error delivering #{ManageIQ::Password.sanitize_string(automate_attrs.inspect)} for object [#{object_name}] with state [#{state}] to Automate: #{err.message}"
       miq_task&.error(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
       _log.error(message)
+      return nil
     ensure
       vmdb_object.after_ae_delivery(ae_result.to_s.downcase) if vmdb_object.respond_to?(:after_ae_delivery)
       if miq_task && miq_task.state == MiqTask::STATE_ACTIVE
