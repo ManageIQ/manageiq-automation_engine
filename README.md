@@ -32,10 +32,10 @@ Here is a grammar for a URI:
 
 Here is a typical example:
 
-    foo://example.com:8042/over/there?name=ferret#nose
-    \_/   \______________/\_________/ \_________/ \__/
-    |           |            |            |        |
-  scheme     authority       path        query   fragment
+    foo://example.com:8042/over/there?name=ferret#mouth
+    \_/   \______________/\_________/ \_________/ \___/
+     |           |             |           |        |
+    scheme   authority        path       query   fragment
 
 
 The Automation Engine supports two schemes (currently):
