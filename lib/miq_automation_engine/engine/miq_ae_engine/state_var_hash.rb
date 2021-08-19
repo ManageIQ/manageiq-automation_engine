@@ -10,8 +10,7 @@ module MiqAeEngine
     end
 
     def encode_with(coder)
-      coder[SERIALIZE_KEY] =
-        blank? ? 0 : BinaryBlob.new.tap { |bb| bb.store_data("YAML", to_h) }.id
+      coder[SERIALIZE_KEY] = blank? ? 0 : generate_binary_blob
     end
 
     def init_with(coder)
@@ -33,6 +32,17 @@ module MiqAeEngine
     end
 
     private
+
+    # returns `id` of new blob
+    def generate_binary_blob
+      blob               = BinaryBlob.new
+      blob.resource_id   = - Time.now.utc.to_i # make it negtive so this isn't a valid ID
+      blob.resource_type = "StateVarHash"
+
+      blob.store_data("YAML", to_h)
+
+      blob.id
+    end
 
     def validate_state_var_name!(name)
       if STATE_VAR_NAME_CLASSES.none? { |klass| name.kind_of?(klass) }
