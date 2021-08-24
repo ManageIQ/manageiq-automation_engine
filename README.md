@@ -1,9 +1,9 @@
 # ManageIQ::AutomationEngine
 
-[![Build Status](https://travis-ci.com/ManageIQ/manageiq-automation_engine.svg?branch=lasker)](https://travis-ci.com/ManageIQ/manageiq-automation_engine)
+[![Build Status](https://travis-ci.com/ManageIQ/manageiq-automation_engine.svg?branch=morphy)](https://travis-ci.com/ManageIQ/manageiq-automation_engine)
 [![Maintainability](https://api.codeclimate.com/v1/badges/3833d6be49c4abc3e926/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3833d6be49c4abc3e926/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/test_coverage)
-[![Security](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/lasker.svg)](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/lasker)
+[![Security](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/morphy.svg)](https://hakiri.io/github/ManageIQ/manageiq-automation_engine/morphy)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/manageiq/automate?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
