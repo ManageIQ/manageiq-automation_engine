@@ -39,11 +39,24 @@ describe MiqAeEngine::StateVarHash do
 
     it 'should create a new copy of the original hash object when reloaded' do
       expect($miq_ae_logger).to receive(:info).with(/Reloading state var data/).and_call_original
+      expect($miq_ae_logger).to receive(:info).with(/\n---/).and_call_original
 
       new_start_var_hash = YAML.safe_load(YAML.dump(state_var_hash), [MiqAeEngine::StateVarHash])
 
       expect(new_start_var_hash).to eq(state_var_hash)
       expect(new_start_var_hash.object_id).to_not eq(start_var_hash.object_id)
+    end
+
+    it 'should filter passwords when reloading' do
+      svh_with_user_pass = MiqAeEngine::StateVarHash.new(:username => "foo", :password => "bar")
+
+      expect($miq_ae_logger).to receive(:info).with(/Reloading state var data/).and_call_original
+      expect($miq_ae_logger).to receive(:info).with(/\n---\nusername: foo\npassword: \[FILTERED\]/).and_call_original
+
+      new_start_var_hash = YAML.safe_load(YAML.dump(svh_with_user_pass), [MiqAeEngine::StateVarHash])
+
+      expect(new_start_var_hash).to eq(svh_with_user_pass)
+      expect(new_start_var_hash.object_id).to_not eq(svh_with_user_pass.object_id)
     end
 
     it 'should log a warning and return empty hash if binary_blob instance is not found' do
