@@ -8,3 +8,4 @@ addons:
 install: bin/setup
 after_script: bin/ci/after_script
 after_failure: bin/ci/after_failure
+dist: bionic
