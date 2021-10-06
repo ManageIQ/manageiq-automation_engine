@@ -35,9 +35,7 @@ module MiqAeEngine
 
     # returns `id` of new blob
     def generate_binary_blob
-      blob               = BinaryBlob.new
-      blob.resource_id   = - Time.now.utc.to_i # make it negtive so this isn't a valid ID
-      blob.resource_type = "StateVarHash"
+      blob = BinaryBlob.new
 
       blob.store_data("YAML", to_h)
 
