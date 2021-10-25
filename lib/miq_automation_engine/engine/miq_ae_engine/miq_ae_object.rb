@@ -277,7 +277,7 @@ module MiqAeEngine
     end
 
     def load_array_objects_from_string(objects_str)
-      objects_str.split(',').collect do |element|
+      objects_str.split("\x1F").collect do |element|
         if element.include?(CLASS_SEPARATOR)
           klass, str_value = element.split(CLASS_SEPARATOR)
           MiqAeObject.convert_value_based_on_datatype(str_value.strip, klass.strip)

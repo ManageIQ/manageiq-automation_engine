@@ -246,7 +246,7 @@ module MiqAeEngine
   def self.create_automation_attribute_array_value(value)
     value.collect do |obj|
       obj.kind_of?(ActiveRecord::Base) ? "#{obj.class.name}::#{obj.id}" : obj.to_s
-    end.join(",")
+    end.join("\x1F")
   end
 
   def self.set_automation_attributes_from_objects(objects, attrs_hash)

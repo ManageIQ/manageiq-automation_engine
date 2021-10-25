@@ -375,8 +375,8 @@ describe MiqAeEngine do
 
     it "with an array of Vms" do
       hash          = {"vms" => Vm.all}
-      result_str    = "Array::vms=" + hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join(",")
-      result_arr    = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join(",")
+      result_str    = "Array::vms=#{hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")}"
+      result_arr    = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")
       result        = MiqAeEngine.create_automation_attributes(hash)
       expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
       expect(result["Array::vms"]).to eq(result_arr)
@@ -384,8 +384,8 @@ describe MiqAeEngine do
 
     it "with an array containing a single Vm" do
       hash          = {"vms" => [Vm.first]}
-      result_str    = "Array::vms=" + hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join(",")
-      result_arr    = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join(",")
+      result_str    = "Array::vms=#{hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")}"
+      result_arr    = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")
       result        = MiqAeEngine.create_automation_attributes(hash)
       expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
       expect(result["Array::vms"]).to eq(result_arr)
@@ -406,8 +406,8 @@ describe MiqAeEngine do
 
     it "with an array of Hosts" do
       hash          = {"hosts" => Host.all}
-      result_str    = "Array::hosts=" + hash["hosts"].collect { |h| "Host::#{h.id}" }.join(",")
-      result_arr    = hash["hosts"].collect { |h| "Host::#{h.id}" }.join(",")
+      result_str    = "Array::hosts=#{hash["hosts"].collect { |h| "Host::#{h.id}" }.join("\x1F")}"
+      result_arr    = hash["hosts"].collect { |h| "Host::#{h.id}" }.join("\x1F")
       result        = MiqAeEngine.create_automation_attributes(hash)
       expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
       expect(result["Array::hosts"]).to eq(result_arr)
@@ -415,11 +415,11 @@ describe MiqAeEngine do
 
     it "with multiple arrays" do
       hash            = {"vms" => Vm.all}
-      vm_result_str   = "Array::vms=" + hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join(",")
-      vm_result_arr   = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join(",")
+      vm_result_str   = "Array::vms=#{hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")}"
+      vm_result_arr   = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")
       hash["hosts"]   = Host.all
-      host_result_str = "Array::hosts=" + hash["hosts"].collect { |h| "Host::#{h.id}" }.join(",")
-      host_result_arr = hash["hosts"].collect { |h| "Host::#{h.id}" }.join(",")
+      host_result_str = "Array::hosts=#{hash["hosts"].collect { |h| "Host::#{h.id}" }.join("\x1F")}"
+      host_result_arr = hash["hosts"].collect { |h| "Host::#{h.id}" }.join("\x1F")
       result          = MiqAeEngine.create_automation_attributes(hash)
       expect(result["Array::vms"]).to eq(vm_result_arr)
       expect(result["Array::hosts"]).to eq(host_result_arr)
@@ -777,7 +777,7 @@ describe MiqAeEngine do
     ems = FactoryBot.create(:ems_vmware)
 
     EvmSpecHelper.import_yaml_model(File.join(model_data_dir, "miq_ae_engine_spec5"), domain)
-    ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?Array::my_objects=Vm::#{vm1.id},ExtManagementSystem::#{ems.id},Vm::#{vm2.id}", user)
+    ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?Array::my_objects=Vm::#{vm1.id}\x1FExtManagementSystem::#{ems.id}\x1FVm::#{vm2.id}", user)
     my_objects_array = ws.root("my_objects")
     expect(my_objects_array.length).to eq(3)
     my_objects_array.each { |o| o.kind_of?(MiqAeMethodService::MiqAeServiceModelBase) }
