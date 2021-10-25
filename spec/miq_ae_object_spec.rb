@@ -89,7 +89,7 @@ describe MiqAeEngine::MiqAeObject do
 
   it "#process_args_as_attributes with an array" do
     vm2 = FactoryBot.create(:vm_vmware)
-    result = @miq_obj.process_args_as_attributes("Array::vms" => "VmOrTemplate::#{@vm.id},VmOrTemplate::#{vm2.id}")
+    result = @miq_obj.process_args_as_attributes("Array::vms" => "VmOrTemplate::#{@vm.id}\x1FVmOrTemplate::#{vm2.id}")
     expect(result["vms"]).to be_kind_of(Array)
     expect(result["vms"].length).to eq(2)
   end
@@ -98,7 +98,7 @@ describe MiqAeEngine::MiqAeObject do
     let(:result) { @miq_obj.process_args_as_attributes("Array::my_values" => my_values) }
 
     context "with an array containing invalid entries" do
-      let(:my_values) { "VmOrTemplate::#{@vm.id},fred::12,VmOrTemplate::#{FactoryBot.create(:vm_vmware).id}" }
+      let(:my_values) { "VmOrTemplate::#{@vm.id}\x1Ffred::12\x1FVmOrTemplate::#{FactoryBot.create(:vm_vmware).id}" }
 
       it "raises an exception" do
         expect { @miq_obj.process_args_as_attributes("Array::vms" => my_values) }.to raise_exception MiqAeException::InvalidClass
@@ -106,7 +106,7 @@ describe MiqAeEngine::MiqAeObject do
     end
 
     context "with an array containing empty entries" do
-      let(:my_values) { "VmOrTemplate::#{@vm.id},,,VmOrTemplate::#{FactoryBot.create(:vm_vmware).id}" }
+      let(:my_values) { "VmOrTemplate::#{@vm.id}\x1F\x1F\x1FVmOrTemplate::#{FactoryBot.create(:vm_vmware).id}" }
 
       it "ignores empty values and returns everything else" do
         expect(result["my_values"].size).to eq 2
@@ -114,19 +114,27 @@ describe MiqAeEngine::MiqAeObject do
       end
     end
 
-    context "with an array including spaces after the commas" do
-      let(:my_values) { "integer::1, integer::3, integer::10" }
+    context "with an array including spaces after the seperator" do
+      let(:my_values) { "integer::1\x1F integer::3\x1F integer::10" }
 
       it "stores the values as an array of strings" do
         expect(result["my_values"]).to eq([1, 3, 10])
       end
     end
 
-    context "with an array including no spaces after the commas" do
-      let(:my_values) { "integer::1,integer::3,integer::10" }
+    context "with an array including no spaces after the seperator" do
+      let(:my_values) { "integer::1\x1Finteger::3\x1Finteger::10" }
 
       it "stores the values as an array of strings" do
         expect(result["my_values"]).to eq([1, 3, 10])
+      end
+    end
+
+    context "with an array including commas inside" do
+      let(:my_values) { "'1,1'\x1F\"3,3\"\x1Finteger::10" }
+
+      it "stores the values as an array of strings" do
+        expect(result["my_values"]).to eq(["'1,1'", "\"3,3\"", 10])
       end
     end
 
@@ -134,7 +142,7 @@ describe MiqAeEngine::MiqAeObject do
       let!(:my_values) do
         host    = FactoryBot.create(:host)
         ems     = FactoryBot.create(:ems_vmware)
-        "VmOrTemplate::#{@vm.id},Host::#{host.id},ExtManagementSystem::#{ems.id}"
+        "VmOrTemplate::#{@vm.id}\x1FHost::#{host.id}\x1FExtManagementSystem::#{ems.id}"
       end
 
       it "stores the first value as a VM object" do
@@ -151,7 +159,7 @@ describe MiqAeEngine::MiqAeObject do
     end
 
     context "with an array containing strings" do
-      let(:my_values) { "abc,xyz,,1" }
+      let(:my_values) { "abc\x1Fxyz\x1F\x1F1" }
 
       it "stores the values as an array of strings" do
         expect(result["my_values"]).to eq(%w[abc xyz 1])
@@ -159,7 +167,7 @@ describe MiqAeEngine::MiqAeObject do
     end
 
     context "with an array containing strings and objects" do
-      let(:my_values) { "abc,VmOrTemplate::#{@vm.id}" }
+      let(:my_values) { "abc\x1FVmOrTemplate::#{@vm.id}" }
 
       it "stores the first value as a string" do
         expect(result["my_values"].first).to eq("abc")
