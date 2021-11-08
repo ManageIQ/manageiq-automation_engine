@@ -26,8 +26,12 @@ describe MiqAePassword do
       expect(described_class.decrypt(ManageIQ::Password.encrypt(plaintext))).to eq(plaintext)
     end
 
-    it "throws understandable error" do
-      expect { described_class.decrypt("v1:{something}") }.to raise_error(ManageIQ::Password::PasswordError)
+    it "throws error for plaintext password" do
+      expect { described_class.decrypt("passw0rd") }.to raise_error(ManageIQ::Password::PasswordError)
+    end
+
+    it "throws error for undecryptable strings" do
+      expect { described_class.decrypt("v2:{something}") }.to raise_error(ManageIQ::Password::PasswordError)
     end
   end
 
