@@ -22,7 +22,7 @@ module MiqAeEngine
         binary_blob.destroy
 
         $miq_ae_logger.info("Reloading state var data: ")
-        VMDBLogger.log_hashes($miq_ae_logger, blob_hash, :filter => Vmdb::Settings.secret_filter)
+        $miq_ae_logger.log_hashes(blob_hash, :filter => Vmdb::Settings.secret_filter)
         update(blob_hash)
       else
         $miq_ae_logger.warn("Failed to load BinaryBlob with ID [#{coder[SERIALIZE_KEY]}] for #{self.class.name}")
