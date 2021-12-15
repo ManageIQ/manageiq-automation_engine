@@ -37,7 +37,7 @@ describe MiqAeMethodService::MiqAeServiceOrchestrationStack do
     before { stack.update(:ext_management_system => FactoryBot.create(:ext_management_system)) }
 
     it "calls a refresh on OrchestrationStack object" do
-      expect(stack.class).to receive(:refresh_ems).with(stack.ext_management_system.id, stack.ems_ref)
+      expect(stack.class).to receive(:queue_refresh).with(stack.ext_management_system.id, stack.ems_ref)
       service_stack.refresh
     end
 
