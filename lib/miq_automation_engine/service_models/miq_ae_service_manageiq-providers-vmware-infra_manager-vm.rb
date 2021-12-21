@@ -16,6 +16,10 @@ module MiqAeMethodService
       sync_or_async_ems_operation(options[:sync], "remove_disk", [disk_name, options])
     end
 
+    def rename(new_name, options = {})
+      sync_or_async_ems_operation(options[:sync], "rename", [new_name])
+    end
+
     def resize_disk(disk_name, disk_size_mb, options = {})
       sync_or_async_ems_operation(options[:sync], "resize_disk", [disk_name, disk_size_mb, options])
     end
