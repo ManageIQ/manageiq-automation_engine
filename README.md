@@ -1,6 +1,6 @@
 # ManageIQ::AutomationEngine
 
-[![Build Status](https://travis-ci.com/ManageIQ/manageiq-automation_engine.svg?branch=master)](https://travis-ci.com/github/ManageIQ/manageiq-automation_engine)
+[![CI](https://github.com/ManageIQ/manageiq-automation_engine/actions/workflows/ci.yaml/badge.svg)](https://github.com/ManageIQ/manageiq-automation_engine/actions/workflows/ci.yaml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/3833d6be49c4abc3e926/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3833d6be49c4abc3e926/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/test_coverage)
 
