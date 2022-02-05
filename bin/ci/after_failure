@@ -1,3 +1,0 @@
-#!/bin/bash
-
-cat ${TRAVIS_BUILD_DIR}/spec/manageiq/log/automation.log
