@@ -8,7 +8,7 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_AnsibleTower_Automat
   end
 
   it "#create_job" do
-    workflow_template = FactoryBot.create(:configuration_workflow)
+    workflow_template = FactoryBot.create(:ansible_configuration_workflow)
     svc_workflow_template = described_class.find(workflow_template.id)
     expect(ManageIQ::Providers::AnsibleTower::AutomationManager::WorkflowJob).to receive(:create_job)
 
