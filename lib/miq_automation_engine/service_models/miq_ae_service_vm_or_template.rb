@@ -112,5 +112,9 @@ module MiqAeMethodService
     def remove_from_disk(sync = true)
       sync_or_async_ems_operation(sync, "vm_destroy")
     end
+
+    def show_url
+      URI.join(MiqRegion.my_region.remote_ui_url, "vm/show/#{@object.id}").to_s
+    end
   end
 end
