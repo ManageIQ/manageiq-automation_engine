@@ -40,9 +40,5 @@ module MiqAeMethodService
       options[:task] = task.to_s
       Vm.process_tasks(options)
     end
-
-    def show_url
-      URI.join(MiqRegion.my_region.remote_ui_url, "vm/show/#{@object.id}").to_s
-    end
   end
 end
