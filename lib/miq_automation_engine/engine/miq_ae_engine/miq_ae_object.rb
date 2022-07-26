@@ -304,6 +304,7 @@ module MiqAeEngine
     end
 
     def process_filtered_fields(aetypes, message, args = {})
+      # binding.pry
       fields(message).each do |f|
         next unless aetypes.include?(f['aetype'])
 
@@ -351,6 +352,7 @@ module MiqAeEngine
     end
 
     def process_relationship(field, message, args)
+      # binding.pry
       process_relationship_raw(get_value(field, :aetype_relationship), message, args, field['name'], field['collect'])
     end
 
@@ -371,6 +373,7 @@ module MiqAeEngine
     end
 
     def process_method(field, _message, _args)
+      # binding.pry
       process_method_raw(get_value(field), field['collect'])
     end
 
@@ -594,6 +597,7 @@ module MiqAeEngine
     private_class_method :decrypt_password
 
     def process_assertion(field, message, args)
+      # binding.pry
       Benchmark.current_realtime[:assertion_count] += 1
       Benchmark.realtime_block(:assertion_time) do
         assertion = get_value(field, :aetype_assertion, true)
@@ -617,6 +621,7 @@ module MiqAeEngine
     end
 
     def process_attribute(field, _message, _args, value = nil)
+      # binding.pry
       Benchmark.current_realtime[:attribute_count] += 1
       Benchmark.realtime_block(:attribute_time) do
         value = get_value(field) if value.nil?

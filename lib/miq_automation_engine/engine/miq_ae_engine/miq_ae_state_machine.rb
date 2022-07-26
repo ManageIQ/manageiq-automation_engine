@@ -65,6 +65,7 @@ module MiqAeEngine
     end
 
     def process_state(field, message, args)
+      # binding.pry
       Benchmark.current_realtime[:state_count] += 1
       Benchmark.realtime_block(:state_time) do
         # Initialize the ae_state and ae_result variables, if blank
