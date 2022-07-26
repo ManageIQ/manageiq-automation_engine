@@ -52,11 +52,54 @@ module MiqAeEngine
       workspace = MiqAeWorkspaceRuntime.new(attrs)
       self.current = workspace
       workspace.instantiate(uri, user, nil)
+
+      if !uri.nil?
+        _scheme, _userinfo, _host, _port, _registry, _path, _opaque, query, _fragment = MiqAeUri.split(uri, "miqaedb")
+        args = MiqAeUri.query2hash(query)
+        miq_request_id = find_miq_request_id(args)
+      else
+        miq_request_id = nil
+      end
+
       workspace
     rescue MiqAeException => err
-      $miq_ae_logger.error(err.message)
+      $miq_ae_logger.error(err.message, :resource_id => miq_request_id)
     ensure
       clear_stored_workspace
+    end
+
+    def self.find_miq_request_id(args)
+      miq_request_id = nil
+      if args['MiqRequest::miq_request']
+        miq_request_id = args['MiqRequest::miq_request']
+      elsif args['vmdb_object_type'].to_s.include?("task")
+        current_task = nil
+        MiqRequestTask.descendants.map(&:name).each do |task|
+          if args.keys.any? { |k| k.include?(task) }
+            current_task = task
+            break
+          end
+        end
+
+        if !current_task.nil?
+          task_id_key = args.keys.find { |key| key.include?(current_task) }
+          miq_request_id = current_task.constantize.find(args[task_id_key]).miq_request_id
+        end
+      end
+      miq_request_id
+    end
+
+    def find_miq_request_id
+      # TODO: get rid of defined
+      if !defined?(root.attributes).nil?
+        if !root.attributes['miq_request_id'].nil?
+          root.attributes['miq_request_id']
+        elsif !defined?(root.attributes[root.attributes['vmdb_object_type']].miq_request_id).nil?
+          root.attributes[root.attributes['vmdb_object_type']].miq_request_id
+        elsif !defined?(root.attributes[root.attributes['vmdb_object_type']].object.miq_request_id).nil?
+          root.attributes[root.attributes['vmdb_object_type']].object.miq_request_id
+        end
+      end
     end
 
     def rbac_enabled?
@@ -102,7 +145,6 @@ module MiqAeEngine
     end
 
     def instantiate(uri, user, root = nil)
-      $miq_ae_logger.info("Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]") if root.nil?
       @ae_user = user
       @dom_search.ae_user = user
       scheme, _userinfo, _host, _port, _registry, path, _opaque, query, fragment = MiqAeUri.split(uri, "miqaedb")
@@ -112,6 +154,10 @@ module MiqAeEngine
 
       message = fragment.blank? ? "create" : fragment.downcase
       args = MiqAeUri.query2hash(query)
+      miq_request_id = self.class.find_miq_request_id(args)
+
+      $miq_ae_logger.info("Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]", :resource_id => miq_request_id) if root.nil?
+
       if (ae_state_data = args.delete('ae_state_data'))
         @persist_state_hash.merge!(YAML.load(ae_state_data))
       end
@@ -159,18 +205,18 @@ module MiqAeEngine
         end
         obj.process_fields(message)
       rescue MiqAeException::MiqAeDatastoreError => err
-        $miq_ae_logger.error(err.message)
+        $miq_ae_logger.error(err.message, :resource_id => miq_request_id)
       rescue MiqAeException::AssertionFailure => err
-        $miq_ae_logger.info(err.message)
+        $miq_ae_logger.info(err.message, :resource_id => miq_request_id)
         delete(obj)
       rescue MiqAeException::StopInstantiation => err
-        $miq_ae_logger.info("Stopping instantiation because [#{err.message}]")
+        $miq_ae_logger.info("Stopping instantiation because [#{err.message}]", :resource_id => miq_request_id)
         delete(obj)
       rescue MiqAeException::UnknownMethodRc => err
-        $miq_ae_logger.error("Aborting instantiation (unknown method return code) because [#{err.message}]")
+        $miq_ae_logger.error("Aborting instantiation (unknown method return code) because [#{err.message}]", :resource_id => miq_request_id)
         raise
       rescue MiqAeException::AbortInstantiation => err
-        $miq_ae_logger.info("Aborting instantiation because [#{err.message}]")
+        $miq_ae_logger.info("Aborting instantiation because [#{err.message}]", :resource_id => miq_request_id)
         raise
       ensure
         @current.pop if pushed

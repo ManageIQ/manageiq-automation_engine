@@ -19,7 +19,7 @@ describe MiqAeEngine::MiqAeBuiltinMethod do
 
   describe 'AE entrypoint calculation' do
     let(:obj)       { double('OBJ', :workspace => workspace) }
-    let(:workspace) { double('WORKSPACE', :root => root) }
+    let(:workspace) { double('WORKSPACE', :root => root, :find_miq_request_id => 123) }
     let(:root)      { {} }
 
     context '/PhysicalInfrastructure/PhysicalServer/Lifecycle/Provisioning' do

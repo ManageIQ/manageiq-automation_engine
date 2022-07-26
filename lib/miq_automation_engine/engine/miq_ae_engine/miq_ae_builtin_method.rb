@@ -54,8 +54,7 @@ module MiqAeEngine
     def self.miq_parse_provider_category(obj, _inputs)
       provider_category = nil
       ATTRIBUTE_LIST.detect { |attr| provider_category = category_for_key(obj, attr) }
-      $miq_ae_logger.info("Setting provider_category to: #{provider_category}")
-
+      $miq_ae_logger.info("Setting provider_category to: #{provider_category}", :resource_id => obj.workspace.find_miq_request_id)
       obj.workspace.root["ae_provider_category"] = provider_category || UNKNOWN
 
       prepend_vendor(obj)
@@ -75,8 +74,10 @@ module MiqAeEngine
           %w[Configured_System Lifecycle Provisioning]
         when 'physical_server_provision' then %w[PhysicalServer Lifecycle Provisioning]
         end
-      $miq_ae_logger.info("Request:<#{obj['request']}> Target Component:<#{obj['target_component']}> ")
-      $miq_ae_logger.info("Target Class:<#{obj['target_class']}> Target Instance:<#{obj['target_instance']}>")
+
+      miq_request_id = obj.workspace.find_miq_request_id
+      $miq_ae_logger.info("Request:<#{obj['request']}> Target Component:<#{obj['target_component']}> ", :resource_id => miq_request_id)
+      $miq_ae_logger.info("Target Class:<#{obj['target_class']}> Target Instance:<#{obj['target_instance']}>", :resource_id => miq_request_id)
     end
 
     def self.miq_host_and_storage_least_utilized(obj, _inputs)
@@ -222,7 +223,7 @@ module MiqAeEngine
       vendor = nil
       ATTRIBUTE_LIST.detect { |attr| vendor = detect_vendor(obj.workspace.root[attr], attr) }
       if vendor
-        $miq_ae_logger.info("Setting prepend_namespace to: #{vendor}")
+        $miq_ae_logger.info("Setting prepend_namespace to: #{vendor}", :resource_id => obj.workspace.find_miq_request_id)
         obj.workspace.prepend_namespace = vendor.downcase
       end
     end

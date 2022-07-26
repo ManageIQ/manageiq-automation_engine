@@ -67,6 +67,7 @@ module MiqAeEngine
 
     def self.invoke(obj, aem, args)
       inputs = {}
+      miq_request_id = obj.workspace.find_miq_request_id
 
       aem.inputs.each do |f|
         key   = f.name
@@ -85,9 +86,9 @@ module MiqAeEngine
       end
 
       if obj.workspace.readonly?
-        $miq_ae_logger.info("Workspace Instantiation is READONLY -- skipping method [#{aem.fqname}] with inputs [#{inputs.inspect}]")
+        $miq_ae_logger.info("Workspace Instantiation is READONLY -- skipping method [#{aem.fqname}] with inputs [#{inputs.inspect}]", :resource_id => miq_request_id)
       elsif %w[inline builtin uri expression playbook ansible_job_template ansible_workflow_template].include?(aem.location.downcase.strip)
-        $miq_ae_logger.info("Invoking [#{aem.location}] method [#{aem.fqname}] with inputs [#{inputs.inspect}]")
+        $miq_ae_logger.info("Invoking [#{aem.location}] method [#{aem.fqname}] with inputs [#{inputs.inspect}]", :resource_id => miq_request_id)
         return MiqAeEngine::MiqAeMethod.send("invoke_#{aem.location.downcase.strip}", aem, obj, inputs)
       end
 
@@ -96,10 +97,11 @@ module MiqAeEngine
 
     def self.invoke_external(cmd, workspace, serialize_workspace = false)
       ws = nil
+      miq_request_id = workspace.find_miq_request_id
 
       if serialize_workspace
         ws, = Benchmark.realtime_block(:method_invoke_external_ws_create_time) { MiqAeWorkspace.create(:workspace => workspace) }
-        $miq_ae_logger.debug("Invoking External Method with MIQ_TOKEN=#{ws.guid} and command=#{cmd}")
+        $miq_ae_logger.debug("Invoking External Method with MIQ_TOKEN=#{ws.guid} and command=#{cmd}", :resource_id => miq_request_id)
       end
 
       # Release connection to thread that will be used by method process. It will return it when it is done
@@ -109,13 +111,13 @@ module MiqAeEngine
 
       ENV['MIQ_TOKEN'] = ws.guid unless ws.nil?
 
-      rc, msg = run_method(*cmd)
+      rc, msg = run_method(*cmd, miq_request_id)
       if ws
         ws.reload
         ws.setters&.each { |uri, value| workspace.varset(uri, value) }
         ws.delete
       end
-      process_ruby_method_results(rc, msg)
+      process_ruby_method_results(rc, msg, miq_request_id)
     end
     private_class_method :invoke_external
 
@@ -140,11 +142,11 @@ module MiqAeEngine
     end
     private_class_method :verbose_rc
 
-    def self.run_ruby_method(code)
+    def self.run_ruby_method(code, miq_request_id)
       ActiveRecord::Base.connection_pool.release_connection unless Rails.env.test?
       with_automation_env do
         ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
-          run_method(Gem.ruby) do |stdin|
+          run_method(Gem.ruby, miq_request_id) do |stdin|
             stdin.puts(code)
           end
         end
@@ -167,12 +169,12 @@ module MiqAeEngine
     end
     private_class_method :with_automation_env
 
-    def self.process_ruby_method_results(return_code, msg)
+    def self.process_ruby_method_results(return_code, msg, miq_request_id)
       case return_code
       when MIQ_OK
-        $miq_ae_logger.info(msg)
+        $miq_ae_logger.info(msg, :resource_id => miq_request_id)
       when MIQ_WARN
-        $miq_ae_logger.warn(msg)
+        $miq_ae_logger.warn(msg, :resource_id => miq_request_id)
       when MIQ_STOP
         raise MiqAeException::StopInstantiation,  msg
       when MIQ_ABORT
@@ -194,20 +196,21 @@ module MiqAeEngine
     private_class_method :ruby_method_runnable?
 
     def self.invoke_inline_ruby(aem, obj, inputs)
+      miq_request_id = obj.workspace.find_miq_request_id
       if ruby_method_runnable?(aem)
         obj.workspace.invoker ||= MiqAeEngine::DrbRemoteInvoker.new(obj.workspace)
         bodies, script_info = bodies_and_line_numbers(obj, aem)
         obj.workspace.invoker.with_server(inputs, bodies, aem.fqname, script_info) do |code|
-          $miq_ae_logger.info("<AEMethod [#{aem.fqname}]> Starting ")
-          rc, msg = run_ruby_method(code)
-          $miq_ae_logger.info("<AEMethod [#{aem.fqname}]> Ending")
-          process_ruby_method_results(rc, msg)
+          $miq_ae_logger.info("<AEMethod [#{aem.fqname}]> Starting ", :resource_id => miq_request_id)
+          rc, msg = run_ruby_method(code, miq_request_id)
+          $miq_ae_logger.info("<AEMethod [#{aem.fqname}]> Ending", :resource_id => miq_request_id)
+          process_ruby_method_results(rc, msg, miq_request_id)
         end
       end
     end
     private_class_method :invoke_inline_ruby
 
-    def self.run_method(cmd)
+    def self.run_method(cmd, miq_request_id)
       require 'open3'
       rc = nil
       threads = []
@@ -218,10 +221,14 @@ module MiqAeEngine
           yield stdin if block_given?
           stdin.close
           threads << Thread.new do
-            stdout.each_line { |msg| $miq_ae_logger.info("Method STDOUT: #{msg.strip}") }
+            stdout.each_line do |msg|
+              $miq_ae_logger.info("Method STDOUT: #{msg.strip}", :resource_id => miq_request_id)
+            end
           end
           threads << Thread.new do
-            stderr.each_line { |msg| $miq_ae_logger.error("Method STDERR: #{msg.strip}") }
+            stderr.each_line do |msg|
+              $miq_ae_logger.error("Method STDERR: #{msg.strip}", :resource_id => miq_request_id)
+            end
           end
           threads.each(&:join)
           wait_thread.value
@@ -232,24 +239,24 @@ module MiqAeEngine
         threads = []
       rescue StandardError => err
         STDERR.puts "** AUTOMATE ** Method exec failed because #{err.class}:#{err.message}" if ENV.key?("CI") # rubocop:disable Style/StderrPuts
-        $miq_ae_logger.error("Method exec failed because (#{err.class}:#{err.message})")
+        $miq_ae_logger.error("Method exec failed because (#{err.class}:#{err.message})", :resource_id => miq_request_id)
         rc = MIQ_ABORT
         msg = "Method execution failed"
       ensure
-        cleanup(method_pid, threads)
+        cleanup(method_pid, threads, miq_request_id)
       end
       return rc, msg
     end
     private_class_method :run_method
 
-    def self.cleanup(method_pid, threads)
+    def self.cleanup(method_pid, threads, miq_request_id)
       if method_pid
         begin
-          $miq_ae_logger.error("Terminating non responsive method with pid #{method_pid.inspect}")
+          $miq_ae_logger.error("Terminating non responsive method with pid #{method_pid.inspect}", :resource_id => miq_request_id)
           Process.kill("TERM", method_pid)
           Process.wait(method_pid)
         rescue Errno::ESRCH, RangeError => err
-          $miq_ae_logger.error("Error terminating #{method_pid.inspect} exception #{err}")
+          $miq_ae_logger.error("Error terminating #{method_pid.inspect} exception #{err}", :resource_id => miq_request_id)
         end
       end
       threads.each(&:exit)
@@ -275,6 +282,7 @@ module MiqAeEngine
     private_class_method :bodies_and_line_numbers
 
     def self.embedded_methods(workspace, method_obj, current_items, top)
+      miq_request_id = workspace.find_miq_request_id
       method_obj.embedded_methods.each do |name|
         method_name, klass, ns = embedded_method_name(name)
         match_ns = workspace.overlay_method(ns, klass, method_name)
@@ -284,12 +292,12 @@ module MiqAeEngine
 
         fqname = "/#{match_ns}/#{klass}/#{method_name}"
         if top == fqname
-          $miq_ae_logger.info("Skipping #{fqname}, cannot reference the top method")
+          $miq_ae_logger.info("Skipping #{fqname}, cannot reference the top method", :resource_id => miq_request_id)
         elsif loaded?(current_items, fqname)
-          $miq_ae_logger.info("Already loaded embedded method #{fqname}")
+          $miq_ae_logger.info("Already loaded embedded method #{fqname}", :resource_id => miq_request_id)
         else
           current_items << {:data => aem.data, :fqname => fqname}
-          $miq_ae_logger.info("Loading embedded method #{fqname}")
+          $miq_ae_logger.info("Loading embedded method #{fqname}", :resource_id => miq_request_id)
           # Get the embedded methods for the this method
           embedded_methods(workspace, aem, current_items, top)
         end
