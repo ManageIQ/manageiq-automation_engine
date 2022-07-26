@@ -106,6 +106,7 @@ module MiqAeEvent
   end
 
   def self.process_result(ae_result, aevent)
+    # binding.pry
     scheme, _userinfo, _host, _port, _registry, _path, _opaque, query, _fragment = MiqAeEngine::MiqAeUri.split(ae_result)
     args = MiqAeEngine::MiqAeUri.query2hash(query)
 
@@ -122,9 +123,10 @@ module MiqAeEvent
         inputs[:host]                  = Host.find_by(:id => aevent[:host_id])               unless aevent[:host_id].nil?
         inputs[:ext_management_system] = ExtManagementSystem.find_by(:id => aevent[:ems_id]) unless aevent[:ems_id].nil?
       end
-
+      # binding.pry
       target     = inputs.delete(:target) || inputs['vm']
       event_name = args['logical_event'] || aevent[:event_type]
+      RequestLogs.create(:log_message => "Enforcing Policy [#{ae_result}]", :miq_requests_id => $request_id, :object_id => $object_id, :object_type => $object_type)
       $miq_ae_logger.info("Enforcing Policy [#{ae_result}]")
       MiqPolicy.enforce_policy(target, event_name, inputs) unless target.nil?
     end

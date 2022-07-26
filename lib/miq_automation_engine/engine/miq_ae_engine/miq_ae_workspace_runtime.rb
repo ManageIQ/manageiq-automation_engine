@@ -102,11 +102,13 @@ module MiqAeEngine
     end
 
     def instantiate(uri, user, root = nil)
+      # binding.pry
       $miq_ae_logger.info("Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]") if root.nil?
+      RequestLogs.create(:log_message => "Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]", :miq_requests_id => $request_id, :object_id => $object_id, :object_type => $object_type)
       @ae_user = user
       @dom_search.ae_user = user
       scheme, _userinfo, _host, _port, _registry, path, _opaque, query, fragment = MiqAeUri.split(uri, "miqaedb")
-
+      # binding.pry
       raise MiqAeException::InvalidPathFormat, "Unsupported Scheme [#{scheme}]" unless MiqAeUri.scheme_supported?(scheme)
       raise MiqAeException::InvalidPathFormat, "Invalid URI <#{uri}>" if path.nil?
 
@@ -115,23 +117,24 @@ module MiqAeEngine
       if (ae_state_data = args.delete('ae_state_data'))
         @persist_state_hash.merge!(YAML.load(ae_state_data))
       end
-
+      # binding.pry
       if (ae_state_previous = args.delete('ae_state_previous'))
         load_previous_state_info(ae_state_previous)
       end
-
+      # binding.pry
       ns, klass, instance = MiqAePath.split(path)
       ns = overlay_namespace(scheme, uri, ns, klass, instance)
       current = @current.last
       ns ||= current[:ns] if current
       klass ||= current[:klass] if current
-
+      # binding.pry
       pushed = false
       is_state_machine = false
       raise MiqAeException::CyclicalRelationship, "cyclical reference: [#{MiqAeObject.fqname(ns, klass, instance)} with message=#{message}]" if cyclical?(ns, klass, instance, message)
-
+      # binding.pry
       begin
         if scheme == "miqaedb"
+          # binding.pry
           obj = MiqAeObject.new(self, ns, klass, instance)
 
           @current.push(:ns => ns, :klass => klass, :instance => instance, :object => obj, :message => message)
@@ -153,10 +156,12 @@ module MiqAeEngine
           obj = get_obj_from_path(path)
           raise MiqAeException::ObjectNotFound, "Object [#{path}] not found" if obj.nil?
         elsif ["miqaemethod", "method"].include?(scheme)
+          # binding.pry
           raise MiqAeException::MethodNotFound, "No Current Object" if current[:object].nil?
 
           return current[:object].process_method_via_uri(uri)
         end
+        # binding.pry
         obj.process_fields(message)
       rescue MiqAeException::MiqAeDatastoreError => err
         $miq_ae_logger.error(err.message)

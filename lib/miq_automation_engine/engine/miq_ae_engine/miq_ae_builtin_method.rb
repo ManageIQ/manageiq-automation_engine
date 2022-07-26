@@ -54,8 +54,10 @@ module MiqAeEngine
     def self.miq_parse_provider_category(obj, _inputs)
       provider_category = nil
       ATTRIBUTE_LIST.detect { |attr| provider_category = category_for_key(obj, attr) }
+      # binding.pry
       $miq_ae_logger.info("Setting provider_category to: #{provider_category}")
-
+      
+      RequestLogs.create(:log_message => "Setting provider_category to: #{provider_category}", :miq_requests_id => $request_id, :object_id => $object_id, :object_type => $object_type)
       obj.workspace.root["ae_provider_category"] = provider_category || UNKNOWN
 
       prepend_vendor(obj)
@@ -262,6 +264,7 @@ module MiqAeEngine
     private_class_method :emsevent?
 
     def self.miq_parse_event_stream(obj, _attr)
+      binding.pry
       event_stream = obj.workspace.root['event_stream']
       raise "Event Stream object not found" if event_stream.nil?
 

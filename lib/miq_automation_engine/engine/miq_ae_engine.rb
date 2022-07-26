@@ -15,6 +15,7 @@ module MiqAeEngine
   end
 
   def self.deliver_queue(args, options = {})
+    # binding.pry
     options = {
       :class_name  => 'MiqAeEngine',
       :method_name => 'deliver',
@@ -67,6 +68,20 @@ module MiqAeEngine
     options[:ae_state_previous] = YAML.dump(workspace.current_state_info) unless workspace.current_state_info.empty?
   end
 
+  def self.get_request_id(options)
+    # binding.pry
+    if options[:object_type].ends_with?("Request")
+      return options[:object_id]
+    end
+    if options[:object_type].ends_with?("Task")
+      return MiqRequestTask.find(options[:object_id]).miq_request_id
+    end
+    if options[:object_type].starts_with?("Service")
+      return Service.find(264).miq_request.id
+    end
+    nil
+  end
+
   def self.deliver(*args)
     options     = options_from_args(args)
     user_obj    = ae_user_object(options)
@@ -74,31 +89,38 @@ module MiqAeEngine
     vmdb_object = nil
     ae_result   = 'error'
     miq_task    = MiqTask.find(options[:open_url_task_id]) if options[:open_url_task_id]
-
+    $request_id = get_request_id(options)
+    $object_id = options[:object_id]
+    $object_type = options[:object_type]
+    # binding.pry
     begin
       miq_task&.state_active
+      # binding.pry
       object_name = "#{options[:object_type]}.#{options[:object_id]}"
-      _log.info("Delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate")
+      attr_string = ManageIQ::Password.sanitize_string(options[:attrs].inspect)
+      _log.info("Delivering #{attr_string} for object [#{object_name}] with state [#{state}] to Automate")
       automate_attrs = automate_attrs_from_options(options)
-
+      # binding.pry
+      RequestLogs.create(:log_message => "Delivering #{attr_string} with state [#{state}] to Automate", :miq_requests_id => $request_id, :object_id => $object_id, :object_type => $object_type)
       if options[:object_type]
         vmdb_object = options[:object_type].constantize.find_by!(:id => options[:object_id])
         automate_attrs[create_automation_attribute_key(vmdb_object)] = options[:object_id]
         vmdb_object.before_ae_starts(options) if vmdb_object.respond_to?(:before_ae_starts)
         vmdb_object.mark_execution_servers if vmdb_object.respond_to?(:mark_execution_servers)
       end
-
+      # binding.pry
       uri = create_automation_object(options[:instance_name], automate_attrs, create_automation_object_options(options, vmdb_object))
       ws  = resolve_automation_object(uri, user_obj)
-
+      # binding.pry 
       if ws.nil? || ws.root.nil?
-        message = "Error delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate: Empty Workspace"
+        message = "Error delivering #{attr_string} for object [#{object_name}] with state [#{state}] to Automate: Empty Workspace"
+        RequestLogs.create(:log_message => message, :miq_requests_id => $request_id, :object_id => $object_id, :object_type => $object_type)
         _log.error(message)
         return nil
       end
-
+      # binding.pry
       ae_result = ws.root['ae_result'] || 'ok'
-
+      # binding.pry
       unless ae_result.nil?
         if ae_result.casecmp('retry').zero?
           ae_retry_interval = ws.root['ae_retry_interval'].to_s.to_i_with_method
@@ -106,6 +128,7 @@ module MiqAeEngine
           change_options_by_ws(options, ws)
 
           message = "Requeuing #{ManageIQ::Password.sanitize_string(options.inspect)} for object [#{object_name}] with state [#{options[:state]}] to Automate for delivery in [#{ae_retry_interval}] seconds"
+          RequestLogs.create(:log_message => message, :miq_requests_id => $request_id, :object_id => $object_id, :object_type => $object_type)
           _log.info(message)
           queue_options = {:deliver_on => deliver_on}
           queue_options[:server_guid] = MiqServer.my_guid if ws.root['ae_retry_server_affinity']
@@ -114,17 +137,19 @@ module MiqAeEngine
         else
           if ae_result.casecmp('error').zero?
             miq_task&.update_message(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
-            message = "Error delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate: #{ws.root['ae_message']}"
+            message = "Error delivering #{attr_string} for object [#{object_name}] with state [#{state}] to Automate: #{ws.root['ae_message']}"
             _log.error(message)
+            RequestLogs.create(:log_message => message, :miq_requests_id => $request_id, :object_id => $object_id, :object_type => $object_type)
           end
           MiqAeEvent.process_result(ae_result, automate_attrs) if options[:instance_name].to_s.casecmp('EVENT').zero?
         end
       end
-
+      # binding.pry
       return_result(ws, options[:attrs])
     rescue MiqAeException::Error => err
       message = "Error delivering #{ManageIQ::Password.sanitize_string(automate_attrs.inspect)} for object [#{object_name}] with state [#{state}] to Automate: #{err.message}"
       miq_task&.error(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
+      RequestLogs.create(:log_message => message, :object_id => $object_id, :miq_requests_id => $request_id, :object_type => $object_type)
       _log.error(message)
       return nil
     ensure
