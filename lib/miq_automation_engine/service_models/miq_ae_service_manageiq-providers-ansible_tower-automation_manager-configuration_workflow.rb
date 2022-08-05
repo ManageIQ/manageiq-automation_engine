@@ -1,5 +1,5 @@
 module MiqAeMethodService
-  class MiqAeServiceManageIQ_Providers_AnsibleTower_AutomationManager_ConfigurationWorkflow < MiqAeServiceManageIQ_Providers_ExternalAutomationManager_ConfigurationScript
+  class MiqAeServiceManageIQ_Providers_AnsibleTower_AutomationManager_ConfigurationWorkflow < MiqAeServiceManageIQ_Providers_Awx_AutomationManager_ConfigurationWorkflow
     expose :run
 
     def create_job(args)

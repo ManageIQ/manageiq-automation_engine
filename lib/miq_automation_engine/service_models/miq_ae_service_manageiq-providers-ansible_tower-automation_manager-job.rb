@@ -1,5 +1,5 @@
 module MiqAeMethodService
-  class MiqAeServiceManageIQ_Providers_AnsibleTower_AutomationManager_Job < MiqAeServiceManageIQ_Providers_ExternalAutomationManager_OrchestrationStack
+  class MiqAeServiceManageIQ_Providers_AnsibleTower_AutomationManager_Job < MiqAeServiceManageIQ_Providers_Awx_AutomationManager_Job
     expose :refresh_ems
     expose :raw_stdout
 
