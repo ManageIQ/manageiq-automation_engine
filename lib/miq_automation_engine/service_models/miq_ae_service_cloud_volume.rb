@@ -10,6 +10,6 @@ module MiqAeMethodService
 
   def self.create_volume_task(ems, options = {})
     ext_management_system = ExtManagementSystem.find(ems)
-    CloudVolume.create_volume_queue('admin',ext_management_system,options)
+    CloudVolume.create_volume_queue('admin', ext_management_system, options)
   end
 end
