@@ -7,9 +7,9 @@ module MiqAeMethodService
     expose :attach_volume,          :override_return => nil
     expose :detach_volume,          :override_return => nil
 
-    def self.create_volume_task(ems,user, options = {})
+    def self.create_volume_task(ems,user_id, options = {})
       ext_management_system = ExtManagementSystem.find(ems)
-      CloudVolume.create_volume_queue(user.id, ext_management_system, options)
+      CloudVolume.create_volume_queue(user_id, ext_management_system, options)
     end
   end
 end
