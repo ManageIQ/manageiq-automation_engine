@@ -36,7 +36,7 @@ module MiqAeEngine
     end
 
     def self.miq_send_email(_obj, inputs)
-      MiqAeMethodService::MiqAeServiceMethods.send_email(inputs["to"], inputs["from"], inputs["subject"], inputs["body"], :cc => inputs["cc"], :bcc => inputs["bcc"], :content_type => inputs["content_type"])
+      MiqAeMethodService::MiqAeServiceMethods.send_email(inputs["to"], inputs["from"], inputs["subject"], inputs["body"], {:cc => inputs["cc"], :bcc => inputs["bcc"], :content_type => inputs["content_type"]})
     end
 
     def self.miq_snmp_trap_v1(_obj, inputs)

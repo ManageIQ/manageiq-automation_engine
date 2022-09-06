@@ -7,16 +7,16 @@ module MiqAeMethodService
 
     SYNCHRONOUS = Rails.env.test?
 
-    def self.send_email(to, from, subject, body, content_type: nil, cc: nil, bcc: nil) # rubocop:disable Naming/MethodParameterName
+    def self.send_email(to, from, subject, body, options = {}) # rubocop:disable Naming/MethodParameterName
       ar_method do
         meth = SYNCHRONOUS ? :deliver : :deliver_queue
         options = {
           :to           => to,
           :from         => from,
-          :cc           => cc,
-          :bcc          => bcc,
+          :cc           => options[:cc],
+          :bcc          => options[:bcc],
           :subject      => subject,
-          :content_type => content_type,
+          :content_type => options[:content_type],
           :body         => body
         }
         GenericMailer.send(meth, :automation_notification, options)
