@@ -49,12 +49,12 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, {:bcc => #{options[:bcc].inspect}, :cc => #{options[:cc].inspect}, :content_type => #{options[:content_type].inspect}})"
       @ae_method.update(:data => method)
       stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
-      expect(MiqQueue).to receive(:put).with(
+      expect(MiqQueue).to receive(:put).with({
         :class_name  => 'GenericMailer',
         :method_name => "deliver",
         :args        => [:automation_notification, options],
         :role        => "notifier"
-      ).once
+      }).once
       ae_object = invoke_ae.root(@ae_result_key)
       expect(ae_object).to be_truthy
     end

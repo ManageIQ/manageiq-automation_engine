@@ -80,7 +80,7 @@ describe MiqAeEngine do
         object_id = cluster.id
         automate_attrs = {"#{object_type}::#{object_type.underscore}" => object_id,
                           "User::user"                                => user.id}
-        expect(MiqAeEngine).to receive(:create_automation_object).with(instance_name, automate_attrs, :vmdb_object => cluster).and_return('uri')
+        expect(MiqAeEngine).to receive(:create_automation_object).with(instance_name, automate_attrs, {:vmdb_object => cluster}).and_return('uri')
         expect(call_automate(object_type, object_id)).to be_nil
       end
 
@@ -90,7 +90,7 @@ describe MiqAeEngine do
         object_id = ems.id
         automate_attrs = {"#{base_name}::#{base_name.underscore}" => object_id,
                           "User::user"                            => user.id}
-        expect(MiqAeEngine).to receive(:create_automation_object).with(instance_name, automate_attrs, :vmdb_object => ems).and_return('uri')
+        expect(MiqAeEngine).to receive(:create_automation_object).with(instance_name, automate_attrs, {:vmdb_object => ems}).and_return('uri')
         expect(call_automate(object_type, object_id)).to be_nil
       end
     end
@@ -141,7 +141,7 @@ describe MiqAeEngine do
           args[:fqclass_name] = "Factory/StateMachines/ServiceProvision_template"
           args[:user_id] = user.id
           args[:miq_group_id] = user.current_group.id
-          expect(MiqAeEngine).to receive(:create_automation_object).with("DEFAULT", attrs, :fqclass => "Factory/StateMachines/ServiceProvision_template").and_return('uri')
+          expect(MiqAeEngine).to receive(:create_automation_object).with("DEFAULT", attrs, {:fqclass => "Factory/StateMachines/ServiceProvision_template"}).and_return('uri')
           expect(MiqAeEngine.deliver(args)).to eq(@ws)
         end
       end
