@@ -41,6 +41,15 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       expect(ae_object).to be_truthy
     end
 
+    it "sends mail synchronous with options hash (for backwards compatibility with ruby 2.7) - drop when we drop ruby 2.7" do
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, {:bcc => #{options[:bcc].inspect}, :cc => #{options[:cc].inspect}, :content_type => #{options[:content_type].inspect}})"
+      @ae_method.update(:data => method)
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
+      expect(GenericMailer).to receive(:deliver).with(:automation_notification, options).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
+    end
+
     it "sends mail asynchronous" do
       miq_server = EvmSpecHelper.local_miq_server
       MiqRegion.seed
@@ -60,52 +69,102 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     end
   end
 
-  it "#snmp_trap_v1" do
-    to      = "wilma@bedrock.gov"
-    from    = "fred@bedrock.gov"
-    inputs  = {:to => to, :from => from}
-    method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v1, #{inputs.inspect})"
-    @ae_method.update(:data => method)
+  context "#snmp_trap" do
+    it "_v1" do
+      to      = "wilma@bedrock.gov"
+      from    = "fred@bedrock.gov"
+      inputs  = {:to => to, :from => from}
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v1, #{inputs.inspect})"
+      @ae_method.update(:data => method)
 
-    stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
-    expect(MiqSnmp).to receive(:trap_v1).with(inputs).once
-    ae_object = invoke_ae.root(@ae_result_key)
-    expect(ae_object).to be_truthy
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
+      expect(MiqSnmp).to receive(:trap_v1).with(inputs).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
 
-    stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
-    expect(MiqQueue).to receive(:put).with(
-      :class_name  => "MiqSnmp",
-      :method_name => "trap_v1",
-      :args        => [inputs],
-      :role        => "notifier",
-      :zone        => nil
-    ).once
-    ae_object = invoke_ae.root(@ae_result_key)
-    expect(ae_object).to be_truthy
-  end
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
+      expect(MiqQueue).to receive(:put).with(
+        :class_name  => "MiqSnmp",
+        :method_name => "trap_v1",
+        :args        => [inputs],
+        :role        => "notifier",
+        :zone        => nil
+      ).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
+    end
 
-  it "#snmp_trap_v2" do
-    to      = "wilma@bedrock.gov"
-    from    = "fred@bedrock.gov"
-    inputs  = {:to => to, :from => from}
-    method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v2, #{inputs.inspect})"
-    @ae_method.update(:data => method)
+    it "_v2" do
+      to      = "wilma@bedrock.gov"
+      from    = "fred@bedrock.gov"
+      inputs  = {:to => to, :from => from}
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v2, #{inputs.inspect})"
+      @ae_method.update(:data => method)
 
-    stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
-    expect(MiqSnmp).to receive(:trap_v2).with(inputs).once
-    ae_object = invoke_ae.root(@ae_result_key)
-    expect(ae_object).to be_truthy
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
+      expect(MiqSnmp).to receive(:trap_v2).with(inputs).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
 
-    stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
-    expect(MiqQueue).to receive(:put).with(
-      :class_name  => "MiqSnmp",
-      :method_name => "trap_v2",
-      :args        => [inputs],
-      :role        => "notifier",
-      :zone        => nil
-    ).once
-    ae_object = invoke_ae.root(@ae_result_key)
-    expect(ae_object).to be_truthy
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
+      expect(MiqQueue).to receive(:put).with(
+        :class_name  => "MiqSnmp",
+        :method_name => "trap_v2",
+        :args        => [inputs],
+        :role        => "notifier",
+        :zone        => nil
+      ).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
+    end
+
+    it "_v1 kwargs" do
+      to      = "wilma@bedrock.gov"
+      from    = "fred@bedrock.gov"
+      inputs  = {:to => to, :from => from}
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v1, **#{inputs.inspect})"
+      @ae_method.update(:data => method)
+
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
+      expect(MiqSnmp).to receive(:trap_v1).with(inputs).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
+
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
+      expect(MiqQueue).to receive(:put).with(
+        :class_name  => "MiqSnmp",
+        :method_name => "trap_v1",
+        :args        => [inputs],
+        :role        => "notifier",
+        :zone        => nil
+      ).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
+    end
+
+    it "_v2 kwargs" do
+      to      = "wilma@bedrock.gov"
+      from    = "fred@bedrock.gov"
+      inputs  = {:to => to, :from => from}
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:snmp_trap_v2, **#{inputs.inspect})"
+      @ae_method.update(:data => method)
+
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
+      expect(MiqSnmp).to receive(:trap_v2).with(inputs).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
+
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
+      expect(MiqQueue).to receive(:put).with(
+        :class_name  => "MiqSnmp",
+        :method_name => "trap_v2",
+        :args        => [inputs],
+        :role        => "notifier",
+        :zone        => nil
+      ).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
+    end
   end
 
   it "#vm_templates" do
@@ -142,6 +201,20 @@ describe MiqAeMethodService::MiqAeServiceMethods do
   end
 
   it "#category_create" do
+    @ae_method.update(:data => category_create_script)
+
+    expect(invoke_ae.root(@ae_result_key)).to be_truthy
+  end
+
+  def category_create_script_kwargs
+    <<-'RUBY'
+    options = {:name => 'flintstones',
+               :description => 'testing'}
+    $evm.root['foo'] = $evm.execute(:category_create, **options)
+    RUBY
+  end
+
+  it "#category_create kwargs" do
     @ae_method.update(:data => category_create_script)
 
     expect(invoke_ae.root(@ae_result_key)).to be_truthy
@@ -255,6 +328,16 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     expect(ct.entries.collect(&:name).include?('fred')).to be_truthy
   end
 
+  it "#tag_create kwargs" do
+    ct = FactoryBot.create(:classification_department_with_tags)
+    method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:tag_create, #{ct.name.inspect}, :name => 'fred', :description => 'ABC')"
+    @ae_method.update(:data => method)
+
+    expect(invoke_ae.root(@ae_result_key)).to be_truthy
+    ct.reload
+    expect(ct.entries.collect(&:name).include?('fred')).to be_truthy
+  end
+
   context "#tag_delete!" do
     let(:ct) { FactoryBot.create(:classification_department_with_tags) }
     let(:entry_name) { ct.entries.first.name }
@@ -326,6 +409,77 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       @ae_method.update(:data => method)
 
       expect(invoke_ae.root(@ae_result_key)).to be false
+    end
+  end
+
+  context "#create_provision_request" do
+    let(:workspace) do
+      double("MiqAeEngine::MiqAeWorkspaceRuntime",
+             :persist_state_hash => MiqAeEngine::StateVarHash.new,
+             :ae_user            => user)
+    end
+    let(:user) { double }
+    let(:miq_ae_service) { MiqAeMethodService::MiqAeService.new(workspace) }
+    before do
+      allow(User).to receive(:lookup_by_userid).and_return(user)
+    end
+
+    it "passes arguments correctly" do
+      expect(MiqProvisionVirtWorkflow).to receive(:from_ws).with('one', 'two', user).and_return(true)
+      expect(MiqAeMethodService::MiqAeServiceModelBase).to receive(:wrap_results).and_return(true)
+      allow(workspace).to receive(:disable_rbac)
+      miq_ae_service.execute(:create_provision_request, 'one', 'two')
+    end
+
+    it "passes array arguments correctly" do
+      expect(MiqProvisionVirtWorkflow).to receive(:from_ws).with(['one', 'two'], user).and_return(true)
+      expect(MiqAeMethodService::MiqAeServiceModelBase).to receive(:wrap_results).and_return(true)
+      allow(workspace).to receive(:disable_rbac)
+      miq_ae_service.execute(:create_provision_request, %w[one two])
+    end
+
+    it "passes empty array arguments correctly" do
+      expect(MiqProvisionVirtWorkflow).to receive(:from_ws).with([], user).and_return(true)
+      expect(MiqAeMethodService::MiqAeServiceModelBase).to receive(:wrap_results).and_return(true)
+      allow(workspace).to receive(:disable_rbac)
+      miq_ae_service.execute(:create_provision_request, [])
+    end
+
+    it "passes nil argument correctly" do
+      expect(MiqProvisionVirtWorkflow).to receive(:from_ws).with(user).and_return(true)
+      expect(MiqAeMethodService::MiqAeServiceModelBase).to receive(:wrap_results).and_return(true)
+      allow(workspace).to receive(:disable_rbac)
+      miq_ae_service.execute(:create_provision_request)
+    end
+  end
+
+  context "#create_automation_request" do
+    let(:workspace) do
+      double("MiqAeEngine::MiqAeWorkspaceRuntime",
+             :persist_state_hash => MiqAeEngine::StateVarHash.new,
+             :ae_user            => user)
+    end
+    let(:user)           { double }
+    let(:admin_user)     { double }
+    let(:miq_ae_service) { MiqAeMethodService::MiqAeService.new(workspace) }
+    let(:auto_approve)   { true }
+    let(:options)        { {:test => 1} }
+
+    it "passes arguments correctly" do
+      expect(AutomationRequest).to receive(:create_request).with(options, user, auto_approve).and_return(true)
+      expect(MiqAeMethodService::MiqAeServiceModelBase).to receive(:wrap_results).and_return(true)
+      allow(workspace).to receive(:disable_rbac)
+      allow(User).to receive(:lookup_by_userid!).and_return(user)
+      miq_ae_service.execute(:create_automation_request, options, user, auto_approve)
+    end
+
+    it "passes arguments correctly from defaults" do
+      expect(AutomationRequest).to receive(:create_request).with(options, admin_user, false).and_return(true)
+      expect(MiqAeMethodService::MiqAeServiceModelBase).to receive(:wrap_results).and_return(true)
+      allow(workspace).to receive(:disable_rbac)
+      allow(User).to receive(:lookup_by_userid!).and_return(admin_user)
+
+      miq_ae_service.execute(:create_automation_request, options)
     end
   end
 
