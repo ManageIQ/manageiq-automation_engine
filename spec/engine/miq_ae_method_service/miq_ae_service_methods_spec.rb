@@ -41,6 +41,25 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       expect(ae_object).to be_truthy
     end
 
+    it "sends mail and rejects invalid inputs" do
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, :bcc => #{options[:bcc].inspect}, :cc => #{options[:cc].inspect}, :joe => 'OMG', :content_type => #{options[:content_type].inspect})"
+      @ae_method.update(:data => method)
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
+      expect(GenericMailer).to receive(:deliver).with(:automation_notification, options).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
+    end
+
+    it "sends mail synchronous with no options or kwargs" do
+      method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, nil)"
+      @ae_method.update(:data => method)
+      stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', true)
+      lesser_options = options.except(:cc, :bcc, :content_type)
+      expect(GenericMailer).to receive(:deliver).with(:automation_notification, lesser_options).once
+      ae_object = invoke_ae.root(@ae_result_key)
+      expect(ae_object).to be_truthy
+    end
+
     it "sends mail synchronous with options hash (for backwards compatibility with ruby 2.7) - drop when we drop ruby 2.7" do
       method = "$evm.root['#{@ae_result_key}'] = $evm.execute(:send_email, #{options[:to].inspect}, #{options[:from].inspect}, #{options[:subject].inspect}, #{options[:body].inspect}, {:bcc => #{options[:bcc].inspect}, :cc => #{options[:cc].inspect}, :content_type => #{options[:content_type].inspect}})"
       @ae_method.update(:data => method)
