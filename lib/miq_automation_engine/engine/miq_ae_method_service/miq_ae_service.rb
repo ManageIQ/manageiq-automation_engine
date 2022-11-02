@@ -201,14 +201,20 @@ module MiqAeMethodService
     def ldap
     end
 
-    def execute(method_name, *args)
-      User.with_user(@workspace.ae_user) { execute_with_user(method_name, *args) }
+    def execute(method_name, *args, **kwargs, &block)
+      User.with_user(@workspace.ae_user) { execute_with_user(method_name, *args, **kwargs, &block) }
     end
 
-    def execute_with_user(method_name, *args)
+    def execute_with_user(method_name, *args, **kwargs, &block)
       # Since each request from DRb client could run in a separate thread
       # We have to set the current_user in every thread.
-      MiqAeServiceMethods.send(method_name, *args)
+
+      # For ruby 2.6-3.0+ support, we grab any kwargs and append as a hash
+      # at the end of the args, as all MiqAeServiceMethods now don't accept
+      # kwargs.  When we get to ruby 3, we can remove this and convert all to
+      # kwargs.
+      args << kwargs unless kwargs.blank?
+      MiqAeServiceMethods.send(method_name, *args, &block)
     rescue NoMethodError => err
       raise MiqAeException::MethodNotFound, err.message
     end

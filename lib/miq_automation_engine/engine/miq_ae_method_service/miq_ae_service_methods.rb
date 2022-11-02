@@ -7,18 +7,29 @@ module MiqAeMethodService
 
     SYNCHRONOUS = Rails.env.test?
 
-    def self.send_email(to, from, subject, body, content_type: nil, cc: nil, bcc: nil) # rubocop:disable Naming/MethodParameterName
+    def self.send_email(to, from, subject, body, *args, **kwargs)
+      # TODO: Remove this mess once we're on ruby 3.0+ only: go back to only kwargs.
+      # This is the only method that was expecting kwargs and one caller, execute_with_user,
+      # was changed to capture the kwargs as a hash (via **kwargs) and append them to the args
+      # and call MiqAeServiceMethods methods with those args. We now accept options hash as the last
+      # args or kwargs for any non execute_with_user callers.
+      options = if kwargs.present?
+        kwargs
+      else
+        args.last || {}
+      end
+
+      # we accept only 3 kwargs / options keys
+      options = options.slice(:cc, :bcc, :content_type)
+
       ar_method do
         meth = SYNCHRONOUS ? :deliver : :deliver_queue
-        options = {
+        options.merge!({
           :to           => to,
           :from         => from,
-          :cc           => cc,
-          :bcc          => bcc,
           :subject      => subject,
-          :content_type => content_type,
           :body         => body
-        }
+        })
         GenericMailer.send(meth, :automation_notification, options)
         true
       end
@@ -144,7 +155,7 @@ module MiqAeMethodService
       # Need to add the username into the array of params
       # TODO: This code should pass a real username, similar to how the web-service
       #      passes the name of the user that logged into the web-service.
-      args.insert(1, User.lookup_by_userid("admin")) if args.kind_of?(Array)
+      args << User.lookup_by_userid("admin")
       MiqAeServiceModelBase.wrap_results(MiqProvisionVirtWorkflow.from_ws(*args))
     end
 
