@@ -12,9 +12,12 @@ module MiqAeEngine
       setup if num_methods.zero?
       self.num_methods += 1
       svc = MiqAeMethodService::MiqAeService.new(@workspace, inputs)
-      yield build_method_content(bodies, method_name, svc.object_id, script_info)
+      begin
+        yield build_method_content(bodies, method_name, svc.object_id, script_info)
+      ensure
+        svc.destroy # Reset inputs to empty to avoid storing object references
+      end
     ensure
-      svc.destroy # Reset inputs to empty to avoid storing object references
       self.num_methods -= 1
       teardown if num_methods.zero?
     end
