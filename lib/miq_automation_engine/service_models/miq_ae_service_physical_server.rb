@@ -5,9 +5,8 @@ module MiqAeMethodService
     expose :power_on
     expose :power_off
 
-    def self.create_server_profile_and_deploy_task(ems)
-      ext_management_system = ExtManagementSystem.find(ems)
-      PhysicalServerProfileTemplate.check
+    def self.create_server_profile_and_deploy_task(template_id, server_id, profile_name)
+      PhysicalServerProfileTemplate.deploy_server_from_template(template_id, server_id, profile_name)
     end
   end
 end
