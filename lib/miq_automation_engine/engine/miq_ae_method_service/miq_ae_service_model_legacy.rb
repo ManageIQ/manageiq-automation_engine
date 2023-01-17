@@ -37,12 +37,6 @@ module MiqAeMethodService
       'template_infra'                               => 'ManageIQ_Providers_InfraManager_Template',
       'vm_infra'                                     => 'ManageIQ_Providers_InfraManager_Vm',
       'ems_infra'                                    => 'ManageIQ_Providers_InfraManager',
-      # Microsoft
-      'host_microsoft'                               => 'ManageIQ_Providers_Microsoft_InfraManager_Host',
-      'miq_provision_microsoft'                      => 'ManageIQ_Providers_Microsoft_InfraManager_Provision',
-      'template_microsoft'                           => 'ManageIQ_Providers_Microsoft_InfraManager_Template',
-      'vm_microsoft'                                 => 'ManageIQ_Providers_Microsoft_InfraManager_Vm',
-      'ems_microsoft'                                => 'ManageIQ_Providers_Microsoft_InfraManager',
       # Openstack
       'auth_key_pair_openstack'                      => 'ManageIQ_Providers_Openstack_CloudManager_AuthKeyPair',
       'availability_zone_openstack'                  => 'ManageIQ_Providers_Openstack_CloudManager_AvailabilityZone',
