@@ -69,6 +69,19 @@ module MiqAeEngine
 
   def self.deliver(*args)
     options     = options_from_args(args)
+
+    # HACK: If we are launching a specific Automate instance representing a workflow, then we run that instead
+    if options[:namespace] == "System" && options[:class_name] == "Workflow"
+      workflow_id = options[:instance_name].split("-").last.to_i
+      workflow = Workflow.find(workflow_id)
+
+      task_id = workflow.execute(inputs: options)
+      MiqTask.wait_for_taskid(task_id)
+
+      workflow_instance_id = MiqTask.find(task_id).context_data[:workflow_instance_id]
+      return WorkflowInstance.find(workflow_instance_id)
+    end
+
     user_obj    = ae_user_object(options)
     state       = options[:state]
     vmdb_object = nil
