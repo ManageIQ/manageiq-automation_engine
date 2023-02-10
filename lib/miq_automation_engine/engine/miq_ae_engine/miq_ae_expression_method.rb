@@ -12,9 +12,7 @@ module MiqAeEngine
     end
 
     def run
-      @search_objects = Rbac.search(:filter         => MiqExpression.new(@exp),
-                                    :class          => @exp_object,
-                                    :results_format => :objects).first
+      @search_objects = Rbac.filtered(@exp_object, :filter => MiqExpression.new(@exp))
       @search_objects.empty? ? error_handler : set_result
     end
 
