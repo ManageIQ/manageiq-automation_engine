@@ -171,7 +171,7 @@ class Exception
   end
 
   def get_file_info(line)
-    script_info = YAML.load(SCRIPT_INFO_YAML)
+    script_info = YAML.safe_load(SCRIPT_INFO_YAML, permitted_classes: [Range])
     script_info.each do |fqname, range|
       return fqname, line - range.begin if range.cover?(line)
     end
