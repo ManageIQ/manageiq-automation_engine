@@ -272,7 +272,7 @@ module MiqAeMethodService
 
     def self.find_miq_request_id(object)
       if !defined?(object.type).nil?
-        if object.type.to_s.match?("RequestEvent")
+        if object.type.to_s.include?("RequestEvent")
           return object.target_id
         elsif object.type.to_s.include?("Request")
           return object.id
