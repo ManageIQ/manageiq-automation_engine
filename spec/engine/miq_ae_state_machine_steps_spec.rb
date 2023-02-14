@@ -350,14 +350,14 @@ describe "MiqAeStateMachineSteps" do
   it "ensure MIQ STOP is raised" do
     tweak_instance("/#{@domain}/#{@namespace}/#{@state_class}", @state_instance,
                    'state1', 'on_entry', "common_state_method(exit_code => 8)")
-    allow($miq_ae_logger).to receive(:info).with(/<AEMethod/)
+    allow($miq_ae_logger).to receive(:info).with(/<AEMethod/, :resource_id => nil)
     allow($miq_ae_logger).to receive(:info).with(/MiqAeEngine: /)
-    allow($miq_ae_logger).to receive(:info).with(/Instantiating/)
-    allow($miq_ae_logger).to receive(:info).with(/In State/)
+    allow($miq_ae_logger).to receive(:info).with(/Instantiating/, :resource_id => nil)
+    allow($miq_ae_logger).to receive(:info).with(/In State/, :resource_id => nil)
     allow($miq_ae_logger).to receive(:info).with(/Updated namespace/)
-    allow($miq_ae_logger).to receive(:info).with(/Invoking/)
+    allow($miq_ae_logger).to receive(:info).with(/Invoking/, :resource_id => nil)
 
-    expect($miq_ae_logger).to receive(:info).with("Stopping instantiation because [Method exited with rc=MIQ_STOP]")
+    expect($miq_ae_logger).to receive(:info).with("Stopping instantiation because [Method exited with rc=MIQ_STOP]", :resource_id => nil)
     MiqAeEngine.instantiate(@fqname, @user)
   end
 end

@@ -67,6 +67,11 @@ module MiqAeEngine
     options[:ae_state_previous] = YAML.dump(workspace.current_state_info) unless workspace.current_state_info.empty?
   end
 
+  # Helper method to log the request to both the request_logs table and $log if a request_id is present
+  private_class_method def self.request_log(severity, message = nil, resource_id: nil, &block)
+    MiqRequest.request_log(severity, message, resource_id: resource_id, &block)
+  end
+
   def self.deliver(*args)
     options     = options_from_args(args)
     user_obj    = ae_user_object(options)
@@ -78,7 +83,6 @@ module MiqAeEngine
     begin
       miq_task&.state_active
       object_name = "#{options[:object_type]}.#{options[:object_id]}"
-      _log.info("Delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate")
       automate_attrs = automate_attrs_from_options(options)
 
       if options[:object_type]
@@ -89,11 +93,21 @@ module MiqAeEngine
       end
 
       uri = create_automation_object(options[:instance_name], automate_attrs, create_automation_object_options(options, vmdb_object))
+
+      if !uri.nil?
+        _scheme, _userinfo, _host, _port, _registry, _path, _opaque, query, _fragment = MiqAeUri.split(uri, "miqaedb")
+        args = MiqAeUri.query2hash(query)
+        miq_request_id = MiqAeWorkspaceRuntime.find_miq_request_id(args)
+      end
+
+      attr_string = ManageIQ::Password.sanitize_string(options[:attrs].inspect)
+      request_log(:info, "Delivering #{attr_string} for object [#{object_name}] with state [#{state}] to Automate", :resource_id => miq_request_id)
+
       ws  = resolve_automation_object(uri, user_obj)
 
       if ws.nil? || ws.root.nil?
-        message = "Error delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate: Empty Workspace"
-        _log.error(message)
+        message = "Error delivering #{attr_string} for object [#{object_name}] with state [#{state}] to Automate: Empty Workspace"
+        request_log(:error, message, :resource_id => miq_request_id)
         return nil
       end
 
@@ -106,7 +120,7 @@ module MiqAeEngine
           change_options_by_ws(options, ws)
 
           message = "Requeuing #{ManageIQ::Password.sanitize_string(options.inspect)} for object [#{object_name}] with state [#{options[:state]}] to Automate for delivery in [#{ae_retry_interval}] seconds"
-          _log.info(message)
+          request_log(:info, message, :resource_id => miq_request_id)
           queue_options = {:deliver_on => deliver_on}
           queue_options[:server_guid] = MiqServer.my_guid if ws.root['ae_retry_server_affinity']
           miq_task&.state_queued
@@ -114,8 +128,8 @@ module MiqAeEngine
         else
           if ae_result.casecmp('error').zero?
             miq_task&.update_message(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
-            message = "Error delivering #{ManageIQ::Password.sanitize_string(options[:attrs].inspect)} for object [#{object_name}] with state [#{state}] to Automate: #{ws.root['ae_message']}"
-            _log.error(message)
+            message = "Error delivering #{attr_string} for object [#{object_name}] with state [#{state}] to Automate: #{ws.root['ae_message']}"
+            request_log(:error, message, :resource_id => miq_request_id)
           end
           MiqAeEvent.process_result(ae_result, automate_attrs) if options[:instance_name].to_s.casecmp('EVENT').zero?
         end
@@ -125,7 +139,7 @@ module MiqAeEngine
     rescue MiqAeException::Error => err
       message = "Error delivering #{ManageIQ::Password.sanitize_string(automate_attrs.inspect)} for object [#{object_name}] with state [#{state}] to Automate: #{err.message}"
       miq_task&.error(MiqTask::MESSAGE_TASK_COMPLETED_UNSUCCESSFULLY)
-      _log.error(message)
+      request_log(:error, message, :resource_id => miq_request_id)
       return nil
     ensure
       vmdb_object.after_ae_delivery(ae_result.to_s.downcase) if vmdb_object.respond_to?(:after_ae_delivery)
@@ -321,7 +335,8 @@ module MiqAeEngine
 
     User.find_by!(:id => options[:user_id]).tap do |obj|
       obj.current_group = MiqGroup.find_by!(:id => options[:miq_group_id]) unless options[:miq_group_id] == obj.current_group.id
-      $miq_ae_logger.info("User [#{obj.userid}] with current group ID [#{obj.current_group.id}] name [#{obj.current_group.description}]")
+      miq_request_id = options[:object_type].to_s.include?("Request") ? options[:object_id] : nil
+      $miq_ae_logger.info("User [#{obj.userid}] with current group ID [#{obj.current_group.id}] name [#{obj.current_group.description}]", :resource_id => miq_request_id)
     end
   end
 end

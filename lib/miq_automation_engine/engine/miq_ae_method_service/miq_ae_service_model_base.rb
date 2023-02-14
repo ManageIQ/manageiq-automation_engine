@@ -270,6 +270,19 @@ module MiqAeMethodService
       super
     end
 
+    def self.find_miq_request_id(object)
+      if !defined?(object.type).nil?
+        if object.type.to_s.match?("RequestEvent")
+          return object.target_id
+        elsif object.type.to_s.include?("Request")
+          return object.id
+        elsif object.type.to_s.include?("Task")
+          return object.miq_request_id
+        end
+      end
+      nil
+    end
+
     # @param obj [Integer,ActiveRecord::Base] The object id or ActiveRecord instance to wrap
     #   in a service model
     def initialize(obj)
@@ -347,7 +360,7 @@ module MiqAeMethodService
         begin
           @object.public_send(name, *params)
         rescue Exception # rubocop:disable Lint/RescueException
-          $miq_ae_logger.error("The following error occurred during instance method <#{name}> for AR object <#{@object.inspect}>")
+          $miq_ae_logger.error("The following error occurred during instance method <#{name}> for AR object <#{@object.inspect}>", :resource_id => self.class.find_miq_request_id(@object))
           raise
         end
       end
@@ -366,8 +379,9 @@ module MiqAeMethodService
       ActiveRecord::Base.connection.clear_query_cache if ActiveRecord::Base.connection.query_cache_enabled
       yield
     rescue Exception => err # rubocop:disable Lint/RescueException
-      $miq_ae_logger.error("MiqAeServiceModelBase.ar_method raised: <#{err.class}>: <#{err.message}>")
-      $miq_ae_logger.error(err.backtrace.join("\n"))
+      miq_request_id = find_miq_request_id(@object)
+      $miq_ae_logger.error("MiqAeServiceModelBase.ar_method raised: <#{err.class}>: <#{err.message}>", :resource_id => miq_request_id)
+      $miq_ae_logger.error(err.backtrace.join("\n"), :resource_id => miq_request_id)
       raise
     ensure
       begin

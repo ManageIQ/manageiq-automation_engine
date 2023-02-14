@@ -67,6 +67,7 @@ module MiqAeEvent
   def self.build_evm_event(event, passed_inputs = {})
     inputs = passed_inputs.dup
 
+    # TODO: Add to Request Logs
     $miq_ae_logger.info("MiqAeEvent.build_evm_event >> event=<#{event.inspect}> inputs=<#{inputs.inspect}>")
     event_type = event.respond_to?(:name) ? event.name : event
     aevent = {:event_type => event_type}
@@ -122,7 +123,6 @@ module MiqAeEvent
         inputs[:host]                  = Host.find_by(:id => aevent[:host_id])               unless aevent[:host_id].nil?
         inputs[:ext_management_system] = ExtManagementSystem.find_by(:id => aevent[:ems_id]) unless aevent[:ems_id].nil?
       end
-
       target     = inputs.delete(:target) || inputs['vm']
       event_name = args['logical_event'] || aevent[:event_type]
       $miq_ae_logger.info("Enforcing Policy [#{ae_result}]")

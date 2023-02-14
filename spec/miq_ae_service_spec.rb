@@ -39,9 +39,16 @@ end
 describe MiqAeMethodService::MiqAeService do
   context "#service_model" do
     let(:root_object) { {'ae_state_max_retries' => '100', 'ae_retry_interval' => 2.seconds } }
-    let(:workspace) { double('ws', :persist_state_hash => MiqAeEngine::StateVarHash.new, :get_obj_from_path => root_object) }
     let(:miq_ae_service) { described_class.new(workspace) }
     let(:prefix) { "MiqAeMethodService::MiqAeService" }
+
+    let(:workspace) do
+      double("MiqAeEngine::MiqAeWorkspaceRuntime",
+        :persist_state_hash  => MiqAeEngine::StateVarHash.new,
+        :get_obj_from_path   => root_object,
+        :find_miq_request_id => 123
+      )
+    end
 
     before { allow(workspace).to receive(:disable_rbac) }
 
@@ -237,9 +244,12 @@ describe MiqAeMethodService::MiqAeService do
 
     let(:options) { {} }
     let(:workspace) do
-      double("MiqAeEngine::MiqAeWorkspaceRuntime", :root               => options,
-                                                   :ae_user            => user,
-                                                   :persist_state_hash => MiqAeEngine::StateVarHash.new)
+      double("MiqAeEngine::MiqAeWorkspaceRuntime",
+        :root                => options,
+        :ae_user             => user,
+        :persist_state_hash  => MiqAeEngine::StateVarHash.new,
+        :find_miq_request_id => 123
+      )
     end
     let(:miq_ae_service) { described_class.new(workspace) }
     let(:user) { FactoryBot.create(:user_with_group) }

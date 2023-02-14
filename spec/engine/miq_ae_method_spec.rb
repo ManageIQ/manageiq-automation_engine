@@ -4,6 +4,10 @@ describe MiqAeEngine::MiqAeMethod do
       Class.new do
         attr_accessor :invoker, :root
 
+        def find_miq_request_id
+          123
+        end
+
         def persist_state_hash
         end
 
@@ -36,7 +40,7 @@ describe MiqAeEngine::MiqAeMethod do
 
       it "logs and returns the correct exit status" do
         allow($miq_ae_logger).to receive(:info).and_call_original
-        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK").at_least(:once)
+        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK", :resource_id => 123).at_least(:once)
         expect($miq_ae_logger).to_not receive(:error)
 
         expect(subject).to eq(0)
@@ -53,7 +57,7 @@ describe MiqAeEngine::MiqAeMethod do
 
       it "logs the error with file and line numbers changed in the stacktrace, and raises an exception" do
         allow($miq_ae_logger).to receive(:error).and_call_original
-        expect($miq_ae_logger).to receive(:error).with("Method STDERR: /my/automate/method:2:in `<main>': unhandled exception").at_least(:once)
+        expect($miq_ae_logger).to receive(:error).with("Method STDERR: /my/automate/method:2:in `<main>': unhandled exception", :resource_id => 123).at_least(:once)
 
         expect { subject }.to raise_error(MiqAeException::UnknownMethodRc)
       end
@@ -73,8 +77,8 @@ describe MiqAeEngine::MiqAeMethod do
 
       it "logs the error with file and line numbers changed in the stacktrace, and raises an exception" do
         allow($miq_ae_logger).to receive(:error).and_call_original
-        expect($miq_ae_logger).to receive(:error).with("Method STDERR: /my/automate/method:2:in `my_method': unhandled exception").at_least(:once)
-        expect($miq_ae_logger).to receive(:error).with("Method STDERR: from /my/automate/method:6:in `<main>'").at_least(:once)
+        expect($miq_ae_logger).to receive(:error).with("Method STDERR: /my/automate/method:2:in `my_method': unhandled exception", :resource_id => 123).at_least(:once)
+        expect($miq_ae_logger).to receive(:error).with("Method STDERR: from /my/automate/method:6:in `<main>'", :resource_id => 123).at_least(:once)
 
         expect { subject }.to raise_error(MiqAeException::UnknownMethodRc)
       end
@@ -90,7 +94,7 @@ describe MiqAeEngine::MiqAeMethod do
 
       it "logs and returns the correct exit status" do
         allow($miq_ae_logger).to receive(:info).and_call_original
-        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK").at_least(:once)
+        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK", :resource_id => 123).at_least(:once)
         expect($miq_ae_logger).to_not receive(:error)
 
         expect(subject).to eq(0)
@@ -122,7 +126,7 @@ describe MiqAeEngine::MiqAeMethod do
 
       it "logs and returns the correct exit status" do
         allow($miq_ae_logger).to receive(:info).and_call_original
-        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK").at_least(:once)
+        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK", :resource_id => 123).at_least(:once)
         expect($miq_ae_logger).to_not receive(:error)
 
         expect(subject).to eq(0)
@@ -139,7 +143,7 @@ describe MiqAeEngine::MiqAeMethod do
 
       it "logs and returns the correct exit status" do
         allow($miq_ae_logger).to receive(:warn).and_call_original
-        expect($miq_ae_logger).to receive(:warn).with("Method exited with rc=MIQ_WARN").at_least(:once)
+        expect($miq_ae_logger).to receive(:warn).with("Method exited with rc=MIQ_WARN", :resource_id => 123).at_least(:once)
         expect($miq_ae_logger).to_not receive(:error)
 
         expect(subject).to eq(4)
@@ -221,10 +225,10 @@ describe MiqAeEngine::MiqAeMethod do
         svc = MiqAeMethodService::MiqAeService.new(workspace, [], logger_stub)
         expect(MiqAeMethodService::MiqAeService).to receive(:new).with(workspace, inputs).and_return(svc)
 
-        expect($miq_ae_logger).to receive(:info).with("<AEMethod [/my/automate/method]> Starting ").ordered
+        expect($miq_ae_logger).to receive(:info).with("<AEMethod [/my/automate/method]> Starting ", :resource_id => 123).ordered
         expect(logger_stub).to    receive(:sleep).and_call_original.ordered
-        expect($miq_ae_logger).to receive(:info).with("<AEMethod [/my/automate/method]> Ending").ordered
-        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK").ordered
+        expect($miq_ae_logger).to receive(:info).with("<AEMethod [/my/automate/method]> Ending", :resource_id => 123).ordered
+        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK", :resource_id => 123).ordered
 
         expect(subject).to eq(0)
         expect(logger_stub.expected_messages).to eq([])
@@ -335,7 +339,7 @@ describe MiqAeEngine::MiqAeMethod do
         allow(::MiqAeMethod).to receive(:find_by).with(:class_id => klass.id, :name => 'TopMethod').and_return(embed_method)
         allow($miq_ae_logger).to receive(:info).and_call_original
         allow(workspace).to receive(:overlay_method).with('Shared', 'Methods', 'TopMethod').and_return('Shared')
-        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK").at_least(:once)
+        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK", :resource_id => 123).at_least(:once)
         expect($miq_ae_logger).to_not receive(:error)
 
         expect(subject).to eq(0)
@@ -357,7 +361,7 @@ describe MiqAeEngine::MiqAeMethod do
           allow($miq_ae_logger).to receive(:info).and_call_original
           allow($miq_ae_logger).to receive(:error).and_call_original
           allow(workspace).to receive(:overlay_method).with('Shared', 'Methods', 'RaiseException').and_return('Shared')
-          expect($miq_ae_logger).to receive(:error).with("<AEMethod /my/automate/method>   /Shared/Methods/RaiseException:8:in `some_method'").at_least(:once)
+          expect($miq_ae_logger).to receive(:error).with("<AEMethod /my/automate/method>   /Shared/Methods/RaiseException:8:in `some_method'", :resource_id => 123).at_least(:once)
           expect { subject }.to raise_error(MiqAeException::UnknownMethodRc)
         end
       end

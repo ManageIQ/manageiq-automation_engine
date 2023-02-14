@@ -17,7 +17,7 @@ module ManageIQ
       end
 
       def self.init_loggers
-        $miq_ae_logger ||= Vmdb::Loggers.create_logger("automation.log")
+        $miq_ae_logger ||= Vmdb::Loggers.create_logger("automation.log", ManageIQ::AutomationEngine::Logger)
       end
 
       def self.apply_logger_config(config)

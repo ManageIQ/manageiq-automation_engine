@@ -14,7 +14,7 @@ describe "MiqAeStateMachine" do
     end
   end
 
-  let(:workspace) { double("MiqAeEngine::MiqAeWorkspaceRuntime", :root => options) }
+  let(:workspace) { double("MiqAeEngine::MiqAeWorkspaceRuntime", :root => options, :find_miq_request_id => 123) }
   let(:test_class_instance) { test_class.new(workspace) }
 
   describe "#enforce_max_retries" do
