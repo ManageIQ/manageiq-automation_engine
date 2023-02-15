@@ -100,6 +100,10 @@ module MiqAeEngine
           root.attributes[root.attributes['vmdb_object_type']].object.miq_request_id
         end
       end
+    rescue => err
+      $miq_ae_logger.error("Failed to find miq_request_id, in root.attributes: #{root.attributes.keys}")
+      $miq_ae_logger.error(err)
+      nil
     end
 
     def rbac_enabled?
