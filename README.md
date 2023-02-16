@@ -1,12 +1,12 @@
 # ManageIQ::AutomationEngine
 
-[![CI](https://github.com/ManageIQ/manageiq-automation_engine/actions/workflows/ci.yaml/badge.svg)](https://github.com/ManageIQ/manageiq-automation_engine/actions/workflows/ci.yaml)
+[![CI](https://github.com/ManageIQ/manageiq-automation_engine/actions/workflows/ci.yaml/badge.svg?branch=petrosian)](https://github.com/ManageIQ/manageiq-automation_engine/actions/workflows/ci.yaml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/3833d6be49c4abc3e926/maintainability)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3833d6be49c4abc3e926/test_coverage)](https://codeclimate.com/github/ManageIQ/manageiq-automation_engine/test_coverage)
 
 [![Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ManageIQ/manageiq/automate?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build history for master branch](https://buildstats.info/github/chart/ManageIQ/manageiq-automation_engine?branch=master&buildCount=50&includeBuildsFromPullRequest=false&showstats=false)](https://github.com/ManageIQ/manageiq-automation_engine/actions?query=branch%3Amaster)
+[![Build history for petrosian branch](https://buildstats.info/github/chart/ManageIQ/manageiq-automation_engine?branch=petrosian&buildCount=50&includeBuildsFromPullRequest=false&showstats=false)](https://github.com/ManageIQ/manageiq-automation_engine/actions?query=branch%3Amaster)
 
 Automation Engine plugin for ManageIQ.
 
