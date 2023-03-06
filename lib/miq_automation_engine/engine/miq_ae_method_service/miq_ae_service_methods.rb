@@ -155,7 +155,7 @@ module MiqAeMethodService
       # Need to add the username into the array of params
       # TODO: This code should pass a real username, similar to how the web-service
       #      passes the name of the user that logged into the web-service.
-      args << User.lookup_by_userid("admin")
+      args.insert(1, User.lookup_by_userid("admin"))
       MiqAeServiceModelBase.wrap_results(MiqProvisionVirtWorkflow.from_ws(*args))
     end
 
