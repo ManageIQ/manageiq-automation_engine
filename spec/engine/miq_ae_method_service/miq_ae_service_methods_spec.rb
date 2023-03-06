@@ -437,17 +437,22 @@ describe MiqAeMethodService::MiqAeServiceMethods do
              :persist_state_hash => MiqAeEngine::StateVarHash.new,
              :ae_user            => user)
     end
-    let(:user) { double }
-    let(:miq_ae_service) { MiqAeMethodService::MiqAeService.new(workspace) }
+    let(:user)            { double }
+    let(:miq_ae_service)  { MiqAeMethodService::MiqAeService.new(workspace) }
+    let(:version)         { "1.1" }
+    let(:template_fields) { {"name" => "App"} }
+    let(:vm_fields)       { {'vm_name' => 'CRM_APP', 'request_type' => 'template'} }
+    let(:requester)       { {'owner_email' => 'admin@asd.com'} }
+    let(:tags)            { {'crm' => 'true'} }
     before do
       allow(User).to receive(:lookup_by_userid).and_return(user)
     end
 
     it "passes arguments correctly" do
-      expect(MiqProvisionVirtWorkflow).to receive(:from_ws).with('one', 'two', user).and_return(true)
+      expect(MiqProvisionVirtWorkflow).to receive(:from_ws).with(version, user, template_fields, vm_fields, requester, tags, nil, nil, nil).and_return(true)
       expect(MiqAeMethodService::MiqAeServiceModelBase).to receive(:wrap_results).and_return(true)
       allow(workspace).to receive(:disable_rbac)
-      miq_ae_service.execute(:create_provision_request, 'one', 'two')
+      miq_ae_service.execute(:create_provision_request, version, template_fields, vm_fields, requester, tags, nil, nil, nil)
     end
 
     it "passes array arguments correctly" do
@@ -465,7 +470,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
     end
 
     it "passes nil argument correctly" do
-      expect(MiqProvisionVirtWorkflow).to receive(:from_ws).with(user).and_return(true)
+      expect(MiqProvisionVirtWorkflow).to receive(:from_ws).with(nil, user).and_return(true)
       expect(MiqAeMethodService::MiqAeServiceModelBase).to receive(:wrap_results).and_return(true)
       allow(workspace).to receive(:disable_rbac)
       miq_ae_service.execute(:create_provision_request)
