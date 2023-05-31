@@ -145,7 +145,7 @@ module MiqAeEngine
     def self.run_ruby_method(code, miq_request_id)
       ActiveRecord::Base.connection_pool.release_connection unless Rails.env.test?
       with_automation_env do
-        ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
+        AsDependenciesInterlock.permit_concurrent_loads do
           run_method(Gem.ruby, miq_request_id) do |stdin|
             stdin.puts(code)
           end
