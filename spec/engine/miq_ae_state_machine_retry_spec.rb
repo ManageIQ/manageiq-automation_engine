@@ -183,6 +183,7 @@ describe "MiqAeStateMachineRetry" do
   end
 
   it "check persistent hash" do
+    ActiveRecord::Base.yaml_column_permitted_classes << "MiqAeEngine::StateVarHash"
     setup_model(method_script_state_var)
     expected = MiqAeEngine::StateVarHash.new('three' => 3, 'one' => 1, 'two' => 2, 'gravy' => 'train')
     send_ae_request_via_queue(@automate_args)
@@ -280,6 +281,6 @@ describe "MiqAeStateMachineRetry" do
     expect(MiqQueue.count).to eq(2)
     q = MiqQueue.where(:state => 'ready').first
     expect(q[:server_guid]).to be_nil
-    expect(YAML.safe_load(q.args.first[:ae_state_data], [MiqAeEngine::StateVarHash])).to eq(ae_state_data)
+    expect(YAML.safe_load(q.args.first[:ae_state_data], :permitted_classes => [MiqAeEngine::StateVarHash])).to eq(ae_state_data)
   end
 end

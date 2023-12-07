@@ -11,7 +11,7 @@ describe MiqAeEngine::StateVarHash do
     it 'should return an empty hash struct without calling BinaryBlob find' do
       expect(BinaryBlob).to_not receive(:find_by)
 
-      new_start_var_hash = YAML.safe_load(blank_yaml_string, [MiqAeEngine::StateVarHash])
+      new_start_var_hash = YAML.safe_load(blank_yaml_string, :permitted_classes => [MiqAeEngine::StateVarHash])
 
       expect(new_start_var_hash).to be_a(MiqAeEngine::StateVarHash)
       expect(new_start_var_hash).to be_blank
@@ -33,7 +33,7 @@ describe MiqAeEngine::StateVarHash do
       yaml_out = YAML.dump(state_var_hash)
       expect(BinaryBlob.count).to be(1)
 
-      YAML.safe_load(yaml_out, [MiqAeEngine::StateVarHash])
+      YAML.safe_load(yaml_out, :permitted_classes => [MiqAeEngine::StateVarHash])
       expect(BinaryBlob.count).to be_zero
     end
 
@@ -41,7 +41,7 @@ describe MiqAeEngine::StateVarHash do
       expect($miq_ae_logger).to receive(:info).with(/Reloading state var data/).and_call_original
       expect($miq_ae_logger).to receive(:info).with(/\n---/).and_call_original
 
-      new_start_var_hash = YAML.safe_load(YAML.dump(state_var_hash), [MiqAeEngine::StateVarHash])
+      new_start_var_hash = YAML.safe_load(YAML.dump(state_var_hash), :permitted_classes => [MiqAeEngine::StateVarHash])
 
       expect(new_start_var_hash).to eq(state_var_hash)
       expect(new_start_var_hash.object_id).to_not eq(start_var_hash.object_id)
@@ -53,7 +53,7 @@ describe MiqAeEngine::StateVarHash do
       expect($miq_ae_logger).to receive(:info).with(/Reloading state var data/).and_call_original
       expect($miq_ae_logger).to receive(:info).with(/\n---\nusername: foo\npassword: \[FILTERED\]/).and_call_original
 
-      new_start_var_hash = YAML.safe_load(YAML.dump(svh_with_user_pass), [MiqAeEngine::StateVarHash])
+      new_start_var_hash = YAML.safe_load(YAML.dump(svh_with_user_pass), :permitted_classes => [MiqAeEngine::StateVarHash])
 
       expect(new_start_var_hash).to eq(svh_with_user_pass)
       expect(new_start_var_hash.object_id).to_not eq(svh_with_user_pass.object_id)
@@ -65,7 +65,7 @@ describe MiqAeEngine::StateVarHash do
 
       expect($miq_ae_logger).to receive(:warn).with(/Failed to load BinaryBlob with ID/).and_call_original
 
-      restored_state_var = YAML.safe_load(yaml_out, [MiqAeEngine::StateVarHash])
+      restored_state_var = YAML.safe_load(yaml_out, :permitted_classes => [MiqAeEngine::StateVarHash])
       expect(restored_state_var).to eq({})
     end
   end
