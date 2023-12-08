@@ -122,7 +122,9 @@ module MiqAeMethodService
     def self.create_service_model(ar_model)
       file_path = model_to_file_path(ar_model)
       if File.exist?(file_path)
-        require file_path
+        # class reloading in development causes require to no-op when it should load
+        # since we will never require this file, using load is not a big loss
+        load file_path
         model_name_from_active_record_model(ar_model).safe_constantize
       else
         dynamic_service_model_creation(ar_model, service_model_superclass(ar_model))
