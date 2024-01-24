@@ -17,6 +17,8 @@ module ManageIQ
       end
 
       def self.init_loggers
+        # This require avoids autoload during rails boot
+        require 'manageiq/automation_engine/logger'
         $miq_ae_logger ||= Vmdb::Loggers.create_logger("automation.log", ManageIQ::AutomationEngine::Logger)
       end
 
