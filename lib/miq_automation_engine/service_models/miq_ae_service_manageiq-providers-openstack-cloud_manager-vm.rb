@@ -4,7 +4,6 @@ module MiqAeMethodService
     expose :resize_confirm, :override_return => nil
     expose :resize_revert,  :override_return => nil
 
-    expose :supports_resize?
     # @return [boolean] (not using supports)
     expose :validate_resize_confirm
     # @return [boolean] (not using supports)
@@ -24,11 +23,17 @@ module MiqAeMethodService
       sync_or_async_ems_operation(options[:sync], "detach_volume", [volume_id])
     end
 
+    # backwards compatible
+    def supports_resize?
+      object_send(:supports?, :resize)
+    end
+
     # this implents the AvailabilityMixin interface
     # for backwards compatibility in customer scripts
-    # prefer using supports_resize? method instead
+    # prefer using supports?(:resize) method instead
     def validate_resize
-      {:available => supports_resize?, :message => unsupported_reason(:resize)}
+      reason = object_send(:unsupported_reason, :resize)
+      {:available => !reason, :message => reason}
     end
   end
 end
