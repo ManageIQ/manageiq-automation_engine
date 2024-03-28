@@ -34,7 +34,7 @@ module MiqAeMethodService
     end
 
     def snapshot_operation(task, options = {})
-      raise "#{task} operation not supported for #{self.class.name}" unless object_send(:supports_snapshots?)
+      raise "#{task} operation not supported for #{self.class.name}" unless object_send(:supports?, :snapshots)
 
       options[:ids]  = [id]
       options[:task] = task.to_s
