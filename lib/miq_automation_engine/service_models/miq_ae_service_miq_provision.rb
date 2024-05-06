@@ -6,6 +6,7 @@ module MiqAeMethodService
     expose :target_type
     expose :source_type
     expose :update_vm_name
+    expose :statemachine_task_status
 
     expose_eligible_resources :hosts
     expose_eligible_resources :storages
@@ -32,20 +33,6 @@ module MiqAeMethodService
 
     def set_folder(folder_path)
       object_send(:set_folder, folder_path)
-    end
-
-    def statemachine_task_status
-      ar_method do
-        if %w[finished provisioned].include?(@object.state)
-          if @object.status.to_s.downcase == 'error' || @object.vm.nil?
-            'error'
-          else
-            'ok'
-          end
-        else
-          'retry'
-        end
-      end
     end
   end
 end

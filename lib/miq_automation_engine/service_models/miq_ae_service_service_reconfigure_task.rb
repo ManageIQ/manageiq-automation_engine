@@ -1,5 +1,7 @@
 module MiqAeMethodService
   class MiqAeServiceServiceReconfigureTask < MiqAeServiceMiqRequestTask
+    expose :statemachine_task_status
+
     def dialog_options
       options[:dialog] || {}
     end
@@ -13,16 +15,6 @@ module MiqAeMethodService
         @object.options[:dialog] ||= {}
         @object.options[:dialog][key] = value
         @object.update_attribute(:options, @object.options)
-      end
-    end
-
-    def statemachine_task_status
-      ar_method do
-        if @object.state == 'finished'
-          @object.status.to_s.downcase
-        else
-          'retry'
-        end
       end
     end
 

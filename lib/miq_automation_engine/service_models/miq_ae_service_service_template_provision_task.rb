@@ -1,6 +1,7 @@
 module MiqAeMethodService
   class MiqAeServiceServiceTemplateProvisionTask < MiqAeServiceMiqRequestTask
     expose :provision_priority
+    expose :statemachine_task_status
 
     def dialog_options
       options[:dialog] || {}
@@ -19,16 +20,6 @@ module MiqAeMethodService
         @object.options[:dialog] ||= {}
         @object.options[:dialog][key] = value
         @object.update_attribute(:options, @object.options)
-      end
-    end
-
-    def statemachine_task_status
-      ar_method do
-        if ['finished', 'provisioned'].include?(@object.state)
-          @object.status.to_s.downcase
-        else
-          'retry'
-        end
       end
     end
 
