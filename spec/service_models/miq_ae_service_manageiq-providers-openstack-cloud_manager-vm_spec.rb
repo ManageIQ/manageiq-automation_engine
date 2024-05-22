@@ -34,4 +34,12 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Openstack_CloudManag
       )
     )
   end
+
+  it "#validate_resize" do
+    expect(service_vm.validate_resize).to eq({:available => true, :message => nil})
+  end
+
+  it "#supports_resize?" do
+    expect(service_vm.supports_resize?).to eq(true)
+  end
 end
