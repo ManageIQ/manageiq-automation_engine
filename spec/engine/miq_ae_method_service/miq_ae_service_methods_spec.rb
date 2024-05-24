@@ -79,7 +79,7 @@ describe MiqAeMethodService::MiqAeServiceMethods do
       stub_const('MiqAeMethodService::MiqAeServiceMethods::SYNCHRONOUS', false)
       expect(MiqQueue).to receive(:put).with({
         :class_name  => 'GenericMailer',
-        :method_name => "deliver",
+        :method_name => "deliver!",
         :args        => [:automation_notification, options],
         :role        => "notifier"
       }).once
