@@ -290,9 +290,10 @@ describe MiqAeEngine do
 
     it "will process an array of objects" do
       FactoryBot.create(:host)
+      FactoryBot.create(:host)
       hash       = {"hosts" => Host.all}
       attrs      = {"Array::my_hosts" => hash["hosts"].collect { |h| "Host::#{h.id}" }}
-      result_str = "Array%3A%3Amy_hosts=" + hash["hosts"].collect { |h| "Host%3A%3A#{h.id}" }.join(",")
+      result_str = "Array%3A%3Amy_hosts=" + hash["hosts"].collect { |h| "Host%3A%3A#{h.id}" }.join("%1F") # After URL encoding the separator "\x1F" is converted to %1F
       extras = "MiqServer%3A%3Amiq_server=#{miq_server_id}"
       uri = "/System/Process/AUTOMATION?#{result_str}&#{extras}&object_name=AUTOMATION"
       expect(MiqAeEngine.create_automation_object("AUTOMATION", attrs)).to eq(uri)
@@ -374,26 +375,28 @@ describe MiqAeEngine do
     end
 
     it "with an array of Vms" do
-      hash          = {"vms" => Vm.all}
-      result_str    = "Array::vms=#{hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")}"
-      result_arr    = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")
-      result        = MiqAeEngine.create_automation_attributes(hash)
+      result_arr = []
+      hash = {"vms" => Vm.all}
+      result_str = "vms=#{hash["vms"].collect { |v| v.id.to_s }.join("=")}"
+      hash["vms"].collect { |v| result_arr.push(v.id.to_s) }
+      result = MiqAeEngine.create_automation_attributes(hash)
       expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
-      expect(result["Array::vms"]).to eq(result_arr)
+      expect(result["vms"]).to eq(result_arr)
     end
 
     it "with an array containing a single Vm" do
-      hash          = {"vms" => [Vm.first]}
-      result_str    = "Array::vms=#{hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")}"
-      result_arr    = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")
-      result        = MiqAeEngine.create_automation_attributes(hash)
+      result_arr = []
+      hash = {"vms" => [Vm.first]}
+      result_str = "vms=#{hash["vms"].collect { |v| v.id.to_s }.join("=")}"
+      hash["vms"].collect { |v| result_arr.push(v.id.to_s) }
+      result = MiqAeEngine.create_automation_attributes(hash)
       expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
-      expect(result["Array::vms"]).to eq(result_arr)
+      expect(result["vms"]).to eq(result_arr)
     end
 
     it "with an empty array" do
       result = MiqAeEngine.create_automation_attributes("vms" => [])
-      expect(result["Array::vms"]).to eq("")
+      expect(result["vms"]).to eq([])
     end
 
     it "with a hash containing a single Vm" do
@@ -405,24 +408,27 @@ describe MiqAeEngine do
     end
 
     it "with an array of Hosts" do
+      result_arr = []
       hash          = {"hosts" => Host.all}
-      result_str    = "Array::hosts=#{hash["hosts"].collect { |h| "Host::#{h.id}" }.join("\x1F")}"
-      result_arr    = hash["hosts"].collect { |h| "Host::#{h.id}" }.join("\x1F")
-      result        = MiqAeEngine.create_automation_attributes(hash)
+      result_str    = "hosts=#{hash["hosts"].collect { |h| h.id.to_s }.join("=")}"
+      hash["hosts"].collect { |h| result_arr.push(h.id.to_s) }
+      result = MiqAeEngine.create_automation_attributes(hash)
       expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
-      expect(result["Array::hosts"]).to eq(result_arr)
+      expect(result["hosts"]).to eq(result_arr)
     end
 
     it "with multiple arrays" do
+      vm_result_arr = []
+      host_result_arr = []
       hash            = {"vms" => Vm.all}
-      vm_result_str   = "Array::vms=#{hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")}"
-      vm_result_arr   = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("\x1F")
+      vm_result_str   = "vms=#{hash["vms"].collect { |v| v.id.to_s }.join("=")}"
+      hash["vms"].collect { |v| vm_result_arr.push(v.id.to_s) }
       hash["hosts"]   = Host.all
-      host_result_str = "Array::hosts=#{hash["hosts"].collect { |h| "Host::#{h.id}" }.join("\x1F")}"
-      host_result_arr = hash["hosts"].collect { |h| "Host::#{h.id}" }.join("\x1F")
-      result          = MiqAeEngine.create_automation_attributes(hash)
-      expect(result["Array::vms"]).to eq(vm_result_arr)
-      expect(result["Array::hosts"]).to eq(host_result_arr)
+      host_result_str = "hosts=#{hash["hosts"].collect { |h| h.id.to_s }.join("=")}"
+      hash["hosts"].collect { |h| host_result_arr.push(h.id.to_s) }
+      result = MiqAeEngine.create_automation_attributes(hash)
+      expect(result["vms"]).to eq(vm_result_arr)
+      expect(result["hosts"]).to eq(host_result_arr)
       result_str = MiqAeEngine.create_automation_attributes_string(hash)
       expect(result_str).to include(vm_result_str)
       expect(result_str).to include(host_result_str)
@@ -431,16 +437,16 @@ describe MiqAeEngine do
     it "with invalid object references" do
       hash          = {"vms" => ["bogus::12"]}
       result        = MiqAeEngine.create_automation_attributes(hash)
-      expect(result["Array::vms"]).to eq("bogus::12")
-      expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq("Array::vms=bogus::12")
+      expect(result["vms"]).to eq(["bogus::12"])
+      expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq("vms=bogus::12")
     end
 
     it "with garbage values" do
       hash          = {"vms" => ["bogus::12,garbage::moreso,notevenclose"]}
-      bogus_arr     = "bogus::12,garbage::moreso,notevenclose"
+      bogus_arr     = ["bogus::12,garbage::moreso,notevenclose"]
       result        = MiqAeEngine.create_automation_attributes(hash)
-      expect(result["Array::vms"]).to eq(bogus_arr)
-      expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq("Array::vms=bogus::12,garbage::moreso,notevenclose")
+      expect(result["vms"]).to eq(bogus_arr)
+      expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq("vms=bogus::12,garbage::moreso,notevenclose")
     end
 
     it "with a string value" do
