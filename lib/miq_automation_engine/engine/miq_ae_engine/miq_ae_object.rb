@@ -253,7 +253,7 @@ module MiqAeEngine
     end
 
     def process_args_as_attributes(args = {})
-      args.keys.each { |k| MiqAeEngine.automation_attribute_is_array?(k) ? process_args_array(args, k) : process_args_attribute(args, k) }
+      args.keys.each { |k| attribute_is_array?(k) ? process_args_array(args, k) : process_args_attribute(args, k) }
       @attributes.merge!(args)
     end
 
@@ -262,6 +262,10 @@ module MiqAeEngine
       key = args_key.split(CLASS_SEPARATOR).last
       value = args.delete(args_key)
       args[key.downcase] = load_array_objects_from_string(value)
+    end
+
+    def attribute_is_array?(attr)
+      attr.to_s.downcase.starts_with?("array::")
     end
 
     def process_args_attribute(args, args_key)
