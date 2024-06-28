@@ -293,7 +293,7 @@ describe MiqAeEngine do
       FactoryBot.create(:host)
       hash       = {"hosts" => Host.all}
       attrs      = {"Array::my_hosts" => hash["hosts"].collect { |h| "Host::#{h.id}" }}
-      result_str = "Array%3A%3Amy_hosts=" + hash["hosts"].collect { |h| "Host%3A%3A#{h.id}" }.join("%1F") # After URL encoding the separator "\x1F" is converted to %1F
+      result_str = "Array%3A%3Amy_hosts=#{hash["hosts"].collect { |h| "Host%3A%3A#{h.id}" }.join("%1F")}" # After URL encoding the separator "\x1F" is converted to %1F
       extras = "MiqServer%3A%3Amiq_server=#{miq_server_id}"
       uri = "/System/Process/AUTOMATION?#{result_str}&#{extras}&object_name=AUTOMATION"
       expect(MiqAeEngine.create_automation_object("AUTOMATION", attrs)).to eq(uri)

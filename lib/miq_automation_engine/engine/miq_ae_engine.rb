@@ -234,14 +234,6 @@ module MiqAeEngine
     args = create_automation_attributes(hash)
     return args if args.kind_of?(String)
 
-    # result_array = []
-    # args.keys.each do |k|
-    #   args[k].each do |item|
-    #     result_array.push(item.id)
-    #   end
-    # end
-    # result_string = result_array.join("\x1F")
-
     args.collect { |a| a.join("=") }.join("&")
   end
 
@@ -270,7 +262,6 @@ module MiqAeEngine
   end
 
   def self.create_automation_attribute_array_value(value)
-    # value
     value.collect do |obj|
       obj.kind_of?(ActiveRecord::Base) ? obj.id.to_s : obj.to_s
     end
