@@ -24,6 +24,8 @@ module MiqAeMethodService
     expose :changed_vm_value?
     expose :refresh, :method => :refresh_ems
     expose :evacuate
+    expose :memory_for_request
+    expose :number_of_cpus_for_request
 
     METHODS_WITH_NO_ARGS = %w[start stop suspend unregister collect_running_processes shutdown_guest standby_guest reboot_guest].freeze
     METHODS_WITH_NO_ARGS.each do |m|
