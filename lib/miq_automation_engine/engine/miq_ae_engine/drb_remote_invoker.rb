@@ -110,6 +110,14 @@ begin
   require 'drb'
   require 'yaml'
 
+  YAML.singleton_class.prepend(
+    Module.new do
+      def safe_load(yaml, aliases: false, **kwargs)
+        super(yaml, aliases: true, **kwargs)
+      end
+    end
+  )
+
   Time.zone = 'UTC'
 
   MIQ_OK    = 0

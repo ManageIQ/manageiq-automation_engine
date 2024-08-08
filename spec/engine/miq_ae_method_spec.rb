@@ -47,6 +47,38 @@ describe MiqAeEngine::MiqAeMethod do
       end
     end
 
+    context "with a script that tries to YAML.load with aliases" do
+      let(:script) do
+        <<-RUBY
+          YAML.load("---\na: &a\n  b: true  \n\ndevelopment:\n  <<: *a\n  c: false\n\n")
+        RUBY
+      end
+
+      it "logs and returns the correct exit status" do
+        allow($miq_ae_logger).to receive(:info).and_call_original
+        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK", :resource_id => 123).at_least(:once)
+        expect($miq_ae_logger).to_not receive(:error)
+
+        expect(subject).to eq(0)
+      end
+    end
+
+    context "with a script that tries to YAML.safe_load with aliases" do
+      let(:script) do
+        <<-RUBY
+          YAML.safe_load("---\na: &a\n  b: true  \n\ndevelopment:\n  <<: *a\n  c: false\n\n")
+        RUBY
+      end
+
+      it "logs and returns the correct exit status" do
+        allow($miq_ae_logger).to receive(:info).and_call_original
+        expect($miq_ae_logger).to receive(:info).with("Method exited with rc=MIQ_OK", :resource_id => 123).at_least(:once)
+        expect($miq_ae_logger).to_not receive(:error)
+
+        expect(subject).to eq(0)
+      end
+    end
+
     context "with a script that raises" do
       let(:script) do
         <<-RUBY
