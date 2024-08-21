@@ -263,7 +263,7 @@ module MiqAeEngine
 
   def self.create_automation_attribute_array_value(value)
     value.collect do |obj|
-      obj.kind_of?(ActiveRecord::Base) ? obj.id.to_s : obj.to_s
+      obj.kind_of?(ActiveRecord::Base) ? "#{obj.class.name}::#{obj.id}" : obj.to_s
     end
   end
 
@@ -320,13 +320,22 @@ module MiqAeEngine
     array_objects.each do |array_object|
       # Each array attribute is tagged with Array:: before the attribute key unless it already starts with Array::
       array_attr_key = array_object
-      if !array_object.starts_with?("Array::")
+      if !ae_attrs[array_object].empty? && ae_attrs[array_object].first.to_s.split("::").first == "Classification"
+        array_attr_key = if array_object.starts_with?("Array::")
+                           "Tag#{array_object}"
+                         else
+                           "TagArray::#{array_object}"
+                         end
+      elsif !array_object.starts_with?("Array::")
         array_attr_key = "Array::#{array_object}"
       end
       ae_attrs[array_attr_key] = ae_attrs[array_object].collect do |obj|
         obj.kind_of?(ActiveRecord::Base) ? "#{obj.class.name}::#{obj.id}" : obj.to_s
       end.join("\x1F")
       if !array_object.starts_with?("Array::")
+        ae_attrs.delete(array_object)
+      end
+      if !array_object.starts_with?("TagArray::") && array_attr_key.starts_with?("TagArray::")
         ae_attrs.delete(array_object)
       end
     end
