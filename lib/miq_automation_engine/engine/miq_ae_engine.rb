@@ -212,7 +212,7 @@ module MiqAeEngine
 
   def self.create_automation_attribute_key(object, attr_name = nil)
     klass_name = create_automation_attribute_class_name(object)
-    return klass_name.to_s if automation_attribute_is_array?(klass_name, object)
+    return klass_name.to_s if automation_attribute_is_array?(klass_name)
 
     attr_name ||= create_automation_attribute_name(object)
     "#{klass_name}::#{attr_name}"
@@ -222,12 +222,8 @@ module MiqAeEngine
     object.id
   end
 
-  def self.automation_attribute_is_array?(attr, object = nil)
-    if !object.nil? && !object.kind_of?(String) && object.has_attribute?(:options) && !object.options.nil? && !object.options[:dialog].nil?
-      object[:options][:dialog][attr].kind_of?(Array)
-    else
-      attr.to_s.downcase.starts_with?("array::")
-    end
+  def self.automation_attribute_is_array?(attr)
+    attr.to_s.downcase.starts_with?("array::")
   end
 
   def self.create_automation_attributes_string(hash)
@@ -258,13 +254,13 @@ module MiqAeEngine
   end
 
   def self.create_automation_attribute_array_key(key)
-    key
+    "Array::#{key}"
   end
 
   def self.create_automation_attribute_array_value(value)
     value.collect do |obj|
-      obj.kind_of?(ActiveRecord::Base) ? obj.id.to_s : obj.to_s
-    end
+      obj.kind_of?(ActiveRecord::Base) ? "#{obj.class.name}::#{obj.id}" : obj.to_s
+    end.join("\x1F")
   end
 
   def self.set_automation_attributes_from_objects(objects, attrs_hash)
@@ -315,20 +311,9 @@ module MiqAeEngine
     ae_attrs["MiqRequest::miq_request"] = vmdb_object.id if vmdb_object.kind_of?(MiqRequest)
     ae_attrs['vmdb_object_type'] = create_automation_attribute_name(vmdb_object) unless vmdb_object.nil?
 
-    # Sends array attributes to the miq_ae_object as strings with \x1F between each array item.
-    array_objects = ae_attrs.keys.find_all { |key| ae_attrs[key].kind_of?(Array) }
-    array_objects.each do |array_object|
-      # Each array attribute is tagged with Array:: before the attribute key unless it already starts with Array::
-      array_attr_key = array_object
-      if !array_object.starts_with?("Array::")
-        array_attr_key = "Array::#{array_object}"
-      end
-      ae_attrs[array_attr_key] = ae_attrs[array_object].collect do |obj|
-        obj.kind_of?(ActiveRecord::Base) ? "#{obj.class.name}::#{obj.id}" : obj.to_s
-      end.join("\x1F")
-      if !array_object.starts_with?("Array::")
-        ae_attrs.delete(array_object)
-      end
+    array_objects = ae_attrs.keys.find_all { |key| automation_attribute_is_array?(key) }
+    array_objects.each do |o|
+      ae_attrs[o] = ae_attrs[o].first if ae_attrs[o].kind_of?(Array)
     end
     ae_attrs
   end
