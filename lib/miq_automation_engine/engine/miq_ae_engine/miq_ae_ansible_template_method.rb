@@ -1,6 +1,6 @@
 module MiqAeEngine
   class MiqAeAnsibleTemplateMethod < MiqAeAnsibleMethodBase
-    TEMPLATE_CLASS = ManageIQ::Providers::ExternalAutomationManager::ConfigurationScript
+    TEMPLATE_CLASS = ManageIQ::Providers::AutomationManager::ConfigurationScript
 
     private
 

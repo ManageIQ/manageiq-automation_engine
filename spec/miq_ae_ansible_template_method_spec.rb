@@ -12,6 +12,7 @@ describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
     let(:miq_task) { FactoryBot.create(:miq_task) }
     let(:manager)  { FactoryBot.create(:automation_manager_ansible_tower) }
     let(:template) { FactoryBot.create(:ansible_configuration_script, :manager => manager) }
+    let(:workflow_template) { FactoryBot.create(:ansible_configuration_workflow, :manager => manager) }
 
     let(:workspace) do
       double("MiqAeEngine::MiqAeWorkspaceRuntime", :root               => root_object,
@@ -106,7 +107,7 @@ describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
       end
     end
 
-    context "regular method" do
+    context "regular method with jobs" do
       before do
         allow(described_class::TEMPLATE_CLASS).to receive(:find).and_return(template)
         allow(template).to receive(:run_with_miq_job).and_return(miq_task.id)
@@ -133,8 +134,44 @@ describe MiqAeEngine::MiqAeAnsibleTemplateMethod do
         expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
       end
 
-      it "template launch fails" do
+      it "job template launch fails" do
         expect(template).to receive(:run_with_miq_job).and_raise("Bamm Bamm Rubble")
+
+        at = described_class.new(aem, obj, inputs)
+        expect { at.run }.to raise_exception(MiqAeException::Error)
+        expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context "regular method with workflows" do
+      before do
+        allow(described_class::TEMPLATE_CLASS).to receive(:find).and_return(workflow_template)
+        allow(workflow_template).to receive(:run_with_miq_job).and_return(miq_task.id)
+        allow(MiqRegion).to receive(:my_region).and_return(FactoryBot.create(:miq_region))
+        allow(AutomateWorkspace).to receive(:create).and_return(aw)
+        allow(MiqTask).to receive(:wait_for_taskid).and_return(miq_task)
+        allow(workspace).to receive(:update_workspace)
+      end
+
+      it "success" do
+        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_OK, "Done")
+
+        at = described_class.new(aem, obj, inputs)
+        at.run
+
+        expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+
+      it "method fails" do
+        miq_task.update_status(MiqTask::STATE_FINISHED, MiqTask::STATUS_ERROR, "Done")
+
+        at = described_class.new(aem, obj, inputs)
+        expect { at.run }.to raise_exception(MiqAeException::Error)
+        expect { aw.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      end
+
+      it "workflow template launch fails" do
+        expect(workflow_template).to receive(:run_with_miq_job).and_raise("Bamm Bamm Rubble")
 
         at = described_class.new(aem, obj, inputs)
         expect { at.run }.to raise_exception(MiqAeException::Error)
