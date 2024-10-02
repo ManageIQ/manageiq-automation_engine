@@ -329,7 +329,7 @@ describe MiqAeEngine::MiqAeObject do
 
   context "integer" do
     it "returns value to_i" do
-      %w[Integer integer Fixnum].each { |type| expect(described_class.convert_value_based_on_datatype("45", type)).to eq(45) }
+      %w[Integer integer].each { |type| expect(described_class.convert_value_based_on_datatype("45", type)).to eq(45) }
     end
   end
 
