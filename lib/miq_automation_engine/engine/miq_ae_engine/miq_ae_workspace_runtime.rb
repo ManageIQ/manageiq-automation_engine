@@ -26,8 +26,6 @@ module MiqAeEngine
       initialize_obj_entries
     end
 
-    delegate :prepend_namespace=, :to => :@dom_search
-
     def readonly?
       @readonly
     end
