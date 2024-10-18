@@ -15,6 +15,14 @@ describe MiqAeMethodService::MiqAeServiceManageIQ_Providers_Vmware_InfraManager_
     }
   end
 
+  it "#set_description" do
+    service_vm.set_description("new-description")
+
+    expect(MiqQueue.first).to have_attributes(
+      @base_queue_options.merge(:method_name => "set_description", :args => %w[new-description])
+    )
+  end
+
   it "#set_number_of_cpus" do
     service_vm.set_number_of_cpus(1)
 
