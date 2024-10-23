@@ -56,8 +56,6 @@ module MiqAeEngine
       ATTRIBUTE_LIST.detect { |attr| provider_category = category_for_key(obj, attr) }
       $miq_ae_logger.info("Setting provider_category to: #{provider_category}", :resource_id => obj.workspace.find_miq_request_id)
       obj.workspace.root["ae_provider_category"] = provider_category || UNKNOWN
-
-      prepend_vendor(obj)
     end
 
     def self.miq_parse_automation_request(obj, _inputs)
@@ -218,16 +216,6 @@ module MiqAeEngine
       end
     end
     private_class_method :category_for_key
-
-    def self.prepend_vendor(obj)
-      vendor = nil
-      ATTRIBUTE_LIST.detect { |attr| vendor = detect_vendor(obj.workspace.root[attr], attr) }
-      if vendor
-        $miq_ae_logger.info("Setting prepend_namespace to: #{vendor}", :resource_id => obj.workspace.find_miq_request_id)
-        obj.workspace.prepend_namespace = vendor.downcase
-      end
-    end
-    private_class_method :prepend_vendor
 
     def self.detect_vendor(src_obj, attr)
       return unless src_obj
