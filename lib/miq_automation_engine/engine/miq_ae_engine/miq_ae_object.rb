@@ -190,7 +190,7 @@ module MiqAeEngine
       case value.class.to_s
       when 'MiqAePassword'            then xml.Password(OPAQUE_PASSWORD)
       when 'String'                   then xml.String(value)
-      when 'Fixnum'                   then xml.Fixnum(value)
+      when 'Fixnum', 'Integer'        then xml.Integer(value)
       when 'Symbol'                   then xml.Symbol(value.to_s)
       when 'TrueClass', 'FalseClass'  then xml.Boolean(value.to_s)
       when /MiqAeMethodService::(.*)/ then xml.tag!($1.gsub(/::/, '-'), :object_id => value.object_id, :id => value.id)
@@ -486,7 +486,7 @@ module MiqAeEngine
       return false                                           if datatype == 'FalseClass'
       return Time.parse(value).getlocal                      if 'time'.casecmp?(datatype)
       return value.to_sym                                    if 'symbol'.casecmp?(datatype)
-      return value.to_i                                      if 'integer'.casecmp?(datatype) || datatype == 'Fixnum'
+      return value.to_i                                      if 'integer'.casecmp?(datatype) || 'fixnum'.casecmp?(datatype)
       return value.to_f                                      if 'float'.casecmp?(datatype)
       return value.gsub(/[\[\]]/, '').strip.split(/\s*,\s*/) if datatype == 'array' && value.class == String
       return decrypt_password(value) if datatype == 'password'
