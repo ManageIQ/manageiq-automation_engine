@@ -309,9 +309,8 @@ describe MiqAeEngine do
 
     it "will process an array of objects with a server and user" do
       extras = "MiqServer%3A%3Amiq_server=12"
-      FactoryBot.create(:small_environment)
-      attrs = {"MiqServer::miq_server" => "12", "array::tag" => "Classification::1,Classification::2"}
-      result_str = "array%3A%3Atag=Classification%3A%3A1%2CClassification%3A%3A2"
+      attrs = {"MiqServer::miq_server" => "12", "Array::tags" => ["Classification::1,Classification::2"]}
+      result_str = "TagArray%3A%3Atags=Classification%3A%3A1%2CClassification%3A%3A2"
       uri = "/System/Process/AUTOMATION?#{extras}&#{result_str}&object_name=AUTOMATION"
       expect(MiqAeEngine.create_automation_object("AUTOMATION", attrs)).to eq(uri)
     end
@@ -375,20 +374,22 @@ describe MiqAeEngine do
     end
 
     it "with an array of Vms" do
-      result_arr = []
       hash = {"vms" => Vm.all}
-      result_str = "vms=#{hash["vms"].collect { |v| v.id.to_s }.join("=")}"
-      hash["vms"].collect { |v| result_arr.push(v.id.to_s) }
+      result_str = "vms=#{hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("=")}"
       result = MiqAeEngine.create_automation_attributes(hash)
+      result_arr = if hash["vms"].length == 1
+                     "ManageIQ::Providers::Vmware::InfraManager::Vm::#{hash["vms"][0].id}"
+                   else
+                     hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }
+                   end
       expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
       expect(result["vms"]).to eq(result_arr)
     end
 
     it "with an array containing a single Vm" do
-      result_arr = []
       hash = {"vms" => [Vm.first]}
-      result_str = "vms=#{hash["vms"].collect { |v| v.id.to_s }.join("=")}"
-      hash["vms"].collect { |v| result_arr.push(v.id.to_s) }
+      result_str = "vms=#{hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("=")}"
+      result_arr = ["ManageIQ::Providers::Vmware::InfraManager::Vm::#{hash["vms"][0].id}"]
       result = MiqAeEngine.create_automation_attributes(hash)
       expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
       expect(result["vms"]).to eq(result_arr)
@@ -408,30 +409,43 @@ describe MiqAeEngine do
     end
 
     it "with an array of Hosts" do
-      result_arr = []
       hash          = {"hosts" => Host.all}
-      result_str    = "hosts=#{hash["hosts"].collect { |h| h.id.to_s }.join("=")}"
-      hash["hosts"].collect { |h| result_arr.push(h.id.to_s) }
+      result_str    = "hosts=#{hash["hosts"].collect { |h| "Host::#{h.id}" }.join("=")}"
+      result_arr = hash["hosts"].collect { |h| "Host::#{h.id}" }
       result = MiqAeEngine.create_automation_attributes(hash)
       expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
       expect(result["hosts"]).to eq(result_arr)
     end
 
     it "with multiple arrays" do
-      vm_result_arr = []
-      host_result_arr = []
       hash            = {"vms" => Vm.all}
-      vm_result_str   = "vms=#{hash["vms"].collect { |v| v.id.to_s }.join("=")}"
-      hash["vms"].collect { |v| vm_result_arr.push(v.id.to_s) }
+      vm_result_str   = "vms=#{hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }.join("=")}"
+      vm_result_arr = hash["vms"].collect { |v| "ManageIQ::Providers::Vmware::InfraManager::Vm::#{v.id}" }
       hash["hosts"]   = Host.all
-      host_result_str = "hosts=#{hash["hosts"].collect { |h| h.id.to_s }.join("=")}"
-      hash["hosts"].collect { |h| host_result_arr.push(h.id.to_s) }
+      host_result_str = "hosts=#{hash["hosts"].collect { |h| "Host::#{h.id}" }.join("=")}"
+      host_result_arr = hash["hosts"].collect { |h| "Host::#{h.id}" }
       result = MiqAeEngine.create_automation_attributes(hash)
       expect(result["vms"]).to eq(vm_result_arr)
       expect(result["hosts"]).to eq(host_result_arr)
       result_str = MiqAeEngine.create_automation_attributes_string(hash)
       expect(result_str).to include(vm_result_str)
       expect(result_str).to include(host_result_str)
+    end
+
+    it "with an array of Tags" do
+      FactoryBot.create(:classification)
+      FactoryBot.create(:classification)
+      FactoryBot.create(:classification)
+      hash       = {"tags" => Classification.all}
+      result_str = "tags=#{hash["tags"].collect { |h| "Classification::#{h.id}" }.join("=")}"
+      result_arr = if hash["tags"].length == 1
+                     "Classification::#{hash["tags"][0].id}"
+                   else
+                     hash["tags"].collect { |h| "Classification::#{h.id}" }
+                   end
+      result = MiqAeEngine.create_automation_attributes(hash)
+      expect(MiqAeEngine.create_automation_attributes_string(hash)).to eq(result_str)
+      expect(result["tags"]).to eq(result_arr)
     end
 
     it "with invalid object references" do
@@ -786,6 +800,28 @@ describe MiqAeEngine do
     ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?Array::my_objects=Vm::#{vm1.id}\x1FExtManagementSystem::#{ems.id}\x1FVm::#{vm2.id}", user)
     my_objects_array = ws.root("my_objects")
     expect(my_objects_array.length).to eq(3)
+    my_objects_array.each { |o| o.kind_of?(MiqAeMethodService::MiqAeServiceModelBase) }
+  end
+
+  it "processes tags array arguments properly" do
+    tag1 = FactoryBot.create(:classification)
+    tag2 = FactoryBot.create(:classification)
+    tag3 = FactoryBot.create(:classification)
+
+    EvmSpecHelper.import_yaml_model(File.join(model_data_dir, "miq_ae_engine_spec5"), domain)
+    ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?TagArray::my_objects=Classification::#{tag1.id}\x1FClassification::#{tag2.id}\x1FClassification::#{tag3.id}", user)
+    my_objects_array = ws.root("my_objects")
+    expect(my_objects_array.length).to eq(3)
+    my_objects_array.each { |o| o.kind_of?(MiqAeMethodService::MiqAeServiceModelBase) }
+  end
+
+  it "processes tags array with a single value arguments properly" do
+    tag1 = FactoryBot.create(:classification)
+
+    EvmSpecHelper.import_yaml_model(File.join(model_data_dir, "miq_ae_engine_spec5"), domain)
+    ws = MiqAeEngine.instantiate("/EVM/AUTOMATE/test1?TagArray::my_objects=Classification::#{tag1.id}", user)
+    my_objects_array = ws.root("my_objects")
+    expect(my_objects_array.length).to eq(1)
     my_objects_array.each { |o| o.kind_of?(MiqAeMethodService::MiqAeServiceModelBase) }
   end
 

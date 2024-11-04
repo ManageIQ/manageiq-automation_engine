@@ -258,19 +258,34 @@ module MiqAeEngine
     end
 
     def process_args_array(args, args_key)
-      # process Array::servers => MiqServer::2,MiqServer::3,MiqServer::4
+      # Process Array::servers => MiqServer::2,MiqServer::3,MiqServer::4
+      # If no class seperator exists then return Array::servers => 2,3,4
       key = args_key.split(CLASS_SEPARATOR).last
       value = args.delete(args_key)
       args[key.downcase] = load_array_objects_from_string(value)
     end
 
     def attribute_is_array?(attr)
-      attr.to_s.downcase.starts_with?("array::")
+      attr.to_s.downcase.starts_with?("array::") && !attr.to_s.downcase.starts_with?("tagarray")
     end
 
     def process_args_attribute(args, args_key)
-      # process MiqServer::svr => 2
-      if args_key.include?(CLASS_SEPARATOR)
+      # Process TagArray::dialog_tags => <Classification ...>, <Classification ...>, <Classification ...>
+      if args_key.to_s.downcase.starts_with?("tagarray")
+        tags = []
+        args[args_key].split("\u001F").each do |tag|
+          # args_key: TagArray::dialog_param_test1
+          # args[args_key]: <Classification ...>, <Classification ...>, <Classification ...>
+          # tag: <Classification ...>
+          key, klass = get_key_name_and_klass_from_key(tag)
+          tags.push(MiqAeObject.convert_value_based_on_datatype(key, klass))
+          args["#{key}_id"] = tag if attribute_for_vmdb_object?(klass, args[args_key]) && !@attributes.key?(key)
+        end
+        args.delete(args_key)
+        key = args_key.split("::").last
+        args[key] = tags
+      # Process MiqServer::svr => 2
+      elsif args_key.include?(CLASS_SEPARATOR)
         key, klass = get_key_name_and_klass_from_key(args_key)
         value = args.delete(args_key)
         args["#{key}_id"] = value if attribute_for_vmdb_object?(klass, value) && !@attributes.key?(key)
