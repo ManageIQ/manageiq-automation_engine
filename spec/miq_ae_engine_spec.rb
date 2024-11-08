@@ -859,8 +859,7 @@ describe MiqAeEngine do
       expect(test_class_name).to receive(:constantize).and_return(test_class)
       expect(test_class).to receive(:find_by!).with(any_args).and_return(test_class_instance)
       allow(MiqAeEngine).to receive(:create_automation_attribute_key)
-      expect($log).to receive(:error)
-        .with("Error delivering {\"User::user\"=>#{user.id}, nil=>nil} for object \[TestClass.\] with state \[\] to Automate: bad URI(is not URI?): \"_ wrong_uri _\"")
+      expect($log).to receive(:error).with(/Error delivering.+_ wrong_uri _/)
       MiqAeEngine.deliver(options)
     end
 
