@@ -221,20 +221,6 @@ describe MiqAeMethodService::MiqAeService do
 end
 
 describe MiqAeMethodService::MiqAeService do
-  context "#prepend_namespace=" do
-    let(:options) { {} }
-    let(:workspace) { double("MiqAeEngine::MiqAeWorkspaceRuntime", :root => options) }
-    let(:miq_ae_service) { described_class.new(workspace) }
-    let(:ns) { "fred" }
-
-    it "set namespace" do
-      allow(workspace).to receive(:disable_rbac)
-      allow(workspace).to receive(:persist_state_hash).and_return(MiqAeEngine::StateVarHash.new)
-      expect(workspace).to receive(:prepend_namespace=).with(ns)
-
-      miq_ae_service.prepend_namespace = ns
-    end
-  end
   context "create notifications" do
     before do
       NotificationType.seed
