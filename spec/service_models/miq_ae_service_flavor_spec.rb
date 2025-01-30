@@ -8,6 +8,7 @@ describe MiqAeMethodService::MiqAeServiceFlavor do
     expect(@service_flavor.name).to eq("small")
     expect(@service_flavor.description).to eq("really small")
     expect(@service_flavor.cpus).to eq(1)
+    expect(@service_flavor.cpu_total_cores).to eq(1)
     expect(@service_flavor.memory).to eq(2.gigabytes)
     expect(@service_flavor).to be_kind_of(MiqAeMethodService::MiqAeServiceFlavor)
   end
