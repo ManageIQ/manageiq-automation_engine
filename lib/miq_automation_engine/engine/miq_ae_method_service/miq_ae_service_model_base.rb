@@ -60,7 +60,7 @@ module MiqAeMethodService
 
     def self.expose_class_attributes(subclass)
       subclass.class_eval do
-        model.attribute_names.each do |attr|
+        model.all_attribute_names.each do |attr|
           next if model.private_method_defined?(attr)
           next if EXPOSED_ATTR_BLACK_LIST.any? { |rexp| attr =~ rexp }
           next if subclass.base_class != self && method_defined?(attr)
