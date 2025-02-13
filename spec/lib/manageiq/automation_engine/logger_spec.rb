@@ -1,7 +1,7 @@
 describe ManageIQ::AutomationEngine::Logger do
   let(:io) { StringIO.new }
   subject do
-    described_class.new(io).tap do |logger|
+    described_class.create_log_wrapper(io).tap do |logger|
       logger.level = Logger::DEBUG
     end
   end
@@ -70,8 +70,15 @@ describe ManageIQ::AutomationEngine::Logger do
   end
 
   describe "supports container logging" do
-    subject { Vmdb::Loggers.create_logger("automation.log", described_class) }
-    let(:container_log) { subject.try(:wrapped_logger) }
+    subject { described_class.create_log_wrapper }
+    let(:automation_log_wrapper) { subject.automation_log_wrapper }
+    let(:container_log) do
+      if automation_log_wrapper.respond_to?(:broadcasts)
+        automation_log_wrapper.broadcasts.last
+      else
+        automation_log_wrapper.wrapped_logger
+      end
+    end
 
     before do
       stub_const("ENV", ENV.to_h.merge("CONTAINER" => "true"))
@@ -120,7 +127,7 @@ describe ManageIQ::AutomationEngine::Logger do
 
     it "without a resource_id and with a block" do
       expect(subject.logdev).to be_nil # i.e. won't write to a file
-      expect(subject).to       receive(:add).with(Logger::INFO, nil, nil).and_call_original
+      expect(subject).to receive(:add).with(Logger::INFO, nil, nil).and_call_original
       expect(container_log).to receive(:add).with(Logger::INFO, nil, nil).and_call_original
       expect(container_log.logdev).to receive(:write).with(/"message":"foo"/)
 
