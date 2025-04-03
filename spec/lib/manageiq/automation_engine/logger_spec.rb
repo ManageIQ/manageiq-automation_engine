@@ -71,12 +71,12 @@ describe ManageIQ::AutomationEngine::Logger do
 
   describe "supports container logging" do
     subject { described_class.create_log_wrapper }
-    let(:automation_log_wrapper) { subject.automation_log_wrapper }
+    let(:log_wrapper) { subject.log_wrapper }
     let(:container_log) do
-      if automation_log_wrapper.respond_to?(:broadcasts)
-        automation_log_wrapper.broadcasts.last
+      if log_wrapper.respond_to?(:broadcasts)
+        log_wrapper.broadcasts.last
       else
-        automation_log_wrapper.wrapped_logger
+        log_wrapper.wrapped_logger
       end
     end
 
