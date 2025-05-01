@@ -163,7 +163,7 @@ module MiqAeEngine
       $miq_ae_logger.info("Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]", :resource_id => miq_request_id) if root.nil?
 
       if (ae_state_data = args.delete('ae_state_data'))
-        @persist_state_hash.merge!(YAML.load(ae_state_data))
+        @persist_state_hash.merge!(YAML.safe_load(ae_state_data, :permitted_classes => [MiqAeEngine::StateVarHash]))
       end
 
       if (ae_state_previous = args.delete('ae_state_previous'))
