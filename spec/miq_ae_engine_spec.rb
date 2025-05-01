@@ -924,7 +924,7 @@ describe MiqAeEngine do
     end
 
     it "fetches value from state_var" do
-      ae_state_data = {:my_id => 45}.to_yaml
+      ae_state_data = MiqAeEngine::StateVarHash.new(:my_id => 45).to_yaml
       workspace = MiqAeEngine.instantiate("/A/C/BARNEY/FRED?ae_state_data=#{ae_state_data}", user)
       expect(workspace.root['field1']).to eq("45")
       expect(workspace.root['field2']).to eq('Bamm Bamm Rubble')
