@@ -69,7 +69,7 @@ module MiqAeMethodService
 
     def log(level, msg)
       Thread.current["tracking_label"] = @tracking_label
-      $miq_ae_logger.send(level, "<AEMethod #{current_method}> #{ManageIQ::Password.sanitize_string(msg)}", :resource_id => @workspace.find_miq_request_id)
+      @workspace.logger.send(level, "<AEMethod #{current_method}> #{ManageIQ::Password.sanitize_string(msg)}")
     end
 
     def set_state_var(name, value)
@@ -98,7 +98,7 @@ module MiqAeMethodService
 
     def set_service_var(name, value)
       if service_object.nil?
-        $miq_ae_logger.error("Service object not found in root object, set_service_var skipped for #{name} = #{value}", :resource_id => @workspace.find_miq_request_id)
+        @workspace.logger.error("Service object not found in root object, set_service_var skipped for #{name} = #{value}")
         return
       end
 
@@ -133,7 +133,7 @@ module MiqAeMethodService
 
       MiqAeServiceObject.new(obj, self)
     rescue StandardError => e
-      $miq_ae_logger.error("instantiate failed : #{e.message}", :resource_id => @workspace.find_miq_request_id)
+      @workspace.logger.error("instantiate failed : #{e.message}")
       nil
     end
 
@@ -235,7 +235,7 @@ module MiqAeMethodService
     def notification_type(values_hash)
       type = values_hash[:type].present? ? values_hash[:type].to_sym : default_notification_type(values_hash)
       type.tap do |t|
-        $miq_ae_logger.info("Validating Notification type: #{t}", :resource_id => @workspace.find_miq_request_id)
+        @workspace.logger.info("Validating Notification type: #{t}")
         valid_type = NotificationType.find_by(:name => t)
         raise ArgumentError, "Invalid notification type specified" unless valid_type
       end
@@ -257,7 +257,7 @@ module MiqAeMethodService
       subject = notification_subject(values_hash)
       options[:message] = values_hash[:message] if values_hash[:message].present?
 
-      $miq_ae_logger.info("Calling Create Notification type: #{type} subject type: #{subject.class.base_class.name} id: #{subject.id} options: #{options.inspect}", :resource_id => @workspace.find_miq_request_id)
+      @workspace.logger.info("Calling Create Notification type: #{type} subject type: #{subject.class.base_class.name} id: #{subject.id} options: #{options.inspect}")
       MiqAeServiceModelBase.wrap_results(Notification.create!(:type      => type,
                                                               :subject   => subject,
                                                               :options   => options,
@@ -275,7 +275,7 @@ module MiqAeMethodService
       return false unless editable_instance?(path)
 
       ns, klass, instance = MiqAeEngine::MiqAePath.split(path)
-      $miq_ae_logger.info("Instance Create for ns: #{ns} class #{klass} instance: #{instance}", :resource_id => @workspace.find_miq_request_id)
+      @workspace.logger.info("Instance Create for ns: #{ns} class #{klass} instance: #{instance}")
 
       aec = MiqAeClass.lookup_by_namespace_and_name(ns, klass)
       return false if aec.nil?
@@ -389,7 +389,7 @@ module MiqAeMethodService
       domain = MiqAeDomain.lookup_by_fqname(dom, false)
       return false unless domain
 
-      $miq_ae_logger.warn("path=#{path.inspect} : is not editable", :resource_id => @workspace.find_miq_request_id) unless domain.editable?(@workspace.ae_user)
+      @workspace.logger.warn("path=#{path.inspect} : is not editable") unless domain.editable?(@workspace.ae_user)
       domain.editable?(@workspace.ae_user)
     end
 
@@ -397,7 +397,7 @@ module MiqAeMethodService
       domains = @workspace.ae_user.current_tenant.ae_domains.collect(&:name).map(&:upcase)
       return true if domains.include?(dom.upcase)
 
-      $miq_ae_logger.warn("domain=#{dom} : is not editable", :resource_id => @workspace.find_miq_request_id)
+      @workspace.logger.warn("domain=#{dom} : is not editable")
       false
     end
 
@@ -405,7 +405,7 @@ module MiqAeMethodService
       domains = @workspace.ae_user.current_tenant.visible_domains.collect(&:name).map(&:upcase)
       return true if domains.include?(dom.upcase)
 
-      $miq_ae_logger.warn("domain=#{dom} : is not viewable", :resource_id => @workspace.find_miq_request_id)
+      @workspace.logger.warn("domain=#{dom} : is not viewable")
       false
     end
 
