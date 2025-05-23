@@ -123,10 +123,6 @@ module MiqAeMethodService
       service_object.root_service.delete_service_vars_option(name)
     end
 
-    def prepend_namespace=(namespace)
-      @workspace.prepend_namespace = namespace
-    end
-
     def instantiate(uri)
       obj = @workspace.instantiate(uri, @workspace.ae_user, @workspace.current_object)
       return nil if obj.nil?
