@@ -1,12 +1,6 @@
 module MiqAeEngine
   class MiqAeDomainSearch
     def initialize
-      @prepend_namespace   = nil
-    end
-
-    def prepend_namespace=(namespace)
-      @prepend_namespace = namespace.chomp('/').sub(%r{^/}, '')
-      $miq_ae_logger.info("Prepend namespace [#{@prepend_namespace}] during domain search")
     end
 
     def ae_user=(obj)
