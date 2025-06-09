@@ -20,7 +20,7 @@ module MiqAeEngine
     BASE_CLASS        = 'object'.freeze
     BASE_OBJECT       = [BASE_NAMESPACE, BASE_CLASS].join(PATH_SEPARATOR)
     RE_METHOD_CALL    = /^[\s]*([\.\/\w]+)[\s]*(?:\((.*)\))?[\s]*$/.freeze
-    RE_URI_ESCAPE     = Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")
+    RE_URI_ESCAPE     = Regexp.new("[^#{URI::RFC2396_Parser::PATTERN::UNRESERVED}]")
     RE_SUBST          = /\$\{([^}]+)\}/.freeze
     RE_COLLECT_ARRAY  = /^[\s]*(?:([\.\/\w]+)[\s]*=[\s]*)?\[(.*)\](?:\.([^.]+))?/.freeze
     RE_COLLECT_HASH   = /^[\s]*(?:([\.\/\w]+)[\s]*=[\s]*)?\{(.*)\}(?:\.([^.]*))*/.freeze
