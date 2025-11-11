@@ -71,6 +71,9 @@ module MiqAeEngine
           obj.workspace.root['ae_provider_category'] = 'infrastructure'
           %w[Configured_System Lifecycle Provisioning]
         when 'physical_server_provision' then %w[PhysicalServer Lifecycle Provisioning]
+        when 'provision_via_automation_manager'
+          obj.workspace.root['ae_provider_category'] = 'AutomationManagement'
+          %w[AutomationManager Lifecycle Provisioning]
         end
 
       miq_request_id = obj.workspace.find_miq_request_id
