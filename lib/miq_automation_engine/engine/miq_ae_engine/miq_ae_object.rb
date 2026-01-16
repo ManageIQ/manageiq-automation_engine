@@ -78,7 +78,7 @@ module MiqAeEngine
         Benchmark.realtime_block(:instance_fetch_time) do
           @aei = fetch_instance(@instance)
           if @aei.nil?
-            $miq_ae_logger.info("Instance [#{@object_name}] not found in MiqAeDatastore - trying [#{MISSING_INSTANCE}]", :resource_id => @workspace.find_miq_request_id)
+            @workspace.logger.info("Instance [#{@object_name}] not found in MiqAeDatastore - trying [#{MISSING_INSTANCE}]")
             # Try the .missing instance, if the requested one was not found
             @attributes['_missing_instance'] = @instance
             @instance = MISSING_INSTANCE
@@ -437,7 +437,7 @@ module MiqAeEngine
         begin
           methods.each { |meth| value = call_method(value, meth) }
         rescue StandardError => err
-          $miq_ae_logger.warn("Error during substitution: #{err.message}", :resource_id => @workspace.find_miq_request_id)
+          @workspace.logger.warn("Error during substitution: #{err.message}")
           return nil
         end
         return value
@@ -599,7 +599,7 @@ module MiqAeEngine
         assertion = get_value(field, :aetype_assertion, true)
         return if assertion.blank?
 
-        $miq_ae_logger.info("Evaluating substituted assertion [#{assertion}]", :resource_id => @workspace.find_miq_request_id)
+        @workspace.logger.info("Evaluating substituted assertion [#{assertion}]")
 
         begin
           _, _ = message, args # used by eval (?)
@@ -636,8 +636,7 @@ module MiqAeEngine
       query    = MiqAeUri.hash2query(args) if query.nil?
       relationship = MiqAeUri.join(scheme, userinfo, host, port, registry, path, opaque, query, fragment)
 
-      miq_request_id = @workspace.find_miq_request_id
-      $miq_ae_logger.info("Following Relationship [#{relationship}]", :resource_id => miq_request_id)
+      @workspace.logger.info("Following Relationship [#{relationship}]")
 
       if relationship.include?('*')
         rels = []
@@ -652,7 +651,7 @@ module MiqAeEngine
       process_collects(collect, rels)
       @rels[name] = rels
 
-      $miq_ae_logger.info("Followed  Relationship [#{relationship}]", :resource_id => miq_request_id)
+      @workspace.logger.info("Followed  Relationship [#{relationship}]")
     end
 
     def process_collects(what, rels)

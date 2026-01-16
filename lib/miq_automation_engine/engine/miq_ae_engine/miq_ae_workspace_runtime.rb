@@ -26,6 +26,10 @@ module MiqAeEngine
       initialize_obj_entries
     end
 
+    def logger
+      @logger ||= ManageIQ::AutomationEngine::Logger.create_log_wrapper(:resource_id => find_miq_request_id)
+    end
+
     def readonly?
       @readonly
     end
@@ -61,7 +65,7 @@ module MiqAeEngine
 
       workspace
     rescue MiqAeException => err
-      $miq_ae_logger.error(err.message, :resource_id => miq_request_id)
+      workspace.logger.error(err.message)
     ensure
       clear_stored_workspace
     end
@@ -158,7 +162,7 @@ module MiqAeEngine
       args = MiqAeUri.query2hash(query)
       miq_request_id = self.class.find_miq_request_id(args)
 
-      $miq_ae_logger.info("Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]", :resource_id => miq_request_id) if root.nil?
+      logger.info("Instantiating [#{ManageIQ::Password.sanitize_string(uri)}]") if root.nil?
 
       if (ae_state_data = args.delete('ae_state_data'))
         @persist_state_hash.merge!(YAML.safe_load(ae_state_data, :permitted_classes => [MiqAeEngine::StateVarHash]))
@@ -207,18 +211,18 @@ module MiqAeEngine
         end
         obj.process_fields(message)
       rescue MiqAeException::MiqAeDatastoreError => err
-        $miq_ae_logger.error(err.message, :resource_id => miq_request_id)
+        logger.error(err.message)
       rescue MiqAeException::AssertionFailure => err
-        $miq_ae_logger.info(err.message, :resource_id => miq_request_id)
+        logger.info(err.message)
         delete(obj)
       rescue MiqAeException::StopInstantiation => err
-        $miq_ae_logger.info("Stopping instantiation because [#{err.message}]", :resource_id => miq_request_id)
+        logger.info("Stopping instantiation because [#{err.message}]")
         delete(obj)
       rescue MiqAeException::UnknownMethodRc => err
-        $miq_ae_logger.error("Aborting instantiation (unknown method return code) because [#{err.message}]", :resource_id => miq_request_id)
+        logger.error("Aborting instantiation (unknown method return code) because [#{err.message}]")
         raise
       rescue MiqAeException::AbortInstantiation => err
-        $miq_ae_logger.info("Aborting instantiation because [#{err.message}]", :resource_id => miq_request_id)
+        logger.info("Aborting instantiation because [#{err.message}]")
         raise
       ensure
         @current.pop if pushed
