@@ -194,9 +194,6 @@ module MiqAeMethodService
     def datastore
     end
 
-    def ldap
-    end
-
     def execute(method_name, *args, **kwargs, &block)
       User.with_user(@workspace.ae_user) { execute_with_user(method_name, *args, **kwargs, &block) }
     end
