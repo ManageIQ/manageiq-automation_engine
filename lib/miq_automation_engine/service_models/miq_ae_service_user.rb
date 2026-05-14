@@ -16,35 +16,18 @@ module MiqAeMethodService
     end
 
     def get_ldap_attribute_names
-      ar_method do
-        ldap_user = find_ldap_user
-        ldap_user.attribute_names
-      end
+      $miq_ae_logger.warn("[REMOVED] #{self.class.name}#get_ldap_attribute_names has been removed. Please use the net-ldap gem directly instead. At #{caller(1..1).first}")
+      []
     end
 
     def get_ldap_attribute(name)
-      ar_method do
-        ldap_user = find_ldap_user
-        value     = MiqLdap.get_attr(ldap_user, name.to_sym)
-        value.nil? ? nil : value.dup
-      end
+      $miq_ae_logger.warn("[REMOVED] #{self.class.name}#get_ldap_attribute has been removed. Please use the net-ldap gem directly instead. At #{caller(1..1).first}")
+      nil
     end
 
     def miq_group
-      $miq_ae_logger.warn("[DEPRECATION] #{self.class.name}#miq_group accessor is deprecated.  Please use current_group instead.  At #{caller[0]}")
+      $miq_ae_logger.warn("[DEPRECATION] #{self.class.name}#miq_group accessor is deprecated. Please use current_group instead. At #{caller(1..1).first}")
       current_group
-    end
-
-    private
-
-    def find_ldap_user
-      ldap = MiqLdap.new
-      raise "Cannot bind to LDAP with system defaults (see evm.log for details)" if ldap.bind_with_default == false
-
-      ldap_user = ldap.get_user_object(@object.email, 'mail') || ldap.get_user_object(@object.userid, 'userprincipalname')
-      raise "No information returned for email=<#{@object.email}> userid=<#{@object.userid}>" if ldap_user.nil?
-
-      ldap_user
     end
   end
 end
