@@ -166,3 +166,145 @@ describe MiqAeEngine::MiqAeObject do
     end
   end
 end
+
+describe MiqAeEngine::MiqAeAssertion do
+  describe ".evaluate" do
+    context "with boolean literals" do
+      it "true" do
+        expect(described_class.evaluate("true")).to be true
+      end
+
+      it "false" do
+        expect(described_class.evaluate("false")).to be false
+      end
+
+      it "nil" do
+        expect(described_class.evaluate("nil")).to be nil
+      end
+    end
+
+    context "with comparison operators" do
+      it "integer >=" do
+        expect(described_class.evaluate("14 >= 14")).to be true
+        expect(described_class.evaluate("1 > 2")).to be false
+      end
+
+      it "integer ==" do
+        expect(described_class.evaluate("999 == 999")).to be true
+      end
+
+      it "integer !=" do
+        expect(described_class.evaluate("999 != 0")).to be true
+      end
+
+      it "string ==" do
+        expect(described_class.evaluate("'foo' == 'foo'")).to be true
+        expect(described_class.evaluate("'foo' == 'bar'")).to be false
+      end
+
+      it "string !=" do
+        expect(described_class.evaluate("'foo' != 'bar'")).to be true
+      end
+
+      it "float >" do
+        expect(described_class.evaluate("3.14 > 1.0")).to be true
+      end
+
+      it "unary !" do
+        expect(described_class.evaluate("!false")).to be true
+        expect(described_class.evaluate("!true")).to be false
+      end
+    end
+
+    context "with logical operators" do
+      it "&&" do
+        expect(described_class.evaluate("999 == 999 && 'foo' == 'foo'")).to be true
+        expect(described_class.evaluate("999 == 999 && 'foo' == 'bar'")).to be false
+      end
+
+      it "||" do
+        expect(described_class.evaluate("999 != 999 || 'foo' == 'foo'")).to be true
+        expect(described_class.evaluate("999 != 999 || 'foo' == 'bar'")).to be false
+      end
+
+      it "nested && and ||" do
+        expect(described_class.evaluate("1 == 1 && 2 == 2 || 3 == 3")).to be true
+      end
+    end
+
+    context "with Array#include?" do
+      it "%w() literal array" do
+        expect(described_class.evaluate("%w(foo bar).include? 'foo'")).to be true
+        expect(described_class.evaluate("%w(foo bar).include? 'baz'")).to be false
+      end
+    end
+
+    context "with String#include?" do
+      it "string literal receiver" do
+        expect(described_class.evaluate("'foobar'.include?('foo')")).to be true
+        expect(described_class.evaluate("'foobar'.include?('baz')")).to be false
+      end
+    end
+
+    it "parentheses" do
+      expect(described_class.evaluate("(1 == 1)")).to be true
+    end
+
+    context "with disallowed constructs" do
+      it "bare method call with no receiver" do
+        expect { described_class.evaluate("system('ls')") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+
+      it "exit!" do
+        expect { described_class.evaluate("exit!") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+
+      it "constant-qualified method call" do
+        expect { described_class.evaluate("File.read('/etc/passwd')") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+
+      it "backtick execution" do
+        expect { described_class.evaluate("`ls`") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+
+      it "string interpolation" do
+        expect { described_class.evaluate("\"#\{system('ls')}\"\n") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+
+      it "local variable assignment" do
+        expect { described_class.evaluate("x = 1") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+
+      it "multiple statements" do
+        expect { described_class.evaluate("true; system('ls')") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+
+      it "arbitrary method call on string receiver" do
+        expect { described_class.evaluate("'foo'.upcase") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+
+      it "method call chained from comparison" do
+        expect { described_class.evaluate("(1 == 1).to_s") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+
+      it "empty string" do
+        expect { described_class.evaluate("") }
+          .to raise_error(MiqAeException::AssertionFailure, /disallowed constructs/)
+      end
+    end
+
+    it "syntactically invalid Ruby raises AssertionFailure with a syntax error message" do
+      expect { described_class.evaluate("=== broken ===") }
+        .to raise_error(MiqAeException::AssertionFailure, /Syntax Error/)
+    end
+  end
+end
