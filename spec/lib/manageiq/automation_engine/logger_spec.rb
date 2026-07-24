@@ -1,7 +1,8 @@
 describe ManageIQ::AutomationEngine::Logger do
   let(:io) { StringIO.new }
+  let(:resource_id) { nil }
   subject do
-    described_class.create_log_wrapper(io).tap do |logger|
+    described_class.create_log_wrapper(:io => io, :resource_id => resource_id).tap do |logger|
       logger.level = Logger::DEBUG
     end
   end
@@ -10,42 +11,48 @@ describe ManageIQ::AutomationEngine::Logger do
     describe "##{sev}" do
       let(:sev_uc) { sev.upcase }
 
-      it "with a resource_id" do
-        subject.public_send(sev, "foo", :resource_id => 123)
+      context "with a resource_id" do
+        let(:resource_id) { 123 }
 
-        expect(io.string).to match(/#{sev_uc}.*foo/)
+        it "creates the RequestLog record" do
+          subject.public_send(sev, "foo")
 
-        expect(RequestLog.count).to eq(1)
-        log = RequestLog.first
-        expect(log.message).to     eq("foo")
-        expect(log.severity).to    eq(sev_uc)
-        expect(log.resource_id).to eq(123)
+          expect(io.string).to match(/#{sev_uc}.*foo/)
+
+          expect(RequestLog.count).to eq(1)
+          log = RequestLog.first
+          expect(log.message).to     eq("foo")
+          expect(log.severity).to    eq(sev_uc)
+          expect(log.resource_id).to eq(123)
+        end
+
+        it "with a block creates the RequestLog record" do
+          subject.public_send(sev) { "foo" }
+
+          expect(io.string).to match(/#{sev_uc}.*foo/)
+
+          expect(RequestLog.count).to eq(1)
+          log = RequestLog.first
+          expect(log.message).to     eq("foo")
+          expect(log.severity).to    eq(sev_uc)
+          expect(log.resource_id).to eq(123)
+        end
       end
 
-      it "with a resource_id and a block" do
-        subject.public_send(sev, :resource_id => 123) { "foo" }
+      context "without a resource_id" do
+        it "doesn't create a RequestLog record" do
+          subject.public_send(sev, "foo")
 
-        expect(io.string).to match(/#{sev_uc}.*foo/)
+          expect(io.string).to match(/#{sev_uc}.*foo/)
+          expect(RequestLog.count).to eq(0)
+        end
 
-        expect(RequestLog.count).to eq(1)
-        log = RequestLog.first
-        expect(log.message).to     eq("foo")
-        expect(log.severity).to    eq(sev_uc)
-        expect(log.resource_id).to eq(123)
-      end
+        it "with a block doesn't create the RequestLog" do
+          subject.public_send(sev) { "foo" }
 
-      it "without a resource_id" do
-        subject.public_send(sev, "foo")
-
-        expect(io.string).to match(/#{sev_uc}.*foo/)
-        expect(RequestLog.count).to eq(0)
-      end
-
-      it "without a resource_id and with a block" do
-        subject.public_send(sev) { "foo" }
-
-        expect(io.string).to match(/#{sev_uc}.*foo/)
-        expect(RequestLog.count).to eq(0)
+          expect(io.string).to match(/#{sev_uc}.*foo/)
+          expect(RequestLog.count).to eq(0)
+        end
       end
     end
   end
@@ -54,10 +61,14 @@ describe ManageIQ::AutomationEngine::Logger do
     context "when the level doesn't include DEBUG" do
       before { subject.level = Logger::INFO }
 
-      it "with a resource_id" do
-        subject.debug("foo", :resource_id => 123)
+      context "with a resource_id" do
+        let(:resource_id) { 123 }
 
-        expect(RequestLog.count).to eq(0)
+        it "doesn't create a request_log record" do
+          subject.debug("foo")
+
+          expect(RequestLog.count).to eq(0)
+        end
       end
 
       it "without a resource_id" do
@@ -70,7 +81,8 @@ describe ManageIQ::AutomationEngine::Logger do
   end
 
   describe "supports container logging" do
-    subject { described_class.create_log_wrapper }
+    subject { described_class.create_log_wrapper(:resource_id => resource_id) }
+
     let(:automation_log_wrapper) { subject.automation_log_wrapper }
     let(:container_log) do
       if automation_log_wrapper.respond_to?(:broadcasts)
@@ -87,38 +99,45 @@ describe ManageIQ::AutomationEngine::Logger do
       allow(container_log.logdev).to receive(:write)
     end
 
-    it "with a resource_id" do
-      expect(subject.logdev).to be_nil # i.e. won't write to a file
-      expect(subject).to       receive(:add).with(Logger::INFO, "foo", "automation").and_call_original
-      expect(container_log).to receive(:add).with(Logger::INFO, "foo", "automation").and_call_original
+    context "with a resource_id" do
+      let(:resource_id) { 123 }
 
-      subject.info("foo", :resource_id => 123)
+      it "creates a request_log record" do
+        expect(subject.logdev).to be_nil # i.e. won't write to a file
+        expect(subject).to       receive(:add).with(Logger::INFO, nil, "foo").and_call_original
+        expect(container_log).to receive(:add).with(Logger::INFO, nil, "foo").and_call_original
+        expect(container_log.logdev).to receive(:write).with(/"message":"foo"/)
 
-      expect(RequestLog.count).to eq(1)
-      log = RequestLog.first
-      expect(log.message).to     eq("foo")
-      expect(log.severity).to    eq("INFO")
-      expect(log.resource_id).to eq(123)
-    end
+        subject.info("foo")
 
-    it "with a resource_id and a block" do
-      expect(subject.logdev).to be_nil # i.e. won't write to a file
-      expect(subject).to       receive(:add).with(Logger::INFO, "foo", "automation").and_call_original
-      expect(container_log).to receive(:add).with(Logger::INFO, "foo", "automation").and_call_original
+        expect(RequestLog.count).to eq(1)
+        log = RequestLog.first
+        expect(log.message).to     eq("foo")
+        expect(log.severity).to    eq("INFO")
+        expect(log.resource_id).to eq(123)
+      end
 
-      subject.info(:resource_id => 123) { "foo" }
+      it "with a block creates a request_log record" do
+        expect(subject.logdev).to be_nil # i.e. won't write to a file
+        expect(subject).to       receive(:add).with(Logger::INFO, nil, nil).and_call_original
+        expect(container_log).to receive(:add).with(Logger::INFO, nil, nil).and_call_original
+        expect(container_log.logdev).to receive(:write).with(/"message":"foo"/)
 
-      expect(RequestLog.count).to eq(1)
-      log = RequestLog.first
-      expect(log.message).to     eq("foo")
-      expect(log.severity).to    eq("INFO")
-      expect(log.resource_id).to eq(123)
+        subject.info { "foo" }
+
+        expect(RequestLog.count).to eq(1)
+        log = RequestLog.first
+        expect(log.message).to     eq("foo")
+        expect(log.severity).to    eq("INFO")
+        expect(log.resource_id).to eq(123)
+      end
     end
 
     it "without a resource_id" do
       expect(subject.logdev).to be_nil # i.e. won't write to a file
       expect(subject).to       receive(:add).with(Logger::INFO, nil, "foo").and_call_original
       expect(container_log).to receive(:add).with(Logger::INFO, nil, "foo").and_call_original
+      expect(container_log.logdev).to receive(:write).with(/"message":"foo"/)
 
       subject.info("foo")
 
