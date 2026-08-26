@@ -1,4 +1,5 @@
 require 'more_core_extensions/core_ext/array/math'
+require_relative 'miq_ae_assertion'
 require_relative 'miq_ae_state_machine'
 module MiqAeEngine
   class MiqAeObject
@@ -593,7 +594,7 @@ module MiqAeEngine
     end
     private_class_method :decrypt_password
 
-    def process_assertion(field, message, args)
+    def process_assertion(field, _message, _args)
       Benchmark.current_realtime[:assertion_count] += 1
       Benchmark.realtime_block(:assertion_time) do
         assertion = get_value(field, :aetype_assertion, true)
@@ -601,16 +602,7 @@ module MiqAeEngine
 
         $miq_ae_logger.info("Evaluating substituted assertion [#{assertion}]", :resource_id => @workspace.find_miq_request_id)
 
-        begin
-          _, _ = message, args # used by eval (?)
-          assertion_result = eval(assertion)
-        rescue SyntaxError => err
-          $miq_ae_logger.error("Assertion had the following Syntax Error: '#{err.message}'")
-          raise MiqAeException::AssertionFailure, "Syntax Error in Assertion: <#{assertion}>"
-        rescue Exception => err # rubocop:disable Lint/RescueException
-          $miq_ae_logger.error("'#{err.message}', evaluating assertion")
-          raise MiqAeException::AssertionFailure, "Assertion Evaluation Failed: <#{assertion}>"
-        end
+        assertion_result = MiqAeAssertion.evaluate(assertion)
 
         raise MiqAeException::AssertionFailure, "Assertion Failed: <#{assertion}>" unless assertion_result
       end
