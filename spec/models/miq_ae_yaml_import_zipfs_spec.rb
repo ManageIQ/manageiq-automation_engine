@@ -20,7 +20,7 @@ describe MiqAeYamlImportZipfs do
     path = t.path
     t.close
 
-    Zip::File.open(path, create: true) do |zf|
+    Zip::File.open(path, :create => true) do |zf|
       [
         domain_a_yaml, domain_b_yaml,
         ns_a_yaml,     ns_b_yaml,
