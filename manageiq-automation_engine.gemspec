@@ -19,8 +19,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "drb"
-  spec.add_dependency "rubyzip", "~>2.0.0"
   spec.add_dependency "prism"
+  spec.add_dependency "rubyzip", "~>3.6"
 
   spec.add_development_dependency "manageiq-style"
   spec.add_development_dependency "simplecov", ">= 0.21.2"
