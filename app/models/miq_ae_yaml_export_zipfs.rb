@@ -19,7 +19,7 @@ class MiqAeYamlExportZipfs < MiqAeYamlExport
 
   def export
     require 'zip/filesystem'
-    Zip::File.open(@temp_file_name, Zip::File::CREATE) do |zf|
+    Zip::File.open(@temp_file_name, create: true) do |zf|
       @zip_file = zf
       write_model
       @zip_file&.close
