@@ -978,7 +978,7 @@ describe MiqAeDatastore do
 
   def create_bogus_zip_file
     require 'zip/filesystem'
-    Zip::File.open(@zip_file, create: true) do |zh|
+    Zip::File.open(@zip_file, :create => true) do |zh|
       zh.file.open("first.txt", "w") { |f| f.puts "Hello world" }
       zh.dir.mkdir("mydir")
       zh.file.open("mydir/second.txt", "w") { |f| f.puts "Hello again" }
