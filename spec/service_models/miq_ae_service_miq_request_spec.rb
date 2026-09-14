@@ -24,6 +24,13 @@ describe MiqAeMethodService::MiqAeServiceMiqRequest do
     expect(svc_request.show_url).to eq("#{ui_url}/miq_request/show/#{@miq_request.id}")
   end
 
+  it "#show_url returns nil when remote_ui_url is nil" do
+    miq_region = FactoryBot.create(:miq_region)
+    allow(MiqRegion).to receive(:my_region).and_return(miq_region)
+    allow(miq_region).to receive(:remote_ui_url).and_return(nil)
+    expect(svc_request.show_url).to be_nil
+  end
+
   it "#approve" do
     approver = 'wilma'
     reason   = "Why Not?"

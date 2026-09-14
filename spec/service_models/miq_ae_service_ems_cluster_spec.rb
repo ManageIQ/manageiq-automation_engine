@@ -9,6 +9,13 @@ describe MiqAeMethodService::MiqAeServiceEmsCluster do
     expect(svc_cluster.show_url).to eq("#{ui_url}/ems_cluster/show/#{cluster.id}")
   end
 
+  it "#show_url returns nil when remote_ui_url is nil" do
+    miq_region = FactoryBot.create(:miq_region)
+    allow(MiqRegion).to receive(:my_region).and_return(miq_region)
+    allow(miq_region).to receive(:remote_ui_url).and_return(nil)
+    expect(svc_cluster.show_url).to be_nil
+  end
+
   it "#backup_create async" do
     @base_queue_options = {
       :class_name  => cluster.class.name,
