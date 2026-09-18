@@ -21,6 +21,13 @@ describe MiqAeMethodService::MiqAeServiceService do
     expect(service_service.show_url).to eq("#{ui_url}/service/show/#{service.id}")
   end
 
+  it "#show_url returns nil when remote_ui_url is nil" do
+    miq_region = FactoryBot.create(:miq_region)
+    allow(MiqRegion).to receive(:my_region).and_return(miq_region)
+    allow(miq_region).to receive(:remote_ui_url).and_return(nil)
+    expect(service_service.show_url).to be_nil
+  end
+
   it "#remove_from_vmdb" do
     expect(Service.count).to eq(1)
     method = "$evm.root['#{@ae_result_key}'] = $evm.root['service'].remove_from_vmdb"

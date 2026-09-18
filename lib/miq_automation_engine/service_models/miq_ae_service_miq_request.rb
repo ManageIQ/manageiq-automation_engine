@@ -33,7 +33,10 @@ module MiqAeMethodService
     end
 
     def show_url
-      URI.join(MiqRegion.my_region.remote_ui_url, "miq_request/show/#{@object.id}").to_s
+      remote_ui_url = MiqRegion.my_region.remote_ui_url
+      return nil if remote_ui_url.nil?
+
+      URI.join(remote_ui_url, "miq_request/show/#{@object.id}").to_s
     end
   end
 end

@@ -9,6 +9,13 @@ describe MiqAeMethodService::MiqAeServiceVmOrTemplate do
     expect(svc_template.show_url).to eq("#{ui_url}/vm/show/#{template.id}")
   end
 
+  it "#show_url returns nil when remote_ui_url is nil" do
+    miq_region = FactoryBot.create(:miq_region)
+    allow(MiqRegion).to receive(:my_region).and_return(miq_region)
+    allow(miq_region).to receive(:remote_ui_url).and_return(nil)
+    expect(svc_template.show_url).to be_nil
+  end
+
   it "#ems_custom_set async" do
     @base_queue_options = {
       :class_name  => vm.class.name,
