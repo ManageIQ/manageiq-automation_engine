@@ -17,6 +17,6 @@ describe ManageIQ::AutomationEngine::SyntaxChecker do
   it "#error_line, #error_text" do
     result = described_class.check "line(1).is.okay\nline(2) is not :("
     expect(result.error_line).to eq(2)
-    expect(result.error_text).to match(/syntax error/)
+    expect(result.error_text).to eq("unexpected local variable or method, expecting end-of-input")
   end
 end

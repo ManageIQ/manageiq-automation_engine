@@ -3,19 +3,13 @@ module ManageIQ
     class SyntaxCheckResult
       attr_reader :error_line, :error_text
 
-      def initialize(output)
-        @valid = (output == "Syntax OK\n")
-        @output = output
-        unless @valid
-          match = /^-:(\d+):(.*)/.match(output)
-          if match.nil?
-            @error_line = 0
-            @error_text = output
-          else
-            @error_line = match[1].to_i
-            @error_text = match[2]
-          end
-        end
+      def initialize(parse_result)
+        @valid = parse_result.success?
+        return if @valid
+
+        error = parse_result.errors.first
+        @error_line = error.location.start_line
+        @error_text = error.message
       end
 
       def valid?
