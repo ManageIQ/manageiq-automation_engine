@@ -1,19 +1,25 @@
 module ManageIQ
   module AutomationEngine
     class SyntaxCheckResult
-      attr_reader :error_line, :error_text
+      # All of the syntax errors found, as an array of [line, text] pairs
+      attr_reader :errors
 
       def initialize(parse_result)
         @valid = parse_result.success?
-        return if @valid
-
-        error = parse_result.errors.first
-        @error_line = error.location.start_line
-        @error_text = error.message
+        @errors = valid? ? [] : parse_result.errors.map { |e| [e.location.start_line, e.message] }
       end
 
       def valid?
         @valid
+      end
+
+      # The first error, kept for backwards compatibility
+      def error_line
+        errors.first&.first
+      end
+
+      def error_text
+        errors.first&.last
       end
     end
   end
